@@ -21,13 +21,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      titleTemplate: "Nubohub | The next evolution of tsboard",
-      link: [
-        {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Outfit:wght@100;400;700;900&display=swap",
-        },
-      ],
+      titleTemplate: "Nubo | The next evolution of tsboard",
     },
   },
 })
