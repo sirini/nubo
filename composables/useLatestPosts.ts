@@ -14,6 +14,14 @@ export async function useLatestPosts() {
   const pending = ref<boolean>(false)
   const error = ref<unknown>(null)
 
+  // 출력되는 기본값 정의
+  const defaultResp: Resp<BoardHomePostItem[]> = {
+    success: false,
+    error: "init value",
+    code: 0,
+    result: [],
+  }
+
   // SSR 포함 최초 로드
   const {
     data,
@@ -28,6 +36,7 @@ export async function useLatestPosts() {
       server: true,
       immediate: true,
       watch: [() => params.option, () => params.keyword],
+      default: () => defaultResp,
     },
   )
 

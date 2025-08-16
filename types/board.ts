@@ -42,15 +42,6 @@ export const BOARD_PREFIX = {
   [BOARD.DEFAULT]: "board",
 } as const
 
-// 게시판 타입 매칭용 배열 정의
-export const CONVERT_BOARD_TYPE = [
-  { path: "/board/", name: "boardList" },
-  { path: "/gallery/", name: "galleryList" },
-  { path: "/blog/", name: "blogList" },
-  { path: "/webzine/", name: "webzineList" },
-  { path: "/trade/", name: "tradeList" },
-]
-
 // 게시글 작성자 기본값 정의
 export const BOARD_WRITER: BoardWriter = {
   uid: 0,
