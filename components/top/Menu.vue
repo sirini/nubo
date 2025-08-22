@@ -11,7 +11,11 @@
         <NavigationMenuItem v-for="(menu, index) in menus.result" :key="index">
           <NavigationMenuTrigger class="font-bold text-md">{{ menu.group }}</NavigationMenuTrigger>
           <NavigationMenuContent
-            class="grid gap-2 p-2 w-80 sm:w-100 md:w-140 md:grid-cols-2 lg:w-180 lg:grid-cols-3 xl:w-240 xl:grid-cols-4"
+            class="grid gap-2 p-2 w-80 sm:w-100 md:w-140 lg:w-180 xl:w-240"
+            :class="`md:grid-cols-${Math.min(2, menu.boards.length)} lg:grid-cols-${Math.min(
+              3,
+              menu.boards.length,
+            )} xl:grid-cols-${Math.min(4, menu.boards.length)}`"
           >
             <NavigationMenuLink as-child v-for="(board, idx) in menu.boards" :key="idx">
               <a
