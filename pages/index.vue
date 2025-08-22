@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { ArrowDownFromLine } from "lucide-vue-next"
-import { useLatestPosts } from "~/composables/useLatestPosts"
+import { useLatestPosts } from "~/composables/home/useLatestPosts"
 
 // SSR 시점에 데이터 먼저 가져오기
 const { posts, pending, error, loadMore } = await useLatestPosts()

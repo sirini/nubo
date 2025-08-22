@@ -24,10 +24,11 @@ export default defineNuxtConfig({
   ],
   googleFonts: {
     display: "swap",
+    preconnect: true,
+    download: false,
     families: {
-      Inter: [400, 500, 700],
-      Roboto: true,
-      "Noto+Sans+KR": [400, 700],
+      Inter: [200, 400, 500, 600, 700],
+      "Google Sans Code": [400, 500, 600, 700],
     },
   },
   shadcn: {
@@ -36,7 +37,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      titleTemplate: "Nubo | The next evolution of tsboard",
+      titleTemplate: "Nubo | Networked Utilities & Builtin Options",
     },
   },
 })

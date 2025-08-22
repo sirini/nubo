@@ -30,5 +30,5 @@ export default defineEventHandler(async (event) => {
     path: "/",
   })
 
-  return { ok: true, data: res }
+  return res
 })

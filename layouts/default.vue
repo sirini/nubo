@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { useVisit } from "~/composables/useVisit"
+import { useVisit } from "~/composables/home/useVisit"
 
 onNuxtReady(() => {
   const { call } = useVisit()

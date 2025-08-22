@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { Squirrel } from "lucide-vue-next"
-import { useHomeMenus } from "~/composables/useHomeMenus"
+import { useHomeMenus } from "~/composables/home/useHomeMenus"
 
 const { menus, pending, error, refresh } = await useHomeMenus()
 </script>

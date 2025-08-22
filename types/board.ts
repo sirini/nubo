@@ -235,7 +235,7 @@ export type BoardViewDownloadResult = {
   path: string
 }
 
-// 게시글 보기에 반환 타입 정의
+// 게시글 보기 반환 타입 정의
 export type BoardViewResult = {
   config: BoardConfig
   post: BoardListItem
@@ -246,6 +246,19 @@ export type BoardViewResult = {
   nextPostUid: number
   writerPosts: BoardWriterLatestPost[]
   writerComments: BoardWriterLatestComment[]
+}
+
+// 게시글 보기 반환 기본값 정의
+export const BOARD_VIEW_RESULT: BoardViewResult = {
+  config: BOARD_CONFIG,
+  post: BOARD_LIST_ITEM,
+  images: [] as BoardAttachedImage[],
+  files: [] as BoardAttachment[],
+  tags: [] as Pair[],
+  prevPostUid: 0,
+  nextPostUid: 0,
+  writerPosts: [] as BoardWriterLatestPost[],
+  writerComments: [] as BoardWriterLatestComment[],
 }
 
 // 게시글 작성자 타입 정의
