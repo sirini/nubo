@@ -37,7 +37,7 @@ export const BOARD_ACTION_NAME = {
 export const BOARD_PREFIX = {
   [BOARD.GALLERY]: "gallery",
   [BOARD.BLOG]: "blog",
-  [BOARD.WEBZINE]: "webzine",
+  [BOARD.WEBZINE]: "board",
   [BOARD.TRADE]: "trade",
   [BOARD.DEFAULT]: "board",
 } as const

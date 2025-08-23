@@ -2,10 +2,10 @@
   <section class="container mx-auto py-4">
     <div>
       <div v-if="pending">Loading ...</div>
-      <div v-else>
+      <div v-else-if="view">
+        <BoardViewBreadcrumb :config="view.config" />
         <Card
           class="rounded-lg mx-auto overflow-hidden shadow-lg pt-0"
-          v-if="view"
           :style="`max-width: ${view.config.width}px`"
         >
           <img
