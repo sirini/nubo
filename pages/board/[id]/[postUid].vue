@@ -54,6 +54,8 @@
             </div>
           </div>
         </Card>
+
+        <BoardViewWriteComment />
       </div>
     </div>
   </section>
