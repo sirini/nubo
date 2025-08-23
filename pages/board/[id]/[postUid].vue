@@ -35,6 +35,17 @@
           <CardContent class="leading-7 px-4 nubo">
             <div v-html="view.post.content"></div>
           </CardContent>
+          <CardFooter class="px-4">
+            <Badge
+              v-for="(tag, index) in view.tags"
+              :key="index"
+              variant="secondary"
+              class="mt-2 mr-2"
+            >
+              <Hash />
+              {{ tag.name }}</Badge
+            >
+          </CardFooter>
         </Card>
       </div>
     </div>
@@ -42,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { Eye, Heart, MessageCircle } from "lucide-vue-next"
+import { Eye, Hash, Heart, MessageCircle } from "lucide-vue-next"
 import "~/assets/css/editor.scss"
 import { useBoardView } from "~/composables/board/useBoardView"
 import { showDateOnly, showReadableNumber } from "~/lib/utils"
