@@ -2,10 +2,10 @@
   <section class="container mx-auto py-4">
     <div>
       <div v-if="pending">Loading ...</div>
-      <div v-else-if="view">
+      <div v-else-if="view" class="mx-auto" :style="`max-width: ${view.config.width}px`">
         <BoardViewBreadcrumb :config="view.config" />
         <Card
-          class="rounded-lg mx-auto overflow-hidden shadow-lg pt-0"
+          class="rounded-lg overflow-hidden shadow-lg pt-0"
           :style="`max-width: ${view.config.width}px`"
         >
           <img
@@ -55,7 +55,7 @@
           </div>
         </Card>
 
-        <BoardViewWriteComment />
+        <BoardViewWriteComment class="mt-4" />
       </div>
     </div>
   </section>

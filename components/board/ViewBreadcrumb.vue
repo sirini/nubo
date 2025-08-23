@@ -1,5 +1,5 @@
 <template>
-  <Breadcrumb class="font-title mb-2">
+  <Breadcrumb class="font-title mb-2 mx-auto px-3">
     <BreadcrumbList>
       <BreadcrumbItem>
         <BreadcrumbLink href="/">Home</BreadcrumbLink>

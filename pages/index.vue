@@ -6,9 +6,7 @@
         v-else
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4"
       >
-        <NuxtLink :to="`/board/${post.id}/${post.uid}`" v-for="post in posts" :key="post.uid">
-          <main-post-card :post="post" />
-        </NuxtLink>
+        <main-post-card :post="post" v-for="post in posts" :key="post.uid" />
       </div>
     </div>
 
