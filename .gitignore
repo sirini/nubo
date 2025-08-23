@@ -11,6 +11,9 @@ upload
 # Node dependencies
 node_modules
 
+# GOAPI Backend
+goapi-mac*
+
 # Logs
 logs
 *.log
