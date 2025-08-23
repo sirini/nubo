@@ -46,6 +46,13 @@
               {{ tag.name }}</Badge
             >
           </CardFooter>
+
+          <div v-if="view.post.writer.signature.length > 0">
+            <hr />
+            <div class="text-secondary text-sm pt-3 px-4">
+              {{ stripHtmlTags(view.post.writer.signature) }}
+            </div>
+          </div>
         </Card>
       </div>
     </div>
@@ -56,7 +63,7 @@
 import { Eye, Hash, Heart, MessageCircle } from "lucide-vue-next"
 import "~/assets/css/editor.scss"
 import { useBoardView } from "~/composables/board/useBoardView"
-import { showDateOnly, showReadableNumber } from "~/lib/utils"
+import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
 
 const { data, pending } = await useBoardView()
 const view = computed(() => data.value?.result)
