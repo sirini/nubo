@@ -4,12 +4,32 @@
 
   a {
     text-decoration: none;
-    color: #37474f;
+    color: oklch(80% 0.12209 279.447);
+    font-family: "Google Sans Code", sans-serif;
   }
 
   ul,
   ol {
     padding: 0 1.5rem;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+  ul ul {
+    list-style-type: circle;
+  }
+  ul ul ul {
+    list-style-type: square;
+  }
+  ol {
+    list-style-type: decimal;
+  }
+  ol ol {
+    list-style-type: lower-alpha;
+  }
+  ol ol ol {
+    list-style-type: lower-latin;
   }
 
   h1 {
@@ -37,22 +57,33 @@
     font-size: 1.1em;
   }
 
+  mark {
+    background-color: oklch(90% 0.14002 89.161);
+    border-radius: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+  }
+
   code {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: oklch(30% 0.02934 284.342);
     color: #ffffff;
     padding: 3px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 20px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+    border-radius: 1rem;
     font-family: "Google Sans Code", sans-serif;
   }
 
   pre {
-    background: #0d0d0d;
+    background: oklch(15% 0.01861 284.284);
     color: #fff;
     font-family: "Google Sans Code", sans-serif;
     padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
+    border-radius: 1rem;
     margin: 1rem 0;
     overflow: auto;
 
@@ -65,7 +96,7 @@
 
     .hljs-comment,
     .hljs-quote {
-      color: #616161;
+      color: oklch(50% 0.12106 161.647);
     }
 
     .hljs-variable,
@@ -123,14 +154,14 @@
 
   blockquote {
     padding: 1rem;
-    border-left: 2px solid rgba(30, 30, 30, 0.1);
-    background-color: rgba(200, 200, 200, 0.1);
+    border-left: 2px solid oklch(30% 0.02934 284.342);
+    background-color: oklch(15% 0.01861 284.284);
     margin: 1rem 0;
   }
 
   hr {
     border: none;
-    border-top: 1px solid rgba(30, 30, 30, 0.1);
+    border-top: 1px solid oklch(25% 0.02805 284.268);
   }
 
   table {
@@ -143,7 +174,7 @@
     td,
     th {
       min-width: 1em;
-      border: 1px solid #ced4da;
+      border: 1px solid oklch(25% 0.02805 284.268);
       padding: 3px 5px;
       vertical-align: top;
       box-sizing: border-box;
@@ -157,7 +188,7 @@
     th {
       font-weight: bold;
       text-align: left;
-      background-color: #f1f3f5;
+      background-color: oklch(30% 0.02934 284.342);
     }
 
     .selectedCell:after {
@@ -168,7 +199,7 @@
       right: 0;
       top: 0;
       bottom: 0;
-      background: rgba(200, 200, 255, 0.4);
+      background: oklch(30% 0.02934 284.342);
       pointer-events: none;
     }
 

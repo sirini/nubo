@@ -3,7 +3,11 @@
     <div>
       <div v-if="pending">Loading ...</div>
       <div v-else>
-        <Card class="rounded-lg overflow-hidden shadow-lg pt-0" v-if="view">
+        <Card
+          class="rounded-lg mx-auto overflow-hidden shadow-lg pt-0"
+          v-if="view"
+          :style="`max-width: ${view.config.width}px`"
+        >
           <img
             v-if="view.post.cover"
             :src="view.post.cover"
@@ -11,10 +15,10 @@
             class="w-full object-cover"
           />
           <CardHeader class="px-3" :class="view.post.cover ? '' : 'pt-6'">
-            <CardTitle class="line-clamp-1 mb-2 text-2xl font-heading">{{
+            <CardTitle class="line-clamp-1 mb-2 text-2xl font-title px-1">{{
               view.post.title
             }}</CardTitle>
-            <CardDescription class="inline-flex items-center">
+            <CardDescription class="inline-flex items-center px-1 font-code">
               <Heart
                 :class="view.post.liked ? 'text-red-200 fill-current' : ''"
                 class="w-3 h-3 mr-2"
@@ -28,8 +32,8 @@
               {{ showDateOnly(view.post.submitted) }}
             </CardDescription>
           </CardHeader>
-          <CardContent class="leading-6 px-3 nubo">
-            <div v-html="view.post.content" class="font-sans"></div>
+          <CardContent class="leading-7 px-4 nubo">
+            <div v-html="view.post.content"></div>
           </CardContent>
         </Card>
       </div>

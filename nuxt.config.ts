@@ -27,8 +27,9 @@ export default defineNuxtConfig({
     preconnect: true,
     download: false,
     families: {
-      Inter: [200, 400, 500, 600, 700],
-      "Google Sans Code": [400, 500, 600, 700],
+      Inter: [400, 500, 700],
+      "Google Sans Code": [400, 500, 700],
+      "Noto Sans KR": [400, 500, 700],
     },
   },
   shadcn: {
