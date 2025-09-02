@@ -4,14 +4,12 @@ import type { BoardHomePostItem } from "~/types/home"
 
 export async function useLatestPosts() {
   const { $api } = useNuxtApp()
-  const params = reactive({
-    sinceUid: 0,
-    bunch: 20,
-    option: SEARCH.TITLE as Search,
-    keyword: "",
-  })
-  const posts = ref<BoardHomePostItem[]>([])
-  const pending = ref<boolean>(false)
+  const sinceUid = useState("latest-posts-sinceUid", () => 0)
+  const bunch = useState("latest-posts-bunch", () => 20)
+  const option = useState("latest-posts-option", () => SEARCH.TITLE as Search)
+  const keyword = useState("latest-posts-keyword", () => "")
+  const posts = useState("latest-posts-data", () => [] as BoardHomePostItem[])
+  const pending = useState("latest-posts-pending", () => false)
   const error = ref<unknown>(null)
 
   // 출력되는 기본값 정의
@@ -31,54 +29,96 @@ export async function useLatestPosts() {
     execute,
   } = await useAsyncData(
     "home-latest",
-    () => $api<Resp<BoardHomePostItem[]>>("/home/latest", { method: "GET", params }),
+    () =>
+      $api<Resp<BoardHomePostItem[]>>("/home/latest", {
+        method: "GET",
+        params: {
+          sinceUid: sinceUid.value,
+          bunch: bunch.value,
+          option: option.value,
+          keyword: keyword.value,
+        },
+      }),
     {
       server: true,
       immediate: true,
-      watch: [() => params.option, () => params.keyword],
       default: () => defaultResp,
     },
   )
 
-  // 최초 / 필터 변경 시 결과 덮어쓰기
-  watchEffect(() => {
-    pending.value = p.value
-    error.value = e.value
-    const d = data.value
-    if (!d || !d.success) return
+  watch(
+    p,
+    (v) => {
+      pending.value = v
+    },
+    { immediate: true },
+  )
+  watch(
+    e,
+    (v) => {
+      error.value = v
+    },
+    { immediate: true },
+  )
+  watch(
+    data,
+    (d) => {
+      if (!d || !d.success) return
+      const incoming = d.result ?? []
 
-    if (params.sinceUid === 0) {
-      posts.value = d.result ?? []
-    } else {
-      const merged = [
-        ...new Map([...posts.value, ...(d.result ?? [])].map((item) => [item.uid, item])).values(),
-      ]
+      if (sinceUid.value === 0) {
+        const isSame =
+          posts.value.length === incoming.length && posts.value.at(-1)?.uid === incoming.at(-1)?.uid
+        if (!isSame) posts.value = incoming
+        return
+      }
+
+      if (incoming.length === 0) return
+
+      const map = new Map<number, BoardHomePostItem>()
+      for (const it of posts.value) map.set(it.uid, it)
+      for (const it of incoming) map.set(it.uid, it)
+
+      const merged = Array.from(map.values())
+      const isSameLength = merged.length === posts.value.length
+      const isSameLast = merged.at(-1)?.uid === posts.value.at(-1)?.uid
+      if (isSameLength && isSameLast) return
+
       posts.value = merged
-    }
-    params.sinceUid = posts.value.at(-1)?.uid ?? 0
-  })
+    },
+    { immediate: true },
+  )
 
   // 게시글 더 가져오기
   async function loadMore() {
-    if (pending.value) return
+    if (p.value) return
+
+    const last = posts.value.at(-1)?.uid ?? 0
+    if (last === sinceUid.value) return
+
+    sinceUid.value = last
     await execute()
   }
 
   // 필터/검색 바꿀 때는 목록 초기화 후 새로 로드
-  function setFilter({ option, keyword }: { option?: Search; keyword?: string }) {
-    if (option !== undefined) params.option = option
-    if (keyword !== undefined) params.keyword = keyword
+  function setFilter(_option: Search, _keyword: string) {
+    const isChanged = option.value !== _option || keyword.value !== _keyword
+    option.value = _option
+    keyword.value = _keyword
 
-    params.sinceUid = 0
+    sinceUid.value = 0
     posts.value = []
-    refresh()
+    if (isChanged) refresh()
   }
 
   return {
     posts,
     pending,
     error,
-    params,
+    sinceUid,
+    bunch,
+    option,
+    keyword,
 
     loadMore,
     setFilter,

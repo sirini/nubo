@@ -11,7 +11,7 @@
     </div>
 
     <Button
-      @click="loadMore"
+      @click="home.loadMore"
       :disabled="pending"
       class="text-foreground w-full mt-4 cursor-pointer"
       variant="outline"
@@ -21,12 +21,17 @@
       더 불러오기</Button
     >
   </section>
+  <Toaster />
 </template>
 
 <script setup lang="ts">
 import { ArrowDownFromLine } from "lucide-vue-next"
-import { useLatestPosts } from "~/composables/home/useLatestPosts"
+import { storeToRefs } from "pinia"
+import "vue-sonner/style.css"
+import { Toaster } from "~/components/ui/sonner"
 
-// SSR 시점에 데이터 먼저 가져오기
-const { posts, pending, error, loadMore } = await useLatestPosts()
+const home = useHomeStore()
+const { posts, pending } = storeToRefs(home)
+
+await callOnce(() => home.fetchLatest({ reset: true }))
 </script>

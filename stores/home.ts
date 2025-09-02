@@ -1,0 +1,102 @@
+import { defineStore } from "pinia"
+import { SEARCH, type Search } from "~/types/board"
+import type { Resp } from "~/types/common"
+import type { BoardHomePostItem } from "~/types/home"
+
+export const useHomeStore = defineStore("home", () => {
+  const { $api } = useNuxtApp()
+  const sinceUid = ref(0)
+  const bunch = ref(20)
+  const option = ref<Search>(SEARCH.TITLE as Search)
+  const keyword = ref("")
+  const posts = ref<BoardHomePostItem[]>([])
+  const pending = ref(false)
+  const error = ref<unknown>(null)
+  const initialized = ref(false)
+
+  // 내부 유틸: 결과 병합
+  function mergePosts(incoming: BoardHomePostItem[] = []) {
+    if (sinceUid.value === 0) {
+      posts.value = incoming
+      return
+    }
+    const map = new Map<number, BoardHomePostItem>(posts.value.map((i) => [i.uid, i]))
+    for (const it of incoming) map.set(it.uid, it)
+    const merged = Array.from(map.values())
+    // 동일 내용이면 재할당 피하기 (불필요 렌더/반응 방지)
+    if (merged.length === posts.value.length && merged.at(-1)?.uid === posts.value.at(-1)?.uid)
+      return
+    posts.value = merged
+  }
+
+  // 목록 조회 (초기/검색/더보기 공용)
+  async function fetchLatest(opts?: { reset?: boolean }) {
+    if (pending.value) return
+    try {
+      pending.value = true
+      if (opts?.reset) {
+        sinceUid.value = 0
+        posts.value = []
+      }
+      const resp = await $api<Resp<BoardHomePostItem[]>>("/home/latest", {
+        method: "GET",
+        params: {
+          sinceUid: sinceUid.value,
+          bunch: bunch.value,
+          option: option.value,
+          keyword: keyword.value,
+        },
+      })
+      if (!resp.success) throw new Error(String(resp.error ?? "fetch failed"))
+      mergePosts(resp.result ?? [])
+      initialized.value = true
+    } catch (err) {
+      error.value = err
+    } finally {
+      pending.value = false
+    }
+  }
+
+  // 이전 게시글 더 가져오기
+  async function loadMore() {
+    if (pending.value) return
+    const last = posts.value.at(-1)?.uid ?? 0
+    if (last === sinceUid.value) return
+    sinceUid.value = last
+    await fetchLatest()
+  }
+
+  // 검색/필터 설정
+  async function setFilter(newOption: Search, newKeyword: string) {
+    const changed = option.value !== newOption || keyword.value !== newKeyword
+    option.value = newOption
+    keyword.value = newKeyword
+    if (!changed) return
+    await fetchLatest({ reset: true })
+  }
+
+  // 각종 변수 초기화
+  function reset() {
+    sinceUid.value = 0
+    posts.value = []
+    pending.value = false
+    error.value = null
+    initialized.value = false
+  }
+
+  return {
+    sinceUid,
+    bunch,
+    option,
+    keyword,
+    posts,
+    pending,
+    error,
+    initialized,
+
+    fetchLatest,
+    loadMore,
+    setFilter,
+    reset,
+  }
+})

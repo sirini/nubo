@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     "@nuxt/scripts",
     "shadcn-nuxt",
     "@nuxtjs/google-fonts",
+    "@pinia/nuxt",
   ],
   googleFonts: {
     display: "swap",
