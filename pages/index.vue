@@ -31,6 +31,9 @@ import "vue-sonner/style.css"
 import { Toaster } from "~/components/ui/sonner"
 
 const home = useHomeStore()
+const colorMode = useColorMode()
+colorMode.preference = "dark"
+
 const { posts, pending } = storeToRefs(home)
 
 await callOnce(() => home.fetchLatest({ reset: true }))

@@ -1,43 +1,49 @@
 <template>
-  <NavigationMenu>
-    <NavigationMenuList>
-      <NavigationMenuItem>
-        <NuxtLink to="/" class="flex items-center gap-2 font-bold text-lg mr-4">
-          <Squirrel class="w-5 h-5" /> Nubo
-        </NuxtLink>
-      </NavigationMenuItem>
+  <div class="flex items-center gap-2">
+    <NuxtLink to="/" class="flex items-center gap-2 font-bold text-lg mr-2">
+      <Squirrel class="w-5 h-5" />
+      <span class="hidden sm:inline">{{ config.public.title }}</span>
+    </NuxtLink>
 
-      <template v-if="menus">
-        <NavigationMenuItem v-for="(menu, index) in menus.result" :key="index">
-          <NavigationMenuTrigger class="font-bold text-md">{{ menu.group }}</NavigationMenuTrigger>
-          <NavigationMenuContent
-            class="grid gap-2 p-2 w-80 sm:w-100 md:w-140 lg:w-180 xl:w-240"
-            :class="`md:grid-cols-${Math.min(2, menu.boards.length)} lg:grid-cols-${Math.min(
-              3,
-              menu.boards.length,
-            )} xl:grid-cols-${Math.min(4, menu.boards.length)}`"
-          >
-            <NavigationMenuLink as-child v-for="(board, idx) in menu.boards" :key="idx">
-              <a
-                :href="`/board/${board.id}`"
-                class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-              >
-                <div class="text-sm font-semibold leading-none">{{ board.name }}</div>
-                <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  {{ board.info }}
-                </p>
-              </a>
-            </NavigationMenuLink>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-      </template>
-    </NavigationMenuList>
-  </NavigationMenu>
+    <template v-if="menus">
+      <DropdownMenu v-for="(menu, index) in menus.result" :key="index">
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost" class="font-bold text-md">{{ menu.group }}</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-56">
+          <DropdownMenuItem v-for="(board, idx) in menu.boards" :key="idx" as-child>
+            <NuxtLink :to="`/board/${board.id}`" class="cursor-pointer">
+              <div class="font-semibold">{{ board.name }}</div>
+            </NuxtLink>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
+// Shadcn-vue 컴포넌트 import
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { Squirrel } from "lucide-vue-next"
+
+// 기존 로직 import
+import { useRuntimeConfig } from "#app"
 import { useHomeMenus } from "~/composables/home/useHomeMenus"
 
-const { menus, pending, error, refresh } = await useHomeMenus()
+const config = useRuntimeConfig()
+const { menus } = await useHomeMenus()
+
+// 테마 변경 로직
+const colorMode = useColorMode()
+const setColorTheme = (theme: "light" | "dark" | "system") => {
+  colorMode.preference = theme
+}
 </script>
