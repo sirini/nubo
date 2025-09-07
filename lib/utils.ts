@@ -30,3 +30,12 @@ export function showReadableNumber(big: number): string {
 export function stripHtmlTags(html: string): string {
   return html.replace(/<[^>]*>?/gm, "")
 }
+
+// Store에서 사용할 useAsyncData 래퍼 유틸리티
+export function fetchGet<T>(cacheKey: string, url: string, params: Record<string, any>) {
+  const { $api } = useNuxtApp()
+  return useAsyncData<T>(cacheKey, () => $api<T>(url, { method: "GET", params }), {
+    server: true,
+    immediate: true,
+  })
+}

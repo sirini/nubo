@@ -62,11 +62,21 @@
 </template>
 
 <script setup lang="ts">
+import { useBoardViewStore } from "#imports"
 import { Eye, Hash, Heart, MessageCircle } from "lucide-vue-next"
 import "~/assets/css/editor.scss"
-import { useBoardView } from "~/composables/board/useBoardView"
 import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
 
-const { data, pending } = await useBoardView()
-const view = computed(() => data.value?.result)
+const route = useRoute()
+const boardView = useBoardViewStore()
+const { view, pending } = storeToRefs(boardView)
+
+await boardView.fetchView(route.params.id as string, parseInt(route.params.postUid as string, 10))
+
+watch(
+  () => route.params,
+  async (newParams) => {
+    await boardView.fetchView(newParams.id as string, parseInt(newParams.postUid as string, 10))
+  },
+)
 </script>

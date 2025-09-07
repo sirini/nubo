@@ -1,18 +1,18 @@
 import { defineStore } from "pinia"
+import { fetchGet } from "~/lib/utils"
 import { SEARCH, type Search } from "~/types/board"
 import type { Resp } from "~/types/common"
 import type { BoardHomePostItem } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
-  const { $api } = useNuxtApp()
-  const sinceUid = ref(0)
-  const bunch = ref(20)
+  const sinceUid = ref<number>(0)
+  const bunch = ref<number>(20)
   const option = ref<Search>(SEARCH.TITLE as Search)
-  const keyword = ref("")
+  const keyword = ref<string>("")
   const posts = ref<BoardHomePostItem[]>([])
-  const pending = ref(false)
+  const pending = ref<boolean>(false)
   const error = ref<unknown>(null)
-  const initialized = ref(false)
+  const initialized = ref<boolean>(false)
   const openMenus = ref<Record<string, boolean>>({})
   const timers = ref<Record<string, NodeJS.Timeout>>({})
 
@@ -25,7 +25,7 @@ export const useHomeStore = defineStore("home", () => {
     const map = new Map<number, BoardHomePostItem>(posts.value.map((i) => [i.uid, i]))
     for (const it of incoming) map.set(it.uid, it)
     const merged = Array.from(map.values())
-    // 동일 내용이면 재할당 피하기 (불필요 렌더/반응 방지)
+
     if (merged.length === posts.value.length && merged.at(-1)?.uid === posts.value.at(-1)?.uid)
       return
     posts.value = merged
@@ -40,17 +40,23 @@ export const useHomeStore = defineStore("home", () => {
         sinceUid.value = 0
         posts.value = []
       }
-      const resp = await $api<Resp<BoardHomePostItem[]>>("/home/latest", {
-        method: "GET",
-        params: {
+
+      const { data, error } = await fetchGet<Resp<BoardHomePostItem[]>>(
+        `home-latest-${sinceUid.value}-${option.value}-${keyword.value}`,
+        "/home/latest",
+        {
           sinceUid: sinceUid.value,
           bunch: bunch.value,
           option: option.value,
           keyword: keyword.value,
         },
-      })
-      if (!resp.success) throw new Error(String(resp.error ?? "fetch failed"))
-      mergePosts(resp.result ?? [])
+      )
+
+      if (!data.value || !data.value.success) {
+        throw new Error(String(error.value ?? "fetchGet(/home/latest) failed"))
+      }
+
+      mergePosts(data.value.result ?? [])
       initialized.value = true
     } catch (err) {
       error.value = err
