@@ -13,6 +13,8 @@ export const useHomeStore = defineStore("home", () => {
   const pending = ref(false)
   const error = ref<unknown>(null)
   const initialized = ref(false)
+  const openMenus = ref<Record<string, boolean>>({})
+  const timers = ref<Record<string, NodeJS.Timeout>>({})
 
   // 내부 유틸: 결과 병합
   function mergePosts(incoming: BoardHomePostItem[] = []) {
@@ -84,6 +86,21 @@ export const useHomeStore = defineStore("home", () => {
     initialized.value = false
   }
 
+  // 상단 메뉴에 마우스 포인터가 들어갔을 때 호출
+  function handleMenuEnter(group: string): void {
+    if (timers.value[group]) {
+      clearTimeout(timers.value[group])
+    }
+    openMenus.value[group] = true
+  }
+
+  // 상단 메뉴에 마우스 포인터가 나갔을 때 호출
+  function handleMenuLeave(group: string): void {
+    timers.value[group] = setTimeout(() => {
+      openMenus.value[group] = false
+    }, 200)
+  }
+
   return {
     sinceUid,
     bunch,
@@ -93,10 +110,13 @@ export const useHomeStore = defineStore("home", () => {
     pending,
     error,
     initialized,
+    openMenus,
 
     fetchLatest,
     loadMore,
     setFilter,
     reset,
+    handleMenuEnter,
+    handleMenuLeave,
   }
 })
