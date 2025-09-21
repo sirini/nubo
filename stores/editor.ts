@@ -30,18 +30,6 @@ export const useEditorStore = defineStore("editor", () => {
     editor.value.chain().focus().extendMarkRange("link").setLink({ href: url }).run()
   }
 
-  // 이미지 URL로 추가하기
-  function addImageURL(): void {
-    //
-  }
-
-  // 이미지 직접 업로드 후 본문에 삽입하기
-  function uploadImages(): void {
-    isUploadingImages.value = true
-
-    console.log(`uploadImages() was called, isUploadingImages.value = true`)
-  }
-
   // 헤딩 선택하기
   function toggleHeading(event: Event): void {
     const target = event.target as HTMLSelectElement
@@ -68,9 +56,7 @@ export const useEditorStore = defineStore("editor", () => {
 
     selectColor,
     setLink,
-    addImageURL,
     toggleHeading,
     isHeadingActive,
-    uploadImages,
   }
 })

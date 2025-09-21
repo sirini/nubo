@@ -15,29 +15,31 @@
         </TabsList>
         <TabsContent value="upload">
           <Card class="p-0">
-            <CardContent class="pt-3 px-3">
+            <CardContent class="flex p-3 max-w-sm items-center gap-2">
               <Input type="file" @change="" accept="image/*" multiple />
+              <Button type="button" @click="">업로드</Button>
             </CardContent>
-            <CardFooter class="pb-3 px-3">
-              <Button class="w-full" type="button" @click="">업로드 하고 추가하기</Button>
-            </CardFooter>
           </Card>
         </TabsContent>
 
         <TabsContent value="link">
           <Card class="p-0">
-            <CardContent class="pt-3 px-3">
-              <Input type="text" />
+            <CardContent class="flex p-3 max-w-sm items-center gap-2">
+              <Input type="text" placeholder="https://example.com/path/image.jpg" />
+              <Button type="button" @click="">추가</Button>
             </CardContent>
-            <CardFooter class="pb-3 px-3">
-              <Button class="w-full" type="button" @click="">URL 추가하기</Button>
-            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>
       <DialogFooter>
         <DialogClose as-child class="inline-flex">
-          <Button class="w-full" type="button" variant="outline">닫기</Button>
+          <Button
+            class="w-full"
+            type="button"
+            variant="outline"
+            @click="edit.isUploadingImages = false"
+            >닫기</Button
+          >
         </DialogClose>
       </DialogFooter>
     </DialogContent>

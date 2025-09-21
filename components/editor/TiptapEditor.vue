@@ -55,7 +55,7 @@
           <Link class="w-4 h-4" />
         </Button>
 
-        <Button size="sm" variant="ghost" @click="edit.uploadImages">
+        <Button size="sm" variant="ghost" @click="edit.isUploadingImages = true">
           <Image class="w-4 h-4" />
         </Button>
 
