@@ -9,8 +9,8 @@
           :style="`max-width: ${view.config.width}px`"
         >
           <img
-            v-if="view.post.cover"
-            :src="view.post.cover"
+            v-if="view.images.length > 0"
+            :src="view.images[0].thumbnail.large"
             alt="cover image"
             class="w-full object-cover"
           />
