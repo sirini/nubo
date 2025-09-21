@@ -55,7 +55,7 @@
           </div>
         </Card>
 
-        <BoardViewWriteComment class="mt-4" />
+        <BoardViewWriteComment class="mt-4" :config="view.config" />
       </div>
     </div>
   </section>

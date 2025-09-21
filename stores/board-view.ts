@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { fetchGet } from "~/lib/utils"
+import { useGet } from "~/lib/utils"
 import { BOARD_VIEW_RESULT, type BoardViewResult } from "~/types/board"
 import type { Resp } from "~/types/common"
 
@@ -16,7 +16,7 @@ export const useBoardViewStore = defineStore("board-view", () => {
     try {
       pending.value = true
 
-      const { data, error } = await fetchGet<Resp<BoardViewResult>>(
+      const { data, error } = await useGet<Resp<BoardViewResult>>(
         `board-${id}-${postUid}`,
         "/board/view",
         {
@@ -27,7 +27,7 @@ export const useBoardViewStore = defineStore("board-view", () => {
       )
 
       if (!data.value || !data.value.success) {
-        throw new Error(String(error.value ?? "fetchGet(/board/view) failed"))
+        throw new Error(String(error.value ?? "useGet(/board/view) failed"))
       }
 
       view.value = data.value.result

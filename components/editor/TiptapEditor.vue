@@ -55,7 +55,7 @@
           <Link class="w-4 h-4" />
         </Button>
 
-        <Button size="sm" variant="ghost" @click="edit.isUploadingImages = true">
+        <Button size="sm" variant="ghost" @click="edit.isImageUploadDialog = true">
           <Image class="w-4 h-4" />
         </Button>
 
@@ -86,12 +86,10 @@
         </Button>
       </div>
 
-      <EditorContent
-        :editor="ed as unknown as Editor"
-        class="p-4 min-h-[250px] focus:outline-none"
-      />
+      <EditorContent :editor="ed as unknown as Editor" class="p-4 min-h-60 focus:outline-none" />
       <editor-image-upload />
     </div>
+    <Toaster />
   </ClientOnly>
 </template>
 
@@ -157,10 +155,12 @@ import py from "highlight.js/lib/languages/python"
 import rs from "highlight.js/lib/languages/rust"
 import ts from "highlight.js/lib/languages/typescript"
 import { all, createLowlight } from "lowlight"
+import type { BoardConfig } from "~/types/board"
 
 // Props & Emits
 const props = defineProps<{
   modelValue: string
+  config: BoardConfig
 }>()
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void
@@ -226,6 +226,7 @@ onMounted(() => {
   })
 
   edit.editor = ed.value
+  edit.boardConfig = props.config
 })
 
 watch(

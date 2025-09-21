@@ -1,11 +1,18 @@
 import { Editor } from "@tiptap/vue-3"
 import { defineStore } from "pinia"
 import { ref } from "vue"
+import { toast } from "vue-sonner"
+import { BOARD_CONFIG, type BoardConfig } from "~/types/board"
 import type { HeadingLevel } from "~/types/editor"
 
 export const useEditorStore = defineStore("editor", () => {
-  const isUploadingImages = ref<boolean>(false)
+  const isUploading = ref<boolean>(false)
+  const isImageUploadDialog = ref<boolean>(false)
+  const boardConfig = ref<BoardConfig>(BOARD_CONFIG)
   const editor = ref<Editor | null>(null)
+  const files = ref<File[]>([])
+  const previewImages = ref<string[]>([])
+  const runtimeConfig = useRuntimeConfig()
 
   // 글자 색상 변경하기
   function selectColor(event: Event): void {
@@ -50,13 +57,64 @@ export const useEditorStore = defineStore("editor", () => {
     )
   }
 
+  // 선택한 이미지 파일들을 미리 보여주기
+  function selectedFiles(event: MouseEvent): void {
+    previewImages.value.forEach((url) => URL.revokeObjectURL(url))
+    previewImages.value = []
+    files.value = []
+
+    const targets = (event?.target as HTMLInputElement).files
+    if (!targets) {
+      return
+    }
+
+    let totalSize = 0
+    const arr = Array.from(targets)
+    for (const target of arr) {
+      totalSize += target.size
+      if (totalSize > parseInt(runtimeConfig.public.fileSize)) {
+        toast(`파일 크기 제한을 초과하였습니다: ${totalSize} > ${runtimeConfig.public.fileSize}`)
+        break
+      }
+      files.value.push(target)
+      previewImages.value.push(URL.createObjectURL(target))
+    }
+    toast(`업로드 버튼을 클릭하셔야 파일이 올라갑니다`)
+  }
+
+  // 선택된 이미지 파일들 업로드하고 작성란에 추가하기
+  async function uploadingFiles(): Promise<void> {
+    try {
+      isUploading.value = true
+      const fd = new FormData()
+
+      fd.append("boardUid", boardConfig.value.uid.toString())
+      for (const file of files.value) {
+        fd.append("images[]", file)
+      }
+
+      // fetchPost
+    } catch (e) {
+      toast(`이미지 파일 업로드에 실패하였습니다: `)
+    } finally {
+      isUploading.value = false
+      files.value = []
+    }
+  }
+
   return {
-    isUploadingImages,
+    isUploading,
+    isImageUploadDialog,
+    boardConfig,
     editor,
+    files,
+    previewImages,
 
     selectColor,
     setLink,
     toggleHeading,
     isHeadingActive,
+    selectedFiles,
+    uploadingFiles,
   }
 })

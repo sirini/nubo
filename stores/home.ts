@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { fetchGet } from "~/lib/utils"
+import { useGet } from "~/lib/utils"
 import { SEARCH, type Search } from "~/types/board"
 import type { Resp } from "~/types/common"
 import type { BoardHomePostItem } from "~/types/home"
@@ -41,7 +41,7 @@ export const useHomeStore = defineStore("home", () => {
         posts.value = []
       }
 
-      const { data, error } = await fetchGet<Resp<BoardHomePostItem[]>>(
+      const { data, error } = await useGet<Resp<BoardHomePostItem[]>>(
         `home-latest-${sinceUid.value}-${option.value}-${keyword.value}`,
         "/home/latest",
         {
@@ -53,7 +53,7 @@ export const useHomeStore = defineStore("home", () => {
       )
 
       if (!data.value || !data.value.success) {
-        throw new Error(String(error.value ?? "fetchGet(/home/latest) failed"))
+        throw new Error(String(error.value ?? "useGet(/home/latest) failed"))
       }
 
       mergePosts(data.value.result ?? [])
