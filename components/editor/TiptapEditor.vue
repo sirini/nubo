@@ -55,17 +55,9 @@
           <Link class="w-4 h-4" />
         </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button size="sm" variant="ghost">
-              <Image class="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem @click="edit.uploadImages"> 컴퓨터에서 업로드 </DropdownMenuItem>
-            <DropdownMenuItem @click="edit.addImageURL"> URL로 추가 </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button size="sm" variant="ghost" @click="edit.uploadImages">
+          <Image class="w-4 h-4" />
+        </Button>
 
         <Button
           size="sm"

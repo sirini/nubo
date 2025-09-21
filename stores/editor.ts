@@ -32,15 +32,14 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 이미지 URL로 추가하기
   function addImageURL(): void {
-    const url = window.prompt("이미지 URL을 입력하세요.")
-    if (url && editor.value) {
-      editor.value.chain().focus().setImage({ src: url }).run()
-    }
+    //
   }
 
   // 이미지 직접 업로드 후 본문에 삽입하기
   function uploadImages(): void {
     isUploadingImages.value = true
+
+    console.log(`uploadImages() was called, isUploadingImages.value = true`)
   }
 
   // 헤딩 선택하기
