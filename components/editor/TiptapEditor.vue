@@ -38,20 +38,31 @@
           </Button>
         </div>
 
-        <select
-          class="p-2 text-sm bg-transparent rounded-md hover:bg-muted"
-          @change="edit.toggleHeading($event)"
+        <Select
+          class="p-2 text-sm bg-transparent rounded-md hover:bg-white/10"
+          @update:model-value="edit.toggleHeading"
+          :model-value="edit.headingLevel"
         >
-          <option value="0" :selected="!edit.isHeadingActive()">본문</option>
-          <option value="1" :selected="ed.isActive('heading', { level: 1 })">H1</option>
-          <option value="2" :selected="ed.isActive('heading', { level: 2 })">H2</option>
-          <option value="3" :selected="ed.isActive('heading', { level: 3 })">H3</option>
-          <option value="3" :selected="ed.isActive('heading', { level: 4 })">H4</option>
-        </select>
+          <SelectTrigger class="w-24">
+            <SelectValue placeholder="스타일" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="0" :selected="!edit.isHeadingActive()">본문</SelectItem>
+              <SelectItem
+                v-for="(_, index) in 6"
+                :key="index"
+                :value="index + 1"
+                :selected="ed.isActive('heading', { level: index + 1 })"
+                >H{{ index + 1 }}</SelectItem
+              >
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
         <div class="w-[1px] h-6 bg-border mx-1"></div>
 
-        <Button size="sm" variant="ghost" @click="edit.setLink">
+        <Button size="sm" variant="ghost" @click="edit.isAddLinkDialog = true">
           <Link class="w-4 h-4" />
         </Button>
 
@@ -69,10 +80,18 @@
 
         <Button
           size="sm"
+          :variant="ed.isActive('code') ? 'secondary' : 'ghost'"
+          @click="ed.chain().focus().toggleCode().run()"
+        >
+          <CodeIcon class="w-4 h-4" />
+        </Button>
+
+        <Button
+          size="sm"
           :variant="ed.isActive('codeBlock') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleCodeBlock().run()"
         >
-          <Codepen class="w-4 h-4" />
+          <SquareCode class="w-4 h-4" />
         </Button>
 
         <div class="w-[1px] h-6 bg-border mx-1"></div>
@@ -86,7 +105,11 @@
         </Button>
       </div>
 
-      <EditorContent :editor="ed as unknown as Editor" class="p-4 min-h-60 focus:outline-none" />
+      <EditorContent
+        :editor="ed as unknown as Editor"
+        class="nubo p-4 min-h-60 focus:outline-none"
+      />
+      <editor-add-link />
       <editor-image-upload />
     </div>
     <Toaster />
@@ -95,6 +118,7 @@
 
 <script setup lang="ts">
 import { useEditorStore } from "#imports"
+import "@/assets/css/editor.scss"
 import { Editor, EditorContent, type Editor as EditorClass } from "@tiptap/vue-3"
 import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 
@@ -102,12 +126,14 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { Button } from "@/components/ui/button"
 import {
   Bold as BoldIcon,
+  CodeIcon,
   Image,
   Italic,
   Link,
   Palette,
   Quote,
   Redo,
+  SquareCode,
   Strikethrough,
   Undo,
 } from "lucide-vue-next"

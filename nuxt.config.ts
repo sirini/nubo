@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite"
 
 export default defineNuxtConfig({
   runtimeConfig: {
-    apiBaseInternal: "http://localhost:3003/goapi", // GOAPI 백엔드 주소
+    apiBaseInternal: "http://localhost:3006/goapi", // GOAPI 백엔드 주소
     public: {
       apiBase: "/api",
       version: process.env.NUXT_PUBLIC_VERSION || "v2.0.0",

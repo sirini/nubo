@@ -5,7 +5,7 @@
       <div v-else-if="view" class="mx-auto" :style="`max-width: ${view.config.width}px`">
         <BoardViewBreadcrumb :config="view.config" />
         <Card
-          class="rounded-lg overflow-hidden shadow-lg pt-0"
+          class="rounded-lg overflow-hidden shadow-lg pt-0 mb-4"
           :style="`max-width: ${view.config.width}px`"
         >
           <img
@@ -55,7 +55,7 @@
           </div>
         </Card>
 
-        <BoardViewWriteComment class="mt-4" :config="view.config" />
+        <BoardViewWriteComment :config="view.config" />
       </div>
     </div>
   </section>

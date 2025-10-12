@@ -1,5 +1,6 @@
 import { Editor } from "@tiptap/vue-3"
 import { defineStore } from "pinia"
+import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
 import { BOARD_CONFIG, type BoardConfig } from "~/types/board"
@@ -8,11 +9,13 @@ import type { HeadingLevel } from "~/types/editor"
 export const useEditorStore = defineStore("editor", () => {
   const isUploading = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
+  const isAddLinkDialog = ref<boolean>(false)
   const boardConfig = ref<BoardConfig>(BOARD_CONFIG)
   const editor = ref<Editor | null>(null)
   const files = ref<File[]>([])
   const previewImages = ref<string[]>([])
   const runtimeConfig = useRuntimeConfig()
+  const headingLevel = ref<string>("")
 
   // 글자 색상 변경하기
   function selectColor(event: Event): void {
@@ -23,14 +26,9 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 링크 설정하기
-  function setLink(): void {
+  function setLink(url: string): void {
     if (!editor.value) return
-    const previousUrl = editor.value.getAttributes("link").href
-    const url = window.prompt("URL을 입력하세요.", previousUrl)
-
-    if (url === null) return // Cancelled
     if (url === "") {
-      // Unset link
       editor.value.chain().focus().extendMarkRange("link").unsetLink().run()
       return
     }
@@ -38,10 +36,10 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 헤딩 선택하기
-  function toggleHeading(event: Event): void {
-    const target = event.target as HTMLSelectElement
-    if (!target || !editor.value) return
-    const level = parseInt(target.value, 10) as HeadingLevel
+  function toggleHeading(value: AcceptableValue): void {
+    const level = parseInt(value as any, 10) as HeadingLevel
+    if (!editor.value) return
+
     editor.value.chain().focus().toggleHeading({ level }).run()
   }
 
@@ -105,10 +103,12 @@ export const useEditorStore = defineStore("editor", () => {
   return {
     isUploading,
     isImageUploadDialog,
+    isAddLinkDialog,
     boardConfig,
     editor,
     files,
     previewImages,
+    headingLevel,
 
     selectColor,
     setLink,
