@@ -8,10 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import { useVisit } from "~/composables/home/useVisit"
+const { addVisitHistory } = useHome()
 
 onNuxtReady(() => {
-  const { call } = useVisit()
-  call(0)
+  addVisitHistory()
 })
 </script>

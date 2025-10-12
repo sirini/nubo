@@ -36,5 +36,7 @@ colorMode.preference = "dark"
 
 const { posts, pending } = storeToRefs(home)
 
-await callOnce(() => home.fetchLatest({ reset: true }))
+await callOnce(() => {
+  home.fetchLatest({ reset: true })
+})
 </script>

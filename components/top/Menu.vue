@@ -5,9 +5,9 @@
       <span class="hidden sm:inline">{{ config.public.title }}</span>
     </NuxtLink>
 
-    <template v-if="menus">
+    <template v-if="data">
       <DropdownMenu
-        v-for="(menu, index) in menus.result"
+        v-for="(menu, index) in data.result"
         :key="index"
         v-model:open="home.openMenus[menu.group]"
       >
@@ -41,9 +41,9 @@ import {
 import { useRuntimeConfig } from "#app"
 import { useHomeStore } from "#imports"
 import { Squirrel } from "lucide-vue-next"
-import { useHomeMenus } from "~/composables/home/useHomeMenus"
 
+const { fetchHomeMenus } = useHome()
 const config = useRuntimeConfig()
-const { menus } = await useHomeMenus()
+const { data } = await fetchHomeMenus()
 const home = useHomeStore()
 </script>

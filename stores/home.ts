@@ -1,8 +1,8 @@
 import { defineStore } from "pinia"
-import { useGet } from "~/lib/utils"
 import { SEARCH, type Search } from "~/types/board"
-import type { Resp } from "~/types/common"
 import type { BoardHomePostItem } from "~/types/home"
+
+const { fetchHomeLatestPosts } = useHome()
 
 export const useHomeStore = defineStore("home", () => {
   const sinceUid = ref<number>(0)
@@ -41,16 +41,12 @@ export const useHomeStore = defineStore("home", () => {
         posts.value = []
       }
 
-      const { data, error } = await useGet<Resp<BoardHomePostItem[]>>(
-        `home-latest-${sinceUid.value}-${option.value}-${keyword.value}`,
-        "/home/latest",
-        {
-          sinceUid: sinceUid.value,
-          bunch: bunch.value,
-          option: option.value,
-          keyword: keyword.value,
-        },
-      )
+      const { data, error } = await fetchHomeLatestPosts({
+        sinceUid: sinceUid.value,
+        bunch: bunch.value,
+        option: option.value,
+        keyword: keyword.value,
+      })
 
       if (!data.value || !data.value.success) {
         throw new Error(String(error.value ?? "useGet(/home/latest) failed"))
