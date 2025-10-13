@@ -17,14 +17,19 @@
           >
         </CardContent>
       </Card>
+
+      <DialogFooter>
+        <DialogClose as-child class="inline-flex">
+          <Button
+            class="w-full"
+            type="button"
+            variant="outline"
+            @click="edit.isAddLinkDialog = false"
+            >닫기</Button
+          >
+        </DialogClose>
+      </DialogFooter>
     </DialogContent>
-    <DialogFooter>
-      <DialogClose as-child class="inline-flex">
-        <Button class="w-full" type="button" variant="outline" @click="edit.isAddLinkDialog = false"
-          >닫기</Button
-        >
-      </DialogClose>
-    </DialogFooter>
   </Dialog>
 </template>
 
