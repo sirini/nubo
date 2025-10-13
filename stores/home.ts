@@ -49,13 +49,11 @@ export const useHomeStore = defineStore("home", () => {
       })
 
       if (!data.value || !data.value.success) {
-        throw new Error(String(error.value ?? "useGet(/home/latest) failed"))
+        return
       }
 
       mergePosts(data.value.result ?? [])
       initialized.value = true
-    } catch (err) {
-      error.value = err
     } finally {
       pending.value = false
     }

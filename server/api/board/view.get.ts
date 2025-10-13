@@ -6,8 +6,8 @@ export default defineEventHandler(async (event) => {
   const latestLimit = parseInt(query.latestLimit as string)
   const id = query.id as string
   const postUid = parseInt(query.postUid as string)
-
   const viewed = getCookie(event, hitKey) || "[]"
+
   let viewedPosts: number[] = []
   try {
     viewedPosts = JSON.parse(viewed)
