@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 import { BOARD_VIEW_RESULT, type BoardViewResult } from "~/types/board"
 
 export const useBoardStore = defineStore("board", () => {
+  const isFileListOpen = ref<boolean>(false)
   const latestLimit = ref<number>(5)
   const pending = ref<boolean>(false)
   const error = ref<unknown>(null)
@@ -13,7 +14,7 @@ export const useBoardStore = defineStore("board", () => {
     if (pending.value) return
     try {
       pending.value = true
-      const { data, error } = await fetchBoardView(id, postUid)
+      const { data } = await fetchBoardView(id, postUid)
 
       if (!data.value || !data.value.success) {
         return
@@ -25,6 +26,7 @@ export const useBoardStore = defineStore("board", () => {
   }
 
   return {
+    isFileListOpen,
     latestLimit,
     pending,
     error,

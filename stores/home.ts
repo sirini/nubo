@@ -41,7 +41,7 @@ export const useHomeStore = defineStore("home", () => {
         posts.value = []
       }
 
-      const { data, error } = await fetchHomeLatestPosts({
+      const { data } = await fetchHomeLatestPosts({
         sinceUid: sinceUid.value,
         bunch: bunch.value,
         option: option.value,
