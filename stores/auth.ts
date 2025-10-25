@@ -1,0 +1,123 @@
+import { unescape } from "querystring"
+import { toast } from "vue-sonner"
+import { MY_INFO_RESULT, type MyInfoResult } from "~/types/user"
+
+const { fetchUserInfo, fetchOAuthUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
+
+export const useAuthStore = defineStore("auth", () => {
+  const password = ref<string>("")
+  const checkedPassword = ref<string>("")
+  const newProfile = ref<File | undefined>(undefined)
+  const user = useState<MyInfoResult>("user-state", () => MY_INFO_RESULT)
+  const token = useCookie<string | null>("auth-token", { default: () => null })
+  const refresh = useCookie<string | null>("auth-refresh", { default: () => null })
+  const isLoggedIn = computed(() => user.value.uid > 0 && !!token.value)
+
+  // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
+  async function loadUserInfo(): Promise<void> {
+    if (!token.value) return
+
+    try {
+      const response = await fetchUserInfo(token.value)
+      if (!response || !response.success) {
+        return await logout(false)
+      }
+
+      user.value = response.result
+      user.value.token = token.value
+      user.value.signature = unescape(user.value.signature)
+    } catch (e) {
+      toast(`사용자 정보를 가져오지 못했습니다: ${e}`)
+      await logout(false)
+    }
+  }
+
+  // OAuth 로그인 이후 결과값 가져오기
+  async function loadOAuthUserInfo(): Promise<void> {
+    try {
+      const response = await fetchOAuthUserInfo()
+      if (!response || !response.success) {
+        toast(`OAuth 로그인 정보 획득 실패: ${response.error}`)
+        return
+      }
+
+      user.value = response.result
+      token.value = response.result.token
+      refresh.value = response.result.refresh
+    } catch (e) {
+      toast(`OAuth 로그인 후 정보를 가져오지 못했습니다: ${e}`)
+    }
+  }
+
+  // 로그인
+  async function login(): Promise<void> {
+    try {
+      const response = await fetchLogin(user.value.id, password.value)
+      if (!response || !response.success) {
+        toast(`로그인 실패: ${response.error}`)
+        return
+      }
+
+      user.value = response.result
+      token.value = response.result.token
+      refresh.value = response.result.refresh
+
+      await navigateTo("/")
+    } catch (e) {
+      toast(`로그인에 실패하였습니다: ${e}`)
+    } finally {
+      password.value = ""
+    }
+  }
+
+  // 로그아웃
+  async function logout(notifyServer = true): Promise<void> {
+    if (notifyServer && token.value) {
+      try {
+        fetchLogout(token.value)
+      } catch (e) {
+        // do nothing
+      }
+    }
+
+    user.value = MY_INFO_RESULT
+    token.value = null
+    refresh.value = null
+  }
+
+  // 액세스 토큰 업데이트
+  async function updateAccessToken(): Promise<boolean> {
+    if (!refresh.value) return false
+
+    try {
+      const response = await fetchToken(user.value.uid, refresh.value)
+      if (!response || !response.success) {
+        await logout(false)
+        return false
+      }
+
+      token.value = response.result
+      user.value.token = response.result
+      return true
+    } catch (e) {
+      await logout(false)
+    }
+    return false
+  }
+
+  return {
+    password,
+    checkedPassword,
+    newProfile,
+    user,
+    token,
+    refresh,
+    isLoggedIn,
+
+    loadUserInfo,
+    loadOAuthUserInfo,
+    login,
+    logout,
+    updateAccessToken,
+  }
+})

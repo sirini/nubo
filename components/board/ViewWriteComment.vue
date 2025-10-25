@@ -1,12 +1,12 @@
 <template>
-  <EditorTiptapEditor v-model="content" :config="config" />
+  <EditorTiptapEditor v-model="editor.content" :config="config" />
+  <Button variant="outline" class="w-full">댓글 남기기</Button>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
 import type { BoardConfig } from "~/types/board"
 
-const content = ref<string>("")
+const editor = useEditorStore()
 const props = defineProps<{
   config: BoardConfig
 }>()

@@ -7,6 +7,8 @@ import { BOARD_CONFIG, type BoardConfig } from "~/types/board"
 import type { HeadingLevel } from "~/types/editor"
 
 export const useEditorStore = defineStore("editor", () => {
+  const auth = useAuthStore()
+  const { uploadEditorImages } = useEditor()
   const isUploading = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isAddLinkDialog = ref<boolean>(false)
@@ -16,6 +18,7 @@ export const useEditorStore = defineStore("editor", () => {
   const previewImages = ref<string[]>([])
   const runtimeConfig = useRuntimeConfig()
   const headingLevel = ref<string>("")
+  const content = ref<string>("")
 
   // 글자 색상 변경하기
   function selectColor(event: Event): void {
@@ -84,16 +87,12 @@ export const useEditorStore = defineStore("editor", () => {
   async function uploadingFiles(): Promise<void> {
     try {
       isUploading.value = true
-      const fd = new FormData()
-
-      fd.append("boardUid", boardConfig.value.uid.toString())
-      for (const file of files.value) {
-        fd.append("images[]", file)
+      const response = await uploadEditorImages(auth.user.token, boardConfig.value.uid, files.value)
+      if (!response.success) {
+        toast(`업로드 실패: ${response.error}`)
       }
-
-      // fetchPost
     } catch (e) {
-      toast(`이미지 파일 업로드에 실패하였습니다: `)
+      toast(`이미지 파일 업로드에 실패하였습니다: ${e}`)
     } finally {
       isUploading.value = false
       files.value = []
@@ -109,6 +108,7 @@ export const useEditorStore = defineStore("editor", () => {
     files,
     previewImages,
     headingLevel,
+    content,
 
     selectColor,
     setLink,
