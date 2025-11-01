@@ -4,7 +4,6 @@ import { BOARD_VIEW_RESULT, type BoardViewResult } from "~/types/board"
 const { fetchBoardView } = useBoard()
 
 export const useBoardStore = defineStore("board", () => {
-  const auth = useAuthStore()
   const isFileListOpen = ref<boolean>(false)
   const latestLimit = ref<number>(5)
   const pending = ref<boolean>(false)

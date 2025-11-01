@@ -1,4 +1,4 @@
-import { Editor } from "@tiptap/vue-3"
+import type { Editor } from "@tiptap/vue-3"
 import { defineStore } from "pinia"
 import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
@@ -40,8 +40,22 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 헤딩 선택하기
   function toggleHeading(value: AcceptableValue): void {
-    const level = parseInt(value as any, 10) as HeadingLevel
-    if (!editor.value) return
+    let level: HeadingLevel | undefined
+
+    if (typeof value === "string") {
+      const parsed = parseInt(value, 10)
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 6) {
+        level = parsed as HeadingLevel
+      }
+    } else if (typeof value === "number") {
+      if (value >= 1 && value <= 6) {
+        level = value as HeadingLevel
+      }
+    }
+
+    if (!editor.value || level === undefined) {
+      return
+    }
 
     editor.value.chain().focus().toggleHeading({ level }).run()
   }

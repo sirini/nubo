@@ -4,6 +4,6 @@ export default defineEventHandler(async (event) => {
     baseURL: config.apiBaseInternal,
     method: "GET",
   })
-
+  void event
   return res
 })

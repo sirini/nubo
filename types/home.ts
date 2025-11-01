@@ -2,6 +2,7 @@ import {
   type Board,
   type BoardConfig,
   type BoardListItem,
+  type Search,
   BOARD,
   BOARD_CONFIG,
   BOARD_LIST_ITEM,
@@ -49,4 +50,13 @@ export type HomeSidebarBoardResult = {
 export type HomeSidebarGroupResult = {
   group: string
   boards: HomeSidebarBoardResult[]
+}
+
+// 홈화면 최근 게시글들 가져오는 파라미터 정의
+export type FetchHomeLatestPostsParams = {
+  sinceUid?: number
+  bunch?: number
+  option?: Search
+  keyword?: string
+  [key: string]: string | number | boolean | object | undefined
 }

@@ -75,8 +75,8 @@ export const useAuthStore = defineStore("auth", () => {
     if (notifyServer && token.value) {
       try {
         fetchLogout(token.value)
-      } catch (e) {
-        // do nothing
+      } catch (e: unknown) {
+        void e
       }
     }
 
@@ -101,6 +101,7 @@ export const useAuthStore = defineStore("auth", () => {
       return true
     } catch (e) {
       await logout(false)
+      void e
     }
     return false
   }

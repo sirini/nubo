@@ -1,5 +1,9 @@
-import { type Resp } from "~/types/common"
-import type { BoardHomePostItem, HomeSidebarGroupResult } from "~/types/home"
+import type { Resp } from "~/types/common"
+import type {
+  BoardHomePostItem,
+  HomeSidebarGroupResult,
+  FetchHomeLatestPostsParams,
+} from "~/types/home"
 
 export const useHome = () => {
   const today = new Date().toISOString().slice(0, 10)
@@ -39,7 +43,7 @@ export const useHome = () => {
   }
 
   // 홈 화면에서 게시글들 목록 조회하기
-  const fetchHomeLatestPosts = async (params: Record<string, any>) => {
+  const fetchHomeLatestPosts = async (params: FetchHomeLatestPostsParams) => {
     const { $api } = useNuxtApp()
     return useAsyncData(
       `home-latest-${params.sinceUid}-${params.option}-${params.keyword}`,

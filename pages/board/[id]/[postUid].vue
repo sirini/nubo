@@ -20,9 +20,9 @@
           />
 
           <Collapsible
+            v-if="board.view.files.length > 0"
             v-model:open="board.isFileListOpen"
             class="px-4"
-            v-if="board.view.files.length > 0"
           >
             <div class="flex items-center justify-between w-full px-1">
               <h4
@@ -40,9 +40,9 @@
             </div>
             <CollapsibleContent class="pt-2 space-y-2">
               <div
-                class="rounded-md border px-4 py-3 font-code text-sm inline-flex items-center w-full"
                 v-for="(file, index) in board.view.files"
                 :key="index"
+                class="rounded-md border px-4 py-3 font-code text-sm inline-flex items-center w-full"
               >
                 <Download class="w-4 h-4 mr-3" />
                 {{ file.name }}

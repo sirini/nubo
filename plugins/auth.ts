@@ -7,4 +7,5 @@ export default defineNuxtPlugin(async (nuxtApp) => {
   if (token.value) {
     await auth.loadUserInfo()
   }
+  void nuxtApp
 })

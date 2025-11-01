@@ -1,5 +1,5 @@
-import { type BoardViewResult } from "~/types/board"
-import { type Resp } from "~/types/common"
+import type { BoardViewResult } from "~/types/board"
+import type { Resp } from "~/types/common"
 
 export const useBoard = () => {
   // 게시글 본문 내용 가져오기
