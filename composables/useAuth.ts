@@ -52,7 +52,7 @@ export const useAuth = () => {
     fd.append("userUid", userUid.toString())
     fd.append("refresh", refresh)
 
-    return await await $api<Resp<string>>("/auth/refresh", {
+    return await $api<Resp<string>>("/auth/refresh", {
       method: "POST",
       body: fd,
     })
