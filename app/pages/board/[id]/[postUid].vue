@@ -14,7 +14,7 @@
         >
           <img
             v-if="board.view.images.length > 0"
-            :src="board.view.images[0].thumbnail.large"
+            :src="board.view.images[0]?.thumbnail.large"
             alt="cover image"
             class="w-full object-cover"
           />

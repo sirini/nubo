@@ -1,8 +1,9 @@
+import { useGet } from "~/lib/utils"
 import type { Resp } from "~/types/common"
 import type {
   BoardHomePostItem,
-  HomeSidebarGroupResult,
   FetchHomeLatestPostsParams,
+  HomeSidebarGroupResult,
 } from "~/types/home"
 
 export const useHome = () => {
@@ -31,15 +32,7 @@ export const useHome = () => {
 
   // 홈 화면 메뉴 가져오기
   const fetchHomeMenus = async () => {
-    const { $api } = useNuxtApp()
-    return useAsyncData(
-      "home-menus",
-      () => $api<Resp<HomeSidebarGroupResult[]>>("/home/sidebar/links", { method: "GET" }),
-      {
-        server: true,
-        immediate: true,
-      },
-    )
+    return useGet<Resp<HomeSidebarGroupResult[]>>("home-munus", "/home/sidebar/links")
   }
 
   // 홈 화면에서 게시글들 목록 조회하기
