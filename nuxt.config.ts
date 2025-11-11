@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineNuxtConfig({
+  srcDir: "app/",
   runtimeConfig: {
     apiBaseInternal: "http://localhost:3006/goapi", // GOAPI 백엔드 주소
     public: {
@@ -47,16 +48,9 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: "",
   },
-  components: [
-    {
-      path: "~/components",
-      extensions: [".vue"],
-      pathPrefix: false,
-    },
-  ],
   shadcn: {
     prefix: "",
-    componentDir: "./components/ui",
+    componentDir: "~/components/ui",
   },
   app: {
     head: {
