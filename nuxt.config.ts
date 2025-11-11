@@ -47,6 +47,13 @@ export default defineNuxtConfig({
   colorMode: {
     classSuffix: "",
   },
+  components: [
+    {
+      path: "~/components",
+      extensions: [".vue"],
+      pathPrefix: false,
+    },
+  ],
   shadcn: {
     prefix: "",
     componentDir: "./components/ui",
