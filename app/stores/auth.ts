@@ -3,8 +3,6 @@ import { MY_INFO_RESULT, type MyInfoResult } from "~/types/user"
 
 export const useAuthStore = defineStore("auth", () => {
   const { fetchUserInfo, fetchOAuthUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
-  const password = ref<string>("")
-  const checkedPassword = ref<string>("")
   const newProfile = ref<File | undefined>(undefined)
   const user = useState<MyInfoResult>("user-state", () => MY_INFO_RESULT)
   const token = useCookie<string | null>("auth-token", { default: () => null })
@@ -48,9 +46,9 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   // 로그인
-  async function login(): Promise<void> {
+  async function login(email: string, password: string): Promise<void> {
     try {
-      const response = await fetchLogin(user.value.id, password.value)
+      const response = await fetchLogin(email, password)
       if (!response || !response.success) {
         toast(`로그인 실패: ${response?.error}`)
         return
@@ -63,8 +61,6 @@ export const useAuthStore = defineStore("auth", () => {
       await navigateTo("/")
     } catch (e) {
       toast(`로그인에 실패하였습니다: ${e}`)
-    } finally {
-      password.value = ""
     }
   }
 
@@ -105,8 +101,6 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   return {
-    password,
-    checkedPassword,
     newProfile,
     user,
     token,

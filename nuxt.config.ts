@@ -1,11 +1,14 @@
 import tailwindcss from "@tailwindcss/vite"
 
+const GOAPI = "http://localhost:3006/goapi" // GOAPI 백엔드 주소
+
 export default defineNuxtConfig({
   srcDir: "app/",
   runtimeConfig: {
-    apiBaseInternal: "http://localhost:3006/goapi", // GOAPI 백엔드 주소
+    apiBaseInternal: GOAPI,
     public: {
       apiBase: "/api",
+      goapi: GOAPI,
       version: process.env.NUXT_PUBLIC_VERSION || "v2.0.0",
       url: process.env.NUXT_PUBLIC_URL || "https://nubohub.org",
       urlPrefix: process.env.NUXT_PUBLIC_URL_PREFIX || "",
