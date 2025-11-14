@@ -15,7 +15,7 @@ export function showDateOnly(timestamp: number, divider: string = "-"): string {
   return `${y}${divider}${m}${divider}${d}`
 }
 
-// 큰 숫자는 K, M 단위를 뒤에 붙여서 표현
+// 큰 숫자는 K, M 단위를 뒤에 붙여서 표현
 export function showReadableNumber(big: number): string {
   if (big > 999999) {
     return (big / 1000000).toFixed(1) + "M"
@@ -31,10 +31,36 @@ export function stripHtmlTags(html: string): string {
   return html.replace(/<[^>]*>?/gm, "")
 }
 
-// Store에서 사용할 useAsyncData 래퍼 (GET)
+// Composables에서 사용할 useAsyncData 래퍼 (GET)
 export function useGet<T>(cacheKey: string, url: string, params: Record<string, any> = {}) {
   const { $api } = useNuxtApp()
   return useAsyncData<T>(cacheKey, () => $api<T>(url, { method: "GET", params }), {
     server: true,
   })
+}
+
+// Composables에서 사용할 래퍼 (POST)
+export function usePostAction<T>() {
+  const { $api } = useNuxtApp()
+  const loading = ref<boolean>(false)
+
+  const execute = async (url: string, body: Record<string, any> | BodyInit | FormData) => {
+    loading.value = true
+    try {
+      const result = await $api<T>(url, {
+        method: "POST",
+        body,
+      })
+      return result
+    } catch (e) {
+      console.error("Post Action Error: ", e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    loading,
+    execute,
+  }
 }

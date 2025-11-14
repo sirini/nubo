@@ -3,6 +3,7 @@ import { defineStore } from "pinia"
 import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
+import { useEditor } from "~/client/composables/useEditor"
 import { BOARD_CONFIG, type BoardConfig } from "~/types/board"
 import type { HeadingLevel } from "~/types/editor"
 
