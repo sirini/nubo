@@ -7,11 +7,9 @@ export default defineEventHandler(async (event) => {
     keyword: string
   }
 
-  const res = await $fetch("/home/latest", {
+  return await $fetch("/home/latest", {
     baseURL: config.apiBaseInternal,
     method: "GET",
     params,
   })
-
-  return res
 })

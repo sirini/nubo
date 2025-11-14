@@ -2,7 +2,7 @@ import { toast } from "vue-sonner"
 import { MY_INFO_RESULT, type MyInfoResult } from "~/types/user"
 
 export const useAuthStore = defineStore("auth", () => {
-  const { fetchUserInfo, fetchOAuthUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
+  const { fetchUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
   const newProfile = ref<File | undefined>(undefined)
   const user = useState<MyInfoResult>("user-state", () => MY_INFO_RESULT)
   const token = useCookie<string | null>("auth-token", { default: () => null })
@@ -12,11 +12,11 @@ export const useAuthStore = defineStore("auth", () => {
   // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
   async function loadUserInfo(): Promise<void> {
     if (!token.value) return
-
     try {
       const response = await fetchUserInfo(token.value)
       if (!response || !response.success) {
-        return await logout(false)
+        console.log(`response.error = ${response.error}`)
+        return await logout()
       }
 
       user.value = response.result
@@ -24,29 +24,31 @@ export const useAuthStore = defineStore("auth", () => {
       user.value.signature = decodeURIComponent(user.value.signature)
     } catch (e) {
       toast(`사용자 정보를 가져오지 못했습니다: ${e}`)
-      await logout(false)
+      await logout()
     }
   }
 
   // OAuth 로그인 이후 결과값 가져오기
   async function loadOAuthUserInfo(): Promise<void> {
-    try {
-      const response = await fetchOAuthUserInfo()
-      if (!response || !response.success) {
-        toast(`OAuth 로그인 정보 획득 실패: ${response.error}`)
-        return
-      }
+    if (isLoggedIn.value) return
+    if (import.meta.client) return // Nitro 서버에서만 동작
 
-      user.value = response.result
-      token.value = response.result.token
-      refresh.value = response.result.refresh
-    } catch (e) {
-      toast(`OAuth 로그인 후 정보를 가져오지 못했습니다: ${e}`)
+    const tokenFromOauth = useCookie("nubo-oauth-access")
+    const refreshFromOauth = useCookie("nubo-oauth-refresh")
+
+    if (refreshFromOauth.value) {
+      refresh.value = refreshFromOauth.value
+    }
+    if (tokenFromOauth.value) {
+      token.value = tokenFromOauth.value
+      await loadUserInfo()
     }
   }
 
   // 로그인
   async function login(email: string, password: string): Promise<void> {
+    if (isLoggedIn.value) return
+
     try {
       const response = await fetchLogin(email, password)
       if (!response || !response.success) {
@@ -65,12 +67,12 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   // 로그아웃
-  async function logout(notifyServer = true): Promise<void> {
-    if (notifyServer && token.value) {
+  async function logout(): Promise<void> {
+    if (token.value) {
       try {
-        fetchLogout(token.value)
-      } catch (e: unknown) {
-        void e
+        await fetchLogout(token.value)
+      } catch (e) {
+        console.error(`logout error: ${e}`)
       }
     }
 
@@ -86,7 +88,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const response = await fetchToken(user.value.uid, refresh.value)
       if (!response || !response.success) {
-        await logout(false)
+        await logout()
         return false
       }
 
@@ -94,7 +96,7 @@ export const useAuthStore = defineStore("auth", () => {
       user.value.token = response.result
       return true
     } catch (e) {
-      await logout(false)
+      await logout()
       void e
     }
     return false

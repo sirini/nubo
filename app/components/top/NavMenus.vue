@@ -6,6 +6,9 @@
         <div class="flex items-center gap-2">
           <TopSearch />
         </div>
+        <div class="flex items-center gap-2">
+          <TopLogin />
+        </div>
       </div>
     </div>
   </div>

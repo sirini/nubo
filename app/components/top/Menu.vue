@@ -1,8 +1,15 @@
 <template>
   <div class="flex items-center gap-2">
     <NuxtLink to="/" class="flex items-center gap-2 font-bold text-lg mr-2">
-      <Squirrel class="w-5 h-5" />
-      <span class="hidden sm:inline">{{ config.public.title }}</span>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger as-child class="inline-flex gap-3 items-center">
+            <Squirrel class="w-6 h-6" />
+            <span class="hidden sm:inline">{{ config.public.title }}</span>
+          </TooltipTrigger>
+          <TooltipContent class="text-foreground"> 첫 화면으로 이동합니다 </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </NuxtLink>
 
     <template v-if="data">

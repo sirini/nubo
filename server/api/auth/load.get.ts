@@ -1,7 +1,12 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  return await $fetch("/home/sidebar/links", {
+  const Authorization = getHeader(event, "Authorization") || ""
+
+  return await $fetch("/auth/load", {
     baseURL: config.apiBaseInternal,
     method: "GET",
+    headers: {
+      Authorization,
+    },
   })
 })

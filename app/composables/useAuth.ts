@@ -15,14 +15,6 @@ export const useAuth = () => {
     })
   }
 
-  // OAuth 로그인 이후 결과값 반환
-  const fetchOAuthUserInfo = async () => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<MyInfoResult>>("/auth/oauth/userinfo", {
-      method: "GET",
-    })
-  }
-
   // 로그인 처리하기
   const fetchLogin = async (id: string, password: string) => {
     const { execute } = usePostAction<Resp<MyInfoResult>>()
@@ -58,7 +50,6 @@ export const useAuth = () => {
 
   return {
     fetchUserInfo,
-    fetchOAuthUserInfo,
     fetchLogin,
     fetchLogout,
     fetchToken,
