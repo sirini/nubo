@@ -1,4 +1,5 @@
 import { SHA256 } from "crypto-js"
+import { usePostAction } from "~/lib/utils"
 import type { Resp } from "~/types/common"
 import type { MyInfoResult } from "~/types/user"
 
@@ -10,6 +11,7 @@ export const useAuth = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      method: "GET",
     })
   }
 
@@ -23,39 +25,35 @@ export const useAuth = () => {
 
   // 로그인 처리하기
   const fetchLogin = async (id: string, password: string) => {
-    const { $api } = useNuxtApp()
-    const fd = new FormData()
-    fd.append("id", id.trim())
-    fd.append("password", SHA256(password).toString())
+    const { execute } = usePostAction<Resp<MyInfoResult>>()
+    const body = new FormData()
+    body.append("id", id.trim())
+    body.append("password", SHA256(password).toString())
 
-    return await $api<Resp<MyInfoResult>>("/auth/signin", {
-      method: "POST",
-      body: fd,
-    })
+    return await execute("/auth/signin", body)
   }
 
   // 로그아웃 처리하기
   const fetchLogout = async (token: string) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<null>>("/auth/logout", {
-      method: "POST",
-      headers: {
+    const { execute } = usePostAction<Resp<null>>()
+
+    return await execute(
+      "/auth/logout",
+      {},
+      {
         Authorization: `Bearer ${token}`,
       },
-    })
+    )
   }
 
   // 액세스 토큰 업데이트
   const fetchToken = async (userUid: number, refresh: string) => {
-    const { $api } = useNuxtApp()
-    const fd = new FormData()
-    fd.append("userUid", userUid.toString())
-    fd.append("refresh", refresh)
+    const { execute } = usePostAction<Resp<string>>()
+    const body = new FormData()
+    body.append("userUid", userUid.toString())
+    body.append("refresh", refresh)
 
-    return await $api<Resp<string>>("/auth/refresh", {
-      method: "POST",
-      body: fd,
-    })
+    return await execute("/auth/refresh", body)
   }
 
   return {

@@ -5,7 +5,7 @@
         v-if="post.cover"
         :src="post.cover"
         alt="cover image"
-        class="w-full aspect-[1/1] object-cover transition-transform hover:scale-105"
+        class="w-full aspect-square object-cover transition-transform hover:scale-105"
       />
 
       <CardHeader class="px-3">

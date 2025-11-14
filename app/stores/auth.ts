@@ -1,10 +1,8 @@
-import { unescape } from "querystring"
 import { toast } from "vue-sonner"
 import { MY_INFO_RESULT, type MyInfoResult } from "~/types/user"
 
-const { fetchUserInfo, fetchOAuthUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
-
 export const useAuthStore = defineStore("auth", () => {
+  const { fetchUserInfo, fetchOAuthUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
   const password = ref<string>("")
   const checkedPassword = ref<string>("")
   const newProfile = ref<File | undefined>(undefined)
@@ -25,7 +23,7 @@ export const useAuthStore = defineStore("auth", () => {
 
       user.value = response.result
       user.value.token = token.value
-      user.value.signature = unescape(user.value.signature)
+      user.value.signature = decodeURIComponent(user.value.signature)
     } catch (e) {
       toast(`사용자 정보를 가져오지 못했습니다: ${e}`)
       await logout(false)
@@ -54,7 +52,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const response = await fetchLogin(user.value.id, password.value)
       if (!response || !response.success) {
-        toast(`로그인 실패: ${response.error}`)
+        toast(`로그인 실패: ${response?.error}`)
         return
       }
 

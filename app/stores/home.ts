@@ -2,9 +2,8 @@ import { defineStore } from "pinia"
 import { SEARCH, type Search } from "~/types/board"
 import type { BoardHomePostItem } from "~/types/home"
 
-const { fetchHomeLatestPosts } = useHome()
-
 export const useHomeStore = defineStore("home", () => {
+  const { fetchHomeLatestPosts } = useHome()
   const sinceUid = ref<number>(0)
   const bunch = ref<number>(20)
   const option = ref<Search>(SEARCH.TITLE as Search)

@@ -37,23 +37,10 @@ export const useHome = () => {
 
   // 홈 화면에서 게시글들 목록 조회하기
   const fetchHomeLatestPosts = async (params: FetchHomeLatestPostsParams) => {
-    const { $api } = useNuxtApp()
-    return useAsyncData(
+    return useGet<Resp<BoardHomePostItem[]>>(
       `home-latest-${params.sinceUid}-${params.option}-${params.keyword}`,
-      () =>
-        $api<Resp<BoardHomePostItem[]>>("/home/latest", {
-          method: "GET",
-          params: {
-            sinceUid: params.sinceUid,
-            bunch: params.bunch,
-            option: params.option,
-            keyword: params.keyword,
-          },
-        }),
-      {
-        server: true,
-        immediate: true,
-      },
+      "/home/latest",
+      params,
     )
   }
 
