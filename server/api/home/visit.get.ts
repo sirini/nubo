@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const query = getQuery(event) as { userUid?: number }
   const ua = getHeader(event, "user-agent") || ""
-  const visitKey = "nuboVisitDate"
+  const visitKey = "nubo-visit-date"
 
   if (/\b(bot|spider|crawl)\b/i.test(ua)) {
     return { skipped: true, reason: "bot" }
@@ -24,8 +24,6 @@ export default defineEventHandler(async (event) => {
 
   setCookie(event, visitKey, today, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24,
     path: "/",
   })

@@ -1,7 +1,6 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const hitKey = "nuboHit"
-  const accessTokenKey = "nuboAccessToken"
+  const hitKey = "nubo-read-marks"
   const query = getQuery(event)
   const latestLimit = parseInt(query.latestLimit as string)
   const id = query.id as string
@@ -28,7 +27,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const token = getCookie(event, accessTokenKey) || "empty"
+  const token = getCookie(event, "nubo-auth-token") || "empty"
   const res = await $fetch("/board/view", {
     baseURL: config.apiBaseInternal,
     method: "GET",

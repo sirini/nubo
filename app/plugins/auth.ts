@@ -3,7 +3,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   if (auth.isLoggedIn) return
 
-  const token = useCookie("auth-token")
+  const token = useCookie("nubo-auth-token")
   if (token.value) {
     await auth.loadUserInfo()
   }

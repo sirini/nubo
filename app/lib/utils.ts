@@ -44,16 +44,11 @@ export function usePostAction<T>() {
   const { $api } = useNuxtApp()
   const loading = ref<boolean>(false)
 
-  const execute = async (
-    url: string,
-    body: Record<string, any> | BodyInit | FormData,
-    headers: HeadersInit | undefined = undefined,
-  ) => {
+  const execute = async (url: string, body: Record<string, any>) => {
     loading.value = true
     let error = ""
     try {
       const result = await $api<T>(url, {
-        headers,
         method: "POST",
         body,
       })

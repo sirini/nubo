@@ -14,14 +14,14 @@ import { Toaster } from "vue-sonner"
 const { addVisitHistory } = useHome()
 const auth = useAuthStore()
 
-// 쿠키에 액세스 토큰이 있다면 로그인 처리해주기
+// 로그인 여부 확인해서 업뎃해놓기
 await useAsyncData(
   "init-auth",
   async () => {
-    if (import.meta.server) {
-      await auth.loadOAuthUserInfo()
-      return auth.isLoggedIn
+    if (!auth.isLoggedIn) {
+      await auth.loadUserInfo()
     }
+    return auth.isLoggedIn
   },
   {
     watch: [],
