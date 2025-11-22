@@ -6,6 +6,7 @@
           size="sm"
           :variant="ed.isActive('bold') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleBold().run()"
+          class="cursor-pointer"
         >
           <BoldIcon class="w-4 h-4" />
         </Button>
@@ -14,6 +15,7 @@
           size="sm"
           :variant="ed.isActive('italic') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleItalic().run()"
+          class="cursor-pointer"
         >
           <Italic class="w-4 h-4" />
         </Button>
@@ -22,12 +24,13 @@
           size="sm"
           :variant="ed.isActive('strike') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleStrike().run()"
+          class="cursor-pointer"
         >
           <Strikethrough class="w-4 h-4" />
         </Button>
 
         <div class="relative">
-          <Button size="sm" variant="ghost">
+          <Button size="sm" variant="ghost" class="cursor-pointer">
             <Palette class="w-4 h-4" />
             <input
               type="color"
@@ -43,7 +46,7 @@
           @update:model-value="edit.toggleHeading"
           :model-value="edit.headingLevel"
         >
-          <SelectTrigger class="w-24">
+          <SelectTrigger class="w-24 cursor-pointer">
             <SelectValue placeholder="스타일" />
           </SelectTrigger>
           <SelectContent>
@@ -60,13 +63,23 @@
           </SelectContent>
         </Select>
 
-        <div class="w-[1px] h-6 bg-border mx-1"></div>
+        <div class="w-px h-6 bg-border mx-1"></div>
 
-        <Button size="sm" variant="ghost" @click="edit.isAddLinkDialog = true">
+        <Button
+          size="sm"
+          variant="ghost"
+          @click="edit.isAddLinkDialog = true"
+          class="cursor-pointer"
+        >
           <Link class="w-4 h-4" />
         </Button>
 
-        <Button size="sm" variant="ghost" @click="edit.isImageUploadDialog = true">
+        <Button
+          size="sm"
+          variant="ghost"
+          @click="edit.isImageUploadDialog = true"
+          class="cursor-pointer"
+        >
           <Image class="w-4 h-4" />
         </Button>
 
@@ -74,6 +87,7 @@
           size="sm"
           :variant="ed.isActive('blockquote') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleBlockquote().run()"
+          class="cursor-pointer"
         >
           <Quote class="w-4 h-4" />
         </Button>
@@ -82,6 +96,7 @@
           size="sm"
           :variant="ed.isActive('code') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleCode().run()"
+          class="cursor-pointer"
         >
           <CodeIcon class="w-4 h-4" />
         </Button>
@@ -90,17 +105,28 @@
           size="sm"
           :variant="ed.isActive('codeBlock') ? 'secondary' : 'ghost'"
           @click="ed.chain().focus().toggleCodeBlock().run()"
+          class="cursor-pointer"
         >
           <SquareCode class="w-4 h-4" />
         </Button>
 
-        <div class="w-[1px] h-6 bg-border mx-1"></div>
+        <div class="w-px h-6 bg-border mx-1"></div>
 
-        <Button size="sm" variant="ghost" @click="ed.chain().focus().undo().run()">
+        <Button
+          size="sm"
+          variant="ghost"
+          @click="ed.chain().focus().undo().run()"
+          class="cursor-pointer"
+        >
           <Undo class="w-4 h-4" />
         </Button>
 
-        <Button size="sm" variant="ghost" @click="ed.chain().focus().redo().run()">
+        <Button
+          size="sm"
+          variant="ghost"
+          @click="ed.chain().focus().redo().run()"
+          class="cursor-pointer"
+        >
           <Redo class="w-4 h-4" />
         </Button>
       </div>
@@ -252,7 +278,7 @@ onMounted(() => {
   })
 
   edit.editor = ed.value
-  edit.boardConfig = props.config
+  edit.config = props.config
 })
 
 watch(

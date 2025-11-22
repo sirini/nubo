@@ -4,25 +4,64 @@ import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
 import { useEditor } from "~/client/composables/useEditor"
-import { BOARD_CONFIG, type BoardConfig } from "~/types/board"
+import {
+  BOARD_CONFIG,
+  type Pair,
+  type BoardConfig,
+  type EditorTagItem,
+  type EditorInsertImageResult,
+} from "~/types/board"
 import type { HeadingLevel } from "~/types/editor"
 
 export const useEditorStore = defineStore("editor", () => {
-  const auth = useAuthStore()
-  const { uploadEditorImages } = useEditor()
+  const {
+    uploadEditorImages,
+    getBoardConfig,
+    getSuggestionTags,
+    getSuggestionTitles,
+    getInsertedImages,
+  } = useEditor()
   const isUploading = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isAddLinkDialog = ref<boolean>(false)
-  const boardConfig = ref<BoardConfig>(BOARD_CONFIG)
+  const isNotice = ref<boolean>(false)
+  const isSecret = ref<boolean>(false)
+  const isDragging = ref<boolean>(false)
+  const isSearchingTitles = ref<boolean>(false)
+  const isSearchingTags = ref<boolean>(false)
+  const config = ref<BoardConfig>(BOARD_CONFIG)
+  const categories = ref<Pair[]>([])
   const editor = ref<Editor | null>(null)
-  const files = ref<File[]>([])
+  const images = ref<File[]>([])
+  const attaches = ref<File[]>([])
   const previewImages = ref<string[]>([])
+  const insertedImage = ref<EditorInsertImageResult | null>(null)
   const runtimeConfig = useRuntimeConfig()
   const headingLevel = ref<string>("")
   const content = ref<string>("")
+  const title = ref<string>("")
+  const tag = ref<string>("")
+  const tags = ref<string[]>([])
+  const titleSuggestions = ref<string[]>([])
+  const tagSuggestions = ref<EditorTagItem[]>([])
+
+  // 게시판 설정값 가져오기
+  const loadBoardConfig = async (id: string) => {
+    try {
+      const response = await getBoardConfig(id)
+      if (!response.success) {
+        toast(`게시판 설정값들을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      config.value = response.result.config
+      categories.value = response.result.categories
+    } catch (e) {
+      toast(`게시판 설정값들을 가져오지 못했습니다: ${e}`)
+    }
+  }
 
   // 글자 색상 변경하기
-  function selectColor(event: Event): void {
+  const selectColor = (event: Event) => {
     const target = event.target as HTMLInputElement
     if (target && editor.value) {
       editor.value.chain().focus().setColor(target.value).run()
@@ -30,7 +69,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 링크 설정하기
-  function setLink(url: string): void {
+  const setLink = (url: string) => {
     if (!editor.value) return
     if (url === "") {
       editor.value.chain().focus().extendMarkRange("link").unsetLink().run()
@@ -40,7 +79,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 헤딩 선택하기
-  function toggleHeading(value: AcceptableValue): void {
+  const toggleHeading = (value: AcceptableValue) => {
     let level: HeadingLevel | undefined
 
     if (typeof value === "string") {
@@ -62,7 +101,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 헤딩이 선택되었는지 확인하기
-  function isHeadingActive(): boolean {
+  const isHeadingActive = () => {
     if (!editor.value) return false
 
     return (
@@ -74,10 +113,10 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 선택한 이미지 파일들을 미리 보여주기
-  function selectedFiles(event: MouseEvent): void {
+  const selectedImages = (event: MouseEvent) => {
     previewImages.value.forEach((url) => URL.revokeObjectURL(url))
     previewImages.value = []
-    files.value = []
+    images.value = []
 
     const targets = (event?.target as HTMLInputElement).files
     if (!targets) {
@@ -92,44 +131,182 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`파일 크기 제한을 초과하였습니다: ${totalSize} > ${runtimeConfig.public.fileSize}`)
         break
       }
-      files.value.push(target)
+      images.value.push(target)
       previewImages.value.push(URL.createObjectURL(target))
     }
     toast(`업로드 버튼을 클릭하셔야 파일이 올라갑니다`)
   }
 
+  // 본문 작성란에 이미지 삽입하기
+  const insertImageToEditor = (src: string) => {
+    if (editor.value) {
+      editor.value.commands.focus()
+      editor.value.commands.setImage({ src })
+      editor.value.commands.enter()
+    }
+  }
+
   // 선택된 이미지 파일들 업로드하고 작성란에 추가하기
-  async function uploadingFiles(): Promise<void> {
+  const uploadingImages = async () => {
     try {
       isUploading.value = true
-      const response = await uploadEditorImages(auth.user.token, boardConfig.value.uid, files.value)
+      const response = await uploadEditorImages(config.value.uid, images.value)
       if (!response.success) {
-        toast(`업로드 실패: ${response.error}`)
+        toast(`이미지 파일 업로드에 실패하였습니다: ${response.error}`)
       }
+
+      for (const src of response.result) {
+        insertImageToEditor(src)
+      }
+      toast(`본문에 이미지를 삽입 하였습니다`)
     } catch (e) {
       toast(`이미지 파일 업로드에 실패하였습니다: ${e}`)
     } finally {
       isUploading.value = false
-      files.value = []
+      images.value = []
+      isImageUploadDialog.value = false
     }
   }
+
+  // 기존에 업로드했던 이미지 목록들 불러오기
+  const loadInsertedImages = async (lastUid: number = 0) => {
+    try {
+      const response = await getInsertedImages(config.value.uid, lastUid, 12)
+      if (!response.success) {
+        toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      insertedImage.value = response.result
+    } catch (e) {
+      toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
+  // 유사한 글제목들 가져오기
+  const searchTitles = useDebounceFn(async () => {
+    if (title.value.length < 2) return
+    try {
+      isSearchingTitles.value = true
+      const response = await getSuggestionTitles(title.value)
+      if (!response.success) {
+        toast(`유사한 글제목들을 조회하지 못했습니다: ${response.error}`)
+        return
+      }
+      titleSuggestions.value = response.result
+    } catch (e) {
+      toast(`유사한 글제목들을 조회하지 못했습니다: ${e}`)
+    } finally {
+      isSearchingTitles.value = false
+    }
+  })
+
+  // 추천 태그 목록 가져오기
+  const searchTags = useDebounceFn(async () => {
+    if (tag.value.length < 2) return
+    try {
+      isSearchingTags.value = true
+      const response = await getSuggestionTags(tag.value)
+      if (!response.success) {
+        toast(`유사한 태그들을 조회하지 못했습니다: ${response.error}`)
+        return
+      }
+      tagSuggestions.value = response.result
+    } catch (e) {
+      toast(`유사한 태그들을 조회하지 못했습니다: ${e}`)
+    } finally {
+      isSearchingTags.value = false
+    }
+  }, 300)
+
+  // 제안된 글제목 선택
+  const selectTitle = (suggestion: string) => {
+    title.value = suggestion
+    titleSuggestions.value = []
+  }
+
+  // 해시태그 추가하기
+  const addTag = () => {
+    const val = tag.value.trim().replaceAll("#", "")
+    if (val && !tags.value.includes(val)) {
+      tags.value.push(val)
+    }
+    tag.value = ""
+    tagSuggestions.value = []
+  }
+
+  // 해시태그 삭제하기
+  const removeTag = (index: number) => {
+    tags.value.splice(index, 1)
+  }
+
+  // 첨부파일 추가하기
+  const handleAttachChange = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    if (target.files) {
+      attaches.value = Array.from(target.files)
+    }
+  }
+
+  // 첨부파일 제거하기
+  const removeAttach = (index: number) => {
+    attaches.value.splice(index, 1)
+  }
+
+  // 첨부파일들 드롭 핸들러
+  const dropAttaches = (e: DragEvent) => {
+    isDragging.value = false
+    const fileList = e.dataTransfer?.files
+    if (fileList) {
+      attaches.value = []
+      for (const f of fileList) {
+        attaches.value.push(f)
+      }
+    }
+  }
+
+  // 서버에 내용 전달하기
+  const submit = async () => {}
 
   return {
     isUploading,
     isImageUploadDialog,
     isAddLinkDialog,
-    boardConfig,
+    isNotice,
+    isSecret,
+    isSearchingTitles,
+    isSearchingTags,
+    isDragging,
+    config,
     editor,
-    files,
+    attaches,
+    images,
     previewImages,
+    insertedImage,
     headingLevel,
     content,
+    title,
+    titleSuggestions,
+    tag,
+    tagSuggestions,
+    tags,
 
+    loadBoardConfig,
+    loadInsertedImages,
     selectColor,
     setLink,
     toggleHeading,
     isHeadingActive,
-    selectedFiles,
-    uploadingFiles,
+    selectedImages,
+    uploadingImages,
+    insertImageToEditor,
+    searchTitles,
+    searchTags,
+    selectTitle,
+    addTag,
+    removeTag,
+    handleAttachChange,
+    removeAttach,
+    dropAttaches,
+    submit,
   }
 })

@@ -37,6 +37,7 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "@nuxtjs/color-mode",
     "@pinia/nuxt",
+    "@vueuse/nuxt",
   ],
   googleFonts: {
     display: "swap",

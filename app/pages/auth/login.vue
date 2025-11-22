@@ -53,7 +53,7 @@
               </NuxtLink>
             </Button>
 
-            <Button type="submit" class="w-full">로그인</Button>
+            <Button type="submit" class="w-full text-foreground cursor-pointer">로그인</Button>
           </form>
         </div>
       </CardContent>
@@ -71,6 +71,7 @@ import FormItem from "~/components/ui/form/FormItem.vue"
 import FormLabel from "~/components/ui/form/FormLabel.vue"
 import FormMessage from "~/components/ui/form/FormMessage.vue"
 
+const route = useRoute()
 const auth = useAuthStore()
 const config = useRuntimeConfig()
 const google = `${config.public.goapi}/auth/google/request`
@@ -96,6 +97,7 @@ const { handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit(({ email, password }) => {
-  auth.login(email, password)
+  const redirect = (route.query.redirect as string) || "/"
+  auth.login(email, password, redirect)
 })
 </script>

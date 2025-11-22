@@ -12,11 +12,9 @@ export const useHomeStore = defineStore("home", () => {
   const pending = ref<boolean>(false)
   const error = ref<unknown>(null)
   const initialized = ref<boolean>(false)
-  const openMenus = ref<Record<string, boolean>>({})
-  const timers = ref<Record<string, NodeJS.Timeout>>({})
 
   // 내부 유틸: 결과 병합
-  function mergePosts(incoming: BoardHomePostItem[] = []) {
+  const mergePosts = (incoming: BoardHomePostItem[] = []) => {
     if (sinceUid.value === 0) {
       posts.value = incoming
       return
@@ -31,7 +29,7 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   // 목록 조회 (초기/검색/더보기 공용)
-  async function fetchLatest(opts?: { reset?: boolean }) {
+  const fetchLatest = async (opts?: { reset?: boolean }) => {
     if (pending.value) return
     try {
       pending.value = true
@@ -59,7 +57,7 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   // 이전 게시글 더 가져오기
-  async function loadMore() {
+  const loadMore = async () => {
     if (pending.value) return
     const last = posts.value.at(-1)?.uid ?? 0
     if (last === sinceUid.value) return
@@ -68,27 +66,12 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   // 각종 변수 초기화
-  function reset() {
+  const reset = () => {
     sinceUid.value = 0
     posts.value = []
     pending.value = false
     error.value = null
     initialized.value = false
-  }
-
-  // 상단 메뉴에 마우스 포인터가 들어갔을 때 호출
-  function handleMenuEnter(group: string): void {
-    if (timers.value[group]) {
-      clearTimeout(timers.value[group])
-    }
-    openMenus.value[group] = true
-  }
-
-  // 상단 메뉴에 마우스 포인터가 나갔을 때 호출
-  function handleMenuLeave(group: string): void {
-    timers.value[group] = setTimeout(() => {
-      openMenus.value[group] = false
-    }, 200)
   }
 
   return {
@@ -100,12 +83,9 @@ export const useHomeStore = defineStore("home", () => {
     pending,
     error,
     initialized,
-    openMenus,
 
     fetchLatest,
     loadMore,
     reset,
-    handleMenuEnter,
-    handleMenuLeave,
   }
 })

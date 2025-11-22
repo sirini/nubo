@@ -9,19 +9,23 @@
         </p>
       </DialogDescription>
       <Tabs default-value="upload">
-        <TabsList class="grid w-full grid-cols-2 mb-3">
-          <TabsTrigger value="upload"> 이미지 파일 업로드 </TabsTrigger>
-          <TabsTrigger value="link"> URL 링크 추가 </TabsTrigger>
+        <TabsList class="grid w-full grid-cols-3 mb-3">
+          <TabsTrigger value="upload" class="cursor-pointer"> 업로드 </TabsTrigger>
+          <TabsTrigger value="db" @click="edit.loadInsertedImages(0)" class="cursor-pointer"
+            >이전 업로드들</TabsTrigger
+          >
+          <TabsTrigger value="link" class="cursor-pointer"> URL 추가 </TabsTrigger>
         </TabsList>
         <TabsContent value="upload">
           <Card class="p-0">
             <CardContent class="flex p-3 max-w-sm items-center gap-2">
-              <Input type="file" @change="edit.selectedFiles" accept="image/*" multiple />
+              <Input type="file" @change="edit.selectedImages" accept="image/*" multiple />
               <Button
                 type="button"
-                @click=""
+                @click="edit.uploadingImages"
                 :disabled="!isReady"
-                :variant="isReady ? 'secondary' : 'outline'"
+                :variant="isReady ? 'default' : 'outline'"
+                class="text-foreground cursor-pointer"
                 >업로드</Button
               >
             </CardContent>
@@ -37,11 +41,37 @@
           </Card>
         </TabsContent>
 
+        <TabsContent value="db">
+          <Card class="p-0">
+            <CardContent class="grid grid-cols-3 p-3 gap-2" v-if="edit.insertedImage">
+              <div
+                v-for="(url, index) in edit.insertedImage.images"
+                :key="index"
+                class="cursor-pointer"
+                @click="edit.insertImageToEditor(url.name)"
+              >
+                <img
+                  :src="url.name"
+                  alt="Inserted image"
+                  class="h-full w-full object-cover rounded-xl aspect-square"
+                />
+              </div>
+            </CardContent>
+            <CardContent
+              class="flex flex-col items-center justify-center py-6 text-muted-foreground text-sm"
+              v-else
+            >
+              <ImageOffIcon class="w-8 h-8 mb-2 opacity-70" />
+              <p>올려둔 이미지들이 없습니다</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="link">
           <Card class="p-0">
             <CardContent class="flex p-3 max-w-sm items-center gap-2">
               <Input type="text" placeholder="https://example.com/path/image.jpg" />
-              <Button type="button" @click="">추가</Button>
+              <Button type="button" @click="" class="text-foreground cursor-pointer">추가</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -63,10 +93,13 @@
 
 <script setup lang="ts">
 import { useEditorStore, useRuntimeConfig } from "#imports"
+import { ImageOffIcon } from "lucide-vue-next"
 
 const edit = useEditorStore()
 const config = useRuntimeConfig()
 const isReady = computed(() => {
   return edit.previewImages.length > 0
 })
+
+await edit.loadInsertedImages(0)
 </script>

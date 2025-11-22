@@ -6,9 +6,10 @@ export const useAuthStore = defineStore("auth", () => {
   const newProfile = ref<File | undefined>(undefined)
   const user = useState<MyInfoResult>("user-state", () => MY_INFO_RESULT)
   const isLoggedIn = computed(() => user.value.uid > 0)
+  const isAdmin = computed(() => user.value.uid === 1)
 
   // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
-  async function loadUserInfo(): Promise<void> {
+  const loadUserInfo = async () => {
     try {
       const response = await fetchUserInfo()
       if (!response || !response.success) {
@@ -24,7 +25,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   // 로그인
-  async function login(email: string, password: string): Promise<void> {
+  const login = async (email: string, password: string, redirect: string = "/") => {
     if (isLoggedIn.value) return
     try {
       const response = await fetchLogin(email, password)
@@ -34,15 +35,14 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       user.value = response.result
-
-      await navigateTo("/")
+      await navigateTo(redirect)
     } catch (e) {
       toast(`로그인에 실패하였습니다: ${e}`)
     }
   }
 
   // 로그아웃
-  async function logout(): Promise<void> {
+  const logout = async () => {
     try {
       await fetchLogout()
     } catch (e) {
@@ -53,7 +53,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   // 액세스 토큰 업데이트
-  async function updateAccessToken(): Promise<boolean> {
+  const updateAccessToken = async () => {
     try {
       const response = await fetchToken(user.value.uid)
       if (!response || !response.success) {
@@ -72,6 +72,7 @@ export const useAuthStore = defineStore("auth", () => {
     newProfile,
     user,
     isLoggedIn,
+    isAdmin,
 
     loadUserInfo,
     login,

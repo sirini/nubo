@@ -21,3 +21,9 @@ export const CODE = {
   EXCEED_SIZE: 7,
   EXPIRED: 8,
 }
+
+// 키 값
+export const VISIT_KEY = "nubo-visit-date"
+export const HIT_KEY = "nubo-read-marks"
+export const AUTH_KEY = "nubo-auth-token"
+export const REFRESH_KEY = "nubo-refresh-token"

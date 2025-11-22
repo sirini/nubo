@@ -1,11 +1,12 @@
+import { AUTH_KEY, HIT_KEY } from "~/types/common"
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const hitKey = "nubo-read-marks"
   const query = getQuery(event)
   const latestLimit = parseInt(query.latestLimit as string)
   const id = query.id as string
   const postUid = parseInt(query.postUid as string)
-  const viewed = getCookie(event, hitKey) || "[]"
+  const viewed = getCookie(event, HIT_KEY) || "[]"
 
   let viewedPosts: number[] = []
   try {
@@ -20,14 +21,14 @@ export default defineEventHandler(async (event) => {
     needUpdateHit = 1
     viewedPosts.push(postUid)
 
-    setCookie(event, hitKey, JSON.stringify(viewedPosts), {
+    setCookie(event, HIT_KEY, JSON.stringify(viewedPosts), {
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60 * 24,
     })
   }
 
-  const token = getCookie(event, "nubo-auth-token") || "empty"
+  const token = getCookie(event, AUTH_KEY) || "empty"
   const res = await $fetch("/board/view", {
     baseURL: config.apiBaseInternal,
     method: "GET",

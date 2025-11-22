@@ -10,7 +10,7 @@ export const useBoardStore = defineStore("board", () => {
   const view = ref<BoardViewResult>(BOARD_VIEW_RESULT)
 
   // 게시글 본문 내용 가져오기
-  async function fetchView(id: string, postUid: number): Promise<void> {
+  const fetchView = async (id: string, postUid: number) => {
     if (pending.value) return
     try {
       pending.value = true
