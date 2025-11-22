@@ -27,12 +27,15 @@
 import { ArrowDownFromLine } from "lucide-vue-next"
 import { storeToRefs } from "pinia"
 import "vue-sonner/style.css"
-import { SEARCH, type Search } from "~/types/board"
 
+const route = useRoute()
 const home = useHomeStore()
-const { posts, pending } = storeToRefs(home)
+const { posts } = storeToRefs(home)
+const keyword = computed(() => route.params.keyword as string)
 
-home.option = SEARCH.TITLE as Search
-home.keyword = ""
-await home.fetchLatest({ reset: true })
+const { data, pending } = await useAsyncData(
+  `search-${keyword.value}`,
+  () => home.fetchLatest({ reset: true }),
+  { watch: [keyword] },
+)
 </script>

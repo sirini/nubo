@@ -67,15 +67,6 @@ export const useHomeStore = defineStore("home", () => {
     await fetchLatest()
   }
 
-  // 검색/필터 설정
-  async function setFilter(newOption: Search, newKeyword: string) {
-    const changed = option.value !== newOption || keyword.value !== newKeyword
-    option.value = newOption
-    keyword.value = newKeyword
-    if (!changed) return
-    await fetchLatest({ reset: true })
-  }
-
   // 각종 변수 초기화
   function reset() {
     sinceUid.value = 0
@@ -113,7 +104,6 @@ export const useHomeStore = defineStore("home", () => {
 
     fetchLatest,
     loadMore,
-    setFilter,
     reset,
     handleMenuEnter,
     handleMenuLeave,

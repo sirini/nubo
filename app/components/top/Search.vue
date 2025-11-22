@@ -2,7 +2,7 @@
   <form @submit="onSubmit" class="flex gap-2">
     <CommonVSelect v-model="home.option" :options="options" placeholder="검색 조건 선택" />
     <Input v-model="home.keyword" type="text" placeholder="검색어를 입력하세요" />
-    <Button type="submit" class="text-foreground">찾기</Button>
+    <Button type="submit" variant="outline" class="text-foreground">찾기</Button>
   </form>
 </template>
 
@@ -10,6 +10,7 @@
 import { toast } from "vue-sonner"
 import { SEARCH } from "~/types/board"
 
+const router = useRouter()
 const home = useHomeStore()
 const options = [
   { label: "제목", value: SEARCH.TITLE },
@@ -26,7 +27,6 @@ function onSubmit(event: Event) {
     toast("검색어는 2글자 이상 입력해주세요!")
     return
   }
-  home.setFilter(home.option, home.keyword)
-  home.keyword = ""
+  router.push(`/search/${encodeURIComponent(home.keyword)}?option=${home.option}`)
 }
 </script>
