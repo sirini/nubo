@@ -94,6 +94,37 @@
         </Card>
 
         <BoardViewWriteComment :config="board.view.config" />
+
+        <div class="flex items-center justify-between mt-6">
+          <CommonVTooltip content="목록 페이지로 돌아갑니다">
+            <Button as-child variant="outline">
+              <NuxtLink :to="`/board/${boardId}`">목록보기</NuxtLink></Button
+            >
+          </CommonVTooltip>
+
+          <div class="inline-flex gap-3 items-center">
+            <CommonVTooltip
+              content="본인이 작성하신 게시글을 수정합니다"
+              v-if="auth.user.uid === board.view.post.writer.uid"
+            >
+              <Button as-child variant="outline">
+                <NuxtLink :to="`/board/${boardId}/modify`">수정하기</NuxtLink>
+              </Button>
+            </CommonVTooltip>
+
+            <CommonVTooltip content="새로운 글을 작성합니다">
+              <Button
+                as-child
+                variant="secondary"
+                :class="{ 'opacity-50 pointer-events-none': !auth.isLoggedIn }"
+              >
+                <NuxtLink :to="`/board/${boardId}/write`" :aria-disabled="!auth.isLoggedIn"
+                  >새글작성</NuxtLink
+                >
+              </Button>
+            </CommonVTooltip>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -106,8 +137,11 @@ import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
 
 const route = useRoute()
 const board = useBoardStore()
+const auth = useAuthStore()
+const boardId = route.params.id as string
+const postUid = parseInt(route.params.postUid as string, 10)
 
-await board.fetchView(route.params.id as string, parseInt(route.params.postUid as string, 10))
+await board.fetchView(boardId, postUid)
 
 watch(
   () => route.params,
