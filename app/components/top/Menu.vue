@@ -73,15 +73,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import { useRuntimeConfig } from "#app"
-import { useHomeStore } from "#imports"
 import { FolderOpenIcon, FoldersIcon, LogInIcon, LogOutIcon, MenuIcon } from "lucide-vue-next"
 import AvatarImage from "../ui/avatar/AvatarImage.vue"
 
 const { fetchHomeMenus } = useHome()
 const config = useRuntimeConfig()
 const { data } = await fetchHomeMenus()
-const home = useHomeStore()
 const auth = useAuthStore()
 </script>

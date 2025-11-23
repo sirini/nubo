@@ -39,30 +39,48 @@ export function useGet<T>(cacheKey: string, url: string, params: Record<string, 
   })
 }
 
-// Composables에서 사용할 래퍼 (POST)
-export function usePostAction<T>() {
+// Composables에서 사용할 래퍼
+export function useApiAction<T>() {
   const { $api } = useNuxtApp()
   const loading = ref<boolean>(false)
+  const error = ref<any>(null)
 
-  const execute = async (url: string, body: Record<string, any>) => {
+  type ApiBody = Record<string, any> | FormData
+
+  const execute = async (
+    url: string,
+    options: {
+      method: "POST" | "PUT" | "PATCH" | "DELETE"
+      body: ApiBody
+    },
+  ) => {
     loading.value = true
-    let error = ""
     try {
       const result = await $api<T>(url, {
         method: "POST",
-        body,
+        body: options.body,
       })
       return result
     } catch (e) {
       console.error("Post Action Error: ", e)
-      error = `url: ${url}, error: ${e}`
+      error.value = `url: ${url}, error: ${e}`
     } finally {
       loading.value = false
     }
   }
 
+  const post = (url: string, body: ApiBody) => execute(url, { method: "POST", body })
+  const put = (url: string, body: ApiBody) => execute(url, { method: "PUT", body })
+  const patch = (url: string, body: ApiBody) => execute(url, { method: "PATCH", body })
+  const remove = (url: string, body: ApiBody) => execute(url, { method: "DELETE", body })
+
   return {
     loading,
-    execute,
+    error,
+
+    post,
+    put,
+    patch,
+    remove,
   }
 }

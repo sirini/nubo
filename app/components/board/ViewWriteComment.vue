@@ -10,7 +10,5 @@ import type { BoardConfig } from "~/types/board"
 
 const editor = useEditorStore()
 const auth = useAuthStore()
-const props = defineProps<{
-  config: BoardConfig
-}>()
+defineProps<{ config: BoardConfig }>()
 </script>

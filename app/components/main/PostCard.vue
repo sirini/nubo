@@ -40,7 +40,5 @@ import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
 import type { BoardHomePostItem } from "~/types/home"
 import { Card, CardContent } from "../ui/card"
 
-const props = defineProps<{
-  post: BoardHomePostItem
-}>()
+defineProps<{ post: BoardHomePostItem }>()
 </script>

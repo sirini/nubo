@@ -107,11 +107,14 @@
 import { useEditorStore, useRuntimeConfig } from "#imports"
 import { ImageOffIcon, Trash2Icon } from "lucide-vue-next"
 
-const edit = useEditorStore()
 const config = useRuntimeConfig()
+const edit = useEditorStore()
+const auth = useAuthStore()
 const isReady = computed(() => {
   return edit.previewImages.length > 0
 })
 
-await edit.loadInsertedImages()
+if (auth.isLoggedIn) {
+  await edit.loadInsertedImages()
+}
 </script>
