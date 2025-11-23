@@ -54,6 +54,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "crypto-js": "^4.2.0",
+    "embla-carousel-vue": "^8.6.0",
     "eslint": "^9.31.0",
     "highlight.js": "^11.11.1",
     "lowlight": "^3.3.0",

@@ -7,12 +7,7 @@
         class="rounded-lg overflow-hidden shadow-lg pt-0 mb-4"
         :style="`max-width: ${board.view.config.width}px`"
       >
-        <img
-          v-if="board.view.images.length > 0"
-          :src="board.view.images[0]?.thumbnail.large"
-          alt="cover image"
-          class="w-full object-cover"
-        />
+        <BoardViewImageCarousel :images="board.view.images" v-if="board.view.images.length > 0" />
 
         <Collapsible
           v-if="board.view.files.length > 0"
