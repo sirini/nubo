@@ -11,7 +11,7 @@
       <Tabs default-value="upload">
         <TabsList class="grid w-full grid-cols-3 mb-3">
           <TabsTrigger value="upload" class="cursor-pointer"> 업로드 </TabsTrigger>
-          <TabsTrigger value="db" @click="edit.loadInsertedImages(0)" class="cursor-pointer"
+          <TabsTrigger value="db" @click="edit.loadInsertedImages()" class="cursor-pointer"
             >이전 업로드들</TabsTrigger
           >
           <TabsTrigger value="link" class="cursor-pointer"> URL 추가 </TabsTrigger>
@@ -43,9 +43,9 @@
 
         <TabsContent value="db">
           <Card class="p-0">
-            <CardContent class="grid grid-cols-3 p-3 gap-2" v-if="edit.insertedImage">
+            <CardContent class="grid grid-cols-3 p-3 gap-2" v-if="edit.insertedImages.length > 0">
               <div
-                v-for="(url, index) in edit.insertedImage.images"
+                v-for="(url, index) in edit.insertedImages"
                 :key="index"
                 class="cursor-pointer"
                 @click="edit.insertImageToEditor(url.name)"
@@ -64,6 +64,12 @@
               <ImageOffIcon class="w-8 h-8 mb-2 opacity-70" />
               <p>올려둔 이미지들이 없습니다</p>
             </CardContent>
+            <Button
+              variant="link"
+              class="w-full rounded-t-none cursor-pointer bg-accent/30"
+              @click="edit.loadInsertedImages()"
+              >이전 사진들 불러오기 (총 {{ edit.insertedImageResult?.totalImageCount }}장)</Button
+            >
           </Card>
         </TabsContent>
 
@@ -79,7 +85,7 @@
       <DialogFooter>
         <DialogClose as-child class="inline-flex">
           <Button
-            class="w-full"
+            class="w-full cursor-pointer"
             type="button"
             variant="outline"
             @click="edit.isImageUploadDialog = false"
@@ -101,5 +107,5 @@ const isReady = computed(() => {
   return edit.previewImages.length > 0
 })
 
-await edit.loadInsertedImages(0)
+await edit.loadInsertedImages()
 </script>

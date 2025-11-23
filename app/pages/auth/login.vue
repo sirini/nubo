@@ -42,7 +42,7 @@
 
             <div class="grid grid-cols-3 gap-2 items-center mb-3">
               <CommonVTooltip content="구글 계정으로 로그인하기">
-                <Button as-child variant="outline" class="w-full my-3">
+                <Button as-child variant="outline" class="w-full my-3 cursor-pointer">
                   <NuxtLink :href="google" external>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path
@@ -57,7 +57,7 @@
               </CommonVTooltip>
 
               <CommonVTooltip content="네이버 계정으로 로그인하기">
-                <Button as-child variant="outline" class="w-full my-3">
+                <Button as-child variant="outline" class="w-full my-3 cursor-pointer">
                   <NuxtLink :href="naver" external>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path d="M4 22L4 2h7l7 14V2h4v20h-7L8 8v14H4z" fill="currentColor" />
@@ -69,7 +69,7 @@
               </CommonVTooltip>
 
               <CommonVTooltip content="카카오 계정으로 로그인하기">
-                <Button as-child variant="outline" class="w-full my-3">
+                <Button as-child variant="outline" class="w-full my-3 cursor-pointer">
                   <NuxtLink :href="kakao" external>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path

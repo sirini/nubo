@@ -35,7 +35,8 @@ export const useEditorStore = defineStore("editor", () => {
   const images = ref<File[]>([])
   const attaches = ref<File[]>([])
   const previewImages = ref<string[]>([])
-  const insertedImage = ref<EditorInsertImageResult | null>(null)
+  const insertedImageResult = ref<EditorInsertImageResult | null>(null)
+  const insertedImages = ref<Pair[]>([])
   const runtimeConfig = useRuntimeConfig()
   const headingLevel = ref<string>("")
   const content = ref<string>("")
@@ -169,14 +170,25 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 기존에 업로드했던 이미지 목록들 불러오기
-  const loadInsertedImages = async (lastUid: number = 0) => {
+  const loadInsertedImages = async () => {
     try {
-      const response = await getInsertedImages(config.value.uid, lastUid, 12)
+      let lastUid = insertedImages.value?.at(-1)?.uid || 0
+      const response = await getInsertedImages(config.value.uid, lastUid, 6)
       if (!response.success) {
         toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${response.error}`)
         return
       }
-      insertedImage.value = response.result
+      insertedImageResult.value = response.result
+
+      if (lastUid === 0) {
+        insertedImages.value = response.result.images
+      } else {
+        if (response.result.images.length < 1) {
+          toast(`가져올 이전 사진들이 없습니다`)
+          return
+        }
+        insertedImages.value.push(...response.result.images)
+      }
     } catch (e) {
       toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${e}`)
     }
@@ -281,7 +293,8 @@ export const useEditorStore = defineStore("editor", () => {
     attaches,
     images,
     previewImages,
-    insertedImage,
+    insertedImageResult,
+    insertedImages,
     headingLevel,
     content,
     title,
