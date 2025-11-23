@@ -3,18 +3,11 @@ import { AUTH_KEY } from "~/types/common"
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const token = getCookie(event, AUTH_KEY)
-  const q = getQuery(event) as { boardUid: number; lastUid: number; bunch: number }
+  const searchString = getRequestURL(event).search
 
-  return await $fetch("/editor/load/images", {
-    baseURL: config.apiBaseInternal,
-    method: "GET",
+  return proxyRequest(event, `${config.apiBaseInternal}/editor/load/images${searchString}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-    },
-    query: {
-      boardUid: q.boardUid,
-      lastUid: q.lastUid,
-      bunch: q.bunch,
     },
   })
 })

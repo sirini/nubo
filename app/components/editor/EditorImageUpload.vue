@@ -47,7 +47,7 @@
               <div
                 v-for="(url, index) in edit.insertedImages"
                 :key="index"
-                class="cursor-pointer"
+                class="cursor-pointer relative"
                 @click="edit.insertImageToEditor(url.name)"
               >
                 <img
@@ -55,6 +55,12 @@
                   alt="Inserted image"
                   class="h-full w-full object-cover rounded-xl aspect-square"
                 />
+
+                <CommonVTooltip content="클릭하시면 이 사진을 삭제합니다">
+                  <Trash2Icon
+                    class="w-5 h-5 absolute right-2 top-2 cursor-pointer text-red-400 z-10"
+                  />
+                </CommonVTooltip>
               </div>
             </CardContent>
             <CardContent
@@ -99,7 +105,7 @@
 
 <script setup lang="ts">
 import { useEditorStore, useRuntimeConfig } from "#imports"
-import { ImageOffIcon } from "lucide-vue-next"
+import { ImageOffIcon, Trash2Icon } from "lucide-vue-next"
 
 const edit = useEditorStore()
 const config = useRuntimeConfig()

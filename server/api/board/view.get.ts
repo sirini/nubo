@@ -28,20 +28,16 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const token = getCookie(event, AUTH_KEY) || "empty"
-  const res = await $fetch("/board/view", {
-    baseURL: config.apiBaseInternal,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const token = getCookie(event, AUTH_KEY)
+  return proxyRequest(
+    event,
+    `${config.apiBaseInternal}/board/view?id=${id}&postUid=${postUid}&needUpdateHit=${needUpdateHit}&latestLimit=${latestLimit}`,
+    {
+      fetchOptions: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     },
-    params: {
-      id,
-      postUid,
-      needUpdateHit,
-      latestLimit,
-    },
-  })
-
-  return res
+  )
 })

@@ -12,11 +12,11 @@ export default defineEventHandler(async (event) => {
   deleteCookie(event, AUTH_KEY, cookieOptions)
   deleteCookie(event, REFRESH_KEY, cookieOptions)
 
-  return await $fetch("/auth/logout", {
-    baseURL: config.apiBaseInternal,
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return proxyRequest(event, `${config.apiBaseInternal}/auth/logout`, {
+    fetchOptions: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   })
 })

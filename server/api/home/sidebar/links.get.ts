@@ -1,7 +1,4 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  return await $fetch("/home/sidebar/links", {
-    baseURL: config.apiBaseInternal,
-    method: "GET",
-  })
+  return proxyRequest(event, `${config.apiBaseInternal}/home/sidebar/links`)
 })

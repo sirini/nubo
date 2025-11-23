@@ -15,19 +15,11 @@ export default defineEventHandler(async (event) => {
     return { skipped: true }
   }
 
-  const res = await $fetch("/home/visit", {
-    baseURL: config.apiBaseInternal,
-    method: "GET",
-    params: {
-      userUid: query.userUid,
-    },
-  })
-
   setCookie(event, VISIT_KEY, today, {
     httpOnly: true,
     maxAge: 60 * 60 * 24,
     path: "/",
   })
 
-  return res
+  return proxyRequest(event, `${config.apiBaseInternal}/home/visit?userUid=${query.userUid}`)
 })

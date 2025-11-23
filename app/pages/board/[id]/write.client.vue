@@ -156,7 +156,7 @@
         </div>
       </CardContent>
 
-      <CardFooter class="flex justify-between items-center border-t p-6">
+      <CardFooter class="flex justify-between items-center border-t">
         <Button variant="outline" @click="$router.back()">취소</Button>
         <Button @click="edit.submit" class="px-8 text-foreground">제출하기</Button>
       </CardFooter>
