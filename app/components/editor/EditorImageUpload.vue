@@ -11,7 +11,10 @@
       <Tabs default-value="upload">
         <TabsList class="grid w-full grid-cols-3 mb-3">
           <TabsTrigger value="upload" class="cursor-pointer"> 업로드 </TabsTrigger>
-          <TabsTrigger value="db" @click="edit.loadInsertedImages()" class="cursor-pointer"
+          <TabsTrigger
+            value="db"
+            @click="edit.loadInsertedImages({ reset: true })"
+            class="cursor-pointer"
             >이전 업로드들</TabsTrigger
           >
           <TabsTrigger value="link" class="cursor-pointer"> URL 추가 </TabsTrigger>
@@ -56,8 +59,11 @@
                   class="h-full w-full object-cover rounded-xl aspect-square"
                 />
 
-                <CommonVTooltip content="클릭하시면 이 사진을 삭제합니다">
+                <CommonVTooltip
+                  content="클릭하시면 이 사진을 삭제합니다 : (주의) 기존 게시글에 삽입된 이미지들은 더 이상 표시되지 않습니다"
+                >
                   <Trash2Icon
+                    @click.stop="edit.removeImage(url.uid)"
                     class="w-5 h-5 absolute right-2 top-2 cursor-pointer text-red-400 z-10"
                   />
                 </CommonVTooltip>

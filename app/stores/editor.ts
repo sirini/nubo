@@ -20,6 +20,7 @@ export const useEditorStore = defineStore("editor", () => {
     getSuggestionTags,
     getSuggestionTitles,
     getInsertedImages,
+    removeInsertedImage,
   } = useEditor()
   const isUploading = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
@@ -170,8 +171,11 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 기존에 업로드했던 이미지 목록들 불러오기
-  const loadInsertedImages = async () => {
+  const loadInsertedImages = async (opt?: { reset: boolean }) => {
     try {
+      if (opt?.reset) {
+        insertedImages.value = []
+      }
       let lastUid = insertedImages.value?.at(-1)?.uid || 0
       const response = await getInsertedImages(config.value.uid, lastUid, 6)
       if (!response.success) {
@@ -191,6 +195,23 @@ export const useEditorStore = defineStore("editor", () => {
       }
     } catch (e) {
       toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
+  // 기존에 업로드했던 이미지 삭제하기
+  const removeImage = async (imageUid: number) => {
+    try {
+      const response = await removeInsertedImage(imageUid)
+      if (!response.success) {
+        toast(`기존에 삽입했던 이미지를 삭제하지 못했습니다: ${response.error}`)
+        return
+      }
+      await loadInsertedImages({ reset: true })
+      toast(
+        `정상적으로 삭제하였습니다 : 해당 이미지가 삽입된 게시글들은 더 이상 이미지가 표시되지 않습니다`,
+      )
+    } catch (e) {
+      toast(`기존에 삽입했던 이미지를 삭제하지 못했습니다: ${e}`)
     }
   }
 
@@ -312,6 +333,7 @@ export const useEditorStore = defineStore("editor", () => {
     selectedImages,
     uploadingImages,
     insertImageToEditor,
+    removeImage,
     searchTitles,
     searchTags,
     selectTitle,
