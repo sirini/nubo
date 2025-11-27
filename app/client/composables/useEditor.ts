@@ -1,5 +1,6 @@
 import type { EditorTagItem, EditorConfigResult, EditorInsertImageResult } from "~/types/board"
 import type { Resp } from "~/types/common"
+import type { ModifyPostParam, WritePostParam } from "~/types/editor"
 
 export const useEditor = () => {
   // 에디터에서 삽입할 이미지들 업로드
@@ -53,12 +54,62 @@ export const useEditor = () => {
     })
   }
 
+  // 게시글 수정하기
+  const modifyPrevPost = async (param: ModifyPostParam) => {
+    const { $api } = useNuxtApp()
+    const fd = new FormData()
+    fd.append("boardUid", param.boardUid.toString())
+    fd.append("categoryUid", param.categoryUid.toString())
+    fd.append("content", param.content)
+    fd.append("isNotice", param.isNotice ? "1" : "0")
+    fd.append("isSecret", param.isSecret ? "1" : "0")
+    fd.append("postUid", param.postUid.toString())
+    fd.append("title", param.title)
+    fd.append("tags", param.tags.join(","))
+    for (const file of param.files) {
+      fd.append("attachments[]", file)
+    }
+    return await $api<Resp<null>>("/editor/modify", {
+      method: "POST",
+      body: fd,
+    })
+  }
+
   // 본문에 추가해뒀던 이미지 삭제하기
   const removeInsertedImage = async (imageUid: number) => {
     const { $api } = useNuxtApp()
     return await $api<Resp<null>>("/editor/remove/image", {
       method: "DELETE",
       query: { imageUid },
+    })
+  }
+
+  // 본문에 첨부했던 파일 삭제하기
+  const removeAttachedFile = async (boardUid: number, postUid: number, fileUid: number) => {
+    const { $api } = useNuxtApp()
+    return await $api<Resp<null>>("/editor/remove/attached", {
+      method: "DELETE",
+      query: { boardUid, postUid, fileUid },
+    })
+  }
+
+  // 게시글 작성하기
+  const writeNewPost = async (param: WritePostParam) => {
+    const { $api } = useNuxtApp()
+    const fd = new FormData()
+    fd.append("boardUid", param.boardUid.toString())
+    fd.append("categoryUid", param.categoryUid.toString())
+    fd.append("content", param.content)
+    fd.append("isNotice", param.isNotice ? "1" : "0")
+    fd.append("isSecret", param.isSecret ? "1" : "0")
+    fd.append("title", param.title)
+    fd.append("tags", param.tags.join(","))
+    for (const file of param.files) {
+      fd.append("attachments[]", file)
+    }
+    return await $api<Resp<number>>("/editor/write", {
+      method: "POST",
+      body: fd,
     })
   }
 
@@ -69,5 +120,8 @@ export const useEditor = () => {
     getSuggestionTitles,
     getInsertedImages,
     removeInsertedImage,
+    removeAttachedFile,
+    writeNewPost,
+    modifyPrevPost,
   }
 }

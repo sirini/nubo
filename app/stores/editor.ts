@@ -11,9 +11,10 @@ import {
   type EditorTagItem,
   type EditorInsertImageResult,
 } from "~/types/board"
-import type { HeadingLevel } from "~/types/editor"
+import type { HeadingLevel, WritePostParam } from "~/types/editor"
 
 export const useEditorStore = defineStore("editor", () => {
+  const nuxtConfig = useRuntimeConfig()
   const {
     uploadEditorImages,
     getBoardConfig,
@@ -21,7 +22,10 @@ export const useEditorStore = defineStore("editor", () => {
     getSuggestionTitles,
     getInsertedImages,
     removeInsertedImage,
+    writeNewPost,
+    modifyPrevPost,
   } = useEditor()
+  const isWriting = ref<boolean>(false)
   const isUploading = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isAddLinkDialog = ref<boolean>(false)
@@ -31,6 +35,7 @@ export const useEditorStore = defineStore("editor", () => {
   const isSearchingTitles = ref<boolean>(false)
   const isSearchingTags = ref<boolean>(false)
   const config = ref<BoardConfig>(BOARD_CONFIG)
+  const categoryUid = ref<number>(0)
   const categories = ref<Pair[]>([])
   const editor = ref<Editor | null>(null)
   const images = ref<File[]>([])
@@ -187,7 +192,7 @@ export const useEditorStore = defineStore("editor", () => {
       if (lastUid === 0) {
         insertedImages.value = response.result.images
       } else {
-        if (response.result.images.length < 1) {
+        if (isImageUploadDialog.value && response.result.images.length < 1) {
           toast(`가져올 이전 사진들이 없습니다`)
           return
         }
@@ -258,14 +263,14 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 해시태그 추가하기
-  const addTag = () => {
-    const val = tag.value.trim().replaceAll("#", "")
+  const addTag = useDebounceFn(async () => {
+    const val = tag.value.trim().replace(/[^a-zA-Z0-9_ㄱ-ㅎㅏ-ㅣ가-힣]/g, "")
     if (val && !tags.value.includes(val)) {
       tags.value.push(val)
     }
     tag.value = ""
     tagSuggestions.value = []
-  }
+  }, 300)
 
   // 해시태그 삭제하기
   const removeTag = (index: number) => {
@@ -275,8 +280,19 @@ export const useEditorStore = defineStore("editor", () => {
   // 첨부파일 추가하기
   const handleAttachChange = (e: Event) => {
     const target = e.target as HTMLInputElement
+    let totalSize = 0
+    let totalLimit = parseInt(nuxtConfig.public.fileSize)
     if (target.files) {
-      attaches.value = Array.from(target.files)
+      attaches.value = []
+      const files = Array.from(target.files)
+      files.forEach((file) => {
+        totalSize += file.size
+        if (totalSize > totalLimit) {
+          toast(`첨부 제한 크기를 초과하였습니다 : 이후 파일들은 추가되지 않습니다`)
+          return
+        }
+        attaches.value.push(file)
+      })
     }
   }
 
@@ -288,19 +304,67 @@ export const useEditorStore = defineStore("editor", () => {
   // 첨부파일들 드롭 핸들러
   const dropAttaches = (e: DragEvent) => {
     isDragging.value = false
-    const fileList = e.dataTransfer?.files
-    if (fileList) {
+    const files = e.dataTransfer?.files
+    let totalSize = 0
+    let totalLimit = parseInt(nuxtConfig.public.fileSize)
+    if (files) {
       attaches.value = []
-      for (const f of fileList) {
+      for (const f of files) {
+        totalSize += f.size
+        if (totalSize > totalLimit) {
+          toast(`첨부 제한 크기를 초과하였습니다 : 이후 파일들은 추가되지 않습니다`)
+          return
+        }
         attaches.value.push(f)
       }
     }
   }
 
   // 서버에 내용 전달하기
-  const submit = async () => {}
+  const submit = async () => {
+    if (title.value.trim().length < 2) {
+      toast(`글 제목은 2글자 이상이어야 합니다`)
+      return
+    }
+    if (content.value.trim().length < 2) {
+      toast(`글 내용은 3글자 이상이어야 합니다`)
+      return
+    }
+    const param: WritePostParam = {
+      boardUid: config.value.uid,
+      categoryUid: categoryUid.value,
+      content: content.value.trim().replaceAll("<p></p>", "<p>&nbsp;</p>"),
+      files: attaches.value,
+      isNotice: isNotice.value,
+      isSecret: isSecret.value,
+      title: title.value.trim(),
+      tags: tags.value,
+    }
+    try {
+      isWriting.value = true
+      const response = await writeNewPost(param)
+      if (!response.success) {
+        toast(`게시글을 작성하지 못했습니다: ${response.error}`)
+        return
+      }
+      if (response.result > 0) {
+        navigateTo(`/board/${config.value.id}/${response.result}`)
+      }
+    } catch (e) {
+      toast(`게시글을 작성하지 못했습니다: ${e}`)
+    } finally {
+      isWriting.value = false
+      isNotice.value = false
+      isSecret.value = false
+      tags.value = []
+      content.value = ""
+      attaches.value = []
+      title.value = ""
+    }
+  }
 
   return {
+    isWriting,
     isUploading,
     isImageUploadDialog,
     isAddLinkDialog,
@@ -311,6 +375,8 @@ export const useEditorStore = defineStore("editor", () => {
     isDragging,
     config,
     editor,
+    categoryUid,
+    categories,
     attaches,
     images,
     previewImages,

@@ -1,41 +1,19 @@
-export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
-
-export type WritePostParams = {
+// 새글작성에 필요한 파라미터들 정의
+export type WritePostParam = {
   boardUid: number
-  accessUserUid: number
   categoryUid: number
-  title: string
   content: string
-  isNoticePost: boolean
-  isSecretPost: boolean
+  files: File[]
+  isNotice: boolean
+  isSecret: boolean
+  title: string
+  tags: string[]
 }
 
-export type ModifyPostParams = WritePostParams & {
+// 기존글 수정에 필요한 파라미터들 정의
+export type ModifyPostParam = WritePostParam & {
   postUid: number
 }
 
-export type VideoURL = {
-  src: string
-  width: number
-  height: number
-}
-
-export type TableOption = {
-  rows: number
-  cols: number
-  withHeaderRow: boolean
-}
-
-export type UploadImageParams = {
-  boardUid: number
-  accessUserUid: number
-  images: File[]
-}
-
-export type LoadImageParams = {
-  boardUid: number
-  accessUserUid: number
-  lastUid: number
-  bunch: number
-  maxUid: number
-}
+// 에디터에서 헤딩 타입 정의
+export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6
