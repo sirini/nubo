@@ -95,7 +95,7 @@
             v-if="auth.user.uid === board.view.post.writer.uid"
           >
             <Button as-child variant="outline">
-              <NuxtLink :to="`/board/${boardId}/modify`">수정하기</NuxtLink>
+              <NuxtLink :to="`/board/${boardId}/modify/${postUid}`">수정하기</NuxtLink>
             </Button>
           </CommonVTooltip>
 

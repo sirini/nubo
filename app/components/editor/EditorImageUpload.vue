@@ -110,7 +110,6 @@
 </template>
 
 <script setup lang="ts">
-import { useEditorStore, useRuntimeConfig } from "#imports"
 import { ImageOffIcon, Trash2Icon } from "lucide-vue-next"
 
 const config = useRuntimeConfig()

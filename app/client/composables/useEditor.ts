@@ -1,4 +1,9 @@
-import type { EditorTagItem, EditorConfigResult, EditorInsertImageResult } from "~/types/board"
+import type {
+  EditorTagItem,
+  EditorConfigResult,
+  EditorInsertImageResult,
+  EditorLoadPostResult,
+} from "~/types/board"
 import type { Resp } from "~/types/common"
 import type { ModifyPostParam, WritePostParam } from "~/types/editor"
 
@@ -51,6 +56,15 @@ export const useEditor = () => {
     return await $api<Resp<EditorInsertImageResult>>("/editor/load/images", {
       method: "GET",
       query: { boardUid, lastUid, bunch },
+    })
+  }
+
+  // 수정할 게시글 내용 가져오기
+  const loadOriginalPost = async (boardUid: number, postUid: number) => {
+    const { $api } = useNuxtApp()
+    return await $api<Resp<EditorLoadPostResult>>("/editor/load/post", {
+      method: "GET",
+      query: { boardUid, postUid },
     })
   }
 
@@ -114,14 +128,15 @@ export const useEditor = () => {
   }
 
   return {
-    uploadEditorImages,
     getBoardConfig,
+    getInsertedImages,
     getSuggestionTags,
     getSuggestionTitles,
-    getInsertedImages,
-    removeInsertedImage,
-    removeAttachedFile,
-    writeNewPost,
+    loadOriginalPost,
     modifyPrevPost,
+    removeAttachedFile,
+    removeInsertedImage,
+    uploadEditorImages,
+    writeNewPost,
   }
 }

@@ -44,11 +44,6 @@
 <script setup lang="ts">
 import type { BoardAttachedImage } from "~/types/board"
 import type { CarouselApi } from "../ui/carousel"
-import Carousel from "../ui/carousel/Carousel.vue"
-import CarouselContent from "../ui/carousel/CarouselContent.vue"
-import CarouselItem from "../ui/carousel/CarouselItem.vue"
-import CarouselNext from "../ui/carousel/CarouselNext.vue"
-import CarouselPrevious from "../ui/carousel/CarouselPrevious.vue"
 import { DotIcon } from "lucide-vue-next"
 
 const api = ref<CarouselApi>()

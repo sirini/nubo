@@ -10,47 +10,51 @@ import {
   type BoardConfig,
   type EditorTagItem,
   type EditorInsertImageResult,
+  STATUS,
+  type BoardAttachment,
 } from "~/types/board"
-import type { HeadingLevel, WritePostParam } from "~/types/editor"
+import type { HeadingLevel, ModifyPostParam, WritePostParam } from "~/types/editor"
 
 export const useEditorStore = defineStore("editor", () => {
   const nuxtConfig = useRuntimeConfig()
   const {
-    uploadEditorImages,
     getBoardConfig,
     getSuggestionTags,
     getSuggestionTitles,
     getInsertedImages,
-    removeInsertedImage,
-    writeNewPost,
+    loadOriginalPost,
     modifyPrevPost,
+    removeInsertedImage,
+    uploadEditorImages,
+    writeNewPost,
   } = useEditor()
-  const isWriting = ref<boolean>(false)
-  const isUploading = ref<boolean>(false)
-  const isImageUploadDialog = ref<boolean>(false)
-  const isAddLinkDialog = ref<boolean>(false)
-  const isNotice = ref<boolean>(false)
-  const isSecret = ref<boolean>(false)
-  const isDragging = ref<boolean>(false)
-  const isSearchingTitles = ref<boolean>(false)
-  const isSearchingTags = ref<boolean>(false)
-  const config = ref<BoardConfig>(BOARD_CONFIG)
-  const categoryUid = ref<number>(0)
-  const categories = ref<Pair[]>([])
-  const editor = ref<Editor | null>(null)
-  const images = ref<File[]>([])
   const attaches = ref<File[]>([])
-  const previewImages = ref<string[]>([])
+  const categories = ref<Pair[]>([])
+  const categoryUid = ref<number>(0)
+  const config = ref<BoardConfig>(BOARD_CONFIG)
+  const content = ref<string>("")
+  const editor = ref<Editor | null>(null)
+  const files = ref<BoardAttachment[]>([])
+  const headingLevel = ref<string>("")
+  const images = ref<File[]>([])
   const insertedImageResult = ref<EditorInsertImageResult | null>(null)
   const insertedImages = ref<Pair[]>([])
+  const isAddLinkDialog = ref<boolean>(false)
+  const isDragging = ref<boolean>(false)
+  const isImageUploadDialog = ref<boolean>(false)
+  const isNotice = ref<boolean>(false)
+  const isSearchingTags = ref<boolean>(false)
+  const isSearchingTitles = ref<boolean>(false)
+  const isSecret = ref<boolean>(false)
+  const isUploading = ref<boolean>(false)
+  const isWriting = ref<boolean>(false)
+  const previewImages = ref<string[]>([])
   const runtimeConfig = useRuntimeConfig()
-  const headingLevel = ref<string>("")
-  const content = ref<string>("")
-  const title = ref<string>("")
   const tag = ref<string>("")
   const tags = ref<string[]>([])
-  const titleSuggestions = ref<string[]>([])
   const tagSuggestions = ref<EditorTagItem[]>([])
+  const title = ref<string>("")
+  const titleSuggestions = ref<string[]>([])
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -301,6 +305,13 @@ export const useEditorStore = defineStore("editor", () => {
     attaches.value.splice(index, 1)
   }
 
+  // 글 수정시 이미 첨부되어 있던 파일을 제거하기
+  const removeFile = (fileUid: number, index: number) => {
+    // TODO : 서버에서 실제로 삭제하기
+
+    files.value.splice(index, 1)
+  }
+
   // 첨부파일들 드롭 핸들러
   const dropAttaches = (e: DragEvent) => {
     isDragging.value = false
@@ -320,7 +331,33 @@ export const useEditorStore = defineStore("editor", () => {
     }
   }
 
-  // 서버에 내용 전달하기
+  // 변수들 초기화
+  const clear = () => {
+    attaches.value = []
+    content.value = ""
+    files.value = []
+    isNotice.value = false
+    isSecret.value = false
+    isWriting.value = false
+    tags.value = []
+    title.value = ""
+  }
+
+  // 공통 파라미터들 반환
+  const getParams = () => {
+    return {
+      boardUid: config.value.uid,
+      categoryUid: categoryUid.value,
+      content: content.value.trim().replaceAll("<p></p>", "<p>&nbsp;</p>"),
+      files: attaches.value,
+      isNotice: isNotice.value,
+      isSecret: isSecret.value,
+      tags: tags.value,
+      title: title.value.trim(),
+    }
+  }
+
+  // 서버에 새로운 글쓰기 전송하기
   const submit = async () => {
     if (title.value.trim().length < 2) {
       toast(`글 제목은 2글자 이상이어야 합니다`)
@@ -330,16 +367,7 @@ export const useEditorStore = defineStore("editor", () => {
       toast(`글 내용은 3글자 이상이어야 합니다`)
       return
     }
-    const param: WritePostParam = {
-      boardUid: config.value.uid,
-      categoryUid: categoryUid.value,
-      content: content.value.trim().replaceAll("<p></p>", "<p>&nbsp;</p>"),
-      files: attaches.value,
-      isNotice: isNotice.value,
-      isSecret: isSecret.value,
-      title: title.value.trim(),
-      tags: tags.value,
-    }
+    const param: WritePostParam = getParams()
     try {
       isWriting.value = true
       const response = await writeNewPost(param)
@@ -353,61 +381,121 @@ export const useEditorStore = defineStore("editor", () => {
     } catch (e) {
       toast(`게시글을 작성하지 못했습니다: ${e}`)
     } finally {
-      isWriting.value = false
-      isNotice.value = false
-      isSecret.value = false
-      tags.value = []
-      content.value = ""
-      attaches.value = []
-      title.value = ""
+      clear()
+    }
+  }
+
+  // 서버에 기존글 수정 내용 전송하기
+  const modify = async (postUid: number) => {
+    if (title.value.trim().length < 2) {
+      toast(`글 제목은 2글자 이상이어야 합니다`)
+      return
+    }
+    if (content.value.trim().length < 2) {
+      toast(`글 내용은 3글자 이상이어야 합니다`)
+      return
+    }
+    const param: ModifyPostParam = {
+      ...getParams(),
+      postUid,
+    }
+    try {
+      isWriting.value = true
+      const response = await modifyPrevPost(param)
+      if (!response.success) {
+        toast(`게시글을 수정하지 못했습니다: ${response.error}`)
+        return
+      }
+    } catch (e) {
+      toast(`게시글을 수정하지 못했습니다: ${e}`)
+    } finally {
+      clear()
+    }
+  }
+
+  // 기존에 작성해둔 글 내용 가져오기
+  const loadPost = async (postUid: number) => {
+    try {
+      const response = await loadOriginalPost(config.value.uid, postUid)
+      if (!response.success) {
+        toast(`게시글 내용을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+
+      clear()
+      const post = response.result.post
+
+      if (post.status === STATUS.REMOVED) {
+        toast(`게시글이 삭제되어 수정할 수 없습니다`)
+        navigateTo(`/board/${config.value.id}`)
+      }
+      if (post.status === STATUS.NORMAL) {
+        isNotice.value = true
+      }
+      if (post.status === STATUS.SECRET) {
+        isSecret.value = true
+      }
+
+      response.result.tags.forEach((tag) => {
+        tags.value.push(tag.name)
+      })
+      content.value = post.content
+      title.value = post.title
+      files.value = response.result.files
+    } catch (e) {
+      toast(`게시글 내용을 가져오지 못했습니다: ${e}`)
     }
   }
 
   return {
-    isWriting,
-    isUploading,
-    isImageUploadDialog,
-    isAddLinkDialog,
-    isNotice,
-    isSecret,
-    isSearchingTitles,
-    isSearchingTags,
-    isDragging,
-    config,
-    editor,
-    categoryUid,
-    categories,
     attaches,
+    categories,
+    categoryUid,
+    config,
+    content,
+    editor,
+    files,
+    headingLevel,
     images,
-    previewImages,
     insertedImageResult,
     insertedImages,
-    headingLevel,
-    content,
+    isAddLinkDialog,
+    isDragging,
+    isImageUploadDialog,
+    isNotice,
+    isSearchingTags,
+    isSearchingTitles,
+    isSecret,
+    isUploading,
+    isWriting,
+    previewImages,
+    tag,
+    tags,
+    tagSuggestions,
     title,
     titleSuggestions,
-    tag,
-    tagSuggestions,
-    tags,
 
+    addTag,
+    dropAttaches,
+    handleAttachChange,
+    insertImageToEditor,
+    isHeadingActive,
     loadBoardConfig,
     loadInsertedImages,
-    selectColor,
-    setLink,
-    toggleHeading,
-    isHeadingActive,
-    selectedImages,
-    uploadingImages,
-    insertImageToEditor,
-    removeImage,
-    searchTitles,
-    searchTags,
-    selectTitle,
-    addTag,
-    removeTag,
-    handleAttachChange,
+    loadPost,
+    modify,
     removeAttach,
-    dropAttaches,
+    removeImage,
+    removeFile,
+    removeTag,
+    searchTags,
+    searchTitles,
+    selectColor,
+    selectedImages,
+    selectTitle,
+    setLink,
     submit,
+    toggleHeading,
+    uploadingImages,
   }
 })

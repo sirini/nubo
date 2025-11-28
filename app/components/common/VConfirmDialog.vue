@@ -26,16 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { AlertDialog } from "@/components/ui/alert-dialog"
-import AlertDialogTrigger from "../ui/alert-dialog/AlertDialogTrigger.vue"
-import AlertDialogContent from "../ui/alert-dialog/AlertDialogContent.vue"
-import AlertDialogHeader from "../ui/alert-dialog/AlertDialogHeader.vue"
-import AlertDialogTitle from "../ui/alert-dialog/AlertDialogTitle.vue"
-import AlertDialogDescription from "../ui/alert-dialog/AlertDialogDescription.vue"
-import AlertDialogFooter from "../ui/alert-dialog/AlertDialogFooter.vue"
-import AlertDialogCancel from "../ui/alert-dialog/AlertDialogCancel.vue"
-import AlertDialogAction from "../ui/alert-dialog/AlertDialogAction.vue"
-
 defineProps<{
   title?: string
   desc?: string

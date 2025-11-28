@@ -96,11 +96,6 @@
 import { toTypedSchema } from "@vee-validate/zod"
 import { useForm } from "vee-validate"
 import * as z from "zod"
-import { FormField } from "~/components/ui/form"
-import FormControl from "~/components/ui/form/FormControl.vue"
-import FormItem from "~/components/ui/form/FormItem.vue"
-import FormLabel from "~/components/ui/form/FormLabel.vue"
-import FormMessage from "~/components/ui/form/FormMessage.vue"
 
 const route = useRoute()
 const auth = useAuthStore()

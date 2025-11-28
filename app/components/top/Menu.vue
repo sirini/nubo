@@ -67,13 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useRuntimeConfig } from "#app"
 import { FolderOpenIcon, FoldersIcon, LogInIcon, LogOutIcon, MenuIcon } from "lucide-vue-next"
 import AvatarImage from "../ui/avatar/AvatarImage.vue"
 

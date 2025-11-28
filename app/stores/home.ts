@@ -4,14 +4,14 @@ import type { BoardHomePostItem } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
   const { fetchHomeLatestPosts } = useHome()
-  const sinceUid = ref<number>(0)
   const bunch = ref<number>(20)
-  const option = ref<Search>(SEARCH.TITLE as Search)
-  const keyword = ref<string>("")
-  const posts = ref<BoardHomePostItem[]>([])
-  const pending = ref<boolean>(false)
   const error = ref<unknown>(null)
   const initialized = ref<boolean>(false)
+  const keyword = ref<string>("")
+  const option = ref<Search>(SEARCH.TITLE as Search)
+  const pending = ref<boolean>(false)
+  const posts = ref<BoardHomePostItem[]>([])
+  const sinceUid = ref<number>(0)
 
   // 내부 유틸: 결과 병합
   const mergePosts = (incoming: BoardHomePostItem[] = []) => {
@@ -75,14 +75,14 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   return {
-    sinceUid,
     bunch,
-    option,
-    keyword,
-    posts,
-    pending,
     error,
     initialized,
+    keyword,
+    option,
+    pending,
+    posts,
+    sinceUid,
 
     fetchLatest,
     loadMore,

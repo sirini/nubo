@@ -2,7 +2,6 @@
 import withNuxt from "./.nuxt/eslint.config.mjs"
 
 export default withNuxt()
-// Your custom configs here
 
 module.exports = {
   rules: {
@@ -18,6 +17,5 @@ module.exports = {
         math: "always",
       },
     ],
-    // ... 다른 규칙들 ...
   },
 }

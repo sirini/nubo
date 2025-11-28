@@ -38,7 +38,6 @@
 import { Eye, Heart, MessageCircle } from "lucide-vue-next"
 import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
 import type { BoardHomePostItem } from "~/types/home"
-import { Card, CardContent } from "../ui/card"
 
 defineProps<{ post: BoardHomePostItem }>()
 </script>

@@ -143,13 +143,10 @@
 </template>
 
 <script setup lang="ts">
-import { useEditorStore } from "#imports"
 import "@/assets/css/editor.scss"
 import { Editor, EditorContent, type Editor as EditorClass } from "@tiptap/vue-3"
-import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 
 // Shadcn-vue & lucide-vue-next
-import { Button } from "@/components/ui/button"
 import {
   Bold as BoldIcon,
   CodeIcon,
