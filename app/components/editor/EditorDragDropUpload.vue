@@ -19,49 +19,71 @@
   </div>
 
   <div v-if="edit.attaches.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-    <div
-      v-for="(attach, index) in edit.attaches"
-      :key="index"
-      class="flex items-center justify-between p-2 border rounded text-sm bg-card"
-    >
-      <div class="flex items-center gap-2 truncate">
-        <FileIcon class="w-4 h-4 text-blue-500" />
-        <span class="truncate">{{ attach.name }}</span>
-        <span class="text-xs text-muted-foreground">({{ showReadableNumber(attach.size) }}B)</span>
-      </div>
-      <Button variant="ghost" size="icon" class="w-6 h-6" @click="edit.removeAttach(index)">
-        <XIcon class="w-3 h-3" />
-      </Button>
-    </div>
-  </div>
+    <div v-for="(attach, index) in edit.attaches" :key="index">
+      <Popover v-model:open="isPopOver[attach.name]">
+        <PopoverTrigger
+          as-child
+          @mouseenter="openPopOver(attach.name)"
+          @mouseleave="closePopOver(attach.name)"
+        >
+          <div class="flex items-center justify-between p-2 border rounded-md text-sm bg-card">
+            <div class="flex items-center gap-2 truncate pl-2 cursor-pointer">
+              <span class="truncate text-xs">{{ attach.name }}</span>
+              <span class="text-xs text-muted-foreground"
+                >({{ showReadableNumber(attach.size) }}B)</span
+              >
+            </div>
 
-  <div v-if="edit.files.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-    <div
-      v-for="(file, index) in edit.files"
-      :key="index"
-      class="flex items-center justify-between p-2 border rounded text-sm bg-card"
-    >
-      <div class="flex items-center gap-2 truncate">
-        <FileIcon class="w-4 h-4 text-blue-500" />
-        <span class="truncate">{{ file.name }}</span>
-        <span class="text-xs text-muted-foreground">({{ showReadableNumber(file.size) }}B)</span>
-      </div>
-      <Button variant="ghost" size="icon" class="w-6 h-6" @click="edit.removeFile(file.uid, index)">
-        <XIcon class="w-3 h-3" />
-      </Button>
+            <CommonVTooltip content="이 파일을 첨부파일 목록에서 뺍니다">
+              <Button
+                variant="ghost"
+                size="icon"
+                @click="edit.removeAttach(index)"
+                class="cursor-pointer"
+              >
+                <XIcon class="w-4 h-4" />
+              </Button>
+            </CommonVTooltip>
+          </div>
+        </PopoverTrigger>
+        <PopoverContent class="w-auto p-0" v-if="getThumbnailPath(attach.name).length > 0">
+          <img
+            :src="getThumbnailPath(attach.name)"
+            alt="Preview"
+            class="w-50 h-50 lg:w-75 lg:h-75 object-cover rounded-lg shadow-lg"
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FileIcon, UploadCloudIcon, XIcon } from "lucide-vue-next"
+import { UploadCloudIcon, XIcon } from "lucide-vue-next"
 import { showReadableNumber } from "~/lib/utils"
 
 const edit = useEditorStore()
+const isPopOver = ref<Record<string, boolean>>({})
 const attach = ref<HTMLInputElement | null>(null)
 
 // 첨부파일 선택하기
 const triggerAttach = () => {
   attach.value?.click()
+}
+
+// 이미지 팝업 지연 열기
+const openPopOver = useDebounceFn((name: string) => {
+  isPopOver.value[name] = true
+}, 100)
+
+// 이미지 팝업 지연 닫기
+const closePopOver = useDebounceFn((name: string) => {
+  isPopOver.value[name] = false
+}, 100)
+
+// 미리보기용 이미지 찾아서 반환
+const getThumbnailPath = (fileName: string) => {
+  const thumb = edit.previewEditorSelectedImages.find((f) => f.name === fileName)
+  return thumb?.url || ""
 }
 </script>

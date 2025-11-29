@@ -5,7 +5,7 @@ import type {
   EditorLoadPostResult,
 } from "~/types/board"
 import type { Resp } from "~/types/common"
-import type { ModifyPostParam, WritePostParam } from "~/types/editor"
+import type { EditorModifyParam, EditorWriteParam } from "~/types/editor"
 
 export const useEditor = () => {
   // 에디터에서 삽입할 이미지들 업로드
@@ -59,6 +59,15 @@ export const useEditor = () => {
     })
   }
 
+  // 기존에 첨부파일로 업로드한 이미지의 썸네일 이미지 가져오기
+  const getThumbnailImage = async (fileUid: number) => {
+    const { $api } = useNuxtApp()
+    return await $api<Resp<string>>("/editor/load/thumbnail", {
+      method: "GET",
+      query: { fileUid },
+    })
+  }
+
   // 수정할 게시글 내용 가져오기
   const loadOriginalPost = async (boardUid: number, postUid: number) => {
     const { $api } = useNuxtApp()
@@ -69,7 +78,7 @@ export const useEditor = () => {
   }
 
   // 게시글 수정하기
-  const modifyPrevPost = async (param: ModifyPostParam) => {
+  const modifyPrevPost = async (param: EditorModifyParam) => {
     const { $api } = useNuxtApp()
     const fd = new FormData()
     fd.append("boardUid", param.boardUid.toString())
@@ -99,7 +108,7 @@ export const useEditor = () => {
   }
 
   // 본문에 첨부했던 파일 삭제하기
-  const removeAttachedFile = async (boardUid: number, postUid: number, fileUid: number) => {
+  const EditorRemoveAttachedFile = async (boardUid: number, postUid: number, fileUid: number) => {
     const { $api } = useNuxtApp()
     return await $api<Resp<null>>("/editor/remove/attached", {
       method: "DELETE",
@@ -108,7 +117,7 @@ export const useEditor = () => {
   }
 
   // 게시글 작성하기
-  const writeNewPost = async (param: WritePostParam) => {
+  const writeNewPost = async (param: EditorWriteParam) => {
     const { $api } = useNuxtApp()
     const fd = new FormData()
     fd.append("boardUid", param.boardUid.toString())
@@ -132,9 +141,10 @@ export const useEditor = () => {
     getInsertedImages,
     getSuggestionTags,
     getSuggestionTitles,
+    getThumbnailImage,
     loadOriginalPost,
     modifyPrevPost,
-    removeAttachedFile,
+    EditorRemoveAttachedFile,
     removeInsertedImage,
     uploadEditorImages,
     writeNewPost,

@@ -4,26 +4,30 @@ import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
 import { useEditor } from "~/client/composables/useEditor"
-import {
-  BOARD_CONFIG,
-  type Pair,
-  type BoardConfig,
-  type EditorTagItem,
-  type EditorInsertImageResult,
-  STATUS,
-  type BoardAttachment,
-} from "~/types/board"
-import type { HeadingLevel, ModifyPostParam, WritePostParam } from "~/types/editor"
+import { BOARD_CONFIG, type BoardConfig, STATUS, type BoardAttachment } from "~/types/board"
+import type { Pair } from "~/types/common"
+import type {
+  EditorHeadings,
+  EditorInsertImageResult,
+  EditorModifyParam,
+  EditorPreviewAttachedImage,
+  EditorRemoveAttached,
+  EditorSelectedImage,
+  EditorTagItem,
+  EditorWriteParam,
+} from "~/types/editor"
 
 export const useEditorStore = defineStore("editor", () => {
   const nuxtConfig = useRuntimeConfig()
   const {
     getBoardConfig,
+    getInsertedImages,
     getSuggestionTags,
     getSuggestionTitles,
-    getInsertedImages,
+    getThumbnailImage,
     loadOriginalPost,
     modifyPrevPost,
+    EditorRemoveAttachedFile,
     removeInsertedImage,
     uploadEditorImages,
     writeNewPost,
@@ -35,11 +39,12 @@ export const useEditorStore = defineStore("editor", () => {
   const content = ref<string>("")
   const editor = ref<Editor | null>(null)
   const files = ref<BoardAttachment[]>([])
-  const headingLevel = ref<string>("")
+  const EditorHeadings = ref<string>("")
   const images = ref<File[]>([])
   const insertedImageResult = ref<EditorInsertImageResult | null>(null)
   const insertedImages = ref<Pair[]>([])
   const isAddLinkDialog = ref<boolean>(false)
+  const isConfirmDialog = ref<boolean>(false)
   const isDragging = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isNotice = ref<boolean>(false)
@@ -48,13 +53,17 @@ export const useEditorStore = defineStore("editor", () => {
   const isSecret = ref<boolean>(false)
   const isUploading = ref<boolean>(false)
   const isWriting = ref<boolean>(false)
-  const previewImages = ref<string[]>([])
+  const postUid = ref<number>(0)
+  const previewInsertImages = ref<string[]>([])
+  const previewEditorSelectedImages = ref<EditorSelectedImage[]>([])
+  const EditorRemoveAttachedInfo = ref<EditorRemoveAttached>({ fileUid: 0, index: 0 })
   const runtimeConfig = useRuntimeConfig()
   const tag = ref<string>("")
   const tags = ref<string[]>([])
   const tagSuggestions = ref<EditorTagItem[]>([])
   const title = ref<string>("")
   const titleSuggestions = ref<string[]>([])
+  const thumbnails = ref<EditorPreviewAttachedImage[]>([])
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -91,16 +100,16 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 헤딩 선택하기
   const toggleHeading = (value: AcceptableValue) => {
-    let level: HeadingLevel | undefined
+    let level: EditorHeadings | undefined
 
     if (typeof value === "string") {
       const parsed = parseInt(value, 10)
       if (!isNaN(parsed) && parsed >= 1 && parsed <= 6) {
-        level = parsed as HeadingLevel
+        level = parsed as EditorHeadings
       }
     } else if (typeof value === "number") {
       if (value >= 1 && value <= 6) {
-        level = value as HeadingLevel
+        level = value as EditorHeadings
       }
     }
 
@@ -126,9 +135,9 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 선택한 이미지 파일들을 미리 보여주기
-  const selectedImages = (event: MouseEvent) => {
-    previewImages.value.forEach((url) => URL.revokeObjectURL(url))
-    previewImages.value = []
+  const EditorSelectedImages = (event: MouseEvent) => {
+    previewInsertImages.value.forEach((url) => URL.revokeObjectURL(url))
+    previewInsertImages.value = []
     images.value = []
 
     const targets = (event?.target as HTMLInputElement).files
@@ -145,7 +154,7 @@ export const useEditorStore = defineStore("editor", () => {
         break
       }
       images.value.push(target)
-      previewImages.value.push(URL.createObjectURL(target))
+      previewInsertImages.value.push(URL.createObjectURL(target))
     }
     toast(`업로드 버튼을 클릭하셔야 파일이 올라갑니다`)
   }
@@ -219,7 +228,7 @@ export const useEditorStore = defineStore("editor", () => {
       }
       await loadInsertedImages({ reset: true })
       toast(
-        `정상적으로 삭제하였습니다 : 해당 이미지가 삽입된 게시글들은 더 이상 이미지가 표시되지 않습니다`,
+        `정상적으로 삭제하였습니다: 해당 이미지가 삽입된 게시글들은 더 이상 이미지가 표시되지 않습니다`,
       )
     } catch (e) {
       toast(`기존에 삽입했던 이미지를 삭제하지 못했습니다: ${e}`)
@@ -283,53 +292,81 @@ export const useEditorStore = defineStore("editor", () => {
     tags.value.splice(index, 1)
   }
 
-  // 첨부파일 추가하기
-  const handleAttachChange = (e: Event) => {
-    const target = e.target as HTMLInputElement
+  // 첨부파일들을 추가하고, 이미지는 따로 미리보기용 URL 만들어서 보관
+  const manageAttachments = (fileList: FileList) => {
     let totalSize = 0
     let totalLimit = parseInt(nuxtConfig.public.fileSize)
-    if (target.files) {
+    previewEditorSelectedImages.value.forEach((img) => URL.revokeObjectURL(img.url))
+    previewEditorSelectedImages.value = []
+
+    if (fileList) {
       attaches.value = []
-      const files = Array.from(target.files)
+      const files = Array.from(fileList)
       files.forEach((file) => {
         totalSize += file.size
         if (totalSize > totalLimit) {
-          toast(`첨부 제한 크기를 초과하였습니다 : 이후 파일들은 추가되지 않습니다`)
+          toast(`첨부 제한 크기를 초과하였습니다: 이후 파일들은 추가되지 않습니다`)
           return
         }
         attaches.value.push(file)
+        if (file.type.startsWith("image/")) {
+          previewEditorSelectedImages.value.push({
+            name: file.name,
+            url: URL.createObjectURL(file),
+          })
+        }
       })
     }
   }
 
-  // 첨부파일 제거하기
+  // 첨부파일 추가하기
+  const handleAttachChange = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    if (target.files) {
+      manageAttachments(target.files)
+    }
+  }
+
+  // 아직 업로드 안된 첨부파일 제거하기
   const removeAttach = (index: number) => {
     attaches.value.splice(index, 1)
   }
 
-  // 글 수정시 이미 첨부되어 있던 파일을 제거하기
-  const removeFile = (fileUid: number, index: number) => {
-    // TODO : 서버에서 실제로 삭제하기
+  // 정말로 업로드된 첨부를 삭제할건지 물어보기
+  const confirmRemoveFile = (fileUid: number, index: number) => {
+    EditorRemoveAttachedInfo.value = { fileUid, index }
+    isConfirmDialog.value = true
+  }
 
-    files.value.splice(index, 1)
+  // 글 수정시 이미 첨부되어 있던 파일을 제거하기
+  const removeFile = async () => {
+    const { fileUid, index } = EditorRemoveAttachedInfo.value
+    if (fileUid < 1 || index < 0) {
+      toast(`삭제할 첨부 파일이 제대로 지정되지 않았습니다`)
+      return
+    }
+    try {
+      const response = await EditorRemoveAttachedFile(config.value.uid, postUid.value, fileUid)
+      if (!response.success) {
+        toast(`첨부파일을 삭제하지 못했습니다: ${response.error}`)
+        return
+      }
+      files.value.splice(index, 1)
+      toast(`파일을 정상적으로 삭제하였습니다`)
+    } catch (e) {
+      toast(`첨부파일을 삭제하지 못했습니다: ${e}`)
+    } finally {
+      EditorRemoveAttachedInfo.value = { fileUid: 0, index: 0 }
+      isConfirmDialog.value = false
+    }
   }
 
   // 첨부파일들 드롭 핸들러
   const dropAttaches = (e: DragEvent) => {
     isDragging.value = false
     const files = e.dataTransfer?.files
-    let totalSize = 0
-    let totalLimit = parseInt(nuxtConfig.public.fileSize)
     if (files) {
-      attaches.value = []
-      for (const f of files) {
-        totalSize += f.size
-        if (totalSize > totalLimit) {
-          toast(`첨부 제한 크기를 초과하였습니다 : 이후 파일들은 추가되지 않습니다`)
-          return
-        }
-        attaches.value.push(f)
-      }
+      manageAttachments(files)
     }
   }
 
@@ -343,6 +380,7 @@ export const useEditorStore = defineStore("editor", () => {
     isWriting.value = false
     tags.value = []
     title.value = ""
+    thumbnails.value = []
   }
 
   // 공통 파라미터들 반환
@@ -369,7 +407,7 @@ export const useEditorStore = defineStore("editor", () => {
       toast(`글 내용은 3글자 이상이어야 합니다`)
       return
     }
-    const param: WritePostParam = getParams()
+    const param: EditorWriteParam = getParams()
     try {
       isWriting.value = true
       const response = await writeNewPost(param)
@@ -388,7 +426,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 서버에 기존글 수정 내용 전송하기
-  const modify = async (postUid: number) => {
+  const modify = async () => {
     if (title.value.trim().length < 2) {
       toast(`글 제목은 2글자 이상이어야 합니다`)
       return
@@ -397,10 +435,10 @@ export const useEditorStore = defineStore("editor", () => {
       toast(`글 내용은 3글자 이상이어야 합니다`)
       return
     }
-    const wp: WritePostParam = getParams()
-    const param: ModifyPostParam = {
+    const wp: EditorWriteParam = getParams()
+    const param: EditorModifyParam = {
       ...wp,
-      postUid,
+      postUid: postUid.value,
     }
 
     try {
@@ -410,7 +448,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
-      navigateTo(`/board/${config.value.id}/${postUid}`)
+      navigateTo(`/board/${config.value.id}/${postUid.value}`)
     } catch (e) {
       toast(`게시글을 수정하지 못했습니다: ${e}`)
     } finally {
@@ -419,9 +457,9 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 기존에 작성해둔 글 내용 가져오기
-  const loadPost = async (postUid: number) => {
+  const loadPost = async () => {
     try {
-      const response = await loadOriginalPost(config.value.uid, postUid)
+      const response = await loadOriginalPost(config.value.uid, postUid.value)
       if (!response.success) {
         toast(`게시글 내용을 가져오지 못했습니다: ${response.error}`)
         return
@@ -434,16 +472,38 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`게시글이 삭제되어 수정할 수 없습니다`)
         navigateTo(`/board/${config.value.id}`)
       }
-      response.result.tags.forEach((tag) => tags.value.push(tag.name))
+      response.result.tags.forEach((tag: EditorTagItem) => tags.value.push(tag.name))
       isNotice.value = post.status === STATUS.NORMAL
       isSecret.value = post.status === STATUS.SECRET
       categoryUid.value = post.category.uid
       content.value = post.content
       title.value = post.title
       files.value = response.result.files
+      files.value.forEach(async (file) => {
+        const thumbnail = await getThumb(file.uid)
+        thumbnails.value.push({
+          fileUid: file.uid,
+          isPopOver: false,
+          thumbnail,
+        })
+      })
     } catch (e) {
       toast(`게시글 내용을 가져오지 못했습니다: ${e}`)
     }
+  }
+
+  // 기존에 첨부한 이미지 파일의 썸네일 경로 가져오기
+  const getThumb = async (fileUid: number) => {
+    try {
+      const response = await getThumbnailImage(fileUid)
+      if (!response.success) {
+        return ""
+      }
+      return response.result
+    } catch (e) {
+      console.error(`미리보기 이미지가 없습니다: ${fileUid}`)
+    }
+    return ""
   }
 
   return {
@@ -454,11 +514,12 @@ export const useEditorStore = defineStore("editor", () => {
     content,
     editor,
     files,
-    headingLevel,
+    EditorHeadings,
     images,
     insertedImageResult,
     insertedImages,
     isAddLinkDialog,
+    isConfirmDialog,
     isDragging,
     isImageUploadDialog,
     isNotice,
@@ -467,15 +528,21 @@ export const useEditorStore = defineStore("editor", () => {
     isSecret,
     isUploading,
     isWriting,
-    previewImages,
+    postUid,
+    previewInsertImages,
+    previewEditorSelectedImages,
+    EditorRemoveAttachedInfo,
     tag,
     tags,
     tagSuggestions,
     title,
     titleSuggestions,
+    thumbnails,
 
     addTag,
+    confirmRemoveFile,
     dropAttaches,
+    getThumb,
     handleAttachChange,
     insertImageToEditor,
     isHeadingActive,
@@ -490,7 +557,7 @@ export const useEditorStore = defineStore("editor", () => {
     searchTags,
     searchTitles,
     selectColor,
-    selectedImages,
+    EditorSelectedImages,
     selectTitle,
     setLink,
     submit,

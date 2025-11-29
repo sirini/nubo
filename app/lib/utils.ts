@@ -32,7 +32,7 @@ export function stripHtmlTags(html: string): string {
 }
 
 // Composables에서 사용할 useAsyncData 래퍼 (GET)
-export function useGet<T>(cacheKey: string, url: string, params: Record<string, any> = {}) {
+export function useAsyncGet<T>(cacheKey: string, url: string, params: Record<string, any> = {}) {
   const { $api } = useNuxtApp()
   return useAsyncData<T>(cacheKey, () => $api<T>(url, { method: "GET", params }), {
     server: true,

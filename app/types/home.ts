@@ -12,20 +12,20 @@ export type HomeLang = 0 | 1 | 2
 export type HomeNotice = 0 | 1 | 2 | 3 | 4
 
 // 최근 게시글들 최종 리턴 타입 정의
-export type BoardHomePostItem = BoardListItem & {
+export type HomePostItem = BoardListItem & {
   id: string
   type: Board
   useCategory: boolean
 }
 
 // 최근 게시글들 최종 리턴 타입 및 게시판 정보 정의
-export type BoardHomePostResult = {
-  items: BoardHomePostItem[]
+export type HomePostResult = {
+  items: HomePostItem[]
   config: BoardConfig
 }
 
 // 최근 게시글들 최종 리턴 기본값
-export const BOARD_HOME_POST_ITEM: BoardHomePostItem = {
+export const BOARD_HOME_POST_ITEM: HomePostItem = {
   ...BOARD_LIST_ITEM,
   id: "",
   type: BOARD.DEFAULT as Board,
@@ -33,8 +33,8 @@ export const BOARD_HOME_POST_ITEM: BoardHomePostItem = {
 }
 
 // 최근 게시글들 최종 리턴 및 게시판 정보 기본값
-export const BOARD_HOME_POST_RESULT: BoardHomePostResult = {
-  items: [] as BoardHomePostItem[],
+export const BOARD_HOME_POST_RESULT: HomePostResult = {
+  items: [] as HomePostItem[],
   config: BOARD_CONFIG,
 }
 
@@ -53,7 +53,7 @@ export type HomeSidebarGroupResult = {
 }
 
 // 홈화면 최근 게시글들 가져오는 파라미터 정의
-export type FetchHomeLatestPostsParams = {
+export type HomeLatestPostsParams = {
   sinceUid?: number
   bunch?: number
   option?: Search

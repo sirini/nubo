@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import { SEARCH, type Search } from "~/types/board"
-import type { BoardHomePostItem } from "~/types/home"
+import type { HomePostItem } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
   const { fetchHomeLatestPosts } = useHome()
@@ -10,16 +10,16 @@ export const useHomeStore = defineStore("home", () => {
   const keyword = ref<string>("")
   const option = ref<Search>(SEARCH.TITLE as Search)
   const pending = ref<boolean>(false)
-  const posts = ref<BoardHomePostItem[]>([])
+  const posts = ref<HomePostItem[]>([])
   const sinceUid = ref<number>(0)
 
   // 내부 유틸: 결과 병합
-  const mergePosts = (incoming: BoardHomePostItem[] = []) => {
+  const mergePosts = (incoming: HomePostItem[] = []) => {
     if (sinceUid.value === 0) {
       posts.value = incoming
       return
     }
-    const map = new Map<number, BoardHomePostItem>(posts.value.map((i) => [i.uid, i]))
+    const map = new Map<number, HomePostItem>(posts.value.map((i) => [i.uid, i]))
     for (const it of incoming) map.set(it.uid, it)
     const merged = Array.from(map.values())
 

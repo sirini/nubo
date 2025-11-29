@@ -1,8 +1,5 @@
 <template>
-  <AlertDialog>
-    <AlertDialogTrigger as-child>
-      <slot />
-    </AlertDialogTrigger>
+  <AlertDialog v-model:open="model">
     <AlertDialogContent>
       <AlertDialogHeader>
         <AlertDialogTitle>
@@ -13,19 +10,25 @@
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel>{{ cancelText || "취소" }}</AlertDialogCancel>
-        <AlertDialogAction
-          @click="emit('confirm')"
-          :class="variant === 'destructive' ? 'bg-red-600 hover:bg-red-700' : ''"
-        >
-          {{ confirmText || "확인" }}
-        </AlertDialogAction>
+        <AlertDialogCancel class="cursor-pointer">{{ cancelText || "취소" }}</AlertDialogCancel>
+
+        <CommonVTooltip content="주의 : 삭제 작업은 되돌릴 수 없습니다">
+          <AlertDialogAction
+            @click="emit('confirm')"
+            :class="variant === 'destructive' ? 'bg-red-500 hover:bg-red-700' : ''"
+            class="text-foreground cursor-pointer"
+          >
+            {{ confirmText || "확인" }}
+          </AlertDialogAction>
+        </CommonVTooltip>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
 </template>
 
 <script setup lang="ts">
+const model = defineModel<boolean>()
+
 defineProps<{
   title?: string
   desc?: string

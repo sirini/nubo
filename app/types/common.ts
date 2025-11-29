@@ -27,3 +27,9 @@ export const VISIT_KEY = "nubo-visit-date"
 export const HIT_KEY = "nubo-read-marks"
 export const AUTH_KEY = "nubo-auth-token"
 export const REFRESH_KEY = "nubo-refresh-token"
+
+// 값 2개 (Pair) 타입 정의
+export type Pair = {
+  uid: number
+  name: string
+}

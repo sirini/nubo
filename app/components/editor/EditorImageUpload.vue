@@ -22,7 +22,7 @@
         <TabsContent value="upload">
           <Card class="p-0">
             <CardContent class="flex p-3 max-w-sm items-center gap-2">
-              <Input type="file" @change="edit.selectedImages" accept="image/*" multiple />
+              <Input type="file" @change="edit.EditorSelectedImages" accept="image/*" multiple />
               <Button
                 type="button"
                 @click="edit.uploadingImages"
@@ -32,8 +32,11 @@
                 >업로드</Button
               >
             </CardContent>
-            <CardContent class="grid grid-cols-3 p-3 gap-2" v-show="edit.previewImages.length > 0">
-              <div v-for="(url, index) in edit.previewImages" :key="index">
+            <CardContent
+              class="grid grid-cols-3 p-3 gap-2"
+              v-show="edit.previewInsertImages.length > 0"
+            >
+              <div v-for="(url, index) in edit.previewInsertImages" :key="index">
                 <img
                   :src="url"
                   alt="Preview image"
@@ -116,7 +119,7 @@ const config = useRuntimeConfig()
 const edit = useEditorStore()
 const auth = useAuthStore()
 const isReady = computed(() => {
-  return edit.previewImages.length > 0
+  return edit.previewInsertImages.length > 0
 })
 
 if (auth.isLoggedIn) {

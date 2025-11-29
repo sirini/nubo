@@ -1,12 +1,12 @@
 import { toast } from "vue-sonner"
-import { MY_INFO_RESULT, type MyInfoResult } from "~/types/user"
+import { MY_INFO_RESULT, type UserMyResult } from "~/types/user"
 
 export const useAuthStore = defineStore("auth", () => {
   const { fetchUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
   const isAdmin = computed(() => user.value.uid === 1)
   const isLoggedIn = computed(() => user.value.uid > 0)
   const newProfile = ref<File | undefined>(undefined)
-  const user = useState<MyInfoResult>("user-state", () => MY_INFO_RESULT)
+  const user = useState<UserMyResult>("user-state", () => MY_INFO_RESULT)
 
   // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
   const loadUserInfo = async () => {

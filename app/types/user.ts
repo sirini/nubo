@@ -2,7 +2,7 @@
 export const USER_INFO_KEY = "nuboUserInfo"
 
 // (로그인 한) 내 정보 타입 정의
-export type MyInfoResult = UserInfoResult & {
+export type UserMyResult = UserInfoResult & {
   id: string
   point: number
   token: string
@@ -23,7 +23,7 @@ export const USER_INFO_RESULT: UserInfoResult = {
 }
 
 // (로그인 한) 내 정보 타입 기본값
-export const MY_INFO_RESULT: MyInfoResult = {
+export const MY_INFO_RESULT: UserMyResult = {
   ...USER_INFO_RESULT,
   id: "",
   point: 0,

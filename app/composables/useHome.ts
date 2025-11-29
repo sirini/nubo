@@ -1,10 +1,6 @@
-import { useGet } from "~/lib/utils"
+import { useAsyncGet } from "~/lib/utils"
 import type { Resp } from "~/types/common"
-import type {
-  BoardHomePostItem,
-  FetchHomeLatestPostsParams,
-  HomeSidebarGroupResult,
-} from "~/types/home"
+import type { HomePostItem, HomeLatestPostsParams, HomeSidebarGroupResult } from "~/types/home"
 
 export const useHome = () => {
   const today = new Date().toISOString().slice(0, 10)
@@ -32,12 +28,12 @@ export const useHome = () => {
 
   // 홈 화면 메뉴 가져오기
   const fetchHomeMenus = async () => {
-    return useGet<Resp<HomeSidebarGroupResult[]>>("home-munus", "/home/sidebar/links")
+    return useAsyncGet<Resp<HomeSidebarGroupResult[]>>("home-munus", "/home/sidebar/links")
   }
 
   // 홈 화면에서 게시글들 목록 조회하기
-  const fetchHomeLatestPosts = async (params: FetchHomeLatestPostsParams) => {
-    return useGet<Resp<BoardHomePostItem[]>>(
+  const fetchHomeLatestPosts = async (params: HomeLatestPostsParams) => {
+    return useAsyncGet<Resp<HomePostItem[]>>(
       `home-latest-${params.sinceUid}-${params.option}-${params.keyword}`,
       "/home/latest",
       params,

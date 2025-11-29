@@ -25,7 +25,7 @@
       <CarouselNext class="hidden sm:flex right-3 cursor-pointer"
     /></CommonVTooltip>
 
-    <div class="flex justify-center gap-2 mt-2">
+    <div class="flex justify-center mt-2">
       <CommonVTooltip
         v-for="(i, idx) in count"
         :key="idx"

@@ -44,7 +44,7 @@
         <Select
           class="p-2 text-sm bg-transparent rounded-md hover:bg-white/10"
           @update:model-value="edit.toggleHeading"
-          :model-value="edit.headingLevel"
+          :model-value="edit.EditorHeadings"
         >
           <SelectTrigger class="w-24 cursor-pointer">
             <SelectValue placeholder="스타일" />

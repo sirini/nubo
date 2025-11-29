@@ -1,4 +1,5 @@
 import type { UserBasicInfo } from "~/types/user"
+import type { Pair } from "./common"
 
 // 게시글 작성/수정 실패 리턴값 정의
 export const WRITE_RESULT_FAIL = -1
@@ -283,38 +284,6 @@ export type BoardWriterLatestComment = WriterLatestCommon & {
 export type BoardWriterLatestPost = WriterLatestCommon & {
   comment: number
   title: string
-}
-
-// 태그 자동완성 결과 타입 정의
-export type EditorTagItem = Pair & {
-  count: number
-}
-
-// 에디터에서 게시판 설정 및 카테고리 불러오기 결과 타입 정의
-export type EditorConfigResult = {
-  config: BoardConfig
-  isAdmin: boolean
-  categories: Pair[]
-}
-
-// 게시글에 삽입한 이미지 목록 반환 타입 정의
-export type EditorInsertImageResult = {
-  images: Pair[]
-  maxImageUid: number
-  totalImageCount: number
-}
-
-// 게시글 수정 시 가져오는 정보들 반환 타입 정의
-export type EditorLoadPostResult = {
-  post: BoardListItem
-  files: BoardAttachment[]
-  tags: Pair[]
-}
-
-// 값 2개 (Pair) 타입 정의
-export type Pair = {
-  uid: number
-  name: string
 }
 
 // 페이징 이동 방향 타입 정의

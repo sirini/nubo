@@ -9,6 +9,7 @@
       <CardContent class="space-y-4">
         <EditorPostOptions />
         <EditorDragDropUpload />
+        <EditorDragDropUploadedFiles />
         <EditorTitle />
         <EditorTiptapEditor v-model="edit.content" :config="edit.config" />
         <EditorHashtag />
@@ -20,12 +21,21 @@
         </CommonVTooltip>
 
         <CommonVTooltip content="제출하시기 전에 수정된 글내용을 다시 한 번 살펴봐주세요">
-          <Button @click="edit.modify(postUid)" class="text-foreground cursor-pointer"
-            >제출하기</Button
-          >
+          <Button @click="edit.modify" class="text-foreground cursor-pointer">제출하기</Button>
         </CommonVTooltip>
       </CardFooter>
     </Card>
+
+    <CommonVLoadingDialog message="게시글을 수정하고 있습니다" />
+    <CommonVConfirmDialog
+      v-model="edit.isConfirmDialog"
+      title="첨부파일 삭제"
+      desc="정말로 선택하신 첨부파일을 삭제하시겠습니까?"
+      cancel-text="그대로 두기"
+      confirm-text="삭제하기"
+      variant="destructive"
+      @confirm="edit.removeFile"
+    />
   </section>
 </template>
 
@@ -35,11 +45,11 @@ definePageMeta({ middleware: "auth" as never })
 const route = useRoute()
 const edit = useEditorStore()
 const boardId = route.params.id as string
-const postUid = computed(() => parseInt(route.params.postUid as string))
 
+edit.postUid = parseInt(route.params.postUid as string)
 await edit.loadBoardConfig(boardId)
 
 onMounted(() => {
-  edit.loadPost(postUid.value)
+  edit.loadPost()
 })
 </script>

@@ -1,13 +1,13 @@
 import { useApiAction } from "~/lib/utils"
 import type { Resp } from "~/types/common"
-import type { MyInfoResult } from "~/types/user"
+import type { UserMyResult } from "~/types/user"
 
 export const useAuth = () => {
   // 사용자 정보를 기존 토큰 정보로 가져와서 반환
   const fetchUserInfo = async () => {
     const { $api } = useNuxtApp()
     const headers = useRequestHeaders(["cookie"])
-    return await $api<Resp<MyInfoResult>>("/auth/load", {
+    return await $api<Resp<UserMyResult>>("/auth/load", {
       method: "GET",
       headers, // 쿠키를 GOAPI 서버로 전달 (SSR)
     })
@@ -15,7 +15,7 @@ export const useAuth = () => {
 
   // 로그인 처리하기
   const fetchLogin = async (id: string, password: string) => {
-    const { post } = useApiAction<Resp<MyInfoResult>>()
+    const { post } = useApiAction<Resp<UserMyResult>>()
     return await post("/auth/signin", { id, password })
   }
 

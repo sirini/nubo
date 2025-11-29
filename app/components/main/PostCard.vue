@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { Eye, Heart, MessageCircle } from "lucide-vue-next"
 import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
-import type { BoardHomePostItem } from "~/types/home"
+import type { HomePostItem } from "~/types/home"
 
-defineProps<{ post: BoardHomePostItem }>()
+defineProps<{ post: HomePostItem }>()
 </script>

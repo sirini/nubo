@@ -9,6 +9,7 @@
       <CardContent class="space-y-4">
         <EditorPostOptions />
         <EditorDragDropUpload />
+        <EditorDragDropUploadedFiles />
         <EditorTitle />
         <EditorTiptapEditor v-model="edit.content" :config="edit.config" />
         <EditorHashtag />
