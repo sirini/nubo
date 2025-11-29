@@ -8,6 +8,11 @@
     font-family: "Google Sans Code", sans-serif;
   }
 
+  p:empty::before {
+    content: "\00a0"; /* &nbsp;와 같은 역할, 빈 p 태그에 높이 부여 */
+    display: inline-block;
+  }
+
   ul,
   ol {
     padding: 0 1.5rem;

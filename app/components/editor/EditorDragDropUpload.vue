@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { FileIcon, XIcon } from "lucide-vue-next"
+import { FileIcon, UploadCloudIcon, XIcon } from "lucide-vue-next"
 import { showReadableNumber } from "~/lib/utils"
 
 const edit = useEditorStore()

@@ -16,12 +16,22 @@
   </div>
 
   <div v-if="edit.categories.length > 0">
-    <CommonVSelect v-model="edit.categoryUid" placeholder="게시글 분류 선택" :options="sc" />
+    <Select v-model="edit.categoryUid">
+      <SelectTrigger>
+        <SelectValue :placeholder="edit.categories[edit.categoryUid]?.name" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem v-for="(cat, idx) in edit.categories" :key="idx" :value="cat.uid">{{
+            cat.name
+          }}</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   </div>
 </template>
 
 <script setup lang="ts">
 const auth = useAuthStore()
 const edit = useEditorStore()
-const sc = ref<{ label: string; value: number }[]>([]) // select category
 </script>

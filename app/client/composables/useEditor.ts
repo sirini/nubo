@@ -84,7 +84,7 @@ export const useEditor = () => {
       fd.append("attachments[]", file)
     }
     return await $api<Resp<null>>("/editor/modify", {
-      method: "POST",
+      method: "PATCH",
       body: fd,
     })
   }

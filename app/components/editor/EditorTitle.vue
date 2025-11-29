@@ -5,6 +5,7 @@
       placeholder="제목을 입력하세요"
       class="text-lg font-medium"
       autocomplete="off"
+      @keyup="edit.searchTitles"
     />
 
     <div
@@ -39,8 +40,7 @@
 </template>
 
 <script setup lang="ts">
-const edit = useEditorStore()
+import { Loader2Icon, XIcon } from "lucide-vue-next"
 
-// 유사한 글제목 검색
-watch(() => edit.title, edit.searchTitles)
+const edit = useEditorStore()
 </script>

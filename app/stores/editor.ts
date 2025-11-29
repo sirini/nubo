@@ -30,7 +30,7 @@ export const useEditorStore = defineStore("editor", () => {
   } = useEditor()
   const attaches = ref<File[]>([])
   const categories = ref<Pair[]>([])
-  const categoryUid = ref<number>(0)
+  const categoryUid = ref<number>(1)
   const config = ref<BoardConfig>(BOARD_CONFIG)
   const content = ref<string>("")
   const editor = ref<Editor | null>(null)
@@ -119,7 +119,9 @@ export const useEditorStore = defineStore("editor", () => {
       editor.value.isActive("heading", { level: 1 }) ||
       editor.value.isActive("heading", { level: 2 }) ||
       editor.value.isActive("heading", { level: 3 }) ||
-      editor.value.isActive("heading", { level: 4 })
+      editor.value.isActive("heading", { level: 4 }) ||
+      editor.value.isActive("heading", { level: 5 }) ||
+      editor.value.isActive("heading", { level: 6 })
     )
   }
 
@@ -258,7 +260,7 @@ export const useEditorStore = defineStore("editor", () => {
     } finally {
       isSearchingTags.value = false
     }
-  }, 300)
+  }, 150)
 
   // 제안된 글제목 선택
   const selectTitle = (suggestion: string) => {
@@ -274,7 +276,7 @@ export const useEditorStore = defineStore("editor", () => {
     }
     tag.value = ""
     tagSuggestions.value = []
-  }, 300)
+  }, 150)
 
   // 해시태그 삭제하기
   const removeTag = (index: number) => {
@@ -395,10 +397,12 @@ export const useEditorStore = defineStore("editor", () => {
       toast(`글 내용은 3글자 이상이어야 합니다`)
       return
     }
+    const wp: WritePostParam = getParams()
     const param: ModifyPostParam = {
-      ...getParams(),
+      ...wp,
       postUid,
     }
+
     try {
       isWriting.value = true
       const response = await modifyPrevPost(param)
@@ -406,6 +410,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
+      navigateTo(`/board/${config.value.id}/${postUid}`)
     } catch (e) {
       toast(`게시글을 수정하지 못했습니다: ${e}`)
     } finally {
@@ -429,16 +434,10 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`게시글이 삭제되어 수정할 수 없습니다`)
         navigateTo(`/board/${config.value.id}`)
       }
-      if (post.status === STATUS.NORMAL) {
-        isNotice.value = true
-      }
-      if (post.status === STATUS.SECRET) {
-        isSecret.value = true
-      }
-
-      response.result.tags.forEach((tag) => {
-        tags.value.push(tag.name)
-      })
+      response.result.tags.forEach((tag) => tags.value.push(tag.name))
+      isNotice.value = post.status === STATUS.NORMAL
+      isSecret.value = post.status === STATUS.SECRET
+      categoryUid.value = post.category.uid
       content.value = post.content
       title.value = post.title
       files.value = response.result.files
