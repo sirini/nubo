@@ -9,7 +9,7 @@
   <EyeIcon class="w-3 h-3 ml-4 mr-2" />
   {{ num(board.view.post.hit) }}
   <span class="flex-1"></span>
-  {{ date(board.view.post.submitted) }}
+  <span>{{ date(board.view.post.submitted) }}</span>
 </template>
 
 <script setup lang="ts">

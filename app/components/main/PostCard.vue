@@ -15,11 +15,11 @@
           >{{ post.title }}</CardTitle
         >
         <CardDescription class="inline-flex items-center font-code">
-          <Heart :class="post.liked ? 'text-red-200 fill-current' : ''" class="w-3 h-3 mr-2" />
+          <HeartIcon :class="post.liked ? 'text-red-200 fill-current' : ''" class="w-3 h-3 mr-2" />
           {{ post.like }}
-          <MessageCircle class="w-3 h-3 ml-4 mr-2" />
+          <MessageCircleIcon class="w-3 h-3 ml-4 mr-2" />
           {{ num(post.comment) }}
-          <Eye class="w-3 h-3 ml-4 mr-2" />
+          <EyeIcon class="w-3 h-3 ml-4 mr-2" />
           {{ num(post.hit) }}
           <span class="flex-1"></span>
           <span class="hidden xl:inline">{{ date(post.submitted) }}</span>
@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { Eye, Heart, MessageCircle } from "lucide-vue-next"
+import { EyeIcon, HeartIcon, MessageCircleIcon } from "lucide-vue-next"
 import { date, num, stripTags } from "~/lib/utils"
 import type { HomePostItem } from "~/types/home"
 
