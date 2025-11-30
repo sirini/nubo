@@ -72,19 +72,7 @@
               {{ tag.name }}</Badge
             >
           </div>
-          <div class="flex items-center text-center">
-            <CommonVTooltip content="이 게시글에 좋아요를 취소합니다" v-if="board.view.post.liked">
-              <Button variant="outline" class="cursor-pointer" size="lg">
-                <HeartIcon class="fill-red-500" />
-              </Button>
-            </CommonVTooltip>
-
-            <CommonVTooltip content="이 게시글에 좋아요를 남깁니다" v-else>
-              <Button variant="outline" class="cursor-pointer" size="lg">
-                <HeartIcon class="text-red-500" />
-              </Button>
-            </CommonVTooltip>
-          </div>
+          <ViewLikeButton />
         </CardFooter>
 
         <div v-if="board.view.post.writer.signature.length > 0">
@@ -133,15 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ChevronsUpDown,
-  Download,
-  Eye,
-  Hash,
-  Heart,
-  HeartIcon,
-  MessageCircle,
-} from "lucide-vue-next"
+import { ChevronsUpDown, Download, Eye, Hash, Heart, MessageCircle } from "lucide-vue-next"
 import "~/assets/css/editor.scss"
 import { showDateOnly, num, stripTags } from "~/lib/utils"
 
