@@ -93,15 +93,7 @@
         </CommonVTooltip>
 
         <div class="inline-flex gap-3 items-center">
-          <CommonVTooltip
-            content="본인이 작성하신 게시글을 수정합니다"
-            v-if="auth.user.uid === board.view.post.writer.uid"
-          >
-            <Button as-child variant="outline">
-              <NuxtLink :to="`/board/${boardId}/modify/${postUid}`">수정하기</NuxtLink>
-            </Button>
-          </CommonVTooltip>
-
+          <ViewModifyButton :board-id="boardId" :post-uid="postUid" />
           <ViewWriteButton :board-id="boardId" />
         </div>
       </div>
