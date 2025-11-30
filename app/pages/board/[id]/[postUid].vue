@@ -2,12 +2,12 @@
   <section class="container mx-auto py-4">
     <div v-if="board.pending">Loading ...</div>
     <div v-else-if="board.view" class="mx-auto" :style="`max-width: ${board.view.config.width}px`">
-      <BoardViewBreadcrumb :config="board.view.config" />
+      <ViewBreadcrumb :config="board.view.config" />
       <Card
         class="rounded-lg overflow-hidden shadow-lg pt-0 mb-4"
         :style="`max-width: ${board.view.config.width}px`"
       >
-        <BoardViewImageCarousel :images="board.view.images" v-if="board.view.images.length > 0" />
+        <ViewImageCarousel :images="board.view.images" v-if="board.view.images.length > 0" />
 
         <Collapsible
           v-if="board.view.files.length > 0"
@@ -95,7 +95,7 @@
         </div>
       </Card>
 
-      <BoardViewWriteComment :config="board.view.config" />
+      <ViewWriteComment :config="board.view.config" />
 
       <div class="flex items-center justify-between mt-6">
         <CommonVTooltip content="목록 페이지로 돌아갑니다">
@@ -151,12 +151,12 @@ const auth = useAuthStore()
 const boardId = route.params.id as string
 const postUid = parseInt(route.params.postUid as string, 10)
 
-await board.fetchView(boardId, postUid)
+await board.getInitView(boardId, postUid)
 
 watch(
   () => route.params,
   async (newParams) => {
-    await board.fetchView(newParams.id as string, parseInt(newParams.postUid as string, 10))
+    await board.getInitView(newParams.id as string, parseInt(newParams.postUid as string, 10))
   },
 )
 </script>
