@@ -34,7 +34,7 @@
               <Download class="w-4 h-4 mr-3" />
               <span class="text-xs">{{ file.name }}</span>
               <span class="flex-1"></span>
-              <span class="text-xs">{{ showReadableNumber(file.size) }}B</span>
+              <span class="text-xs">{{ num(file.size) }}B</span>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -45,14 +45,14 @@
           }}</CardTitle>
           <CardDescription class="inline-flex items-center px-1 font-code">
             <Heart
-              :class="board.view.post.liked ? 'text-red-200 fill-current' : ''"
+              :class="board.view.post.liked ? 'text-red-500 fill-current' : ''"
               class="w-3 h-3 mr-2"
             />
             {{ board.view.post.like }}
             <MessageCircle class="w-3 h-3 ml-4 mr-2" />
-            {{ showReadableNumber(board.view.post.comment) }}
+            {{ num(board.view.post.comment) }}
             <Eye class="w-3 h-3 ml-4 mr-2" />
-            {{ showReadableNumber(board.view.post.hit) }}
+            {{ num(board.view.post.hit) }}
             <span class="flex-1"></span>
             {{ showDateOnly(board.view.post.submitted) }}
           </CardDescription>
@@ -60,22 +60,37 @@
         <CardContent class="leading-7 px-4 nubo">
           <div v-html="board.view.post.content"></div>
         </CardContent>
-        <CardFooter class="px-4">
-          <Badge
-            v-for="(tag, index) in board.view.tags"
-            :key="index"
-            variant="secondary"
-            class="mt-2 mr-2"
-          >
-            <Hash />
-            {{ tag.name }}</Badge
-          >
+        <CardFooter class="px-4 justify-between">
+          <div>
+            <Badge
+              v-for="(tag, index) in board.view.tags"
+              :key="index"
+              variant="secondary"
+              class="mt-2 mr-2"
+            >
+              <Hash />
+              {{ tag.name }}</Badge
+            >
+          </div>
+          <div class="flex items-center text-center">
+            <CommonVTooltip content="이 게시글에 좋아요를 취소합니다" v-if="board.view.post.liked">
+              <Button variant="outline" class="cursor-pointer" size="lg">
+                <HeartIcon class="fill-red-500" />
+              </Button>
+            </CommonVTooltip>
+
+            <CommonVTooltip content="이 게시글에 좋아요를 남깁니다" v-else>
+              <Button variant="outline" class="cursor-pointer" size="lg">
+                <HeartIcon class="text-red-500" />
+              </Button>
+            </CommonVTooltip>
+          </div>
         </CardFooter>
 
         <div v-if="board.view.post.writer.signature.length > 0">
           <hr />
           <div class="text-secondary text-sm pt-3 px-4">
-            {{ stripHtmlTags(board.view.post.writer.signature) }}
+            {{ stripTags(board.view.post.writer.signature) }}
           </div>
         </div>
       </Card>
@@ -118,9 +133,17 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronsUpDown, Download, Eye, Hash, Heart, MessageCircle } from "lucide-vue-next"
+import {
+  ChevronsUpDown,
+  Download,
+  Eye,
+  Hash,
+  Heart,
+  HeartIcon,
+  MessageCircle,
+} from "lucide-vue-next"
 import "~/assets/css/editor.scss"
-import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
+import { showDateOnly, num, stripTags } from "~/lib/utils"
 
 const route = useRoute()
 const board = useBoardStore()

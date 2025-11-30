@@ -472,7 +472,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`게시글이 삭제되어 수정할 수 없습니다`)
         navigateTo(`/board/${config.value.id}`)
       }
-      response.result.tags.forEach((tag: EditorTagItem) => tags.value.push(tag.name))
+      response.result.tags.forEach((tag) => tags.value.push(tag.name))
       isNotice.value = post.status === STATUS.NORMAL
       isSecret.value = post.status === STATUS.SECRET
       categoryUid.value = post.category.uid

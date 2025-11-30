@@ -1,5 +1,5 @@
-import { useAsyncGet } from "~/lib/utils"
-import type { Resp } from "~/types/common"
+import { reqGet, useSsrGet } from "~/lib/utils"
+import { IS_VISITED, type Resp } from "~/types/common"
 import type { HomePostItem, HomeLatestPostsParams, HomeSidebarGroupResult } from "~/types/home"
 
 export const useHome = () => {
@@ -8,41 +8,39 @@ export const useHome = () => {
   // 방문 기록 추가하기
   const addVisitHistory = async (userUid?: number) => {
     if (import.meta.server) return // 서버에서는 실행 금지
-
-    const { $api } = useNuxtApp()
-    const flag = "nuboIsVisitToday"
-
     try {
-      if (localStorage.getItem(flag) === today) return
-
-      await $api("/home/visit", {
-        method: "GET",
-        params: { userUid },
-      })
+      if (localStorage.getItem(IS_VISITED) === today) return
+      await reqGet<Resp<null>>("/home/visit", { userUid })
     } catch (e) {
       console.error("Failed to add a visiting count:", e)
     } finally {
-      localStorage.setItem(flag, today)
+      localStorage.setItem(IS_VISITED, today)
     }
   }
 
   // 홈 화면 메뉴 가져오기
-  const fetchHomeMenus = async () => {
-    return useAsyncGet<Resp<HomeSidebarGroupResult[]>>("home-munus", "/home/sidebar/links")
+  const loadInitHomeMenus = async () => {
+    return useSsrGet<Resp<HomeSidebarGroupResult[]>>("home-munus", "/home/sidebar/links")
   }
 
   // 홈 화면에서 게시글들 목록 조회하기
-  const fetchHomeLatestPosts = async (params: HomeLatestPostsParams) => {
-    return useAsyncGet<Resp<HomePostItem[]>>(
+  const loadInitPosts = async (params: HomeLatestPostsParams) => {
+    return useSsrGet<Resp<HomePostItem[]>>(
       `home-latest-${params.sinceUid}-${params.option}-${params.keyword}`,
       "/home/latest",
       params,
     )
   }
 
+  // 홈 화면에서 이전 게시글들을 더 가져오기
+  const loadMorePosts = async (params: HomeLatestPostsParams) => {
+    return reqGet<Resp<HomePostItem[]>>("/home/latest", params)
+  }
+
   return {
     addVisitHistory,
-    fetchHomeMenus,
-    fetchHomeLatestPosts,
+    loadInitHomeMenus,
+    loadInitPosts,
+    loadMorePosts,
   }
 }

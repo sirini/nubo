@@ -1,9 +1,10 @@
 import { defineStore } from "pinia"
+import { toast } from "vue-sonner"
 import { SEARCH, type Search } from "~/types/board"
 import type { HomePostItem } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
-  const { fetchHomeLatestPosts } = useHome()
+  const { loadInitPosts, loadMorePosts } = useHome()
   const bunch = ref<number>(20)
   const error = ref<unknown>(null)
   const initialized = ref<boolean>(false)
@@ -29,7 +30,7 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   // 목록 조회 (초기/검색/더보기 공용)
-  const fetchLatest = async (opts?: { reset?: boolean }) => {
+  const getLatestPosts = async (opts?: { reset?: boolean }) => {
     if (pending.value) return
     try {
       pending.value = true
@@ -38,7 +39,7 @@ export const useHomeStore = defineStore("home", () => {
         posts.value = []
       }
 
-      const { data } = await fetchHomeLatestPosts({
+      const { data, error } = await loadInitPosts({
         sinceUid: sinceUid.value,
         bunch: bunch.value,
         option: option.value,
@@ -46,6 +47,7 @@ export const useHomeStore = defineStore("home", () => {
       })
 
       if (!data.value || !data.value.success) {
+        toast(`서버로부터 데이터를 가져오지 못했습니다: ${error.value}`)
         return
       }
 
@@ -62,7 +64,19 @@ export const useHomeStore = defineStore("home", () => {
     const last = posts.value.at(-1)?.uid ?? 0
     if (last === sinceUid.value) return
     sinceUid.value = last
-    await fetchLatest()
+
+    const response = await loadMorePosts({
+      sinceUid: sinceUid.value,
+      bunch: bunch.value,
+      option: option.value,
+      keyword: keyword.value,
+    })
+    if (!response.success) {
+      toast(`이전 게시글을 가져오지 못했습니다: ${response.error}`)
+      return
+    }
+
+    mergePosts(response.result)
   }
 
   // 각종 변수 초기화
@@ -84,7 +98,7 @@ export const useHomeStore = defineStore("home", () => {
     posts,
     sinceUid,
 
-    fetchLatest,
+    getLatestPosts,
     loadMore,
     reset,
   }

@@ -18,9 +18,9 @@
           <Heart :class="post.liked ? 'text-red-200 fill-current' : ''" class="w-3 h-3 mr-2" />
           {{ post.like }}
           <MessageCircle class="w-3 h-3 ml-4 mr-2" />
-          {{ showReadableNumber(post.comment) }}
+          {{ num(post.comment) }}
           <Eye class="w-3 h-3 ml-4 mr-2" />
-          {{ showReadableNumber(post.hit) }}
+          {{ num(post.hit) }}
           <span class="flex-1"></span>
           <span class="hidden xl:inline">{{ showDateOnly(post.submitted) }}</span>
         </CardDescription>
@@ -28,7 +28,7 @@
       <CardContent
         class="text-sm line-clamp-3 leading-6 px-3 mt-2"
         :class="post.cover ? '' : 'line-clamp-6'"
-        >{{ stripHtmlTags(post.content) }}</CardContent
+        >{{ stripTags(post.content) }}</CardContent
       >
     </NuxtLink>
   </Card>
@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { Eye, Heart, MessageCircle } from "lucide-vue-next"
-import { showDateOnly, showReadableNumber, stripHtmlTags } from "~/lib/utils"
+import { showDateOnly, num, stripTags } from "~/lib/utils"
 import type { HomePostItem } from "~/types/home"
 
 defineProps<{ post: HomePostItem }>()

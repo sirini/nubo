@@ -3,83 +3,58 @@ import type {
   EditorConfigResult,
   EditorInsertImageResult,
   EditorLoadPostResult,
-} from "~/types/board"
+} from "~/types/editor"
 import type { Resp } from "~/types/common"
 import type { EditorModifyParam, EditorWriteParam } from "~/types/editor"
+import { reqDelete, reqGet, reqPatch, reqPost } from "~/lib/utils"
 
 export const useEditor = () => {
   // 에디터에서 삽입할 이미지들 업로드
   const uploadEditorImages = async (boardUid: number, files: File[]) => {
-    const { $api } = useNuxtApp()
     const fd = new FormData()
     fd.append("boardUid", boardUid.toString())
     for (const file of files) {
       fd.append("images[]", file)
     }
-
-    return await $api<Resp<string[]>>("/editor/upload/images", {
-      method: "POST",
-      body: fd,
-    })
+    return await reqPost<Resp<string[]>>("/editor/upload/images", fd)
   }
 
   // 에디터에서 게시판 설정값 가져오기
   const getBoardConfig = async (id: string) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<EditorConfigResult>>("/editor/config", {
-      method: "GET",
-      query: { id },
-    })
+    return await reqGet<Resp<EditorConfigResult>>("/editor/config", { id })
   }
 
   // 추천 태그 목록 가져오기
   const getSuggestionTags = async (tag: string, limit: number = 10) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<EditorTagItem[]>>("/editor/suggestion/tag", {
-      method: "GET",
-      query: { tag, limit },
-    })
+    return await reqGet<Resp<EditorTagItem[]>>("/editor/suggestion/tag", { tag, limit })
   }
 
   // 유사 게시글 제목들 가져오기
   const getSuggestionTitles = async (title: string, limit: number = 10) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<string[]>>("/editor/suggestion/title", {
-      method: "GET",
-      query: { title, limit },
-    })
+    return await reqGet<Resp<string[]>>("/editor/suggestion/title", { title, limit })
   }
 
   // 본문 삽입용으로 이전에 올려둔 이미지 목록 가져오기
   const getInsertedImages = async (boardUid: number, lastUid: number, bunch: number = 12) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<EditorInsertImageResult>>("/editor/load/images", {
-      method: "GET",
-      query: { boardUid, lastUid, bunch },
+    return await reqGet<Resp<EditorInsertImageResult>>("/editor/load/images", {
+      boardUid,
+      lastUid,
+      bunch,
     })
   }
 
   // 기존에 첨부파일로 업로드한 이미지의 썸네일 이미지 가져오기
   const getThumbnailImage = async (fileUid: number) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<string>>("/editor/load/thumbnail", {
-      method: "GET",
-      query: { fileUid },
-    })
+    return await reqGet<Resp<string>>("/editor/load/thumbnail", { fileUid })
   }
 
   // 수정할 게시글 내용 가져오기
   const loadOriginalPost = async (boardUid: number, postUid: number) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<EditorLoadPostResult>>("/editor/load/post", {
-      method: "GET",
-      query: { boardUid, postUid },
-    })
+    return await reqGet<Resp<EditorLoadPostResult>>("/editor/load/post", { boardUid, postUid })
   }
 
   // 게시글 수정하기
   const modifyPrevPost = async (param: EditorModifyParam) => {
-    const { $api } = useNuxtApp()
     const fd = new FormData()
     fd.append("boardUid", param.boardUid.toString())
     fd.append("categoryUid", param.categoryUid.toString())
@@ -92,33 +67,21 @@ export const useEditor = () => {
     for (const file of param.files) {
       fd.append("attachments[]", file)
     }
-    return await $api<Resp<null>>("/editor/modify", {
-      method: "PATCH",
-      body: fd,
-    })
+    return await reqPatch<Resp<null>>("/editor/modify", fd)
   }
 
   // 본문에 추가해뒀던 이미지 삭제하기
   const removeInsertedImage = async (imageUid: number) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<null>>("/editor/remove/image", {
-      method: "DELETE",
-      query: { imageUid },
-    })
+    return await reqDelete<Resp<null>>("/editor/remove/image", { imageUid })
   }
 
   // 본문에 첨부했던 파일 삭제하기
   const EditorRemoveAttachedFile = async (boardUid: number, postUid: number, fileUid: number) => {
-    const { $api } = useNuxtApp()
-    return await $api<Resp<null>>("/editor/remove/attached", {
-      method: "DELETE",
-      query: { boardUid, postUid, fileUid },
-    })
+    return await reqDelete<Resp<null>>("/editor/remove/attached", { boardUid, postUid, fileUid })
   }
 
   // 게시글 작성하기
   const writeNewPost = async (param: EditorWriteParam) => {
-    const { $api } = useNuxtApp()
     const fd = new FormData()
     fd.append("boardUid", param.boardUid.toString())
     fd.append("categoryUid", param.categoryUid.toString())
@@ -130,10 +93,7 @@ export const useEditor = () => {
     for (const file of param.files) {
       fd.append("attachments[]", file)
     }
-    return await $api<Resp<number>>("/editor/write", {
-      method: "POST",
-      body: fd,
-    })
+    return await reqPost<Resp<number>>("/editor/write", fd)
   }
 
   return {

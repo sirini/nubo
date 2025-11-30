@@ -2,7 +2,7 @@ import { toast } from "vue-sonner"
 import { MY_INFO_RESULT, type UserMyResult } from "~/types/user"
 
 export const useAuthStore = defineStore("auth", () => {
-  const { fetchUserInfo, fetchLogin, fetchLogout, fetchToken } = useAuth()
+  const { loadInitUserInfo, doLogin, doLogout, updateRefreshToken } = useAuth()
   const isAdmin = computed(() => user.value.uid === 1)
   const isLoggedIn = computed(() => user.value.uid > 0)
   const newProfile = ref<File | undefined>(undefined)
@@ -11,7 +11,7 @@ export const useAuthStore = defineStore("auth", () => {
   // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
   const loadUserInfo = async () => {
     try {
-      const response = await fetchUserInfo()
+      const response = await loadInitUserInfo()
       if (!response || !response.success) {
         return await logout()
       }
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
   const login = async (email: string, password: string, redirect: string = "/") => {
     if (isLoggedIn.value) return
     try {
-      const response = await fetchLogin(email, password)
+      const response = await doLogin(email, password)
       if (!response || !response.success) {
         toast(`로그인에 실패하였습니다: ${response?.error}`)
         return
@@ -44,7 +44,7 @@ export const useAuthStore = defineStore("auth", () => {
   // 로그아웃
   const logout = async () => {
     try {
-      await fetchLogout()
+      await doLogout()
     } catch (e) {
       void e
     }
@@ -55,7 +55,7 @@ export const useAuthStore = defineStore("auth", () => {
   // 액세스 토큰 업데이트
   const updateAccessToken = async () => {
     try {
-      const response = await fetchToken(user.value.uid)
+      const response = await updateRefreshToken(user.value.uid)
       if (!response || !response.success) {
         await logout()
         return false

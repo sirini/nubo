@@ -24,6 +24,7 @@ export const CODE = {
 
 // 키 값
 export const VISIT_KEY = "nubo-visit-date"
+export const IS_VISITED = "nubo-is-visited-today"
 export const HIT_KEY = "nubo-read-marks"
 export const AUTH_KEY = "nubo-auth-token"
 export const REFRESH_KEY = "nubo-refresh-token"

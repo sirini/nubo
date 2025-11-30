@@ -35,7 +35,7 @@ const keyword = computed(() => route.params.keyword as string)
 
 const { data, pending } = await useAsyncData(
   `search-${keyword.value}`,
-  () => home.fetchLatest({ reset: true }),
+  () => home.getLatestPosts({ reset: true }),
   { watch: [keyword] },
 )
 </script>

@@ -10,9 +10,7 @@
           <div class="flex items-center justify-between p-2 border rounded-md text-sm bg-card">
             <div class="flex items-center gap-2 truncate pl-2 cursor-pointer">
               <span class="truncate text-xs">{{ file.name }}</span>
-              <span class="text-xs text-muted-foreground"
-                >({{ showReadableNumber(file.size) }}B)</span
-              >
+              <span class="text-xs text-muted-foreground">({{ num(file.size) }}B)</span>
             </div>
 
             <CommonVTooltip content="이 첨부파일을 삭제합니다">
@@ -41,7 +39,7 @@
 
 <script setup lang="ts">
 import { Trash2Icon } from "lucide-vue-next"
-import { showReadableNumber } from "~/lib/utils"
+import { num } from "~/lib/utils"
 
 const edit = useEditorStore()
 const isPopOver = ref<Record<number, boolean>>({})

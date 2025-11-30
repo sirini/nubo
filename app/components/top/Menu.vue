@@ -70,8 +70,8 @@
 import { FolderOpenIcon, FoldersIcon, LogInIcon, LogOutIcon, MenuIcon } from "lucide-vue-next"
 import AvatarImage from "../ui/avatar/AvatarImage.vue"
 
-const { fetchHomeMenus } = useHome()
+const { loadInitHomeMenus } = useHome()
 const config = useRuntimeConfig()
-const { data } = await fetchHomeMenus()
+const { data } = await loadInitHomeMenus()
 const auth = useAuthStore()
 </script>

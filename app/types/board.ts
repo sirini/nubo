@@ -262,6 +262,14 @@ export const BOARD_VIEW_RESULT: BoardViewResult = {
   writerComments: [] as BoardWriterLatestComment[],
 }
 
+// 게시글에 좋아요 남기기 시 필요한 파라미터 정의
+export type BoardViewLikeParameter = {
+  boardUid: number
+  postUid: number
+  userUid: number
+  liked: boolean
+}
+
 // 게시글 작성자 타입 정의
 export type BoardWriter = UserBasicInfo & {
   signature: string

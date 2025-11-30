@@ -1,13 +1,14 @@
+import type { AsyncDataOptions } from "#app"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 // for Tailwindcss
-export function cn(...inputs: ClassValue[]) {
+export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
 }
 
 // 날짜만 출력하기
-export function showDateOnly(timestamp: number, divider: string = "-"): string {
+export const showDateOnly = (timestamp: number, divider: string = "-") => {
   const date = new Date(timestamp)
   const y = date.getFullYear()
   const m = ("0" + (date.getMonth() + 1)).slice(-2)
@@ -16,7 +17,7 @@ export function showDateOnly(timestamp: number, divider: string = "-"): string {
 }
 
 // 큰 숫자는 K, M 단위를 뒤에 붙여서 표현
-export function showReadableNumber(big: number): string {
+export const num = (big: number) => {
   if (big > 999999) {
     return (big / 1000000).toFixed(1) + "M"
   } else if (big > 999) {
@@ -27,60 +28,48 @@ export function showReadableNumber(big: number): string {
 }
 
 // HTML 태그 제거하기
-export function stripHtmlTags(html: string): string {
+export const stripTags = (html: string) => {
   return html.replace(/<[^>]*>?/gm, "")
 }
 
-// Composables에서 사용할 useAsyncData 래퍼 (GET)
-export function useAsyncGet<T>(cacheKey: string, url: string, params: Record<string, any> = {}) {
+// Composables에서 사용할 useAsyncData 래퍼 (서버 GET)
+export const useSsrGet = <T>(
+  cacheKey: string,
+  url: string,
+  params: Record<string, any> = {},
+  options: AsyncDataOptions<T> = {},
+) => {
   const { $api } = useNuxtApp()
   return useAsyncData<T>(cacheKey, () => $api<T>(url, { method: "GET", params }), {
     server: true,
+    ...options,
   })
 }
 
-// Composables에서 사용할 래퍼
-export function useApiAction<T>() {
+// Composables에서 사용할 클라이언트용 GET
+export const reqGet = async <T>(url: string, query: Record<string, any>) => {
   const { $api } = useNuxtApp()
-  const loading = ref<boolean>(false)
-  const error = ref<any>(null)
+  return $api<T>(url, { method: "GET", query })
+}
 
-  type ApiBody = Record<string, any> | FormData
+// Composables에서 사용할 클라이언트용 POST
+export const reqPost = async <T>(url: string, body: Record<string, any> | BodyInit | FormData) => {
+  const { $api } = useNuxtApp()
+  return $api<T>(url, { method: "POST", body })
+}
 
-  const execute = async (
-    url: string,
-    options: {
-      method: "POST" | "PUT" | "PATCH" | "DELETE"
-      body: ApiBody
-    },
-  ) => {
-    loading.value = true
-    try {
-      const result = await $api<T>(url, {
-        method: "POST",
-        body: options.body,
-      })
-      return result
-    } catch (e) {
-      console.error("Post Action Error: ", e)
-      error.value = `url: ${url}, error: ${e}`
-    } finally {
-      loading.value = false
-    }
-  }
+// Composables에서 사용할 클라이언트용 PATCH
+export const reqPatch = async <T>(
+  url: string,
+  body: Record<string, any> | BodyInit | FormData,
+  query: Record<string, any> = {},
+) => {
+  const { $api } = useNuxtApp()
+  return $api<T>(url, { method: "PATCH", body, query })
+}
 
-  const post = (url: string, body: ApiBody) => execute(url, { method: "POST", body })
-  const put = (url: string, body: ApiBody) => execute(url, { method: "PUT", body })
-  const patch = (url: string, body: ApiBody) => execute(url, { method: "PATCH", body })
-  const remove = (url: string, body: ApiBody) => execute(url, { method: "DELETE", body })
-
-  return {
-    loading,
-    error,
-
-    post,
-    put,
-    patch,
-    remove,
-  }
+// Composables에서 사용할 클라이언트용 DELETE
+export const reqDelete = async <T>(url: string, query: Record<string, any>) => {
+  const { $api } = useNuxtApp()
+  return $api<T>(url, { method: "DELETE" })
 }
