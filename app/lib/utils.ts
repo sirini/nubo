@@ -8,7 +8,7 @@ export const cn = (...inputs: ClassValue[]) => {
 }
 
 // 날짜만 출력하기
-export const showDateOnly = (timestamp: number, divider: string = "-") => {
+export const date = (timestamp: number, divider: string = "-") => {
   const date = new Date(timestamp)
   const y = date.getFullYear()
   const m = ("0" + (date.getMonth() + 1)).slice(-2)

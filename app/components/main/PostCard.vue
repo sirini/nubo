@@ -22,7 +22,7 @@
           <Eye class="w-3 h-3 ml-4 mr-2" />
           {{ num(post.hit) }}
           <span class="flex-1"></span>
-          <span class="hidden xl:inline">{{ showDateOnly(post.submitted) }}</span>
+          <span class="hidden xl:inline">{{ date(post.submitted) }}</span>
         </CardDescription>
       </CardHeader>
       <CardContent
@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { Eye, Heart, MessageCircle } from "lucide-vue-next"
-import { showDateOnly, num, stripTags } from "~/lib/utils"
+import { date, num, stripTags } from "~/lib/utils"
 import type { HomePostItem } from "~/types/home"
 
 defineProps<{ post: HomePostItem }>()

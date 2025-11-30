@@ -44,34 +44,14 @@
             board.view.post.title
           }}</CardTitle>
           <CardDescription class="inline-flex items-center px-1 font-code">
-            <Heart
-              :class="board.view.post.liked ? 'text-red-500 fill-current' : ''"
-              class="w-3 h-3 mr-2"
-            />
-            {{ board.view.post.like }}
-            <MessageCircle class="w-3 h-3 ml-4 mr-2" />
-            {{ num(board.view.post.comment) }}
-            <Eye class="w-3 h-3 ml-4 mr-2" />
-            {{ num(board.view.post.hit) }}
-            <span class="flex-1"></span>
-            {{ showDateOnly(board.view.post.submitted) }}
+            <ViewStatusLine />
           </CardDescription>
         </CardHeader>
         <CardContent class="leading-7 px-4 nubo">
           <div v-html="board.view.post.content"></div>
         </CardContent>
         <CardFooter class="px-4 justify-between">
-          <div>
-            <Badge
-              v-for="(tag, index) in board.view.tags"
-              :key="index"
-              variant="secondary"
-              class="mt-2 mr-2"
-            >
-              <Hash />
-              {{ tag.name }}</Badge
-            >
-          </div>
+          <ViewTagBadges />
           <ViewLikeButton />
         </CardFooter>
 
@@ -86,11 +66,7 @@
       <ViewWriteComment :config="board.view.config" />
 
       <div class="flex items-center justify-between mt-6">
-        <CommonVTooltip content="목록 페이지로 돌아갑니다">
-          <Button as-child variant="outline">
-            <NuxtLink :to="`/board/${boardId}`">목록보기</NuxtLink></Button
-          >
-        </CommonVTooltip>
+        <ViewListButton :board-id="boardId" />
 
         <div class="inline-flex gap-3 items-center">
           <ViewModifyButton :board-id="boardId" :post-uid="postUid" />
@@ -102,9 +78,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronsUpDown, Download, Eye, Hash, Heart, MessageCircle } from "lucide-vue-next"
+import { ChevronsUpDown, Download } from "lucide-vue-next"
 import "~/assets/css/editor.scss"
-import { showDateOnly, num, stripTags } from "~/lib/utils"
+import { num, stripTags } from "~/lib/utils"
 
 const route = useRoute()
 const board = useBoardStore()
