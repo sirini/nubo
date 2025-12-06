@@ -1,4 +1,3 @@
-import type { AsyncDataOptions } from "#app"
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -30,20 +29,6 @@ export const num = (big: number) => {
 // HTML 태그 제거하기
 export const stripTags = (html: string) => {
   return html.replace(/<[^>]*>?/gm, "")
-}
-
-// Composables에서 사용할 useAsyncData 래퍼 (서버 GET)
-export const useSsrGet = <T>(
-  cacheKey: string,
-  url: string,
-  params: Record<string, any> = {},
-  options: AsyncDataOptions<T> = {},
-) => {
-  const { $api } = useNuxtApp()
-  return useAsyncData<T>(cacheKey, () => $api<T>(url, { method: "GET", params }), {
-    server: true,
-    ...options,
-  })
 }
 
 // Composables에서 사용할 클라이언트용 GET

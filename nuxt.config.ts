@@ -19,6 +19,8 @@ export default defineNuxtConfig({
         thumbnail: process.env.NUXT_PUBLIC_THUMBNAIL_SIZE || "512",
       },
       fileSize: process.env.NUXT_PUBLIC_FILE_SIZE_LIMIT || "104857600",
+      accessTokenHours: process.env.NUXT_PUBLIC_ACCESS_HOURS || "2",
+      refreshTokenDays: process.env.NUXT_PUBLIC_REFRESH_DAYS || "7",
     },
   },
   compatibilityDate: "2025-05-15",

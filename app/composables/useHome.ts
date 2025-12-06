@@ -1,8 +1,9 @@
-import { reqGet, useSsrGet } from "~/lib/utils"
+import { reqGet } from "~/lib/utils"
 import { IS_VISITED, type Resp } from "~/types/common"
 import type { HomePostItem, HomeLatestPostsParams, HomeSidebarGroupResult } from "~/types/home"
 
 export const useHome = () => {
+  const config = useRuntimeConfig()
   const today = new Date().toISOString().slice(0, 10)
 
   // 방문 기록 추가하기
@@ -20,16 +21,19 @@ export const useHome = () => {
 
   // 홈 화면 메뉴 가져오기
   const loadInitHomeMenus = async () => {
-    return useSsrGet<Resp<HomeSidebarGroupResult[]>>("home-munus", "/home/sidebar/links")
+    return await useFetch<Resp<HomeSidebarGroupResult[]>>("/home/sidebar/links", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+    })
   }
 
   // 홈 화면에서 게시글들 목록 조회하기
   const loadInitPosts = async (params: HomeLatestPostsParams) => {
-    return useSsrGet<Resp<HomePostItem[]>>(
-      `home-latest-${params.sinceUid}-${params.option}-${params.keyword}`,
-      "/home/latest",
+    return useFetch<Resp<HomePostItem[]>>("/home/latest", {
+      baseURL: config.public.apiBase,
+      method: "GET",
       params,
-    )
+    })
   }
 
   // 홈 화면에서 이전 게시글들을 더 가져오기

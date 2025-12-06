@@ -11,12 +11,12 @@ export const useAuthStore = defineStore("auth", () => {
   // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
   const loadUserInfo = async () => {
     try {
-      const response = await loadInitUserInfo()
-      if (!response || !response.success) {
+      const { data } = await loadInitUserInfo()
+      if (!data.value || !data.value.success) {
         return await logout()
       }
 
-      user.value = response.result
+      user.value = data.value.result
       user.value.signature = decodeURIComponent(user.value.signature)
     } catch (e) {
       toast(`사용자 정보를 가져오지 못했습니다: ${e}`)
@@ -47,9 +47,9 @@ export const useAuthStore = defineStore("auth", () => {
       await doLogout()
     } catch (e) {
       void e
+    } finally {
+      user.value = MY_INFO_RESULT
     }
-
-    user.value = MY_INFO_RESULT
   }
 
   // 액세스 토큰 업데이트

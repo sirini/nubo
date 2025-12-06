@@ -1,14 +1,14 @@
 <template>
   <div class="flex items-center gap-6">
     <div v-if="auth.isAdmin" class="flex items-center space-x-2">
-      <Checkbox id="notice" v-model:checked="edit.isNotice" />
+      <Checkbox id="notice" v-model="edit.isNotice" />
       <Label for="notice" class="cursor-pointer font-normal text-muted-foreground"
         >공지글로 설정</Label
       >
     </div>
 
     <div class="flex items-center space-x-2">
-      <Checkbox id="secret" v-model:checked="edit.isSecret" />
+      <Checkbox id="secret" v-model="edit.isSecret" />
       <Label for="secret" class="cursor-pointer font-normal text-muted-foreground"
         >비밀글로 설정</Label
       >

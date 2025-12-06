@@ -21,6 +21,7 @@
           @keydown.enter.prevent="edit.addTag"
           @keydown.tab.prevent="edit.addTag"
           @keydown.comma.prevent="edit.addTag"
+          @keydown.space.prevent="edit.addTag"
         />
       </CommonVTooltip>
 

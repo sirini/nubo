@@ -1,4 +1,5 @@
-import { AUTH_KEY, HIT_KEY } from "~/types/common"
+import type { BoardViewResult } from "~/types/board"
+import { AUTH_KEY, HIT_KEY, type Resp } from "~/types/common"
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -29,15 +30,25 @@ export default defineEventHandler(async (event) => {
   }
 
   const token = getCookie(event, AUTH_KEY)
-  return proxyRequest(
-    event,
-    `${config.apiBaseInternal}/board/view?id=${id}&postUid=${postUid}&needUpdateHit=${needUpdateHit}&latestLimit=${latestLimit}`,
-    {
-      fetchOptions: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  try {
+    const response = await $fetch<Resp<BoardViewResult>>(`${config.apiBaseInternal}/board/view`, {
+      method: "GET",
+      params: {
+        id,
+        postUid,
+        needUpdateHit,
+        latestLimit,
       },
-    },
-  )
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
+    return response
+  } catch (e: any) {
+    throw createError({
+      statusCode: e.response?.status || 500,
+      statusMessage: e.response?.statusText || "Internal Server Error",
+      data: e.data,
+    })
+  }
 })
