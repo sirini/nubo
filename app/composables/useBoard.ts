@@ -7,7 +7,7 @@ export const useBoard = () => {
 
   // 게시글 본문 내용 가져오기
   const loadInitBoardView = async (id: string, postUid: number, latestLimit: number = 5) => {
-    const { data, error } = await useFetch<Resp<BoardViewResult>>("/board/view", {
+    const { data } = await useFetch<Resp<BoardViewResult>>("/board/view", {
       baseURL: config.public.apiBase,
       method: "GET",
       params: {

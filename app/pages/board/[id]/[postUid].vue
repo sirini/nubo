@@ -13,6 +13,7 @@
       </Card>
 
       <ViewWriteComment :config="board.view.config" />
+      <ViewCommentList :view="board.view" />
 
       <div class="flex items-center justify-between mt-6">
         <ViewListButton :board-id="boardId" />

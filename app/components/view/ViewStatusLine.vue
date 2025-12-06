@@ -1,6 +1,6 @@
 <template>
   <HeartIcon
-    :class="board.view.post.liked ? 'text-red-500 fill-current' : ''"
+    :class="board.view.post.liked ? 'text-red-300 fill-current' : ''"
     class="w-3 h-3 mr-2"
   />
   {{ board.view.post.like }}
