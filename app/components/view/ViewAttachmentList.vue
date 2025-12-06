@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ChevronsUpDownIcon, DownloadIcon } from "lucide-vue-next"
-import { num } from "~/lib/utils"
+import { num } from "~/composables/useUtils"
 
 const board = useBoardStore()
 </script>

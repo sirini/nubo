@@ -2,7 +2,7 @@
 import { reactiveOmit } from "@vueuse/core"
 import { TabsTrigger, type TabsTriggerProps, useForwardProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
-import { cn } from "~/lib/utils"
+import { cn } from "~/composables/useUtils"
 
 const props = defineProps<TabsTriggerProps & { class?: HTMLAttributes["class"] }>()
 

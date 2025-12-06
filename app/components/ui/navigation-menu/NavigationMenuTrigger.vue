@@ -3,7 +3,7 @@ import { reactiveOmit } from "@vueuse/core"
 import { ChevronDown } from "lucide-vue-next"
 import { NavigationMenuTrigger, type NavigationMenuTriggerProps, useForwardProps } from "reka-ui"
 import type { HTMLAttributes } from "vue"
-import { cn } from "~/lib/utils"
+import { cn } from "~/composables/useUtils"
 import { navigationMenuTriggerStyle } from "."
 
 const props = defineProps<NavigationMenuTriggerProps & { class?: HTMLAttributes["class"] }>()

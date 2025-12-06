@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { Trash2Icon } from "lucide-vue-next"
-import { num } from "~/lib/utils"
+import { num } from "~/composables/useUtils"
 
 const edit = useEditorStore()
 const isPopOver = ref<Record<number, boolean>>({})

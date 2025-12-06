@@ -1,4 +1,4 @@
-import { reqGet } from "~/lib/utils"
+import { reqGet } from "~/composables/useUtils"
 import { IS_VISITED, type Resp } from "~/types/common"
 import type { HomePostItem, HomeLatestPostsParams, HomeSidebarGroupResult } from "~/types/home"
 

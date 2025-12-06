@@ -6,7 +6,7 @@ import type {
 } from "~/types/editor"
 import type { Resp } from "~/types/common"
 import type { EditorModifyParam, EditorWriteParam } from "~/types/editor"
-import { reqDelete, reqGet, reqPatch, reqPost } from "~/lib/utils"
+import { reqDelete, reqGet, reqPatch, reqPost } from "~/composables/useUtils"
 
 export const useEditor = () => {
   // 에디터에서 삽입할 이미지들 업로드

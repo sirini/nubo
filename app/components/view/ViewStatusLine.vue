@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { EyeIcon, HeartIcon, MessageCircleIcon } from "lucide-vue-next"
-import { num, date } from "~/lib/utils"
+import { num, date } from "~/composables/useUtils"
 
 const board = useBoardStore()
 </script>

@@ -1,4 +1,4 @@
-import { reqPatch } from "~/lib/utils"
+import { reqPatch } from "~/composables/useUtils"
 import type { BoardViewLikeParameter, BoardViewResult } from "~/types/board"
 import type { Resp } from "~/types/common"
 

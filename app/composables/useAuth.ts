@@ -1,4 +1,4 @@
-import { reqPost } from "~/lib/utils"
+import { reqPost } from "~/composables/useUtils"
 import { type Resp } from "~/types/common"
 import type { UserMyResult } from "~/types/user"
 

@@ -3,7 +3,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import SheetDescription from "@/components/ui/sheet/SheetDescription.vue"
 import SheetHeader from "@/components/ui/sheet/SheetHeader.vue"
 import SheetTitle from "@/components/ui/sheet/SheetTitle.vue"
-import { cn } from "~/lib/utils"
+import { cn } from "~/composables/useUtils"
 import type { SidebarProps } from "."
 import { SIDEBAR_WIDTH_MOBILE, useSidebar } from "./utils"
 

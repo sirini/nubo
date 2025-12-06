@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { stripTags } from "~/lib/utils"
+import { stripTags } from "~/composables/useUtils"
 
 const board = useBoardStore()
 </script>

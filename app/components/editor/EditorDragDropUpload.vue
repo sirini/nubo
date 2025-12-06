@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { UploadCloudIcon, XIcon } from "lucide-vue-next"
-import { num } from "~/lib/utils"
+import { num } from "~/composables/useUtils"
 
 const edit = useEditorStore()
 const isPopOver = ref<Record<string, boolean>>({})

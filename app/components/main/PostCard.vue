@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { EyeIcon, HeartIcon, MessageCircleIcon } from "lucide-vue-next"
-import { date, num, stripTags } from "~/lib/utils"
+import { date, num, stripTags } from "~/composables/useUtils"
 import type { HomePostItem } from "~/types/home"
 
 defineProps<{ post: HomePostItem }>()

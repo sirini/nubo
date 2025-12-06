@@ -3,7 +3,7 @@ import { defineStore } from "pinia"
 import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
-import { useEditor } from "~/client/composables/useEditor"
+import { useEditor } from "~/composables/useEditor.client"
 import { BOARD_CONFIG, type BoardConfig, STATUS, type BoardAttachment } from "~/types/board"
 import type { Pair } from "~/types/common"
 import type {
