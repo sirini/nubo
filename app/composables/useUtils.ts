@@ -31,16 +31,21 @@ export const stripTags = (html: string) => {
   return html.replace(/<[^>]*>?/gm, "")
 }
 
+// SSR 요청에서 실패 응답을 감안한 값 리턴
+export const resp = <T>(data: T | undefined) => {
+  return data || { success: false, error: "failed operation", result: null }
+}
+
 // Composables에서 사용할 클라이언트용 GET
 export const reqGet = async <T>(url: string, query: Record<string, any>) => {
   const { $api } = useNuxtApp()
-  return $api<T>(url, { method: "GET", query })
+  return await $api<T>(url, { method: "GET", query })
 }
 
 // Composables에서 사용할 클라이언트용 POST
 export const reqPost = async <T>(url: string, body: Record<string, any> | BodyInit | FormData) => {
   const { $api } = useNuxtApp()
-  return $api<T>(url, { method: "POST", body })
+  return await $api<T>(url, { method: "POST", body })
 }
 
 // Composables에서 사용할 클라이언트용 PATCH
@@ -50,11 +55,11 @@ export const reqPatch = async <T>(
   query: Record<string, any> = {},
 ) => {
   const { $api } = useNuxtApp()
-  return $api<T>(url, { method: "PATCH", body, query })
+  return await $api<T>(url, { method: "PATCH", body, query })
 }
 
 // Composables에서 사용할 클라이언트용 DELETE
 export const reqDelete = async <T>(url: string, query: Record<string, any>) => {
   const { $api } = useNuxtApp()
-  return $api<T>(url, { method: "DELETE" })
+  return await $api<T>(url, { method: "DELETE" })
 }

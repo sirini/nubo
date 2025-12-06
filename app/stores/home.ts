@@ -39,19 +39,19 @@ export const useHomeStore = defineStore("home", () => {
         posts.value = []
       }
 
-      const { data, error } = await loadInitPosts({
+      const response = await loadInitPosts({
         sinceUid: sinceUid.value,
         bunch: bunch.value,
         option: option.value,
         keyword: keyword.value,
       })
 
-      if (!data.value || !data.value.success) {
-        toast(`서버로부터 데이터를 가져오지 못했습니다: ${error.value}`)
+      if (!response.success || !response.result) {
+        toast(`서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
         return
       }
 
-      mergePosts(data.value.result ?? [])
+      mergePosts(response.result ?? [])
       initialized.value = true
     } finally {
       pending.value = false

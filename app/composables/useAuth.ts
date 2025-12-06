@@ -6,10 +6,11 @@ export const useAuth = () => {
   const config = useRuntimeConfig()
   // 사용자 정보를 기존 토큰 정보로 가져와서 반환
   const loadInitUserInfo = async () => {
-    return await useFetch<Resp<UserMyResult>>("/auth/load", {
+    const { data } = await useFetch<Resp<UserMyResult>>("/auth/load", {
       baseURL: config.public.apiBase,
       method: "GET",
     })
+    return resp(data.value)
   }
 
   // 로그인 처리하기

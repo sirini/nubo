@@ -21,24 +21,26 @@ export const useHome = () => {
 
   // 홈 화면 메뉴 가져오기
   const loadInitHomeMenus = async () => {
-    return await useFetch<Resp<HomeSidebarGroupResult[]>>("/home/sidebar/links", {
+    const { data, error } = await useFetch<Resp<HomeSidebarGroupResult[]>>("/home/sidebar/links", {
       baseURL: config.public.apiBase,
       method: "GET",
     })
+    return resp(data.value)
   }
 
   // 홈 화면에서 게시글들 목록 조회하기
   const loadInitPosts = async (params: HomeLatestPostsParams) => {
-    return useFetch<Resp<HomePostItem[]>>("/home/latest", {
+    const { data, error } = await useFetch<Resp<HomePostItem[]>>("/home/latest", {
       baseURL: config.public.apiBase,
       method: "GET",
       params,
     })
+    return resp(data.value)
   }
 
   // 홈 화면에서 이전 게시글들을 더 가져오기
   const loadMorePosts = async (params: HomeLatestPostsParams) => {
-    return reqGet<Resp<HomePostItem[]>>("/home/latest", params)
+    return await reqGet<Resp<HomePostItem[]>>("/home/latest", params)
   }
 
   return {

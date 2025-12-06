@@ -7,7 +7,7 @@ export const useBoard = () => {
 
   // 게시글 본문 내용 가져오기
   const loadInitBoardView = async (id: string, postUid: number, latestLimit: number = 5) => {
-    return await useFetch<Resp<BoardViewResult>>("/board/view", {
+    const { data, error } = await useFetch<Resp<BoardViewResult>>("/board/view", {
       baseURL: config.public.apiBase,
       method: "GET",
       params: {
@@ -16,11 +16,12 @@ export const useBoard = () => {
         latestLimit,
       },
     })
+    return resp(data.value)
   }
 
   // 게시글에 좋아요 남기기 (혹은 취소하기)
   const likePost = async (param: BoardViewLikeParameter) => {
-    return reqPatch("/board/like", param)
+    return await reqPatch<Resp<null>>("/board/like", param)
   }
 
   return {
