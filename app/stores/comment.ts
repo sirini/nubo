@@ -5,12 +5,13 @@ import type { CommentResult } from "~/types/comment"
 export const useCommentStore = defineStore("comment", () => {
   const { loadInitCommentList } = useComment()
   const comments = ref<CommentResult[]>([])
+  const page = ref<number>(1)
   const pending = ref<boolean>(false)
   const totalCommentCount = ref<number>(0)
   const view = ref<BoardViewResult | null>(null)
 
   // 댓글 목록 가져오기
-  const getInitComments = async (page: number, viewResult: BoardViewResult) => {
+  const getInitComments = async (viewResult: BoardViewResult) => {
     view.value = viewResult
     if (pending.value || !view.value) return
     try {
@@ -19,7 +20,7 @@ export const useCommentStore = defineStore("comment", () => {
         boardUid: view.value.config.uid,
         postUid: view.value.post.uid,
         userUid: 0 /* not used */,
-        page,
+        page: page.value,
         limit: view.value.config.rowCount,
       })
       if (!response.success || !response.result) {
@@ -37,6 +38,7 @@ export const useCommentStore = defineStore("comment", () => {
 
   return {
     comments,
+    page,
     totalCommentCount,
 
     getInitComments,
