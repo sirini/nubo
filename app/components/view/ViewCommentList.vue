@@ -1,10 +1,11 @@
 <template>
   <section class="space-y-6 mt-8">
-    <div v-for="(co, index) in comment.comments" :key="index" class="group">
+    <div v-if="pending && comments.length === 0">Loading ...</div>
+    <div v-else v-for="(co, index) in comments" :key="index" class="group">
       <div
         class="flex gap-4"
         :class="
-          co.uid !== co.replyUid ? 'mt-4 ml-14 space-y-5 border-l-4 pl-6 border-muted/30' : ''
+          co.uid !== co.replyUid ? 'mt-4 ml-14 space-y-6 border-l-4 pl-5 border-muted/50' : ''
         "
       >
         <Avatar class="w-10 h-10 cursor-pointer">
@@ -40,10 +41,10 @@
             </DropdownMenu>
           </div>
 
-          <p
+          <div
             class="text-sm text-foreground leading-relaxed whitespace-pre-wrap"
             v-html="co.content"
-          ></p>
+          ></div>
 
           <div class="flex items-center gap-2 pt-4">
             <CommonVTooltip content="이 댓글에 나의 답글을 달아봅니다">
@@ -79,7 +80,7 @@
         </div>
       </div>
 
-      <Separator class="my-6" v-if="co !== comment.comments[comment.comments.length - 1]" />
+      <Separator class="my-6" v-if="co !== comments[comments.length - 1]" />
     </div>
   </section>
 </template>
@@ -91,9 +92,9 @@ import type { BoardViewResult } from "~/types/board"
 const props = defineProps<{
   view: BoardViewResult
 }>()
-const auth = useAuthStore()
-const comment = useCommentStore()
 
+const comment = useCommentStore()
+const { comments, pending } = storeToRefs(comment)
 await comment.getInitComments(props.view)
 
 watch(

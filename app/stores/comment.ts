@@ -39,6 +39,7 @@ export const useCommentStore = defineStore("comment", () => {
   return {
     comments,
     page,
+    pending,
     totalCommentCount,
 
     getInitComments,
