@@ -1,14 +1,15 @@
 import { defineStore } from "pinia"
 import { toast } from "vue-sonner"
 import { SEARCH, type Search } from "~/types/board"
-import type { HomePostItem } from "~/types/home"
+import type { HomePostItem, HomeSidebarGroupResult } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
-  const { loadInitPosts, loadMorePosts } = useHome()
+  const { loadInitPosts, loadMorePosts, loadInitHomeMenus } = useHome()
   const bunch = ref<number>(20)
   const error = ref<unknown>(null)
   const initialized = ref<boolean>(false)
   const keyword = ref<string>("")
+  const menus = ref<HomeSidebarGroupResult[]>([])
   const option = ref<Search>(SEARCH.TITLE as Search)
   const pending = ref<boolean>(false)
   const posts = ref<HomePostItem[]>([])
@@ -58,6 +59,16 @@ export const useHomeStore = defineStore("home", () => {
     }
   }
 
+  // 초기 페이지 로드 시 상단 메뉴들 가져오기
+  const loadInitMenus = async () => {
+    const response = await loadInitHomeMenus()
+    if (!response.success || !response.result) {
+      console.error(`Failed to initialize the menu links`)
+      return
+    }
+    menus.value = response.result
+  }
+
   // 이전 게시글 더 가져오기
   const loadMore = async () => {
     if (pending.value) return
@@ -93,12 +104,14 @@ export const useHomeStore = defineStore("home", () => {
     error,
     initialized,
     keyword,
+    menus,
     option,
     pending,
     posts,
     sinceUid,
 
     getLatestPosts,
+    loadInitMenus,
     loadMore,
     reset,
   }

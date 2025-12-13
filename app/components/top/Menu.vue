@@ -33,8 +33,8 @@
         <DropdownMenuSeparator />
 
         <DropdownMenuLabel class="text-gray-500 text-xs">메뉴</DropdownMenuLabel>
-        <DropdownMenuGroup v-if="data">
-          <DropdownMenuSub v-for="(menu, index) in data.result" :key="index">
+        <DropdownMenuGroup v-if="home.menus.length > 0">
+          <DropdownMenuSub v-for="(menu, index) in home.menus" :key="index">
             <DropdownMenuSubTrigger
               ><FoldersIcon class="w-4 h-4 mr-3" /> {{ menu.group }}</DropdownMenuSubTrigger
             >
@@ -70,8 +70,9 @@
 import { FolderOpenIcon, FoldersIcon, LogInIcon, LogOutIcon, MenuIcon } from "lucide-vue-next"
 import AvatarImage from "../ui/avatar/AvatarImage.vue"
 
-const { loadInitHomeMenus } = useHome()
 const config = useRuntimeConfig()
-const { data } = await loadInitHomeMenus()
 const auth = useAuthStore()
+const home = useHomeStore()
+
+await home.loadInitMenus()
 </script>
