@@ -61,5 +61,5 @@ export const reqPatch = async <T>(
 // Composables에서 사용할 클라이언트용 DELETE
 export const reqDelete = async <T>(url: string, query: Record<string, any>) => {
   const { $api } = useNuxtApp()
-  return await $api<T>(url, { method: "DELETE" })
+  return await $api<T>(url, { method: "DELETE", query })
 }
