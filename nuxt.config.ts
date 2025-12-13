@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite"
+import { resolve } from "pathe"
 
 const GOAPI = "http://localhost:3006/goapi" // GOAPI 백엔드 주소
 
@@ -62,5 +63,8 @@ export default defineNuxtConfig({
     head: {
       titleTemplate: "Nubo | Networked Utilities & Builtin Options",
     },
+  },
+  nitro: {
+    publicAssets: [{ baseURL: "/upload", dir: resolve(process.cwd(), "upload") }],
   },
 })
