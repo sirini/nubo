@@ -1,5 +1,5 @@
 import { reqPatch } from "~/composables/useUtils"
-import type { BoardViewLikeParameter, BoardViewResult } from "~/types/board"
+import type { BoardViewLikeParam, BoardViewResult } from "~/types/board"
 import type { Resp } from "~/types/common"
 
 export const useBoard = () => {
@@ -20,7 +20,7 @@ export const useBoard = () => {
   }
 
   // 게시글에 좋아요 남기기 (혹은 취소하기)
-  const likePost = async (param: BoardViewLikeParameter) => {
+  const likePost = async (param: BoardViewLikeParam) => {
     return await reqPatch<Resp<null>>("/board/like", param)
   }
 

@@ -7,12 +7,24 @@ export const cn = (...inputs: ClassValue[]) => {
 }
 
 // 날짜만 출력하기
-export const date = (timestamp: number, divider: string = "-") => {
+export const date = (timestamp: number, div: string = "-") => {
   const date = new Date(timestamp)
   const y = date.getFullYear()
   const m = ("0" + (date.getMonth() + 1)).slice(-2)
   const d = ("0" + date.getDate()).slice(-2)
-  return `${y}${divider}${m}${divider}${d}`
+  return `${y}${div}${m}${div}${d}`
+}
+
+// 날짜와 시간까지 모두 출력하기
+export const dateFull = (timestamp: number, d1: string = "/", d2: string = ":") => {
+  const date = new Date(timestamp)
+  const y = date.getFullYear().toString().slice(2)
+  const m = ("0" + (date.getMonth() + 1)).slice(-2)
+  const d = ("0" + date.getDate()).slice(-2)
+  const h = ("0" + date.getHours()).slice(-2)
+  const i = ("0" + date.getMinutes()).slice(-2)
+  const s = ("0" + date.getSeconds()).slice(-2)
+  return `${y}${d1}${m}${d1}${d} ${h}${d2}${i}${d2}${s}`
 }
 
 // 큰 숫자는 K, M 단위를 뒤에 붙여서 표현

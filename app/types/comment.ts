@@ -2,7 +2,7 @@ import { STATUS } from "./board"
 import type { UserBasicInfo } from "./user"
 
 // 댓글 목록 가져오기용 파라미터 정의
-export type CommentListParameter = {
+export type CommentListParam = {
   boardUid: number
   postUid: number
   userUid: number
@@ -11,15 +11,36 @@ export type CommentListParameter = {
 }
 
 // 새 댓글 저장하기에 필요한 파라미터 타입 정의
-export type CommentNewParameter = {
+export type CommentWriteParam = {
   boardUid: number
   postUid: number
   content: string
+  userUid: number
 }
 
-// 답글, 수정하기에 필요한 파라미터 타입 정의
-export type CommentTargetParameter = CommentNewParameter & {
-  targetUid: number
+// 댓글 수정하기에 필요한 파라미터 정의
+export type CommentModifyParam = CommentWriteParam & {
+  modifyTargetUid: number
+}
+
+// 댓글 삭제하기에 필요한 파라미터 정의
+export type CommentRemoveParam = {
+  boardUid: number
+  userUid: number
+  removeTargetUid: number
+}
+
+// 댓글에 답글 작성하기 시 필요한 파라미터 정의
+export type CommentReplyParam = CommentWriteParam & {
+  replyTargetUid: number
+}
+
+// 댓글에 좋아요 남기기 시 필요한 파라미터 정의
+export type CommentLikeParam = {
+  boardUid: number
+  commentUid: number
+  userUid: number
+  liked: boolean
 }
 
 // 댓글(답글) 작성 후 화면에 반영할 때 필요한 타입 정의

@@ -1,7 +1,5 @@
 .tiptap,
 .nubo {
-  min-height: 200px;
-
   a {
     text-decoration: none;
     color: oklch(80% 0.12209 279.447);
@@ -222,6 +220,10 @@
       margin: 0;
     }
   }
+}
+
+.tiptap {
+  min-height: 10rem;
 }
 
 .tableWrapper {

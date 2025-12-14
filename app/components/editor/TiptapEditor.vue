@@ -131,10 +131,7 @@
         </Button>
       </div>
 
-      <EditorContent
-        :editor="ed as unknown as Editor"
-        class="nubo p-4 min-h-60 focus:outline-none"
-      />
+      <EditorContent :editor="ed as unknown as Editor" class="tiptap p-4 focus:outline-none" />
       <editor-add-link />
       <editor-image-upload />
     </div>

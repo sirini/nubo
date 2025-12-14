@@ -37,14 +37,14 @@ export const useBoardStore = defineStore("board", () => {
       })
 
       if (!response.success) {
-        toast(`좋아요 상태를 변경하지 못했습니다: ${response.error}`)
+        toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${response.error}`)
         return
       }
       if (isLiked) {
-        toast(`이 게시글에 좋아요를 남겼습니다 😍`)
+        toast(`✅ 이 게시글에 좋아요를 남겼습니다`)
       }
     } catch (e) {
-      toast(`좋아요 상태를 변경하지 못했습니다: ${e}`)
+      toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${e}`)
     }
   }
 

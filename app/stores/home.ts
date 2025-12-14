@@ -22,11 +22,13 @@ export const useHomeStore = defineStore("home", () => {
       return
     }
     const map = new Map<number, HomePostItem>(posts.value.map((i) => [i.uid, i]))
-    for (const it of incoming) map.set(it.uid, it)
+    for (const it of incoming) {
+      map.set(it.uid, it)
+    }
     const merged = Array.from(map.values())
-
-    if (merged.length === posts.value.length && merged.at(-1)?.uid === posts.value.at(-1)?.uid)
+    if (merged.length === posts.value.length && merged.at(-1)?.uid === posts.value.at(-1)?.uid) {
       return
+    }
     posts.value = merged
   }
 
@@ -48,7 +50,7 @@ export const useHomeStore = defineStore("home", () => {
       })
 
       if (!response.success || !response.result) {
-        toast(`서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
         return
       }
 
@@ -63,7 +65,7 @@ export const useHomeStore = defineStore("home", () => {
   const loadInitMenus = async () => {
     const response = await loadInitHomeMenus()
     if (!response.success || !response.result) {
-      console.error(`Failed to initialize the menu links`)
+      console.error(`❌ Failed to initialize the menu links`)
       return
     }
     menus.value = response.result
@@ -83,11 +85,11 @@ export const useHomeStore = defineStore("home", () => {
       keyword: keyword.value,
     })
     if (!response.success) {
-      toast(`이전 게시글을 가져오지 못했습니다: ${response.error}`)
+      toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
       return
     }
-
     mergePosts(response.result)
+    toast(`✅ 이전 게시글들을 가져왔습니다`)
   }
 
   // 각종 변수 초기화

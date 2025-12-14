@@ -263,7 +263,7 @@ export const BOARD_VIEW_RESULT: BoardViewResult = {
 }
 
 // 게시글에 좋아요 남기기 시 필요한 파라미터 정의
-export type BoardViewLikeParameter = {
+export type BoardViewLikeParam = {
   boardUid: number
   postUid: number
   userUid: number

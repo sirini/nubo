@@ -19,7 +19,7 @@ export const useAuthStore = defineStore("auth", () => {
       user.value = response.result
       user.value.signature = decodeURIComponent(user.value.signature)
     } catch (e) {
-      toast(`사용자 정보를 가져오지 못했습니다: ${e}`)
+      toast(`❌ 사용자 정보를 가져오지 못했습니다: ${e}`)
       await logout()
     }
   }
@@ -30,14 +30,14 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const response = await doLogin(email, password)
       if (!response || !response.success) {
-        toast(`로그인에 실패하였습니다: ${response?.error}`)
+        toast(`❌ 로그인에 실패하였습니다: ${response?.error}`)
         return
       }
 
       user.value = response.result
       await navigateTo(redirect)
     } catch (e) {
-      toast(`로그인에 실패하였습니다: ${e}`)
+      toast(`❌ 로그인에 실패하였습니다: ${e}`)
     }
   }
 

@@ -70,13 +70,13 @@ export const useEditorStore = defineStore("editor", () => {
     try {
       const response = await getBoardConfig(id)
       if (!response.success) {
-        toast(`게시판 설정값들을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 게시판 설정값들을 가져오지 못했습니다: ${response.error}`)
         return
       }
       config.value = response.result.config
       categories.value = response.result.categories
     } catch (e) {
-      toast(`게시판 설정값들을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 게시판 설정값들을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -150,13 +150,13 @@ export const useEditorStore = defineStore("editor", () => {
     for (const target of arr) {
       totalSize += target.size
       if (totalSize > parseInt(runtimeConfig.public.fileSize)) {
-        toast(`파일 크기 제한을 초과하였습니다: ${totalSize} > ${runtimeConfig.public.fileSize}`)
+        toast(`⚠️ 파일 크기 제한을 초과하였습니다: ${totalSize} > ${runtimeConfig.public.fileSize}`)
         break
       }
       images.value.push(target)
       previewInsertImages.value.push(URL.createObjectURL(target))
     }
-    toast(`업로드 버튼을 클릭하셔야 파일이 올라갑니다`)
+    toast(`⚠️ 업로드 버튼을 클릭하셔야 파일이 올라갑니다`)
   }
 
   // 본문 작성란에 이미지 삽입하기
@@ -174,15 +174,15 @@ export const useEditorStore = defineStore("editor", () => {
       isUploading.value = true
       const response = await uploadEditorImages(config.value.uid, images.value)
       if (!response.success) {
-        toast(`이미지 파일 업로드에 실패하였습니다: ${response.error}`)
+        toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${response.error}`)
       }
 
       for (const src of response.result) {
         insertImageToEditor(src)
       }
-      toast(`본문에 이미지를 삽입 하였습니다`)
+      toast(`✅ 본문에 이미지를 삽입하였습니다`)
     } catch (e) {
-      toast(`이미지 파일 업로드에 실패하였습니다: ${e}`)
+      toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${e}`)
     } finally {
       isUploading.value = false
       images.value = []
@@ -199,7 +199,7 @@ export const useEditorStore = defineStore("editor", () => {
       let lastUid = insertedImages.value?.at(-1)?.uid || 0
       const response = await getInsertedImages(config.value.uid, lastUid, 6)
       if (!response.success) {
-        toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 기존에 삽입했던 이미지들을 가져오지 못했습니다: ${response.error}`)
         return
       }
       insertedImageResult.value = response.result
@@ -208,13 +208,13 @@ export const useEditorStore = defineStore("editor", () => {
         insertedImages.value = response.result.images
       } else {
         if (isImageUploadDialog.value && response.result.images.length < 1) {
-          toast(`가져올 이전 사진들이 없습니다`)
+          toast(`⚠️ 가져올 이전 사진들이 없습니다`)
           return
         }
         insertedImages.value.push(...response.result.images)
       }
     } catch (e) {
-      toast(`기존에 삽입했던 이미지들을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 기존에 삽입했던 이미지들을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -223,15 +223,15 @@ export const useEditorStore = defineStore("editor", () => {
     try {
       const response = await removeInsertedImage(imageUid)
       if (!response.success) {
-        toast(`기존에 삽입했던 이미지를 삭제하지 못했습니다: ${response.error}`)
+        toast(`❌ 기존에 삽입했던 이미지를 삭제하지 못했습니다: ${response.error}`)
         return
       }
       await loadInsertedImages({ reset: true })
       toast(
-        `정상적으로 삭제하였습니다: 해당 이미지가 삽입된 게시글들은 더 이상 이미지가 표시되지 않습니다`,
+        `✅ 정상적으로 삭제하였습니다: 해당 이미지가 삽입된 게시글들은 더 이상 이미지가 표시되지 않습니다`,
       )
     } catch (e) {
-      toast(`기존에 삽입했던 이미지를 삭제하지 못했습니다: ${e}`)
+      toast(`❌ 기존에 삽입했던 이미지를 삭제하지 못했습니다: ${e}`)
     }
   }
 
@@ -242,12 +242,12 @@ export const useEditorStore = defineStore("editor", () => {
       isSearchingTitles.value = true
       const response = await getSuggestionTitles(title.value)
       if (!response.success) {
-        toast(`유사한 글제목들을 조회하지 못했습니다: ${response.error}`)
+        toast(`❌ 유사한 글제목들을 조회하지 못했습니다: ${response.error}`)
         return
       }
       titleSuggestions.value = response.result
     } catch (e) {
-      toast(`유사한 글제목들을 조회하지 못했습니다: ${e}`)
+      toast(`❌ 유사한 글제목들을 조회하지 못했습니다: ${e}`)
     } finally {
       isSearchingTitles.value = false
     }
@@ -260,12 +260,12 @@ export const useEditorStore = defineStore("editor", () => {
       isSearchingTags.value = true
       const response = await getSuggestionTags(tag.value)
       if (!response.success) {
-        toast(`유사한 태그들을 조회하지 못했습니다: ${response.error}`)
+        toast(`❌ 유사한 태그들을 조회하지 못했습니다: ${response.error}`)
         return
       }
       tagSuggestions.value = response.result
     } catch (e) {
-      toast(`유사한 태그들을 조회하지 못했습니다: ${e}`)
+      toast(`❌ 유사한 태그들을 조회하지 못했습니다: ${e}`)
     } finally {
       isSearchingTags.value = false
     }
@@ -305,7 +305,7 @@ export const useEditorStore = defineStore("editor", () => {
       files.forEach((file) => {
         totalSize += file.size
         if (totalSize > totalLimit) {
-          toast(`첨부 제한 크기를 초과하였습니다: 이후 파일들은 추가되지 않습니다`)
+          toast(`⚠️ 첨부 제한 크기를 초과하였습니다: 이후 파일들은 추가되지 않습니다`)
           return
         }
         attaches.value.push(file)
@@ -342,19 +342,19 @@ export const useEditorStore = defineStore("editor", () => {
   const removeFile = async () => {
     const { fileUid, index } = EditorRemoveAttachedInfo.value
     if (fileUid < 1 || index < 0) {
-      toast(`삭제할 첨부 파일이 제대로 지정되지 않았습니다`)
+      toast(`⚠️ 삭제할 첨부 파일이 제대로 지정되지 않았습니다`)
       return
     }
     try {
       const response = await EditorRemoveAttachedFile(config.value.uid, postUid.value, fileUid)
       if (!response.success) {
-        toast(`첨부파일을 삭제하지 못했습니다: ${response.error}`)
+        toast(`❌ 첨부파일을 삭제하지 못했습니다: ${response.error}`)
         return
       }
       files.value.splice(index, 1)
-      toast(`파일을 정상적으로 삭제하였습니다`)
+      toast(`✅ 파일을 정상적으로 삭제하였습니다`)
     } catch (e) {
-      toast(`첨부파일을 삭제하지 못했습니다: ${e}`)
+      toast(`❌ 첨부파일을 삭제하지 못했습니다: ${e}`)
     } finally {
       EditorRemoveAttachedInfo.value = { fileUid: 0, index: 0 }
       isConfirmDialog.value = false
@@ -400,11 +400,11 @@ export const useEditorStore = defineStore("editor", () => {
   // 서버에 새로운 글쓰기 전송하기
   const submit = async () => {
     if (title.value.trim().length < 2) {
-      toast(`글 제목은 2글자 이상이어야 합니다`)
+      toast(`⚠️ 글 제목은 2글자 이상이어야 합니다`)
       return
     }
     if (content.value.trim().length < 2) {
-      toast(`글 내용은 3글자 이상이어야 합니다`)
+      toast(`⚠️ 글 내용은 3글자 이상이어야 합니다`)
       return
     }
     const param: EditorWriteParam = getParams()
@@ -412,14 +412,14 @@ export const useEditorStore = defineStore("editor", () => {
       isWriting.value = true
       const response = await writeNewPost(param)
       if (!response.success) {
-        toast(`게시글을 작성하지 못했습니다: ${response.error}`)
+        toast(`❌ 게시글을 작성하지 못했습니다: ${response.error}`)
         return
       }
       if (response.result > 0) {
         navigateTo(`/board/${config.value.id}/${response.result}`)
       }
     } catch (e) {
-      toast(`게시글을 작성하지 못했습니다: ${e}`)
+      toast(`❌ 게시글을 작성하지 못했습니다: ${e}`)
     } finally {
       clear()
     }
@@ -428,11 +428,11 @@ export const useEditorStore = defineStore("editor", () => {
   // 서버에 기존글 수정 내용 전송하기
   const modify = async () => {
     if (title.value.trim().length < 2) {
-      toast(`글 제목은 2글자 이상이어야 합니다`)
+      toast(`⚠️ 글 제목은 2글자 이상이어야 합니다`)
       return
     }
     if (content.value.trim().length < 2) {
-      toast(`글 내용은 3글자 이상이어야 합니다`)
+      toast(`⚠️ 글 내용은 3글자 이상이어야 합니다`)
       return
     }
     const wp: EditorWriteParam = getParams()
@@ -445,12 +445,12 @@ export const useEditorStore = defineStore("editor", () => {
       isWriting.value = true
       const response = await modifyPrevPost(param)
       if (!response.success) {
-        toast(`게시글을 수정하지 못했습니다: ${response.error}`)
+        toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
       navigateTo(`/board/${config.value.id}/${postUid.value}`)
     } catch (e) {
-      toast(`게시글을 수정하지 못했습니다: ${e}`)
+      toast(`❌ 게시글을 수정하지 못했습니다: ${e}`)
     } finally {
       clear()
     }
@@ -461,7 +461,7 @@ export const useEditorStore = defineStore("editor", () => {
     try {
       const response = await loadOriginalPost(config.value.uid, postUid.value)
       if (!response.success) {
-        toast(`게시글 내용을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response.error}`)
         return
       }
 
@@ -469,7 +469,7 @@ export const useEditorStore = defineStore("editor", () => {
       const post = response.result.post
 
       if (post.status === STATUS.REMOVED) {
-        toast(`게시글이 삭제되어 수정할 수 없습니다`)
+        toast(`❌ 게시글이 삭제되어 수정할 수 없습니다`)
         navigateTo(`/board/${config.value.id}`)
       }
       response.result.tags.forEach((tag) => tags.value.push(tag.name))
@@ -488,7 +488,7 @@ export const useEditorStore = defineStore("editor", () => {
         })
       })
     } catch (e) {
-      toast(`게시글 내용을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 게시글 내용을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -501,7 +501,7 @@ export const useEditorStore = defineStore("editor", () => {
       }
       return response.result
     } catch (e) {
-      console.error(`미리보기 이미지가 없습니다: ${fileUid}`)
+      console.error(`❌ 미리보기 이미지가 없습니다: ${fileUid}`)
     }
     return ""
   }
