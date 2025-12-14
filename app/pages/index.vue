@@ -10,16 +10,20 @@
       </div>
     </div>
 
-    <Button
-      @click="home.loadMore"
-      :disabled="pending"
-      class="text-foreground w-full mt-4 cursor-pointer"
-      variant="outline"
-      size="lg"
+    <CommonVTooltip content="이전 게시글들을 더 불러옵니다">
+      <Button
+        @click="home.loadMore"
+        :disabled="pending"
+        class="text-foreground w-full mt-4 cursor-pointer"
+        variant="outline"
+        size="lg"
+      >
+        <ArrowDownFromLine />
+        더 불러오기</Button
+      ></CommonVTooltip
     >
-      <ArrowDownFromLine />
-      더 불러오기</Button
-    >
+
+    <div class="py-6"></div>
   </section>
 </template>
 
