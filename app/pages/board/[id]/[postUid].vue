@@ -11,11 +11,12 @@
         <ViewAttachmentList />
         <ViewMainContent />
       </Card>
+      <ViewRelatedContent :view="board.view" />
 
       <ViewWriteComment :config="board.view.config" />
       <ViewCommentList :view="board.view" />
 
-      <div class="flex items-center justify-between mt-6">
+      <div class="flex items-center justify-between my-12">
         <ViewListButton :board-id="boardId" />
 
         <div class="inline-flex gap-3 items-center">
