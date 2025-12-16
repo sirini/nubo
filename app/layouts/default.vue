@@ -20,7 +20,7 @@ await useAsyncData(
   "init-auth",
   async () => {
     if (!auth.isLoggedIn) {
-      await auth.loadUserInfo()
+      await auth.getInitUserInfo()
     }
     return auth.isLoggedIn
   },

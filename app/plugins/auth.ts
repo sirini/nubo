@@ -7,7 +7,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   const token = useCookie(AUTH_KEY)
   if (token.value) {
-    await auth.loadUserInfo()
+    await auth.getInitUserInfo()
   }
   void nuxtApp
 })

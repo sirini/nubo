@@ -9,8 +9,10 @@
         <h3 class="text-xl font-semibold tracking-tight">{{ view.post.writer.name }}님의 활동</h3>
       </div>
 
-      <Button variant="link" class="text-muted-foreground p-0 h-auto cursor-pointer">
-        프로필 보기 <ArrowRightIcon class="ml-1 h-4 w-4" />
+      <Button variant="link" class="text-muted-foreground p-0 h-auto cursor-pointer" as-child>
+        <NuxtLink :to="`/user/${view.post.writer.uid}`">
+          프로필 보기 <ArrowRightIcon class="ml-1 h-4 w-4" />
+        </NuxtLink>
       </Button>
     </div>
 

@@ -33,7 +33,7 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   // 목록 조회 (초기/검색/더보기 공용)
-  const getLatestPosts = async (opts?: { reset?: boolean }) => {
+  const getInitLatestPosts = async (opts?: { reset?: boolean }) => {
     if (pending.value) return
     try {
       pending.value = true
@@ -62,7 +62,7 @@ export const useHomeStore = defineStore("home", () => {
   }
 
   // 초기 페이지 로드 시 상단 메뉴들 가져오기
-  const loadInitMenus = async () => {
+  const getInitMenus = async () => {
     const response = await loadInitHomeMenus()
     if (!response.success || !response.result) {
       console.error(`❌ Failed to initialize the menu links`)
@@ -112,8 +112,8 @@ export const useHomeStore = defineStore("home", () => {
     posts,
     sinceUid,
 
-    getLatestPosts,
-    loadInitMenus,
+    getInitLatestPosts,
+    getInitMenus,
     loadMore,
     reset,
   }

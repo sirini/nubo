@@ -18,6 +18,7 @@ export const useBoardStore = defineStore("board", () => {
       const response = await loadInitBoardView(id, postUid)
 
       if (!response.success || !response.result) {
+        toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response.error}`)
         return
       }
       view.value = response.result

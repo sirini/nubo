@@ -1,5 +1,5 @@
 import { reqPatch } from "~/composables/useUtils"
-import type { BoardViewLikeParam, BoardViewResult } from "~/types/board"
+import type { BoardWriterLatestContent, BoardViewLikeParam, BoardViewResult } from "~/types/board"
 import type { Resp } from "~/types/common"
 
 export const useBoard = () => {
@@ -19,6 +19,19 @@ export const useBoard = () => {
     return resp(data.value)
   }
 
+  // 특정 회원의 최근 (댓)글들 가져오기
+  const loadInitUserLatestContent = async (targetUserUid: number, limit: number = 5) => {
+    const { data } = await useFetch<Resp<BoardWriterLatestContent>>("/board/user/latest", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      params: {
+        targetUserUid,
+        limit,
+      },
+    })
+    return resp(data.value)
+  }
+
   // 게시글에 좋아요 남기기 (혹은 취소하기)
   const likePost = async (param: BoardViewLikeParam) => {
     return await reqPatch<Resp<null>>("/board/like", param)
@@ -26,6 +39,7 @@ export const useBoard = () => {
 
   return {
     loadInitBoardView,
+    loadInitUserLatestContent,
     likePost,
   }
 }

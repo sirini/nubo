@@ -294,6 +294,12 @@ export type BoardWriterLatestPost = WriterLatestCommon & {
   title: string
 }
 
+// 특정 회원의 최근 (댓)글들 가져오기 결과 타입
+export type BoardWriterLatestContent = {
+  posts: BoardWriterLatestPost[]
+  comments: BoardWriterLatestComment[]
+}
+
 // 페이징 이동 방향 타입 정의
 export type Paging = -1 | 1
 

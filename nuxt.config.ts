@@ -13,7 +13,7 @@ export default defineNuxtConfig({
       version: process.env.NUXT_PUBLIC_VERSION || "v2.0.0",
       url: process.env.NUXT_PUBLIC_URL || "https://nubohub.org",
       urlPrefix: process.env.NUXT_PUBLIC_URL_PREFIX || "",
-      title: process.env.NUXT_PUBLIC_TITLE || "The Nubo | Networked Utilities & Builtin Options",
+      title: process.env.NUXT_PUBLIC_TITLE || "The NUBO | Nuxt4 based Board",
       imageSize: {
         profile: process.env.NUXT_PUBLIC_PROFILE_SIZE || "256",
         contentInsert: process.env.NUXT_PUBLIC_CONTENT_INSERT_SIZE || "1024",

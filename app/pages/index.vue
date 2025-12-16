@@ -38,5 +38,5 @@ const { posts, pending } = storeToRefs(home)
 
 home.option = SEARCH.TITLE as Search
 home.keyword = ""
-await home.getLatestPosts({ reset: true })
+await home.getInitLatestPosts({ reset: true })
 </script>

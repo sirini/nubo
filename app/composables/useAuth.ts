@@ -1,6 +1,6 @@
 import { reqPost } from "~/composables/useUtils"
-import { type Resp } from "~/types/common"
-import type { UserMyResult } from "~/types/user"
+import type { Resp } from "~/types/common"
+import type { UserInfoResult, UserMyResult } from "~/types/user"
 
 export const useAuth = () => {
   const config = useRuntimeConfig()
@@ -9,6 +9,18 @@ export const useAuth = () => {
     const { data } = await useFetch<Resp<UserMyResult>>("/auth/load", {
       baseURL: config.public.apiBase,
       method: "GET",
+    })
+    return resp(data.value)
+  }
+
+  // 다른 사용자의 공개된 정보를 가져와서 반환
+  const loadInitOtherUserInfo = async (targetUserUid: number) => {
+    const { data } = await useFetch<Resp<UserInfoResult>>("/auth/user/info", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      params: {
+        targetUserUid,
+      },
     })
     return resp(data.value)
   }
@@ -30,6 +42,7 @@ export const useAuth = () => {
 
   return {
     loadInitUserInfo,
+    loadInitOtherUserInfo,
     doLogin,
     doLogout,
     updateRefreshToken,

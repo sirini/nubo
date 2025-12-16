@@ -74,5 +74,5 @@ const config = useRuntimeConfig()
 const auth = useAuthStore()
 const home = useHomeStore()
 
-await home.loadInitMenus()
+await home.getInitMenus()
 </script>
