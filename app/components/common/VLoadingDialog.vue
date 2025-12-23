@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model:open="edit.isWriting">
     <DialogContent
-      class="sm:max-w-[300px] flex flex-col items-center justify-center gap-4 py-8"
+      class="sm:max-w-75 flex flex-col items-center justify-center gap-4 py-8"
       @pointer-down-outside.prevent
       @escape-key-down.prevent
     >

@@ -43,6 +43,11 @@ export const stripTags = (html: string) => {
   return html.replace(/<[^>]*>?/gm, "")
 }
 
+// HTML 특수문자들을 일반 문자로 변환해주기 (&amp;lt; --> <)
+export const recoverChars = (text: string) => {
+  return text.replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">")
+}
+
 // SSR 요청에서 실패 응답을 감안한 값 리턴
 export const resp = <T>(data: T | undefined) => {
   return data || { success: false, error: "failed operation", result: null }
