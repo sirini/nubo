@@ -14,8 +14,8 @@
         <ProfileChatHistory />
       </Card>
 
-      <ProfileLatestPosts />
-      <ProfileLatestComments />
+      <ProfileLatestPosts :posts="auth.userLatestPosts" />
+      <ProfileLatestComments :comments="auth.userLatestComments" />
     </div>
   </section>
 
@@ -29,7 +29,6 @@ const chat = useChatStore()
 const report = useReportStore()
 const targetUserUid = computed(() => parseInt(route.params.userUid as string))
 const limit = 5
-const isMe = computed(() => targetUserUid.value === auth.user.uid)
 
 await Promise.all([
   auth.getInitOtherUserInfo(targetUserUid.value),

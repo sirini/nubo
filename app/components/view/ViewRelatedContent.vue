@@ -16,83 +16,18 @@
       </Button>
     </div>
 
-    <Card class="bg-card/50 backdrop-blur-sm shadow-sm">
-      <CardContent class="grid gap-6 md:grid-cols-2">
-        <div>
-          <div class="flex items-center gap-2 text-muted-foreground mb-2">
-            <FileTextIcon class="h-4 w-4" />
-            <span class="text-sm font-medium">최근 작성한 글</span>
-          </div>
-
-          <div class="flex flex-col gap-3">
-            <div
-              v-for="(post, index) in view.writerPosts"
-              :key="index"
-              class="block group p-3 rounded-lg border bg-background hover:bg-muted/50 hover:border-muted-foreground/30 transition-all cursor-pointer"
-            >
-              <div class="flex flex-col gap-1">
-                <NuxtLink :to="`/board/${post.board.id}/${post.postUid}`">
-                  <span class="text-sm text-foreground line-clamp-1 group-hover:text-primary">{{
-                    stripTags(post.title)
-                  }}</span></NuxtLink
-                >
-
-                <div class="flex items-center justify-between text-xs text-muted-foreground mt-1">
-                  <span class="shrink-0">{{ date(post.submitted) }}</span>
-                </div>
-              </div>
-              <div
-                v-if="view.writerPosts.length === 0"
-                class="text-sm text-muted-foreground py-4 text-center"
-              >
-                작성한 글이 없습니다.
-              </div>
-            </div>
-          </div>
-        </div>
-
+    <Card class="border-none p-0 shadow-none">
+      <CardContent class="grid gap-4 md:grid-cols-4 p-0">
+        <ProfileLatestPosts :posts="view.writerPosts" />
         <Separator class="md:hidden my-2" />
-
-        <div>
-          <div class="flex items-center gap-2 text-muted-foreground mb-2">
-            <MessageCircleIcon class="h-4 w-4" />
-            <span class="text-sm font-medium">최근 남긴 댓글</span>
-          </div>
-
-          <div class="space-y-3">
-            <div
-              v-for="comment in view.writerComments"
-              :key="comment.postUid"
-              class="block rounded-lg group p-3 border bg-background hover:bg-muted/50 hover:border-muted-foreground/30 transition-all"
-            >
-              <div class="flex flex-col gap-1">
-                <NuxtLink :to="`/board/${comment.board.id}/${comment.postUid}`">
-                  <span class="text-sm text-foreground line-clamp-1 group-hover:text-primary">{{
-                    stripTags(comment.content)
-                  }}</span>
-                </NuxtLink>
-
-                <div class="flex items-center justify-between text-xs text-muted-foreground mt-1">
-                  <span class="shrink-0">{{ date(comment.submitted) }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div
-              v-if="view.writerComments.length === 0"
-              class="text-sm text-muted-foreground py-4 text-center"
-            >
-              작성한 댓글이 없습니다.
-            </div>
-          </div>
-        </div>
+        <ProfileLatestComments :comments="view.writerComments" />
       </CardContent>
     </Card>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ArrowRightIcon, FileTextIcon, MessageCircleIcon } from "lucide-vue-next"
+import { ArrowRightIcon } from "lucide-vue-next"
 import type { BoardViewResult } from "~/types/board"
 
 const auth = useAuthStore()

@@ -8,7 +8,7 @@
     </CardHeader>
     <CardContent class="grid px-2">
       <div
-        v-for="(post, index) in auth.userLatestPosts"
+        v-for="(post, index) in posts"
         :key="index"
         class="text-sm p-2 rounded-md hover:bg-muted transition-colors"
       >
@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <div v-if="auth.userLatestPosts.length < 1" class="text-muted text-center">
+      <div v-if="posts.length < 1" class="text-muted text-center">
         아직 작성한 게시글이 없습니다
       </div>
     </CardContent>
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { NotepadTextIcon } from "lucide-vue-next"
+import type { BoardWriterLatestPost } from "~/types/board"
 
-const auth = useAuthStore()
+defineProps<{ posts: BoardWriterLatestPost[] }>()
 </script>

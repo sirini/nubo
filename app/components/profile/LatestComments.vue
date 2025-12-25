@@ -8,7 +8,7 @@
     </CardHeader>
     <CardContent class="grid px-2">
       <div
-        v-for="(co, index) in auth.userLatestComments"
+        v-for="(co, index) in comments"
         :key="index"
         class="text-sm p-2 rounded-md hover:bg-muted transition-colors"
       >
@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <div v-if="auth.userLatestComments.length < 1" class="text-muted text-center">
+      <div v-if="comments.length < 1" class="text-muted text-center">
         아직 작성한 댓글이 없습니다
       </div>
     </CardContent>
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
 import { MessageCircleIcon } from "lucide-vue-next"
+import type { BoardWriterLatestComment } from "~/types/board"
 
-const auth = useAuthStore()
+defineProps<{ comments: BoardWriterLatestComment[] }>()
 </script>
