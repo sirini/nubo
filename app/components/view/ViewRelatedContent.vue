@@ -25,29 +25,28 @@
           </div>
 
           <div class="flex flex-col gap-3">
-            <NuxtLink
-              v-for="post in view.writerPosts"
-              :key="post.postUid"
-              :to="`/board/${post.board.id}/${post.postUid}`"
-              class="block group p-3 rounded-lg border bg-background hover:bg-muted/50 hover:border-muted-foreground/30 transition-all"
+            <div
+              v-for="(post, index) in view.writerPosts"
+              :key="index"
+              class="block group p-3 rounded-lg border bg-background hover:bg-muted/50 hover:border-muted-foreground/30 transition-all cursor-pointer"
             >
               <div class="flex flex-col gap-1">
-                <div
-                  class="text-sm text-foreground line-clamp-1 group-hover:text-primary"
-                  v-html="post.title"
-                ></div>
+                <NuxtLink :to="`/board/${post.board.id}/${post.postUid}`">
+                  <span class="text-sm text-foreground line-clamp-1 group-hover:text-primary">{{
+                    stripTags(post.title)
+                  }}</span></NuxtLink
+                >
 
                 <div class="flex items-center justify-between text-xs text-muted-foreground mt-1">
                   <span class="shrink-0">{{ date(post.submitted) }}</span>
                 </div>
               </div>
-            </NuxtLink>
-
-            <div
-              v-if="view.writerPosts.length === 0"
-              class="text-sm text-muted-foreground py-4 text-center"
-            >
-              작성한 글이 없습니다.
+              <div
+                v-if="view.writerPosts.length === 0"
+                class="text-sm text-muted-foreground py-4 text-center"
+              >
+                작성한 글이 없습니다.
+              </div>
             </div>
           </div>
         </div>
@@ -61,23 +60,23 @@
           </div>
 
           <div class="space-y-3">
-            <NuxtLink
+            <div
               v-for="comment in view.writerComments"
               :key="comment.postUid"
-              :to="`/board/${comment.board.id}/${comment.postUid}`"
-              class="block group p-3 rounded-lg border bg-background hover:bg-muted/50 hover:border-muted-foreground/30 transition-all"
+              class="block rounded-lg group p-3 border bg-background hover:bg-muted/50 hover:border-muted-foreground/30 transition-all"
             >
               <div class="flex flex-col gap-1">
-                <div
-                  class="text-sm text-foreground line-clamp-1 group-hover:text-primary"
-                  v-html="comment.content"
-                ></div>
+                <NuxtLink :to="`/board/${comment.board.id}/${comment.postUid}`">
+                  <span class="text-sm text-foreground line-clamp-1 group-hover:text-primary">{{
+                    stripTags(comment.content)
+                  }}</span>
+                </NuxtLink>
 
                 <div class="flex items-center justify-between text-xs text-muted-foreground mt-1">
                   <span class="shrink-0">{{ date(comment.submitted) }}</span>
                 </div>
               </div>
-            </NuxtLink>
+            </div>
 
             <div
               v-if="view.writerComments.length === 0"

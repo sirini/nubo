@@ -11,12 +11,13 @@
         v-for="(co, index) in auth.userLatestComments"
         :key="index"
         class="text-sm p-2 rounded-md hover:bg-muted cursor-pointer transition-colors flex justify-between overflow-hidden"
-        @click="navigateTo(`/board/${co.board.id}/${co.postUid}`)"
       >
-        <span class="truncate">{{ stripTags(co.content) }}</span>
-        <span class="text-xs text-muted-foreground whitespace-nowrap ml-2">{{
-          date(co.submitted)
-        }}</span>
+        <NuxtLink :to="`/board/${co.board.id}/${co.postUid}`">
+          <span class="truncate">{{ stripTags(co.content) }}</span>
+          <span class="text-xs text-muted-foreground whitespace-nowrap ml-2">{{
+            date(co.submitted)
+          }}</span>
+        </NuxtLink>
       </div>
 
       <div v-if="auth.userLatestComments.length < 1" class="text-muted text-center">

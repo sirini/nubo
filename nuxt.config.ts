@@ -62,7 +62,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      titleTemplate: "Nubo | Networked Utilities & Builtin Options",
+      titleTemplate: "Nubo | a new unified board",
     },
   },
   nitro: {
