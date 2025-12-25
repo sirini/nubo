@@ -45,6 +45,12 @@ export const USER_BASIC_INFO = {
   profile: "",
 }
 
+// 내가 신고한 사용자인지, 내 블랙리스트에 있는 사용자인지 확인한 결과들 타입 정의
+export type UserCheckReportResult = {
+  isReported: boolean
+  isBannedByMe: boolean
+}
+
 // (공개된) 사용자 정보 타입 정의
 export type UserInfoResult = {
   uid: number

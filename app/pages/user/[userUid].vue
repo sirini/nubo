@@ -18,12 +18,15 @@
       <ProfileLatestComments />
     </div>
   </section>
+
+  <LazyProfileUserReportDialog v-if="report.isOpenReportForm" />
 </template>
 
 <script setup lang="ts">
 const route = useRoute()
 const auth = useAuthStore()
 const chat = useChatStore()
+const report = useReportStore()
 const targetUserUid = computed(() => parseInt(route.params.userUid as string))
 const limit = 5
 const isMe = computed(() => targetUserUid.value === auth.user.uid)

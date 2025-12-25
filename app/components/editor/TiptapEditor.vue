@@ -132,8 +132,8 @@
       </div>
 
       <EditorContent :editor="ed as unknown as Editor" class="tiptap p-4 focus:outline-none" />
-      <editor-add-link />
-      <editor-image-upload />
+      <lazy-editor-add-link />
+      <lazy-editor-image-upload />
     </div>
     <Toaster />
   </ClientOnly>

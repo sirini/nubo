@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-wrap gap-2 p-3 border rounded-md bg-background min-h-[50px] items-center focus-within:ring-1 focus-within:ring-ring"
+    class="flex flex-wrap gap-2 p-3 border rounded-md bg-background min-h-12 items-center focus-within:ring-1 focus-within:ring-ring"
   >
     <Badge
       v-for="(tag, index) in edit.tags"
@@ -12,7 +12,7 @@
       {{ tag }}
     </Badge>
 
-    <div class="relative flex-1 min-w-[120px]">
+    <div class="relative flex-1 min-w-30">
       <CommonVTooltip content="해시태그는 특수기호 및 공백을 허용하지 않습니다">
         <Input
           v-model="edit.tag"

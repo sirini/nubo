@@ -1,5 +1,5 @@
 <template>
-  <top-nav-menus />
+  <TopNavMenus />
   <div class="min-h-screen">
     <main class="flex items-center justify-center min-h-screen py-4">
       <Card class="w-full rounded-lg overflow-hidden shadow-lg max-w-sm">

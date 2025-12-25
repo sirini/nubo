@@ -43,13 +43,16 @@
     </div>
 
     <div class="mt-8 flex gap-2" v-else>
-      <Button
-        variant="destructive"
-        class="flex items-center gap-2 cursor-pointer"
-        :disabled="auth.otherUser.admin"
-      >
-        <SirenIcon class="w-4 h-4" />신고하기
-      </Button>
+      <CommonVTooltip content="이 사용자를 관리자에게 신고합니다">
+        <Button
+          variant="destructive"
+          class="flex items-center gap-2 cursor-pointer"
+          @click="report.open(auth.otherUser.uid)"
+          :disabled="auth.otherUser.admin || !auth.isLoggedIn"
+        >
+          <SirenIcon class="w-4 h-4" />신고하기
+        </Button>
+      </CommonVTooltip>
     </div>
   </Card>
 </template>
@@ -58,6 +61,7 @@
 import { LogOutIcon, ShieldCheckIcon, SirenIcon, UserRoundPenIcon } from "lucide-vue-next"
 
 const auth = useAuthStore()
+const report = useReportStore()
 const props = defineProps<{ targetUserUid: number }>()
 const isMe = computed(() => props.targetUserUid === auth.user.uid)
 </script>
