@@ -10,12 +10,19 @@
       <div
         v-for="(post, index) in auth.userLatestPosts"
         :key="index"
-        class="text-sm p-2 rounded-md hover:bg-muted cursor-pointer transition-colors flex justify-between"
+        class="text-sm p-2 rounded-md hover:bg-muted transition-colors"
       >
-        <span class="truncate">{{ post.title }}</span>
-        <span class="text-xs text-muted-foreground whitespace-nowrap ml-2">{{
-          date(post.submitted)
-        }}</span>
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex-1">
+            <NuxtLink :to="`/board/${post.board.id}/${post.postUid}`">
+              <span class="line-clamp-1">{{ post.title }}</span>
+            </NuxtLink>
+          </div>
+
+          <div class="text-xs text-muted-foreground">
+            <span class="shrink-0">{{ date(post.submitted) }}</span>
+          </div>
+        </div>
       </div>
 
       <div v-if="auth.userLatestPosts.length < 1" class="text-muted text-center">

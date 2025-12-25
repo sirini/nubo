@@ -10,14 +10,19 @@
       <div
         v-for="(co, index) in auth.userLatestComments"
         :key="index"
-        class="text-sm p-2 rounded-md hover:bg-muted cursor-pointer transition-colors flex justify-between overflow-hidden"
+        class="text-sm p-2 rounded-md hover:bg-muted transition-colors"
       >
-        <NuxtLink :to="`/board/${co.board.id}/${co.postUid}`">
-          <span class="truncate">{{ stripTags(co.content) }}</span>
-          <span class="text-xs text-muted-foreground whitespace-nowrap ml-2">{{
-            date(co.submitted)
-          }}</span>
-        </NuxtLink>
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex-1">
+            <NuxtLink :to="`/board/${co.board.id}/${co.postUid}`">
+              <span class="line-clamp-1">{{ stripTags(co.content) }}</span>
+            </NuxtLink>
+          </div>
+
+          <div class="text-xs text-muted-foreground">
+            <span class="shrink-0">{{ date(co.submitted) }}</span>
+          </div>
+        </div>
       </div>
 
       <div v-if="auth.userLatestComments.length < 1" class="text-muted text-center">
