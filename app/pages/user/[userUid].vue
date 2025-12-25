@@ -1,8 +1,6 @@
 <template>
   <section class="max-w-6xl mx-auto">
-    <div
-      class="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-4 h-auto md:h-200"
-    >
+    <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-4 h-auto">
       <ProfileMain :target-user-uid="targetUserUid" />
       <Card class="md:col-span-2 md:row-span-2 overflow-hidden p-0">
         <div class="p-4 border-b bg-muted/30">
@@ -16,6 +14,22 @@
 
       <ProfileLatestPosts :posts="auth.userLatestPosts" />
       <ProfileLatestComments :comments="auth.userLatestComments" />
+
+      <ProfileSimpleInfoBox title="레벨" :content="`Lv. ${auth.otherUser.level}`">
+        <GraduationCapIcon class="w-4 h-4" />
+      </ProfileSimpleInfoBox>
+
+      <ProfileSimpleInfoBox title="가입일" :content="date(auth.otherUser.signup)">
+        <UserRoundPlusIcon class="w-4 h-4" />
+      </ProfileSimpleInfoBox>
+
+      <ProfileSimpleInfoBox
+        title="포인트"
+        :content="num(auth.user.point)"
+        v-if="auth.otherUser.uid === auth.user.uid"
+      >
+        <CoinsIcon class="w-4 h-4" />
+      </ProfileSimpleInfoBox>
     </div>
   </section>
 
@@ -23,6 +37,8 @@
 </template>
 
 <script setup lang="ts">
+import { CoinsIcon, GraduationCapIcon, UserRoundPlusIcon } from "lucide-vue-next"
+
 const route = useRoute()
 const auth = useAuthStore()
 const chat = useChatStore()
