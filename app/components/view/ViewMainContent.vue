@@ -18,13 +18,11 @@
   <div v-if="board.view.post.writer.signature.length > 0">
     <hr />
     <div class="text-secondary text-sm pt-3 px-4">
-      {{ stripTags(board.view.post.writer.signature) }}
+      {{ recoverChars(board.view.post.writer.signature) }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { stripTags } from "~/composables/useUtils"
-
 const board = useBoardStore()
 </script>
