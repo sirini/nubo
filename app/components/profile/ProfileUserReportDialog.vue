@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { Drawer, DrawerContent, DrawerHeader, DrawerTrigger } from "../ui/drawer"
-import ReportForm from "./ReportForm.vue"
+import ReportForm from "./ProfileReportForm.vue"
 
 const report = useReportStore()
 const isDesktop = useMediaQuery("(min-width: 768px)")
