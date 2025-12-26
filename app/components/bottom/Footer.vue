@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-background/80 p-2 shadow-lg backdrop-blur-md transition-all duration-300 ease-in-out"
+    class="fixed left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border bg-background/80 p-2 shadow-lg backdrop-blur-md transition-all duration-300 ease-in-out mb-4"
     :class="isVisible ? 'bottom-4 opacity-100' : '-bottom-20 opacity-0'"
   >
     <CommonVTooltip content="첫 화면으로 이동합니다">

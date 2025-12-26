@@ -1,6 +1,6 @@
 <template>
-  <TopNavMenus />
   <div class="min-h-screen">
+    <TopNavMenus />
     <main class="container mx-auto flex-1 px-4 py-6 min-h-[80vh]">
       <slot />
     </main>

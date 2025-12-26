@@ -40,11 +40,30 @@ export const useAuth = () => {
     return await reqPost<Resp<null>>("/auth/refresh", { userUid })
   }
 
+  // 내 프로필 정보 업데이트
+  const updateMyInfo = async (
+    name: string,
+    signature: string,
+    password: string,
+    profile: File | null,
+  ) => {
+    const fd = new FormData()
+    fd.append("name", name)
+    fd.append("signature", signature)
+    fd.append("password", password)
+    if (profile) {
+      fd.append("profile", profile)
+    }
+
+    return await reqPatch<Resp<null>>("/auth/update", fd)
+  }
+
   return {
     loadInitUserInfo,
     loadInitOtherUserInfo,
     doLogin,
     doLogout,
     updateRefreshToken,
+    updateMyInfo,
   }
 }

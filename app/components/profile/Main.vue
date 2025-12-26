@@ -9,7 +9,6 @@
     <div class="text-center">
       <div class="flex items-center justify-center gap-4 mb-2">
         <h2 class="text-3xl font-bold tracking-tight">{{ auth.otherUser.name }}</h2>
-
         <CommonVTooltip content="사이트의 관리자입니다" v-if="auth.otherUser.admin">
           <Badge
             variant="outline"
@@ -17,21 +16,21 @@
             ><ShieldCheckIcon class="w-4 h-4" /> ADMIN
           </Badge>
         </CommonVTooltip>
-
-        <Badge variant="default" class="text-foreground" v-else
-          >Lv. {{ auth.otherUser.level }}</Badge
-        >
       </div>
-      <div class="text-muted-foreground max-w-sm">{{ auth.otherUser.signature }}</div>
+      <div class="text-muted-foreground max-w-sm">
+        {{ recoverChars(auth.otherUser.signature) }}
+      </div>
     </div>
 
     <div class="mt-8 flex gap-2" v-if="isMe">
       <CommonVTooltip content="내 프로필 이미지, 닉네임, 서명을 수정합니다">
-        <Button variant="outline" class="flex items-center gap-2 cursor-pointer">
-          <UserRoundPenIcon class="w-4 h-4" />
-          프로필 수정</Button
-        ></CommonVTooltip
-      >
+        <LazyProfileEditSheet>
+          <Button variant="outline" class="flex items-center gap-2 cursor-pointer">
+            <UserRoundPenIcon class="w-4 h-4" />
+            프로필 수정
+          </Button>
+        </LazyProfileEditSheet>
+      </CommonVTooltip>
 
       <CommonVTooltip content="사이트에서 로그아웃 합니다">
         <Button variant="outline" class="cursor-pointer" as-child>

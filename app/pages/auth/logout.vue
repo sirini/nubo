@@ -1,5 +1,5 @@
 <template>
-  <section class="flex items-center justify-center min-h-screen py-4">
+  <section class="flex items-center justify-center min-h-[80vh] py-4">
     <Card class="w-full rounded-lg overflow-hidden shadow-lg max-w-sm">
       <CardHeader>
         <CardTitle class="text-xl">로그아웃 완료</CardTitle>

@@ -19,7 +19,6 @@
     <Card class="border-none p-0 shadow-none">
       <CardContent class="grid gap-4 md:grid-cols-4 p-0">
         <ProfileLatestPosts :posts="view.writerPosts" />
-        <Separator class="md:hidden my-2" />
         <ProfileLatestComments :comments="view.writerComments" />
       </CardContent>
     </Card>

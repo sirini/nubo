@@ -1,5 +1,5 @@
 <template>
-  <section class="max-w-6xl mx-auto">
+  <section class="mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-4 h-auto">
       <ProfileMain :target-user-uid="targetUserUid" />
       <Card class="md:col-span-2 md:row-span-2 overflow-hidden p-0">

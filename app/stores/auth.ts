@@ -8,12 +8,11 @@ import {
 } from "~/types/user"
 
 export const useAuthStore = defineStore("auth", () => {
-  const { loadInitUserInfo, loadInitOtherUserInfo, doLogin, doLogout, updateRefreshToken } =
-    useAuth()
+  const { loadInitUserInfo, loadInitOtherUserInfo, doLogin, doLogout, updateMyInfo } = useAuth()
   const { loadInitUserLatestContent } = useBoard()
   const isAdmin = computed(() => user.value.uid === 1)
+  const isLoading = ref<boolean>(false)
   const isLoggedIn = computed(() => user.value.uid > 0)
-  const newProfile = ref<File | undefined>(undefined)
   const user = useState<UserMyResult>("user-state", () => MY_INFO_RESULT)
   const otherUser = ref<UserInfoResult>(USER_INFO_RESULT)
   const userLatestPosts = ref<BoardWriterLatestPost[]>([])
@@ -87,33 +86,44 @@ export const useAuthStore = defineStore("auth", () => {
   const logout = async () => {
     try {
       await doLogout()
-    } catch (e) {
-      void e
     } finally {
       user.value = MY_INFO_RESULT
     }
   }
 
-  // 액세스 토큰 업데이트
-  const updateAccessToken = async () => {
+  // 내 프로필 정보 업데이트
+  const update = async (
+    name: string,
+    signature: string,
+    password: string,
+    profile: File | null,
+  ) => {
     try {
-      const response = await updateRefreshToken(user.value.uid)
-      if (!response || !response.success) {
-        await logout()
-        return false
+      isLoading.value = true
+      const response = await updateMyInfo(name, signature, password, profile)
+      if (!response.success) {
+        toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${response.error}`)
+        return
       }
-      return true
+      toast(`✅ 내 프로필 정보를 성공적으로 수정하였습니다`)
     } catch (e) {
-      await logout()
-      void e
+      toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${e}`)
+    } finally {
+      if (user.value.uid === otherUser.value.uid) {
+        otherUser.value.name = name
+        otherUser.value.signature = signature
+      } else {
+        user.value.name = name
+        user.value.signature = signature
+      }
+      isLoading.value = false
     }
-    return false
   }
 
   return {
     isAdmin,
     isLoggedIn,
-    newProfile,
+    isLoading,
     user,
     otherUser,
     userLatestPosts,
@@ -124,6 +134,6 @@ export const useAuthStore = defineStore("auth", () => {
     getInitUserLatestContent,
     login,
     logout,
-    updateAccessToken,
+    update,
   }
 })
