@@ -8,7 +8,7 @@
         <DropdownMenuLabel class="text-gray-500 text-xs">내 계정</DropdownMenuLabel>
         <DropdownMenuGroup v-if="auth.isLoggedIn">
           <DropdownMenuItem as-child class="w-full cursor-pointer">
-            <NuxtLink to="/auth/profile" class="inline-flex gap-3 items-center">
+            <NuxtLink :to="`/user/${auth.user.uid}`" class="inline-flex gap-3 items-center">
               <Avatar>
                 <AvatarImage :src="auth.user.profile" alt="Profile image" />
                 <AvatarFallback>{{ auth.user.name.charAt(0) }}</AvatarFallback>

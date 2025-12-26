@@ -1,9 +1,22 @@
 import { reqPatch } from "~/composables/useUtils"
-import type { BoardWriterLatestContent, BoardViewLikeParam, BoardViewResult } from "~/types/board"
+import type {
+  BoardViewDownloadResult,
+  BoardViewLikeParam,
+  BoardViewResult,
+  BoardWriterLatestContent,
+} from "~/types/board"
 import type { Resp } from "~/types/common"
 
 export const useBoard = () => {
   const config = useRuntimeConfig()
+
+  // 첨부파일 다운로드 하기
+  const download = async (boardUid: number, fileUid: number) => {
+    return await reqGet<Resp<BoardViewDownloadResult>>("/board/download", {
+      boardUid,
+      fileUid,
+    })
+  }
 
   // 게시글 본문 내용 가져오기
   const loadInitBoardView = async (id: string, postUid: number, latestLimit: number = 5) => {
@@ -38,6 +51,7 @@ export const useBoard = () => {
   }
 
   return {
+    download,
     loadInitBoardView,
     loadInitUserLatestContent,
     likePost,

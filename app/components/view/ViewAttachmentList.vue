@@ -2,10 +2,14 @@
   <Collapsible
     v-if="board.view.files.length > 0"
     v-model:open="board.isFileListOpen"
-    class="p-3 border rounded-md mx-3"
+    class="border-t"
   >
-    <div class="flex items-center justify-between w-full px-1 cursor-pointer">
-      <h4 class="text-sm font-semibold" @click="board.isFileListOpen = !board.isFileListOpen">
+    <div class="flex items-center justify-between w-full p-3">
+      <h4
+        class="text-sm cursor-pointer pl-1 flex items-center gap-2"
+        @click="board.isFileListOpen = !board.isFileListOpen"
+      >
+        <FilesIcon class="w-4 h-4" />
         첨부파일 목록
       </h4>
       <CollapsibleTrigger as-child>
@@ -19,7 +23,8 @@
       <div
         v-for="(file, index) in board.view.files"
         :key="index"
-        class="rounded-md border px-4 py-3 font-code text-sm inline-flex items-center w-full cursor-pointer"
+        @click="board.downloadFile(file.uid)"
+        class="border-b px-4 py-3 font-code text-sm inline-flex items-center cursor-pointer w-full hover:bg-muted hover:text-blue-500 transition-colors"
       >
         <DownloadIcon class="w-4 h-4 mr-3" />
         <span class="text-xs">{{ file.name }}</span>
@@ -31,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronsUpDownIcon, DownloadIcon } from "lucide-vue-next"
+import { ChevronsUpDownIcon, DownloadIcon, FilesIcon } from "lucide-vue-next"
 import { num } from "~/composables/useUtils"
 
 const board = useBoardStore()

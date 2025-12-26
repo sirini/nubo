@@ -3,7 +3,8 @@ import { toast } from "vue-sonner"
 import { BOARD_VIEW_RESULT, type BoardViewResult } from "~/types/board"
 
 export const useBoardStore = defineStore("board", () => {
-  const { loadInitBoardView, likePost } = useBoard()
+  const { download, loadInitBoardView, likePost } = useBoard()
+  const config = useRuntimeConfig()
   const error = ref<unknown>(null)
   const isFileListOpen = ref<boolean>(false)
   const latestLimit = ref<number>(5)
@@ -49,6 +50,30 @@ export const useBoardStore = defineStore("board", () => {
     }
   }
 
+  // 첨부파일 다운로드하기
+  const downloadFile = async (fileUid: number) => {
+    try {
+      const response = await download(view.value.config.uid, fileUid)
+      if (!response.success || !response.result) {
+        toast(`❌ 파일을 내려받지 못했습니다: ${response.error}`)
+        return
+      }
+      const link = document.createElement("a")
+      link.href = `${config.public.goapi}${response.result.path}`
+      link.download = response.result.name
+      link.target = "_blank"
+      link.style.display = "none"
+
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      toast(`✅ 브라우저 기본 다운로드 폴더를 새로고침 해보세요`)
+    } catch (e) {
+      toast(`❌ 파일을 내려받지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     error,
     isFileListOpen,
@@ -56,6 +81,7 @@ export const useBoardStore = defineStore("board", () => {
     pending,
     view,
 
+    downloadFile,
     getInitView,
     togglePostLike,
   }
