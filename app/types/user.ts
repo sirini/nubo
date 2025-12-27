@@ -89,3 +89,25 @@ export const USER_PERMISSION_REPORT_RESULT: UserPermissionReportResult = {
   userUid: 0,
   response: "",
 }
+
+// 프로필 수정 시 필요한 입력값들 정의
+export type EditProfileParam = {
+  password1: string
+  password2: string
+  nickname: string
+  profile: string
+  signature: string
+  newProfile: File | null
+  fileInput: HTMLInputElement | null
+}
+
+// 프로필 수정 시 필요한 타입의 기본값
+export const EDIT_PROFILE_PARAM: EditProfileParam = {
+  password1: "",
+  password2: "",
+  nickname: "",
+  profile: "",
+  signature: "",
+  newProfile: null,
+  fileInput: null,
+}

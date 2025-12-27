@@ -136,8 +136,8 @@ export const useCommentStore = defineStore("comment", () => {
         return
       }
       const comment = { ...COMMENT_RESULT }
-      comment.uid = param.replyTargetUid
-      comment.replyUid = response.result
+      comment.uid = response.result
+      comment.replyUid = param.replyTargetUid
       comment.writer = { uid: user.uid, name: user.name, profile: user.profile }
       comment.content = param.content
       comment.postUid = param.postUid

@@ -1,6 +1,8 @@
 import { toast } from "vue-sonner"
 import type { BoardWriterLatestComment, BoardWriterLatestPost } from "~/types/board"
 import {
+  EDIT_PROFILE_PARAM,
+  type EditProfileParam,
   MY_INFO_RESULT,
   USER_INFO_RESULT,
   type UserInfoResult,
@@ -17,6 +19,7 @@ export const useAuthStore = defineStore("auth", () => {
   const otherUser = ref<UserInfoResult>(USER_INFO_RESULT)
   const userLatestPosts = ref<BoardWriterLatestPost[]>([])
   const userLatestComments = ref<BoardWriterLatestComment[]>([])
+  const editProfile = ref<EditProfileParam>(EDIT_PROFILE_PARAM)
 
   // 서버에서 사용자 정보를 기존 토큰 정보로 가져오기
   const getInitUserInfo = async () => {
@@ -43,6 +46,9 @@ export const useAuthStore = defineStore("auth", () => {
         return
       }
       otherUser.value = response.result
+      editProfile.value.nickname = recoverChars(otherUser.value.name)
+      editProfile.value.profile = otherUser.value.profile
+      editProfile.value.signature = recoverChars(otherUser.value.signature)
     } catch (e) {
       toast(`❌ 다른 사용자의 공개 정보를 가져오지 못했습니다: ${e}`)
     }
@@ -92,15 +98,15 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   // 내 프로필 정보 업데이트
-  const update = async (
-    name: string,
-    signature: string,
-    password: string,
-    profile: File | null,
-  ) => {
+  const update = async () => {
     try {
       isLoading.value = true
-      const response = await updateMyInfo(name, signature, password, profile)
+      const response = await updateMyInfo(
+        editProfile.value.nickname,
+        editProfile.value.signature,
+        editProfile.value.password1,
+        editProfile.value.newProfile,
+      )
       if (!response.success) {
         toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${response.error}`)
         return
@@ -110,11 +116,11 @@ export const useAuthStore = defineStore("auth", () => {
       toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${e}`)
     } finally {
       if (user.value.uid === otherUser.value.uid) {
-        otherUser.value.name = name
-        otherUser.value.signature = signature
+        otherUser.value.name = editProfile.value.nickname
+        otherUser.value.signature = editProfile.value.signature
       } else {
-        user.value.name = name
-        user.value.signature = signature
+        user.value.name = editProfile.value.nickname
+        user.value.signature = editProfile.value.signature
       }
       isLoading.value = false
     }
@@ -128,6 +134,7 @@ export const useAuthStore = defineStore("auth", () => {
     otherUser,
     userLatestPosts,
     userLatestComments,
+    editProfile,
 
     getInitUserInfo,
     getInitOtherUserInfo,

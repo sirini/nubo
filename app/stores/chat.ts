@@ -48,7 +48,7 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   // 채팅 메시지 보내기
-  const send = useDebounceFn(async () => {
+  const send = useDebounceFn(async (userUid: number) => {
     if (targetUserUid.value < 1) return
     try {
       isLoading.value = true
@@ -57,12 +57,17 @@ export const useChatStore = defineStore("chat", () => {
         toast(`❌ 상대방에게 메세지를 보내지 못했습니다: ${response.error}`)
         return
       }
+      history.value.push({
+        uid: response.result,
+        userUid,
+        message: message.value,
+        timestamp: Date.now(),
+      })
       toast(`✅ 상대방에게 메시지를 성공적으로 전달하였습니다`)
     } catch (e) {
       toast(`❌ 상대방에게 메세지를 보내지 못했습니다: ${e}`)
     } finally {
       message.value = ""
-      await getChatHistory(targetUserUid.value)
       isLoading.value = false
     }
   })

@@ -46,7 +46,7 @@ export const useBoard = () => {
   }
 
   // 게시글에 좋아요 남기기 (혹은 취소하기)
-  const likePost = async (param: BoardViewLikeParam) => {
+  const like = async (param: BoardViewLikeParam) => {
     return await reqPatch<Resp<null>>("/board/like", param)
   }
 
@@ -54,6 +54,6 @@ export const useBoard = () => {
     download,
     loadInitBoardView,
     loadInitUserLatestContent,
-    likePost,
+    like,
   }
 }

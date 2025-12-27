@@ -266,7 +266,6 @@ export const BOARD_VIEW_RESULT: BoardViewResult = {
 export type BoardViewLikeParam = {
   boardUid: number
   postUid: number
-  userUid: number
   liked: boolean
 }
 
