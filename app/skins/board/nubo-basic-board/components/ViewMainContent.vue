@@ -15,8 +15,8 @@
 
   <div v-if="view.post.writer.signature.length > 0">
     <hr />
-    <div class="text-secondary text-sm pt-3 px-4">
-      {{ recoverChars(view.post.writer.signature) }}
+    <div class="text-muted-foreground text-xs pt-3 px-4">
+      {{ view.post.writer.signature }}
     </div>
   </div>
 </template>

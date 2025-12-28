@@ -101,8 +101,8 @@ provide(nuboProfileKey, {
         return
       }
     }
-    if (auth.editProfile.nickname.length < 2 || auth.editProfile.nickname.length > 9) {
-      toast(`⚠️ 닉네임은 2글자 이상 10글자 미만으로 작성해주세요`)
+    if (auth.editProfile.nickname.length < 2 || auth.editProfile.nickname.length > 30) {
+      toast(`⚠️ 닉네임은 2글자 이상 30글자 미만으로 작성해주세요`)
       return
     }
     auth.user.profile = auth.editProfile.profile

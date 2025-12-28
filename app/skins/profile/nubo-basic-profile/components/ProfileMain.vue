@@ -8,7 +8,7 @@
     </Avatar>
     <div class="text-center">
       <div class="flex items-center justify-center gap-4 mb-2">
-        <h2 class="text-3xl font-bold tracking-tight">{{ recoverChars(profileUser.name) }}</h2>
+        <h2 class="text-3xl font-bold tracking-tight" v-html="profileUser.name"></h2>
         <CommonVTooltip content="사이트의 관리자입니다" v-if="profileUser.admin">
           <Badge
             variant="outline"
@@ -17,9 +17,7 @@
           </Badge>
         </CommonVTooltip>
       </div>
-      <div class="text-muted-foreground max-w-sm">
-        {{ recoverChars(profileUser.signature) }}
-      </div>
+      <div class="text-muted-foreground max-w-sm" v-html="profileUser.signature"></div>
     </div>
 
     <div class="mt-8 flex gap-2" v-if="isMe">

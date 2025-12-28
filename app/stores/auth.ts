@@ -30,7 +30,8 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       user.value = response.result
-      user.value.signature = decodeURIComponent(user.value.signature)
+      user.value.name = recoverChars(user.value.name)
+      user.value.signature = recoverChars(user.value.signature)
     } catch (e) {
       toast(`❌ 사용자 정보를 가져오지 못했습니다: ${e}`)
       await logout()

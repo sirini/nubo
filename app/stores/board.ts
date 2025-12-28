@@ -22,6 +22,8 @@ export const useBoardStore = defineStore("board", () => {
         return
       }
       view.value = response.result
+      view.value.post.writer.name = recoverChars(view.value.post.writer.name)
+      view.value.post.writer.signature = recoverChars(view.value.post.writer.signature)
     } finally {
       pending.value = false
     }
