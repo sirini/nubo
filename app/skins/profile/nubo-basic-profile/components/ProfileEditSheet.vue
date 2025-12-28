@@ -21,7 +21,7 @@
 
           <input
             type="file"
-            ref="fileInput"
+            ref="fileInputRef"
             class="hidden"
             accept="image/*"
             @change="changeProfileImage"
@@ -87,11 +87,14 @@
 import { CheckCircle2Icon } from "lucide-vue-next"
 import { useNuboProfileContext } from "~/types/nubo-skin-keys"
 
-const fileInput = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<HTMLInputElement | null>(null)
 
 // 프로필 사진 선택하기
 const selectProfileImage = () => {
-  fileInput.value?.click()
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ""
+    fileInputRef.value?.click()
+  }
 }
 
 const { isLoading, editProfile, changeProfileImage, updateMyProfile } = useNuboProfileContext()

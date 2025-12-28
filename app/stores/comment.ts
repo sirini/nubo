@@ -50,6 +50,10 @@ export const useCommentStore = defineStore("comment", () => {
       }
       comments.value = response.result.comments
       totalCommentCount.value = response.result.totalCommentCount
+
+      comments.value.map((comment) => {
+        comment.writer.name = recoverChars(comment.writer.name)
+      })
     } catch (e) {
       toast(`❌ 댓글 목록을 가져오지 못했습니다: ${e}`)
     } finally {
@@ -173,7 +177,7 @@ export const useCommentStore = defineStore("comment", () => {
       const comment = { ...COMMENT_RESULT }
       comment.uid = response.result
       comment.replyUid = response.result
-      comment.writer = { uid: user.uid, name: user.name, profile: user.profile }
+      comment.writer = { uid: user.uid, name: recoverChars(user.name), profile: user.profile }
       comment.content = param.content
       comment.postUid = param.postUid
       comment.submitted = Date.now()

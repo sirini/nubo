@@ -30,6 +30,7 @@ export default defineNuxtConfig({
         profile: "nubo-basic-profile",
         board: "nubo-basic-board",
         privacy: "nubo-basic-privacy",
+        error: "nubo-basic-error",
       },
     },
   },

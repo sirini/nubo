@@ -4,7 +4,7 @@ import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
 import { useEditor } from "~/composables/useEditor.client"
-import { BOARD_CONFIG, type BoardConfig, STATUS, type BoardAttachment } from "~/types/board"
+import { BOARD_CONFIG, STATUS, type BoardAttachment, type BoardConfig } from "~/types/board"
 import type { Pair } from "~/types/common"
 import type {
   EditorHeadings,
@@ -27,7 +27,7 @@ export const useEditorStore = defineStore("editor", () => {
     getThumbnailImage,
     loadOriginalPost,
     modifyPrevPost,
-    EditorRemoveAttachedFile,
+    editorRemoveAttachedFile,
     removeInsertedImage,
     uploadEditorImages,
     writeNewPost,
@@ -38,8 +38,9 @@ export const useEditorStore = defineStore("editor", () => {
   const config = ref<BoardConfig>(BOARD_CONFIG)
   const content = ref<string>("")
   const editor = ref<Editor | null>(null)
+  const editorHeadings = ref<string>("")
+  const editorRemoveAttachedInfo = ref<EditorRemoveAttached>({ fileUid: 0, index: 0 })
   const files = ref<BoardAttachment[]>([])
-  const EditorHeadings = ref<string>("")
   const images = ref<File[]>([])
   const insertedImageResult = ref<EditorInsertImageResult | null>(null)
   const insertedImages = ref<Pair[]>([])
@@ -48,22 +49,23 @@ export const useEditorStore = defineStore("editor", () => {
   const isDragging = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isNotice = ref<boolean>(false)
+  const isPopOver = ref<Record<string, boolean>>({})
   const isSearchingTags = ref<boolean>(false)
   const isSearchingTitles = ref<boolean>(false)
   const isSecret = ref<boolean>(false)
   const isUploading = ref<boolean>(false)
   const isWriting = ref<boolean>(false)
+  const imageUrl = ref<string>("")
   const postUid = ref<number>(0)
-  const previewInsertImages = ref<string[]>([])
   const previewEditorSelectedImages = ref<EditorSelectedImage[]>([])
-  const EditorRemoveAttachedInfo = ref<EditorRemoveAttached>({ fileUid: 0, index: 0 })
+  const previewInsertImages = ref<string[]>([])
   const runtimeConfig = useRuntimeConfig()
   const tag = ref<string>("")
   const tags = ref<string[]>([])
   const tagSuggestions = ref<EditorTagItem[]>([])
+  const thumbnails = ref<EditorPreviewAttachedImage[]>([])
   const title = ref<string>("")
   const titleSuggestions = ref<string[]>([])
-  const thumbnails = ref<EditorPreviewAttachedImage[]>([])
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -135,12 +137,11 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 선택한 이미지 파일들을 미리 보여주기
-  const EditorSelectedImages = (event: MouseEvent) => {
+  const changeSelectedImages = (targets: FileList | null) => {
     previewInsertImages.value.forEach((url) => URL.revokeObjectURL(url))
     previewInsertImages.value = []
     images.value = []
 
-    const targets = (event?.target as HTMLInputElement).files
     if (!targets) {
       return
     }
@@ -219,7 +220,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 기존에 업로드했던 이미지 삭제하기
-  const removeImage = async (imageUid: number) => {
+  const deleteInsertedImage = async (imageUid: number) => {
     try {
       const response = await removeInsertedImage(imageUid)
       if (!response.success) {
@@ -272,7 +273,7 @@ export const useEditorStore = defineStore("editor", () => {
   }, 150)
 
   // 제안된 글제목 선택
-  const selectTitle = (suggestion: string) => {
+  const selectSuggestedTitle = (suggestion: string) => {
     title.value = suggestion
     titleSuggestions.value = []
   }
@@ -298,55 +299,54 @@ export const useEditorStore = defineStore("editor", () => {
     let totalLimit = parseInt(nuxtConfig.public.fileSize)
     previewEditorSelectedImages.value.forEach((img) => URL.revokeObjectURL(img.url))
     previewEditorSelectedImages.value = []
+    attaches.value = []
+    const files = Array.from(fileList)
 
-    if (fileList) {
-      attaches.value = []
-      const files = Array.from(fileList)
-      files.forEach((file) => {
-        totalSize += file.size
-        if (totalSize > totalLimit) {
-          toast(`⚠️ 첨부 제한 크기를 초과하였습니다: 이후 파일들은 추가되지 않습니다`)
-          return
-        }
-        attaches.value.push(file)
-        if (file.type.startsWith("image/")) {
-          previewEditorSelectedImages.value.push({
-            name: file.name,
-            url: URL.createObjectURL(file),
-          })
-        }
-      })
-    }
+    files.forEach((file) => {
+      totalSize += file.size
+      if (totalSize > totalLimit) {
+        toast(`⚠️ 첨부 제한 크기를 초과하였습니다: 이후 파일들은 추가되지 않습니다`)
+        return
+      }
+      attaches.value.push(file)
+      if (file.type.startsWith("image/")) {
+        previewEditorSelectedImages.value.push({
+          name: file.name,
+          url: URL.createObjectURL(file),
+        })
+      }
+    })
   }
 
   // 첨부파일 추가하기
-  const handleAttachChange = (e: Event) => {
+  const changeFileList = (e: Event) => {
     const target = e.target as HTMLInputElement
     if (target.files) {
       manageAttachments(target.files)
     }
+    target.value = ""
   }
 
   // 아직 업로드 안된 첨부파일 제거하기
-  const removeAttach = (index: number) => {
+  const removeFromList = (index: number) => {
     attaches.value.splice(index, 1)
   }
 
   // 정말로 업로드된 첨부를 삭제할건지 물어보기
   const confirmRemoveFile = (fileUid: number, index: number) => {
-    EditorRemoveAttachedInfo.value = { fileUid, index }
+    editorRemoveAttachedInfo.value = { fileUid, index }
     isConfirmDialog.value = true
   }
 
   // 글 수정시 이미 첨부되어 있던 파일을 제거하기
-  const removeFile = async () => {
-    const { fileUid, index } = EditorRemoveAttachedInfo.value
+  const removeAttachedFile = async () => {
+    const { fileUid, index } = editorRemoveAttachedInfo.value
     if (fileUid < 1 || index < 0) {
       toast(`⚠️ 삭제할 첨부 파일이 제대로 지정되지 않았습니다`)
       return
     }
     try {
-      const response = await EditorRemoveAttachedFile(config.value.uid, postUid.value, fileUid)
+      const response = await editorRemoveAttachedFile(config.value.uid, postUid.value, fileUid)
       if (!response.success) {
         toast(`❌ 첨부파일을 삭제하지 못했습니다: ${response.error}`)
         return
@@ -356,7 +356,7 @@ export const useEditorStore = defineStore("editor", () => {
     } catch (e) {
       toast(`❌ 첨부파일을 삭제하지 못했습니다: ${e}`)
     } finally {
-      EditorRemoveAttachedInfo.value = { fileUid: 0, index: 0 }
+      editorRemoveAttachedInfo.value = { fileUid: 0, index: 0 }
       isConfirmDialog.value = false
     }
   }
@@ -473,7 +473,7 @@ export const useEditorStore = defineStore("editor", () => {
         navigateTo(`/board/${config.value.id}`)
       }
       response.result.tags.forEach((tag) => tags.value.push(tag.name))
-      isNotice.value = post.status === STATUS.NORMAL
+      isNotice.value = post.status === STATUS.NOTICE
       isSecret.value = post.status === STATUS.SECRET
       categoryUid.value = post.category.uid
       content.value = post.content
@@ -513,8 +513,9 @@ export const useEditorStore = defineStore("editor", () => {
     config,
     content,
     editor,
+    editorHeadings,
+    editorRemoveAttachedInfo,
     files,
-    EditorHeadings,
     images,
     insertedImageResult,
     insertedImages,
@@ -523,42 +524,43 @@ export const useEditorStore = defineStore("editor", () => {
     isDragging,
     isImageUploadDialog,
     isNotice,
+    isPopOver,
     isSearchingTags,
     isSearchingTitles,
     isSecret,
     isUploading,
     isWriting,
+    imageUrl,
     postUid,
-    previewInsertImages,
     previewEditorSelectedImages,
-    EditorRemoveAttachedInfo,
+    previewInsertImages,
     tag,
     tags,
     tagSuggestions,
+    thumbnails,
     title,
     titleSuggestions,
-    thumbnails,
 
     addTag,
     confirmRemoveFile,
     dropAttaches,
     getThumb,
-    handleAttachChange,
+    changeFileList,
     insertImageToEditor,
     isHeadingActive,
     loadBoardConfig,
     loadInsertedImages,
     loadPost,
     modify,
-    removeAttach,
-    removeImage,
-    removeFile,
+    removeFromList,
+    deleteInsertedImage,
+    removeAttachedFile,
     removeTag,
     searchTags,
     searchTitles,
     selectColor,
-    EditorSelectedImages,
-    selectTitle,
+    changeSelectedImages,
+    selectSuggestedTitle,
     setLink,
     submit,
     toggleHeading,

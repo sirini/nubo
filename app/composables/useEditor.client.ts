@@ -1,12 +1,13 @@
+import { reqDelete, reqGet, reqPatch, reqPost } from "~/composables/useUtils"
+import type { Resp } from "~/types/common"
 import type {
-  EditorTagItem,
   EditorConfigResult,
   EditorInsertImageResult,
   EditorLoadPostResult,
+  EditorModifyParam,
+  EditorTagItem,
+  EditorWriteParam,
 } from "~/types/editor"
-import type { Resp } from "~/types/common"
-import type { EditorModifyParam, EditorWriteParam } from "~/types/editor"
-import { reqDelete, reqGet, reqPatch, reqPost } from "~/composables/useUtils"
 
 export const useEditor = () => {
   // 에디터에서 삽입할 이미지들 업로드
@@ -67,6 +68,7 @@ export const useEditor = () => {
     for (const file of param.files) {
       fd.append("attachments[]", file)
     }
+
     return await reqPatch<Resp<null>>("/editor/modify", fd)
   }
 
@@ -76,7 +78,7 @@ export const useEditor = () => {
   }
 
   // 본문에 첨부했던 파일 삭제하기
-  const EditorRemoveAttachedFile = async (boardUid: number, postUid: number, fileUid: number) => {
+  const editorRemoveAttachedFile = async (boardUid: number, postUid: number, fileUid: number) => {
     return await reqDelete<Resp<null>>("/editor/remove/attached", { boardUid, postUid, fileUid })
   }
 
@@ -104,7 +106,7 @@ export const useEditor = () => {
     getThumbnailImage,
     loadOriginalPost,
     modifyPrevPost,
-    EditorRemoveAttachedFile,
+    editorRemoveAttachedFile,
     removeInsertedImage,
     uploadEditorImages,
     writeNewPost,

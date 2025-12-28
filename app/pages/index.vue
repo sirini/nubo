@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import "vue-sonner/style.css"
+import { useHomeProvider } from "~/providers/home"
 import { SEARCH, type Search } from "~/types/board"
 import { nuboHomeKey } from "~/types/nubo-skin-keys"
 
@@ -19,11 +20,5 @@ const selectedSkin = computed(() => {
 
 await home.getInitLatestPosts({ reset: true })
 
-provide(nuboHomeKey, {
-  pending: computed(() => home.pending),
-  posts: computed(() => home.posts),
-  loadMorePosts: async () => {
-    await home.loadMore()
-  },
-})
+provide(nuboHomeKey, useHomeProvider())
 </script>

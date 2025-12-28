@@ -1,11 +1,11 @@
 <template>
   <div v-if="edit.files.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
     <div v-for="(file, index) in edit.files" :key="index">
-      <Popover v-model:open="isPopOver[file.uid]">
+      <Popover v-model:open="isPopOver[`${file.name}-${file.uid}`]">
         <PopoverTrigger
           as-child
-          @mouseenter="openPopOver(file.uid)"
-          @mouseleave="closePopOver(file.uid)"
+          @mouseenter="openPopOver(`${file.name}-${file.uid}`)"
+          @mouseleave="closePopOver(`${file.name}-${file.uid}`)"
         >
           <div class="flex items-center justify-between p-2 border rounded-md text-sm bg-card">
             <div class="flex items-center gap-2 truncate pl-2 cursor-pointer">
@@ -25,9 +25,9 @@
             </CommonVTooltip>
           </div>
         </PopoverTrigger>
-        <PopoverContent class="w-auto p-0" v-if="getThumbnailPath(file.uid).length > 0">
+        <PopoverContent class="w-auto p-0" v-if="getUploadedThumbnail(file.uid).length > 0">
           <img
-            :src="getThumbnailPath(file.uid)"
+            :src="getUploadedThumbnail(file.uid)"
             class="w-50 h-50 lg:w-75 lg:h-75 object-cover rounded-lg shadow-lg"
             alt="Preview"
           />
@@ -40,23 +40,9 @@
 <script setup lang="ts">
 import { Trash2Icon } from "lucide-vue-next"
 import { num } from "~/composables/useUtils"
+import { useNuboWriteContext } from "~/types/nubo-skin-keys"
 
 const edit = useEditorStore()
-const isPopOver = ref<Record<number, boolean>>({})
 
-// 이미지 팝업 지연 열기
-const openPopOver = useDebounceFn((uid: number) => {
-  isPopOver.value[uid] = true
-}, 100)
-
-// 이미지 팝업 지연 닫기
-const closePopOver = useDebounceFn((uid: number) => {
-  isPopOver.value[uid] = false
-}, 100)
-
-// 이미지 미리보기 URL 반환
-const getThumbnailPath = (fileUid: number) => {
-  const thumb = edit.thumbnails.find((f) => f.fileUid === fileUid)
-  return thumb?.thumbnail || ""
-}
+const { isPopOver, openPopOver, closePopOver, getUploadedThumbnail } = useNuboWriteContext()
 </script>

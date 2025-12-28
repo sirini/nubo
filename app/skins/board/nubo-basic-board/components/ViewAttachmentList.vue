@@ -15,7 +15,7 @@
         </Button>
       </CollapsibleTrigger>
     </div>
-    <CollapsibleContent class="pt-2 space-y-2">
+    <CollapsibleContent>
       <div
         v-for="(file, index) in view.files"
         :key="index"
