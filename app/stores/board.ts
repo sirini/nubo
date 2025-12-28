@@ -1,14 +1,25 @@
 import { defineStore } from "pinia"
 import { toast } from "vue-sonner"
-import { BOARD_VIEW_RESULT, type BoardViewResult } from "~/types/board"
+import {
+  BOARD_LIST_RESULT,
+  BOARD_VIEW_RESULT,
+  SEARCH,
+  type BoardListResult,
+  type BoardViewResult,
+  type Search,
+} from "~/types/board"
 
 export const useBoardStore = defineStore("board", () => {
-  const { loadInitBoardView, like, download } = useBoard()
+  const { loadInitBoardView, loadInitBoardList, like, download } = useBoard()
   const config = useRuntimeConfig()
   const error = ref<unknown>(null)
   const latestLimit = ref<number>(5)
   const pending = ref<boolean>(false)
   const view = ref<BoardViewResult>(BOARD_VIEW_RESULT)
+  const list = ref<BoardListResult>(BOARD_LIST_RESULT)
+  const page = ref<number>(1)
+  const option = ref<Search>(SEARCH.TITLE as Search)
+  const keyword = ref<string>("")
 
   // 게시글 본문 내용 가져오기
   const getInitView = async (id: string, postUid: number) => {
@@ -24,6 +35,28 @@ export const useBoardStore = defineStore("board", () => {
       view.value = response.result
       view.value.post.writer.name = recoverChars(view.value.post.writer.name)
       view.value.post.writer.signature = recoverChars(view.value.post.writer.signature)
+    } finally {
+      pending.value = false
+    }
+  }
+
+  // 게시글 목록 가져오기
+  const getInitList = async (id: string) => {
+    if (pending.value) return
+    try {
+      pending.value = true
+      const response = await loadInitBoardList({
+        id,
+        option: option.value,
+        keyword: keyword.value,
+        page: page.value,
+      })
+
+      if (!response.success || !response.result) {
+        toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      list.value = response.result
     } finally {
       pending.value = false
     }
@@ -81,8 +114,13 @@ export const useBoardStore = defineStore("board", () => {
     latestLimit,
     pending,
     view,
+    list,
+    page,
+    option,
+    keyword,
 
     getInitView,
+    getInitList,
     downloadFile,
     likePost,
   }

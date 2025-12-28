@@ -14,7 +14,7 @@
       >
         <div class="flex items-center justify-between gap-2">
           <div class="flex-1">
-            <NuxtLink :to="`/board/${co.board.id}/${co.postUid}`">
+            <NuxtLink :to="`/board/${co.board.id}/view/${co.postUid}`">
               <span class="line-clamp-1">{{ stripTags(co.content) }}</span>
             </NuxtLink>
           </div>

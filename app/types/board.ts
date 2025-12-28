@@ -214,6 +214,14 @@ export const BOARD_LIST_ITEM: BoardListItem = {
   writer: BOARD_WRITER,
 }
 
+// 게시글 목록보기 요청용 파라미터 정의
+export type BoardListParam = {
+  id: string
+  option: Search
+  keyword: string
+  page: number
+}
+
 // 게시글 목록보기 리턴 값 정의
 export type BoardListResult = {
   totalPostCount: number
@@ -222,6 +230,16 @@ export type BoardListResult = {
   posts: BoardListItem[]
   blackList: number[]
   isAdmin: boolean
+}
+
+// 게시글 목록보기 결과 기본값 정의
+export const BOARD_LIST_RESULT: BoardListResult = {
+  totalPostCount: 0,
+  config: BOARD_CONFIG,
+  notices: [],
+  posts: [],
+  blackList: [],
+  isAdmin: false,
 }
 
 // 썸네일 크기별 종류 정의

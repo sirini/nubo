@@ -1,5 +1,7 @@
 import { reqPatch } from "~/composables/useUtils"
 import type {
+  BoardListParam,
+  BoardListResult,
   BoardViewDownloadResult,
   BoardViewLikeParam,
   BoardViewResult,
@@ -32,6 +34,16 @@ export const useBoard = () => {
     return resp(data.value)
   }
 
+  // 게시글 목록 가져오기
+  const loadInitBoardList = async (params: BoardListParam) => {
+    const { data } = await useFetch<Resp<BoardListResult>>("/board/list", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      params,
+    })
+    return resp(data.value)
+  }
+
   // 특정 회원의 최근 (댓)글들 가져오기
   const loadInitUserLatestContent = async (targetUserUid: number, limit: number = 5) => {
     const { data } = await useFetch<Resp<BoardWriterLatestContent>>("/board/user/latest", {
@@ -53,6 +65,7 @@ export const useBoard = () => {
   return {
     download,
     loadInitBoardView,
+    loadInitBoardList,
     loadInitUserLatestContent,
     like,
   }

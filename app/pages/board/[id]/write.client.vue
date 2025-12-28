@@ -17,7 +17,7 @@ const boardId = route.params.id as string
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.board
-  return defineAsyncComponent(() => import(`../../../skins/board/${skinName}/Write.vue`))
+  return defineAsyncComponent(() => import(`~/skins/board/${skinName}/Write.vue`))
 })
 
 await edit.loadBoardConfig(boardId)

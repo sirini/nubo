@@ -1,6 +1,6 @@
 <template>
   <Card class="overflow-hidden rounded-lg shadow-lg pt-0">
-    <NuxtLink :to="`/board/${post.id}/${post.uid}`">
+    <NuxtLink :to="`/board/${post.id}/view/${post.uid}`">
       <img
         v-if="post.cover"
         :src="post.cover"

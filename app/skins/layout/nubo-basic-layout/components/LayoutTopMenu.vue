@@ -46,7 +46,10 @@
                   as-child
                   class="w-full cursor-pointer"
                 >
-                  <NuxtLink :to="`/board/${board.id}`" class="inline-flex gap-3 items-center">
+                  <NuxtLink
+                    :to="`/board/${board.id}/page/1`"
+                    class="inline-flex gap-3 items-center"
+                  >
                     <FolderOpenIcon class="w-4 h-4" />
                     {{ board.name }}
                   </NuxtLink>

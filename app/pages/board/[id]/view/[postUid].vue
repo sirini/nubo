@@ -18,7 +18,7 @@ const postUid = parseInt(route.params.postUid as string, 10)
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.board
-  return defineAsyncComponent(() => import(`../../../skins/board/${skinName}/View.vue`))
+  return defineAsyncComponent(() => import(`~/skins/board/${skinName}/View.vue`))
 })
 
 await board.getInitView(boardId, postUid)

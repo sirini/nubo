@@ -416,7 +416,7 @@ export const useEditorStore = defineStore("editor", () => {
         return
       }
       if (response.result > 0) {
-        navigateTo(`/board/${config.value.id}/${response.result}`)
+        navigateTo(`/board/${config.value.id}/view/${response.result}`)
       }
     } catch (e) {
       toast(`❌ 게시글을 작성하지 못했습니다: ${e}`)
@@ -448,7 +448,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
-      navigateTo(`/board/${config.value.id}/${postUid.value}`)
+      navigateTo(`/board/${config.value.id}/view/${postUid.value}`)
     } catch (e) {
       toast(`❌ 게시글을 수정하지 못했습니다: ${e}`)
     } finally {
@@ -470,7 +470,7 @@ export const useEditorStore = defineStore("editor", () => {
 
       if (post.status === STATUS.REMOVED) {
         toast(`❌ 게시글이 삭제되어 수정할 수 없습니다`)
-        navigateTo(`/board/${config.value.id}`)
+        navigateTo(`/board/${config.value.id}/page/1`)
       }
       response.result.tags.forEach((tag) => tags.value.push(tag.name))
       isNotice.value = post.status === STATUS.NOTICE

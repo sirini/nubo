@@ -19,7 +19,7 @@ await edit.loadBoardConfig(boardId)
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.board
-  return defineAsyncComponent(() => import(`../../../../skins/board/${skinName}/Modify.vue`))
+  return defineAsyncComponent(() => import(`~/skins/board/${skinName}/Modify.vue`))
 })
 
 watch(() => edit.tag, edit.searchTags)
