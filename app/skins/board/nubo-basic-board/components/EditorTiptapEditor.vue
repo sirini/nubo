@@ -4,8 +4,8 @@
       <div class="p-2 border-b flex items-center flex-wrap gap-2">
         <Button
           size="sm"
-          :variant="ed.isActive('bold') ? 'secondary' : 'ghost'"
-          @click="ed.chain().focus().toggleBold().run()"
+          :variant="isBold ? 'secondary' : 'ghost'"
+          @click="toggleBold"
           class="cursor-pointer"
         >
           <BoldIcon class="w-4 h-4" />
@@ -13,8 +13,8 @@
 
         <Button
           size="sm"
-          :variant="ed.isActive('italic') ? 'secondary' : 'ghost'"
-          @click="ed.chain().focus().toggleItalic().run()"
+          :variant="isItalic ? 'secondary' : 'ghost'"
+          @click="toggleItalic"
           class="cursor-pointer"
         >
           <Italic class="w-4 h-4" />
@@ -22,8 +22,8 @@
 
         <Button
           size="sm"
-          :variant="ed.isActive('strike') ? 'secondary' : 'ghost'"
-          @click="ed.chain().focus().toggleStrike().run()"
+          :variant="isStrike ? 'secondary' : 'ghost'"
+          @click="toggleStrike()"
           class="cursor-pointer"
         >
           <Strikethrough class="w-4 h-4" />
@@ -35,8 +35,8 @@
             <input
               type="color"
               class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-              @input="edit.selectColor($event)"
-              :value="ed.getAttributes('textStyle').color || '#000000'"
+              @input="selectTextColor"
+              :value="getAttr('textStyle').color || '#000000'"
             />
           </Button>
         </div>
@@ -65,19 +65,14 @@
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
-        <Button
-          size="sm"
-          variant="ghost"
-          @click="edit.isAddLinkDialog = true"
-          class="cursor-pointer"
-        >
+        <Button size="sm" variant="ghost" @click="isAddLinkDialog = true" class="cursor-pointer">
           <Link class="w-4 h-4" />
         </Button>
 
         <Button
           size="sm"
           variant="ghost"
-          @click="edit.isImageUploadDialog = true"
+          @click="isImageUploadDialog = true"
           class="cursor-pointer"
         >
           <Image class="w-4 h-4" />
@@ -85,8 +80,8 @@
 
         <Button
           size="sm"
-          :variant="ed.isActive('blockquote') ? 'secondary' : 'ghost'"
-          @click="ed.chain().focus().toggleBlockquote().run()"
+          :variant="isBlockquote ? 'secondary' : 'ghost'"
+          @click="toggleBlockquote"
           class="cursor-pointer"
         >
           <Quote class="w-4 h-4" />
@@ -94,8 +89,8 @@
 
         <Button
           size="sm"
-          :variant="ed.isActive('code') ? 'secondary' : 'ghost'"
-          @click="ed.chain().focus().toggleCode().run()"
+          :variant="isCode ? 'secondary' : 'ghost'"
+          @click="toggleCode"
           class="cursor-pointer"
         >
           <CodeIcon class="w-4 h-4" />
@@ -103,8 +98,8 @@
 
         <Button
           size="sm"
-          :variant="ed.isActive('codeBlock') ? 'secondary' : 'ghost'"
-          @click="ed.chain().focus().toggleCodeBlock().run()"
+          :variant="isCodeBlock ? 'secondary' : 'ghost'"
+          @click="toggleCodeBlock"
           class="cursor-pointer"
         >
           <SquareCode class="w-4 h-4" />
@@ -112,21 +107,11 @@
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
-        <Button
-          size="sm"
-          variant="ghost"
-          @click="ed.chain().focus().undo().run()"
-          class="cursor-pointer"
-        >
+        <Button size="sm" variant="ghost" @click="undo" class="cursor-pointer">
           <Undo class="w-4 h-4" />
         </Button>
 
-        <Button
-          size="sm"
-          variant="ghost"
-          @click="ed.chain().focus().redo().run()"
-          class="cursor-pointer"
-        >
+        <Button size="sm" variant="ghost" @click="redo" class="cursor-pointer">
           <Redo class="w-4 h-4" />
         </Button>
       </div>
@@ -156,6 +141,7 @@ import {
   Undo,
 } from "lucide-vue-next"
 import type { BoardConfig } from "~/types/board"
+import { useNuboEditorContext } from "~/types/nubo-skin-keys"
 import EditorAddLink from "./EditorAddLink.vue"
 import EditorImageUpload from "./EditorImageUpload.vue"
 
@@ -188,4 +174,25 @@ watch(
 onBeforeUnmount(() => {
   ed.value?.destroy()
 })
+
+const {
+  isBold,
+  isItalic,
+  isStrike,
+  isBlockquote,
+  isCode,
+  isCodeBlock,
+  isAddLinkDialog,
+  isImageUploadDialog,
+  toggleBold,
+  toggleItalic,
+  toggleStrike,
+  toggleBlockquote,
+  toggleCode,
+  toggleCodeBlock,
+  undo,
+  redo,
+  getAttr,
+  selectTextColor,
+} = useNuboEditorContext()
 </script>

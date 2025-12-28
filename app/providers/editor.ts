@@ -21,6 +21,12 @@ export const useEditorProvider = (): NuboEditorContext => {
     insertedImages: computed(() => edit.insertedImages),
     insertedImageResult: computed(() => edit.insertedImageResult),
     imageUrl: computed(() => edit.imageUrl),
+    isBold: computed(() => edit.editor?.isActive("bold")),
+    isItalic: computed(() => edit.editor?.isActive("italic")),
+    isStrike: computed(() => edit.editor?.isActive("strike")),
+    isBlockquote: computed(() => edit.editor?.isActive("blockquote")),
+    isCode: computed(() => edit.editor?.isActive("code")),
+    isCodeBlock: computed(() => edit.editor?.isActive("codeBlock")),
 
     setLink: (url: string) => {
       edit.setLink(url)
@@ -36,6 +42,36 @@ export const useEditorProvider = (): NuboEditorContext => {
     },
     deleteInsertedImage: async (imageUid: number) => {
       await edit.deleteInsertedImage(imageUid)
+    },
+    toggleBold: () => {
+      return edit.editor?.chain().focus().toggleBold().run() || false
+    },
+    toggleItalic: () => {
+      return edit.editor?.chain().focus().toggleItalic().run() || false
+    },
+    toggleStrike: () => {
+      return edit.editor?.chain().focus().toggleStrike().run() || false
+    },
+    toggleBlockquote: () => {
+      return edit.editor?.chain().focus().toggleBlockquote().run() || false
+    },
+    toggleCode: () => {
+      return edit.editor?.chain().focus().toggleCode().run() || false
+    },
+    toggleCodeBlock: () => {
+      return edit.editor?.chain().focus().toggleCodeBlock().run() || false
+    },
+    undo: () => {
+      return edit.editor?.chain().focus().undo().run() || false
+    },
+    redo: () => {
+      return edit.editor?.chain().focus().redo().run() || false
+    },
+    getAttr: (name: string) => {
+      return edit.editor?.getAttributes(name) || {}
+    },
+    selectTextColor: (event: Event) => {
+      edit.selectColor(event)
     },
   }
 }

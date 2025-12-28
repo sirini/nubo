@@ -80,11 +80,27 @@ export interface NuboEditorContext {
   insertedImages: ComputedRef<Pair[]>
   insertedImageResult: ComputedRef<EditorInsertImageResult | null>
   imageUrl: ComputedRef<string>
+  isBold: ComputedRef<boolean | undefined>
+  isItalic: ComputedRef<boolean | undefined>
+  isStrike: ComputedRef<boolean | undefined>
+  isBlockquote: ComputedRef<boolean | undefined>
+  isCode: ComputedRef<boolean | undefined>
+  isCodeBlock: ComputedRef<boolean | undefined>
   setLink: (url: string) => void
   loadInsertedImages: (opt?: { reset: boolean } | undefined) => void
   uploadingImages: () => Promise<void>
   insertImageToEditor: (src: string) => void
   deleteInsertedImage: (imageUid: number) => Promise<void>
+  toggleBold: () => boolean
+  toggleItalic: () => boolean
+  toggleStrike: () => boolean
+  toggleBlockquote: () => boolean
+  toggleCode: () => boolean
+  toggleCodeBlock: () => boolean
+  undo: () => boolean
+  redo: () => boolean
+  getAttr: (name: string) => Record<string, any>
+  selectTextColor: (event: Event) => void
 }
 
 // [프로필] 화면에서 필요한 변수 & 함수들 정의
