@@ -1,7 +1,7 @@
 import type { InjectionKey } from "vue"
 import type {
   BoardConfig,
-  BoardListResult,
+  BoardListItem,
   BoardViewResult,
   BoardWriterLatestComment,
   BoardWriterLatestPost,
@@ -16,7 +16,9 @@ import type { EditProfileParam, UserInfoResult, UserMyResult } from "./user"
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboListContext {
-  list: ComputedRef<BoardListResult>
+  notices: ComputedRef<BoardListItem[]>
+  posts: ComputedRef<BoardListItem[]>
+  userBlackList: ComputedRef<number[]>
   config: ComputedRef<BoardConfig>
   isAdmin: ComputedRef<boolean>
   isLoggedIn: ComputedRef<boolean>

@@ -6,7 +6,9 @@ export const useListProvider = (): NuboListContext => {
   const auth = useAuthStore()
 
   return {
-    list: computed(() => board.list),
+    notices: computed(() => board.list.notices),
+    posts: computed(() => board.list.posts),
+    userBlackList: computed(() => board.list.blackList),
     config: computed(() => board.list.config),
     isAdmin: computed(() => auth.isAdmin),
     isLoggedIn: computed(() => auth.isLoggedIn),
