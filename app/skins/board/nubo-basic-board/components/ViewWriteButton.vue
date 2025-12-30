@@ -1,19 +1,25 @@
 <template>
   <CommonVTooltip content="새로운 글을 작성합니다">
-    <Button
+    <NuxtLink
+      :to="`/board/${view.config.id}/write`"
+      :aria-disabled="!isLoggedIn"
       as-child
-      variant="default"
-      class="text-foreground"
-      :class="{ 'opacity-50 pointer-events-none': !isLoggedIn }"
+      class="gap-2"
     >
-      <NuxtLink :to="`/board/${view.config.id}/write`" :aria-disabled="!isLoggedIn">
+      <Button
+        variant="default"
+        class="text-foreground"
+        :class="{ 'opacity-50 pointer-events-none': !isLoggedIn }"
+      >
+        <PencilIcon class="w-4 h-4" />
         새글작성
-      </NuxtLink>
-    </Button>
+      </Button>
+    </NuxtLink>
   </CommonVTooltip>
 </template>
 
 <script setup lang="ts">
+import { PencilIcon } from "lucide-vue-next"
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
 
 const { view, isLoggedIn } = useNuboViewContext()

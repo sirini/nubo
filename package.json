@@ -17,6 +17,7 @@
     "@nuxt/scripts": "^0.11.9",
     "@pinia/nuxt": "^0.11.2",
     "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/vue-table": "^8.21.3",
     "@tiptap/extension-blockquote": "^3.2.2",
     "@tiptap/extension-bold": "^3.4.1",
     "@tiptap/extension-bullet-list": "^3.4.1",

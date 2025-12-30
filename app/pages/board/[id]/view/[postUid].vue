@@ -32,7 +32,6 @@ watch(
   },
 )
 
-// 스킨에서 사용 가능한 변수/함수들 제공
 provide(nuboViewKey, useViewProvider())
 provide(nuboWriteKey, useWriteProvider())
 provide(nuboEditorKey, useEditorProvider())

@@ -19,6 +19,20 @@ export const useBoardStore = defineStore("board", () => {
   const list = ref<BoardListResult>(BOARD_LIST_RESULT)
   const page = ref<number>(1)
   const option = ref<Search>(SEARCH.TITLE as Search)
+  const options = ref<Record<string, number>>({
+    title: SEARCH.TITLE,
+    content: SEARCH.CONTENT,
+    writer: SEARCH.WRITER,
+    tag: SEARCH.TAG,
+    imagedesc: SEARCH.IMAGEDESC,
+  })
+  const optionLabels = computed(() => {
+    const labels: Record<number, string> = {}
+    for (const [key, value] of Object.entries(options.value)) {
+      labels[value] = key
+    }
+    return labels
+  })
   const keyword = ref<string>("")
 
   // 게시글 본문 내용 가져오기
@@ -56,6 +70,14 @@ export const useBoardStore = defineStore("board", () => {
         toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response.error}`)
         return
       }
+      response.result.notices.map((notice) => {
+        notice.title = recoverChars(notice.title)
+        notice.writer.name = recoverChars(notice.writer.name)
+      })
+      response.result.posts.map((post) => {
+        post.title = recoverChars(post.title)
+        post.writer.name = recoverChars(post.writer.name)
+      })
       list.value = response.result
     } finally {
       pending.value = false
@@ -109,6 +131,29 @@ export const useBoardStore = defineStore("board", () => {
     }
   }
 
+  // 게시글 검색하기
+  const searchPost = () => {
+    if (keyword.value.length < 2) {
+      toast(`⚠️ 검색어는 2글자 이상 입력해주세요`)
+      return
+    }
+    navigateTo(
+      `/board/${list.value.config.id}/search/${
+        optionLabels.value[option.value]
+      }/${encodeURIComponent(keyword.value)}/1`,
+    )
+  }
+
+  // 페이징 URL 생성하기
+  const setPagingUrl = (targetPage: number) => {
+    if (keyword.value.length > 1) {
+      return `/board/${list.value.config.id}/search/${
+        optionLabels.value[option.value]
+      }/${encodeURIComponent(keyword.value)}/${targetPage}`
+    }
+    return `/board/${list.value.config.id}/page/${targetPage}`
+  }
+
   return {
     error,
     latestLimit,
@@ -117,11 +162,15 @@ export const useBoardStore = defineStore("board", () => {
     list,
     page,
     option,
+    options,
+    optionLabels,
     keyword,
 
     getInitView,
     getInitList,
     downloadFile,
     likePost,
+    searchPost,
+    setPagingUrl,
   }
 })

@@ -11,6 +11,7 @@ export const useViewProvider = (): NuboViewContext => {
 
   return {
     view: computed(() => board.view),
+    config: computed(() => board.view.config),
     comments: computed(() => comment.comments),
     isLoggedIn: computed(() => auth.isLoggedIn),
     isWriter: computed(() => auth.user.uid === board.view.post.writer.uid),

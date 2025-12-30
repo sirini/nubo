@@ -1,11 +1,11 @@
 <template>
   <section class="container mx-auto py-4">
-    <div v-if="view" class="mx-auto" :style="`max-width: ${view.config.width}px`">
+    <div class="mx-auto" :style="`max-width: ${config.width}px`">
       <ViewBreadcrumb />
 
       <Card
         class="rounded-lg overflow-hidden shadow-lg pt-0 mb-4"
-        :style="`max-width: ${view.config.width}px`"
+        :style="`max-width: ${config.width}px`"
       >
         <ViewImageCarousel v-if="view.images.length > 0" />
         <ViewAttachmentList />
@@ -41,5 +41,5 @@ import ViewRelatedContent from "./components/ViewRelatedContent.vue"
 import ViewWriteButton from "./components/ViewWriteButton.vue"
 import ViewWriteComment from "./components/ViewWriteComment.vue"
 
-const { view } = useNuboViewContext()
+const { view, config } = useNuboViewContext()
 </script>

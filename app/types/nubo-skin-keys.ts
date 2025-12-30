@@ -1,9 +1,11 @@
 import type { InjectionKey } from "vue"
 import type {
   BoardConfig,
+  BoardListResult,
   BoardViewResult,
   BoardWriterLatestComment,
   BoardWriterLatestPost,
+  Search,
 } from "./board"
 import type { ChatHistory } from "./chat"
 import type { CommentResult } from "./comment"
@@ -12,9 +14,24 @@ import type { EditorInsertImageResult, EditorTagItem } from "./editor"
 import type { HomePostItem, HomeSidebarGroupResult } from "./home"
 import type { EditProfileParam, UserInfoResult, UserMyResult } from "./user"
 
+// [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의
+export interface NuboListContext {
+  list: ComputedRef<BoardListResult>
+  config: ComputedRef<BoardConfig>
+  isAdmin: ComputedRef<boolean>
+  isLoggedIn: ComputedRef<boolean>
+  page: ComputedRef<number>
+  totalPostCount: ComputedRef<number>
+  option: ComputedRef<Search>
+  keyword: ComputedRef<string>
+  searchPost: () => void
+  setPagingUrl: (targetUrl: number) => string
+}
+
 // [게시판 글보기] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboViewContext {
   view: ComputedRef<BoardViewResult>
+  config: ComputedRef<BoardConfig>
   comments: ComputedRef<CommentResult[]>
   isLoggedIn: ComputedRef<boolean>
   isWriter: ComputedRef<boolean>
@@ -157,6 +174,7 @@ export interface NuboLoginContext {
   login: (e?: Event | undefined) => Promise<void | undefined>
 }
 
+export const nuboListKey: InjectionKey<NuboListContext> = Symbol("nuboListContext")
 export const nuboViewKey: InjectionKey<NuboViewContext> = Symbol("nuboViewContext")
 export const nuboWriteKey: InjectionKey<NuboWriteContext> = Symbol("nuboWriteContext")
 export const nuboEditorKey: InjectionKey<NuboEditorContext> = Symbol("nuboEditorContext")
@@ -164,6 +182,15 @@ export const nuboHomeKey: InjectionKey<NuboHomeContext> = Symbol("nuboHomeContex
 export const nuboLayoutKey: InjectionKey<NuboLayoutContext> = Symbol("nuboLayoutContext")
 export const nuboLoginKey: InjectionKey<NuboLoginContext> = Symbol("nuboLoginContext")
 export const nuboProfileKey: InjectionKey<NuboProfileContext> = Symbol("nuboProfileContext")
+
+// [게시판 글목록] 화면에 필요한 변수 & 함수들 가져오기
+export function useNuboListContext() {
+  const context = inject(nuboListKey)
+  if (!context) {
+    throw new Error("useNuboListContext must be used within a proper provider")
+  }
+  return context
+}
 
 // [게시판 글보기] 화면에 필요한 변수 & 함수들 가져오기
 export function useNuboViewContext() {

@@ -3,12 +3,18 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
+import { useListProvider } from "~/providers/list"
+import { SEARCH, type Search } from "~/types/board"
+import { nuboListKey } from "~/types/nubo-skin-keys"
 
+const route = useRoute()
 const config = useRuntimeConfig()
 const board = useBoardStore()
 const boardId = route.params.id as string
-board.page = parseInt(route.params.page as string)
+const page = parseInt(route.params.page as string)
+board.page = page > 0 ? page : 1
+board.option = SEARCH.TITLE as Search
+board.keyword = ""
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.board
@@ -16,4 +22,14 @@ const selectedSkin = computed(() => {
 })
 
 await board.getInitList(boardId)
+
+watch(
+  () => route.params,
+  async (newParams) => {
+    board.page = parseInt(newParams.page as string)
+    await board.getInitList(newParams.id as string)
+  },
+)
+
+provide(nuboListKey, useListProvider())
 </script>

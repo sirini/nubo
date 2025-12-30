@@ -11,9 +11,10 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const board = useBoardStore()
 const boardId = route.params.id as string
-board.page = 1
-board.option = SEARCH.TITLE as Search
-board.keyword = ""
+const page = parseInt(route.params.page as string)
+board.page = page > 0 ? page : 1
+board.option = (board.options[route.params.option as string] || SEARCH.TITLE) as Search
+board.keyword = decodeURIComponent(route.params.keyword as string)
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.board
