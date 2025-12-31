@@ -1,5 +1,5 @@
 <template>
-  <section class="flex items-center justify-center min-h-[80vh] py-4">
+  <section class="flex items-center justify-center min-h-[80vh]">
     <Card class="w-full rounded-lg overflow-hidden shadow-lg max-w-sm">
       <CardHeader>
         <CardTitle class="text-xl">로그인</CardTitle>
@@ -10,7 +10,7 @@
           <form @submit="login">
             <FormField name="email" v-slot="{ componentField }">
               <FormItem class="mb-6">
-                <FormLabel class="text-gray-500">이메일</FormLabel>
+                <FormLabel class="text-muted">이메일</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="example@sample.com" v-bind="componentField" />
                 </FormControl>
@@ -20,7 +20,7 @@
 
             <FormField name="password" v-slot="{ componentField }">
               <FormItem class="mb-6">
-                <FormLabel class="text-gray-500">비밀번호</FormLabel>
+                <FormLabel class="text-muted">비밀번호</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
@@ -32,17 +32,33 @@
               </FormItem>
             </FormField>
 
+            <CommonVTooltip content="아이디와 비밀번호를 입력하신 후 클릭해주세요!">
+              <Button type="submit" class="w-full text-foreground cursor-pointer gap-2">
+                <LogInIcon />
+                로그인
+              </Button>
+            </CommonVTooltip>
+
+            <CommonVTooltip content="본인 이메일 주소를 이용하여 인증 후 가입합니다">
+              <NuxtLink to="/auth/join">
+                <Button type="button" variant="outline" class="w-full cursor-pointer gap-2 mt-3">
+                  <UserPlusIcon class="w-4 h-4" />
+                  회원가입
+                </Button>
+              </NuxtLink>
+            </CommonVTooltip>
+
             <div
-              class="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border my-3"
+              class="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border my-6"
             >
               <span class="relative z-10 bg-background px-2 text-muted-foreground">
                 혹은 소셜 로그인
               </span>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 items-center mb-3">
+            <div class="grid grid-cols-3 gap-2 items-center">
               <CommonVTooltip content="구글 계정으로 로그인하기">
-                <Button as-child variant="outline" class="w-full my-3 cursor-pointer">
+                <Button as-child variant="outline" class="w-full cursor-pointer">
                   <NuxtLink :href="oauthGoogleUrl" external>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path
@@ -57,7 +73,7 @@
               </CommonVTooltip>
 
               <CommonVTooltip content="네이버 계정으로 로그인하기">
-                <Button as-child variant="outline" class="w-full my-3 cursor-pointer">
+                <Button as-child variant="outline" class="w-full cursor-pointer">
                   <NuxtLink :href="oauthNaverUrl" external>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path d="M4 22L4 2h7l7 14V2h4v20h-7L8 8v14H4z" fill="currentColor" />
@@ -69,7 +85,7 @@
               </CommonVTooltip>
 
               <CommonVTooltip content="카카오 계정으로 로그인하기">
-                <Button as-child variant="outline" class="w-full my-3 cursor-pointer">
+                <Button as-child variant="outline" class="w-full cursor-pointer">
                   <NuxtLink :href="oauthKakaoUrl" external>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                       <path
@@ -83,8 +99,6 @@
                 </Button>
               </CommonVTooltip>
             </div>
-
-            <Button type="submit" class="w-full text-foreground cursor-pointer">로그인</Button>
           </form>
         </div>
       </CardContent>
@@ -93,6 +107,7 @@
 </template>
 
 <script setup lang="ts">
+import { LogInIcon, UserPlusIcon } from "lucide-vue-next"
 import { useNuboLoginContext } from "~/types/nubo-skin-keys"
 
 const { oauthGoogleUrl, oauthNaverUrl, oauthKakaoUrl, login } = useNuboLoginContext()
