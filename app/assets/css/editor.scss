@@ -3,7 +3,7 @@
   a {
     text-decoration: none;
     color: oklch(80% 0.12209 279.447);
-    font-family: "Google Sans Code", sans-serif;
+    font-family: "JetBrains Mono", sans-serif;
   }
 
   p:empty::before {
@@ -78,13 +78,13 @@
     margin-left: 0.2rem;
     margin-right: 0.2rem;
     border-radius: 1rem;
-    font-family: "Google Sans Code", sans-serif;
+    font-family: "JetBrains Mono", sans-serif;
   }
 
   pre {
     background: oklch(15% 0.01861 284.284);
     color: #fff;
-    font-family: "Google Sans Code", sans-serif;
+    font-family: "JetBrains Mono", sans-serif;
     padding: 0.75rem 1rem;
     border-radius: 1rem;
     margin: 1rem 0;

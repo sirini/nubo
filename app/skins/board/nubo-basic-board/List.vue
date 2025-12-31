@@ -7,11 +7,11 @@
         <Table>
           <TableHeader class="hidden md:table-header-group">
             <TableRow>
-              <TableHead class="w-20 text-center">번호</TableHead>
-              <TableHead class="text-center">제목</TableHead>
-              <TableHead class="w-30 text-center">글쓴이</TableHead>
-              <TableHead class="w-25 text-center">날짜</TableHead>
-              <TableHead class="w-20 text-center">조회</TableHead>
+              <TableHead class="w-20 text-center text-muted-foreground">번호</TableHead>
+              <TableHead class="text-center text-muted-foreground">제목</TableHead>
+              <TableHead class="w-30 text-center text-muted-foreground">글쓴이</TableHead>
+              <TableHead class="w-25 text-center text-muted-foreground">날짜</TableHead>
+              <TableHead class="w-20 text-center text-muted-foreground">조회</TableHead>
             </TableRow>
           </TableHeader>
 

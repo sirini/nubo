@@ -58,6 +58,7 @@ export interface NuboWriteContext {
   tags: ComputedRef<string[]>
   tagSuggestions: ComputedRef<EditorTagItem[]>
   attaches: ComputedRef<File[]>
+  isLoggedIn: ComputedRef<boolean>
   isDragging: ComputedRef<boolean>
   isPopOver: ComputedRef<Record<string, boolean>>
   isAdmin: ComputedRef<boolean>

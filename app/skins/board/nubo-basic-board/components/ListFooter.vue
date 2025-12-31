@@ -18,13 +18,21 @@
           </CommonVTooltip>
         </NuxtLink>
 
-        <NuxtLink :to="setPagingUrl(page - 1)" as-child v-show="page > 1">
+        <Button variant="ghost" icon v-show="page <= 1">
+          <ChevronFirstIcon class="w-10 h-10 text-muted" />
+        </Button>
+
+        <NuxtLink :to="setPagingUrl(page - 1)" as-child v-show="page > 1" class="mr-2">
           <CommonVTooltip content="이전 페이지로 이동합니다">
-            <PaginationPrevious class="cursor-pointer mr-2">
+            <PaginationPrevious class="cursor-pointer">
               <ChevronLeftIcon class="w-10 h-10" />
             </PaginationPrevious>
           </CommonVTooltip>
         </NuxtLink>
+
+        <Button variant="ghost" icon v-show="page <= 1" class="mr-2">
+          <ChevronLeftIcon class="w-10 h-10 text-muted" />
+        </Button>
 
         <template v-for="(item, index) in items">
           <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
@@ -41,13 +49,17 @@
           <PaginationEllipsis v-else :key="item.type" :index="index" />
         </template>
 
-        <NuxtLink :to="setPagingUrl(page + 1)" as-child v-show="page < pageCount">
+        <NuxtLink :to="setPagingUrl(page + 1)" as-child v-show="page < pageCount" class="ml-2">
           <CommonVTooltip content="다음 페이지로 이동합니다">
-            <PaginationNext class="cursor-pointer ml-2">
+            <PaginationNext class="cursor-pointer">
               <ChevronRightIcon class="w-10 h-10" />
             </PaginationNext>
           </CommonVTooltip>
         </NuxtLink>
+
+        <Button variant="ghost" icon v-show="page >= pageCount" class="ml-2">
+          <ChevronRightIcon class="w-10 h-10 text-muted" />
+        </Button>
 
         <NuxtLink :to="setPagingUrl(pageCount)" as-child v-show="page < pageCount">
           <CommonVTooltip content="마지막 페이지로 이동합니다">
@@ -56,6 +68,10 @@
             </PaginationLast>
           </CommonVTooltip>
         </NuxtLink>
+
+        <Button variant="ghost" icon v-show="page >= pageCount">
+          <ChevronLastIcon class="w-10 h-10 text-muted" />
+        </Button>
       </PaginationContent>
     </Pagination>
 

@@ -3,9 +3,12 @@
     <DialogContent class="w-100 p-4">
       <DialogHeader>
         <DialogTitle>이미지 추가</DialogTitle>
-        <DialogDescription>
+        <DialogDescription v-if="isLoggedIn">
           <p>이미지 파일을 업로드 하거나, URL을 추가합니다.</p>
           <p>업로드 시 {{ imageSizeLimit.contentInsert }}px 보다 큰 이미지는 리사이즈 됩니다.</p>
+        </DialogDescription>
+        <DialogDescription v-else>
+          <p>로그인이 필요합니다.</p>
         </DialogDescription>
       </DialogHeader>
       <Tabs default-value="upload">
@@ -15,6 +18,7 @@
             value="db"
             @click="loadInsertedImages({ reset: true })"
             class="cursor-pointer"
+            :disabled="!isLoggedIn"
             >이전 업로드들</TabsTrigger
           >
           <TabsTrigger value="link" class="cursor-pointer"> URL 추가 </TabsTrigger>
@@ -23,12 +27,18 @@
         <TabsContent value="upload">
           <Card class="p-0">
             <CardContent class="flex p-3 max-w-sm items-center gap-2">
-              <Input type="file" @change="changeSelectedImages" accept="image/*" multiple />
+              <Input
+                type="file"
+                @change="changeSelectedImages"
+                accept="image/*"
+                multiple
+                :disabled="!isLoggedIn"
+              />
               <Button
                 type="button"
                 @click="uploadingImages"
                 :variant="previewInsertImages.length > 0 ? 'default' : 'outline'"
-                :disabled="isUploading"
+                :disabled="isUploading || !isLoggedIn"
                 class="text-foreground cursor-pointer flex items-center gap-2"
               >
                 <Spinner v-if="isUploading" />
@@ -54,6 +64,7 @@
                 v-for="(url, index) in insertedImages"
                 :key="index"
                 class="cursor-pointer relative"
+                :disabled="!isLoggedIn"
                 @click="insertImageToEditor(url.name)"
               >
                 <img
@@ -100,6 +111,7 @@
                 type="button"
                 @click="insertImageToEditor(imageUrl)"
                 class="text-foreground cursor-pointer"
+                :disabled="!isLoggedIn"
                 >추가</Button
               >
             </CardContent>
@@ -139,5 +151,5 @@ const {
   deleteInsertedImage,
 } = useNuboEditorContext()
 
-const { changeSelectedImages } = useNuboWriteContext()
+const { isLoggedIn, changeSelectedImages } = useNuboWriteContext()
 </script>

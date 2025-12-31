@@ -9,6 +9,7 @@ export const useWriteProvider = (): NuboWriteContext => {
     tags: computed(() => edit.tags),
     tagSuggestions: computed(() => edit.tagSuggestions),
     attaches: computed(() => edit.attaches),
+    isLoggedIn: computed(() => auth.isLoggedIn),
     isDragging: computed({
       get: () => edit.isDragging,
       set: (val: boolean) => (edit.isDragging = val),

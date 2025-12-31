@@ -18,7 +18,7 @@ body {
 }
 
 .font-code {
-  font-family: "Google Sans Code", monospace;
+  font-family: "JetBrains Mono", monospace;
   font-optical-sizing: auto;
   font-style: normal;
 }

@@ -1,5 +1,5 @@
 <template>
-  <header class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+  <header class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-6">
     <div>
       <h1 class="text-2xl font-bold tracking-tight">{{ config.name }}</h1>
       <div class="text-muted-foreground mt-2 text-sm">{{ config.info }}</div>

@@ -8,6 +8,8 @@
  * (팁 3: https://www.shadcn-vue.com/colors 사이트를 참조하세요)
  */
 
+@import url("~/assets/css/fonts/pretendardvariable-gov.css");
+
 :root {
   --radius: 0.65rem;
   --background: oklch(1 0 0);
@@ -42,6 +44,7 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.623 0.214 259.815);
+  --font-nubo: "Inter", "Pretendard Variable", sans-serif;
 }
 
 /* [다크 모드 설정]
@@ -80,4 +83,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.488 0.243 264.376);
+}
+
+body {
+  font-family: var(--font-nubo);
+  font-variation-settings: "wght" var(--tw-font-weight, 400);
 }

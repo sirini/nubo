@@ -47,20 +47,16 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/scripts",
     "shadcn-nuxt",
-    "@nuxtjs/google-fonts",
     "@nuxtjs/color-mode",
     "@pinia/nuxt",
     "@vueuse/nuxt",
   ],
-  googleFonts: {
-    display: "swap",
-    preconnect: true,
-    download: false,
-    families: {
-      Inter: [400, 500, 700],
-      "Google Sans Code": [400, 500, 700],
-      "Noto Sans KR": [400, 500, 700],
-    },
+  fonts: {
+    families: [
+      { name: "Inter", provider: "google" },
+      { name: "JetBrains Mono", provider: "google" },
+      { name: "Pretendard", provider: "local" },
+    ],
   },
   colorMode: {
     classSuffix: "",
