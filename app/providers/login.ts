@@ -7,6 +7,7 @@ export const useLoginProvider = (): NuboLoginContext => {
   const config = useRuntimeConfig()
   const route = useRoute()
   const auth = useAuthStore()
+  const join = useJoinStore()
 
   const loginSchema = toTypedSchema(
     z.object({
@@ -32,9 +33,42 @@ export const useLoginProvider = (): NuboLoginContext => {
   })
 
   return {
+    joinEmail: computed({ get: () => join.email, set: (val: string) => (join.email = val) }),
+    joinName: computed({ get: () => join.name, set: (val: string) => (join.name = val) }),
+    joinPassword: computed({
+      get: () => join.password,
+      set: (val: string) => (join.password = val),
+    }),
+    joinPassword2: computed({
+      get: () => join.password2,
+      set: (val: string) => (join.password2 = val),
+    }),
+    verifyCode: computed({ get: () => join.code, set: (val: string) => (join.code = val) }),
+    verifyTarget: computed({ get: () => join.target, set: (val: number) => (join.target = val) }),
+    isLoading: computed({
+      get: () => join.isLoading,
+      set: (val: boolean) => (join.isLoading = val),
+    }),
+    isValidEmail: computed(() => join.isValidEmail),
+    isValidName: computed(() => join.isValidName),
+    isValidPassword: computed(() => join.isValidPassword),
+    isValidCode: computed(() => join.isValidCode),
     oauthGoogleUrl: `${config.public.goapi}/auth/google/request`,
     oauthNaverUrl: `${config.public.goapi}/auth/naver/request`,
     oauthKakaoUrl: `${config.public.goapi}/auth/kakao/request`,
     login: onSubmit,
+    isUsedEmail: async () => {
+      await join.isUsedEmail()
+    },
+    isUsedName: async () => {
+      await join.isUsedName()
+    },
+    submit: async () => {
+      await join.submit()
+    },
+    resetJoinForm: () => join.reset(),
+    verify: async () => {
+      await join.verify()
+    },
   }
 }

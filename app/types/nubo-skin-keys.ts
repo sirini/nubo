@@ -171,10 +171,26 @@ export interface NuboLayoutContext {
 
 // [로그인] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboLoginContext {
+  joinEmail: ComputedRef<string>
+  joinName: ComputedRef<string>
+  joinPassword: ComputedRef<string>
+  joinPassword2: ComputedRef<string>
+  verifyCode: ComputedRef<string>
+  verifyTarget: ComputedRef<number>
+  isLoading: ComputedRef<boolean>
+  isValidEmail: ComputedRef<boolean>
+  isValidName: ComputedRef<boolean>
+  isValidPassword: ComputedRef<boolean>
+  isValidCode: ComputedRef<boolean>
   oauthGoogleUrl: string
   oauthNaverUrl: string
   oauthKakaoUrl: string
   login: (e?: Event | undefined) => Promise<void | undefined>
+  isUsedEmail: () => Promise<void>
+  isUsedName: () => Promise<void>
+  submit: () => Promise<void>
+  resetJoinForm: () => void
+  verify: () => Promise<void>
 }
 
 export const nuboListKey: InjectionKey<NuboListContext> = Symbol("nuboListContext")

@@ -102,12 +102,12 @@ export const useAuthStore = defineStore("auth", () => {
   const update = async () => {
     try {
       isLoading.value = true
-      const response = await updateMyInfo(
-        editProfile.value.nickname,
-        editProfile.value.signature,
-        editProfile.value.password1,
-        editProfile.value.newProfile,
-      )
+      const response = await updateMyInfo({
+        name: editProfile.value.nickname,
+        signature: editProfile.value.signature,
+        password: editProfile.value.password1,
+        profile: editProfile.value.newProfile,
+      })
       if (!response.success) {
         toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${response.error}`)
         return

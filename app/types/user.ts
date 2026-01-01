@@ -64,6 +64,14 @@ export type UserInfoResult = {
   blocked: boolean
 }
 
+// 사용자 정보 수정에 필요한 파라미터 정의
+export type UpdateMyInfoParam = {
+  name: string
+  signature: string
+  password: string
+  profile: File | null
+}
+
 // 사용자의 권한 정보들 타입 정의
 export type UserPermissionResult = {
   writePost: boolean
