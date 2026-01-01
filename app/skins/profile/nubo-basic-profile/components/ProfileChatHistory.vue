@@ -26,7 +26,7 @@
           <div class="h-20"></div>
 
           <div v-if="chatHistories.length < 1" class="flex justify-center items-center text-muted">
-            {{ profileUser.name }}님과의 대화 기록이 없습니다
+            {{ recoverChars(profileUser.name) }}님과의 대화 기록이 없습니다
           </div>
         </div>
       </ScrollArea>
