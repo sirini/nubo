@@ -4,6 +4,7 @@ import type {
   BoardListResult,
   BoardViewDownloadResult,
   BoardViewLikeParam,
+  BoardViewParam,
   BoardViewResult,
   BoardWriterLatestContent,
 } from "~/types/board"
@@ -21,15 +22,11 @@ export const useBoard = () => {
   }
 
   // 게시글 본문 내용 가져오기
-  const loadInitBoardView = async (id: string, postUid: number, latestLimit: number = 5) => {
+  const loadInitBoardView = async (params: BoardViewParam) => {
     const { data } = await useFetch<Resp<BoardViewResult>>("/board/view", {
       baseURL: config.public.apiBase,
       method: "GET",
-      params: {
-        id,
-        postUid,
-        latestLimit,
-      },
+      params,
     })
     return resp(data.value)
   }

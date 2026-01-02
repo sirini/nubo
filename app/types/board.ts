@@ -254,6 +254,13 @@ export type BoardViewDownloadResult = {
   path: string
 }
 
+// 겟시글 보기 시 파라미터 정의
+export type BoardViewParam = {
+  id: string
+  postUid: number
+  latestLimit: number
+}
+
 // 게시글 보기 반환 타입 정의
 export type BoardViewResult = {
   config: BoardConfig

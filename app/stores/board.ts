@@ -40,7 +40,11 @@ export const useBoardStore = defineStore("board", () => {
     if (pending.value) return
     try {
       pending.value = true
-      const response = await loadInitBoardView(id, postUid)
+      const response = await loadInitBoardView({
+        id,
+        postUid,
+        latestLimit: latestLimit.value,
+      })
 
       if (!response.success || !response.result) {
         toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response.error}`)
