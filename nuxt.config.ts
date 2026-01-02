@@ -1,7 +1,7 @@
 import tailwindcss from "@tailwindcss/vite"
 import { resolve } from "pathe"
 
-const GOAPI = "http://localhost:3006/goapi" // GOAPI 백엔드 주소
+const GOAPI = `http://localhost:${process.env.NUXT_PUBLIC_GOAPI_PORT || "3006"}/goapi` // GOAPI 백엔드 주소
 
 export default defineNuxtConfig({
   srcDir: "app/",
@@ -11,8 +11,7 @@ export default defineNuxtConfig({
       apiBase: "/api",
       goapi: GOAPI,
       version: process.env.NUXT_PUBLIC_VERSION || "v2.0.0",
-      url: process.env.NUXT_PUBLIC_URL || "https://nubohub.org",
-      urlPrefix: process.env.NUXT_PUBLIC_URL_PREFIX || "",
+      url: process.env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
       title: process.env.NUXT_PUBLIC_TITLE || "The NUBO | Nuxt4 based Board",
       imageSize: {
         profile: process.env.NUXT_PUBLIC_PROFILE_SIZE || "256",
