@@ -50,7 +50,7 @@
               </CommonVTooltip>
 
               <CommonVTooltip content="본인 이메일 주소를 이용하여 비밀번호를 초기화 합니다">
-                <NuxtLink to="/auth/reset/password" as-child>
+                <NuxtLink to="/auth/reset-password" as-child>
                   <Button type="button" variant="outline" class="w-full cursor-pointer gap-2">
                     <LockKeyholeOpenIcon class="w-4 h-4" />
                     비밀번호 초기화
