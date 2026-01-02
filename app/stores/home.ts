@@ -74,22 +74,29 @@ export const useHomeStore = defineStore("home", () => {
   // 이전 게시글 더 가져오기
   const loadMore = async () => {
     if (pending.value) return
-    const last = posts.value.at(-1)?.uid ?? 0
-    if (last === sinceUid.value) return
-    sinceUid.value = last
+    try {
+      pending.value = true
+      const last = posts.value.at(-1)?.uid ?? 0
+      if (last === sinceUid.value) return
+      sinceUid.value = last
 
-    const response = await loadMorePosts({
-      sinceUid: sinceUid.value,
-      bunch: bunch.value,
-      option: option.value,
-      keyword: keyword.value,
-    })
-    if (!response.success) {
-      toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
-      return
+      const response = await loadMorePosts({
+        sinceUid: sinceUid.value,
+        bunch: bunch.value,
+        option: option.value,
+        keyword: keyword.value,
+      })
+      if (!response.success) {
+        if (!response.success) {
+          toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
+          return
+        }
+        mergePosts(response.result)
+        toast(`✅ 이전 게시글들을 가져왔습니다`)
+      }
+    } finally {
+      pending.value = false
     }
-    mergePosts(response.result)
-    toast(`✅ 이전 게시글들을 가져왔습니다`)
   }
 
   // 각종 변수 초기화
