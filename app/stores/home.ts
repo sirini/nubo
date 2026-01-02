@@ -11,7 +11,8 @@ export const useHomeStore = defineStore("home", () => {
   const keyword = ref<string>("")
   const menus = ref<HomeSidebarGroupResult[]>([])
   const option = ref<Search>(SEARCH.TITLE as Search)
-  const pending = ref<boolean>(false)
+  const isLoading = ref<boolean>(false)
+  const isLastPost = ref<boolean>(false)
   const posts = ref<HomePostItem[]>([])
   const sinceUid = ref<number>(0)
 
@@ -34,9 +35,9 @@ export const useHomeStore = defineStore("home", () => {
 
   // 목록 조회 (초기/검색/더보기 공용)
   const getInitLatestPosts = async (opts?: { reset?: boolean }) => {
-    if (pending.value) return
+    if (isLoading.value) return
     try {
-      pending.value = true
+      isLoading.value = true
       if (opts?.reset) {
         sinceUid.value = 0
         posts.value = []
@@ -57,7 +58,7 @@ export const useHomeStore = defineStore("home", () => {
       mergePosts(response.result ?? [])
       initialized.value = true
     } finally {
-      pending.value = false
+      isLoading.value = false
     }
   }
 
@@ -73,11 +74,14 @@ export const useHomeStore = defineStore("home", () => {
 
   // 이전 게시글 더 가져오기
   const loadMore = async () => {
-    if (pending.value) return
+    if (isLoading.value) return
     try {
-      pending.value = true
+      isLoading.value = true
       const last = posts.value.at(-1)?.uid ?? 0
-      if (last === sinceUid.value) return
+      if (last === sinceUid.value) {
+        isLastPost.value = true
+        return
+      }
       sinceUid.value = last
 
       const response = await loadMorePosts({
@@ -87,15 +91,13 @@ export const useHomeStore = defineStore("home", () => {
         keyword: keyword.value,
       })
       if (!response.success) {
-        if (!response.success) {
-          toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
-          return
-        }
-        mergePosts(response.result)
-        toast(`✅ 이전 게시글들을 가져왔습니다`)
+        toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
+        return
       }
+      mergePosts(response.result)
+      toast(`✅ 이전 게시글들을 가져왔습니다`)
     } finally {
-      pending.value = false
+      isLoading.value = false
     }
   }
 
@@ -103,7 +105,7 @@ export const useHomeStore = defineStore("home", () => {
   const reset = () => {
     sinceUid.value = 0
     posts.value = []
-    pending.value = false
+    isLoading.value = false
     error.value = null
     initialized.value = false
   }
@@ -115,7 +117,8 @@ export const useHomeStore = defineStore("home", () => {
     keyword,
     menus,
     option,
-    pending,
+    isLoading,
+    isLastPost,
     posts,
     sinceUid,
 

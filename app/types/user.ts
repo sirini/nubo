@@ -119,3 +119,10 @@ export const EDIT_PROFILE_PARAM: EditProfileParam = {
   newProfile: null,
   fileInput: null,
 }
+
+// 사용자의 비밀번호를 새 걸로 변경할 때 필요한 파라미터 정의
+export type UserChangePasswordParam = {
+  code: string
+  password: string
+  target: number
+}

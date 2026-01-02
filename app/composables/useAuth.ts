@@ -1,7 +1,12 @@
 import { reqPost } from "~/composables/useUtils"
-import type { SignupParam, SignupResult, VerifyParam } from "~/types/auth"
+import type { ResetPasswordParam, SignupParam, SignupResult, VerifyParam } from "~/types/auth"
 import type { Resp } from "~/types/common"
-import type { UpdateMyInfoParam, UserInfoResult, UserMyResult } from "~/types/user"
+import type {
+  UpdateMyInfoParam,
+  UserChangePasswordParam,
+  UserInfoResult,
+  UserMyResult,
+} from "~/types/user"
 
 export const useAuth = () => {
   const config = useRuntimeConfig()
@@ -75,6 +80,16 @@ export const useAuth = () => {
     return await reqPost<Resp<boolean>>("/auth/verify", param)
   }
 
+  // 비밀번호 초기화 요청 보내기
+  const resetUserPassword = async (param: ResetPasswordParam) => {
+    return await reqPost<Resp<boolean>>("/auth/reset-password", param)
+  }
+
+  // 사용자의 비밀번호를 새로 업데이트하기
+  const updateUserPassword = async (param: UserChangePasswordParam) => {
+    return await reqPost<Resp<boolean>>("/auth/user/change-password", param)
+  }
+
   return {
     loadInitUserInfo,
     loadInitOtherUserInfo,
@@ -86,5 +101,7 @@ export const useAuth = () => {
     checkUsedName,
     submitJoinForm,
     verifyUser,
+    resetUserPassword,
+    updateUserPassword,
   }
 }

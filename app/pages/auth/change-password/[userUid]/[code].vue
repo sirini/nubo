@@ -6,11 +6,15 @@
 import { useLoginProvider } from "~/providers/login"
 import { nuboLoginKey } from "~/types/nubo-skin-keys"
 
+const route = useRoute()
 const config = useRuntimeConfig()
+const join = useJoinStore()
+join.resetTarget = parseInt(route.params.userUid as string)
+join.resetCode = route.params.code as string
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.login
-  return defineAsyncComponent(() => import(`~/skins/login/${skinName}/Login.vue`))
+  return defineAsyncComponent(() => import(`~/skins/login/${skinName}/ChangePassword.vue`))
 })
 
 provide(nuboLoginKey, useLoginProvider())

@@ -125,7 +125,7 @@
           </FormField>
 
           <CommonVTooltip content="입력 내용들을 모두 초기화하고 다시 처음부터 입력합니다">
-            <Button variant="outline" class="gap-2 cursor-pointer" @click="resetJoinForm">
+            <Button variant="outline" class="gap-2 cursor-pointer" @click="clearJoinForm">
               <RotateCcwIcon class="w-4 h-4" />
               다시 입력하기
             </Button>
@@ -157,7 +157,7 @@ const {
   isUsedEmail,
   isUsedName,
   submit,
-  resetJoinForm,
+  clearJoinForm,
   verify,
 } = useNuboLoginContext()
 

@@ -12,6 +12,12 @@ export type SignupResult = {
   target: number
 }
 
+// 비밀번호 초기화 요청 보낼 때의 파라미터 정의
+export type ResetPasswordParam = {
+  email: string
+  template: string
+}
+
 // 인증 코드를 포함해서 가입 완료 처리 시 필요한 파라미터 정의
 export type VerifyParam = {
   id: string

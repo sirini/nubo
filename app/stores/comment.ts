@@ -17,7 +17,6 @@ export const useCommentStore = defineStore("comment", () => {
   const isLoading = ref<boolean>(false)
   const isConfirmDialog = ref<boolean>(false)
   const page = ref<number>(1)
-  const pending = ref<boolean>(false)
   const totalCommentCount = ref<number>(0)
   const limit = ref<number>(20)
   const view = ref<BoardViewResult | null>(null)
@@ -27,16 +26,16 @@ export const useCommentStore = defineStore("comment", () => {
   const clear = () => {
     isLoading.value = false
     page.value = 1
-    pending.value = false
+    isLoading.value = false
     target.value = { reply: 0, remove: 0, modify: 0 }
   }
 
   // 댓글 목록 가져오기
   const getInitComments = async (viewResult: BoardViewResult) => {
     view.value = viewResult
-    if (pending.value || !view.value) return
+    if (isLoading.value || !view.value) return
     try {
-      pending.value = true
+      isLoading.value = true
       const response = await loadInitCommentList({
         boardUid: view.value.config.uid,
         postUid: view.value.post.uid,
@@ -57,7 +56,7 @@ export const useCommentStore = defineStore("comment", () => {
     } catch (e) {
       toast(`❌ 댓글 목록을 가져오지 못했습니다: ${e}`)
     } finally {
-      pending.value = false
+      isLoading.value = false
     }
   }
 
@@ -196,7 +195,6 @@ export const useCommentStore = defineStore("comment", () => {
     isLoading,
     isConfirmDialog,
     page,
-    pending,
     target,
     totalCommentCount,
 

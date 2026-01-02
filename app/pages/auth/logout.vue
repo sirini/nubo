@@ -8,7 +8,7 @@ const auth = useAuthStore()
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.login
-  return defineAsyncComponent(() => import(`../../skins/login/${skinName}/Logout.vue`))
+  return defineAsyncComponent(() => import(`~/skins/login/${skinName}/Logout.vue`))
 })
 
 await callOnce(async () => {

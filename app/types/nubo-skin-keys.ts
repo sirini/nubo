@@ -152,7 +152,8 @@ export interface NuboProfileContext {
 
 // [홈] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboHomeContext {
-  pending: ComputedRef<boolean>
+  isLoading: ComputedRef<boolean>
+  isLastPost: ComputedRef<boolean>
   posts: ComputedRef<HomePostItem[]>
   loadMorePosts: () => Promise<void>
 }
@@ -182,15 +183,22 @@ export interface NuboLoginContext {
   isValidName: ComputedRef<boolean>
   isValidPassword: ComputedRef<boolean>
   isValidCode: ComputedRef<boolean>
+  isRequestedReset: ComputedRef<boolean>
   oauthGoogleUrl: string
   oauthNaverUrl: string
   oauthKakaoUrl: string
+  resetCode: ComputedRef<string>
+  resetTarget: ComputedRef<number>
+  resetPassword: ComputedRef<string>
+  resetPassword2: ComputedRef<string>
   login: (e?: Event | undefined) => Promise<void | undefined>
   isUsedEmail: () => Promise<void>
   isUsedName: () => Promise<void>
   submit: () => Promise<void>
-  resetJoinForm: () => void
+  clearJoinForm: () => void
   verify: () => Promise<void>
+  requestResetPassword: () => Promise<void>
+  updateUserPassword: () => Promise<void>
 }
 
 export const nuboListKey: InjectionKey<NuboListContext> = Symbol("nuboListContext")

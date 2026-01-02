@@ -1,4 +1,4 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  return proxyRequest(event, `${config.apiBaseInternal}/auth/user/change/password`)
+  return proxyRequest(event, `${config.apiBaseInternal}/auth/user/change-password`)
 })

@@ -53,9 +53,26 @@ export const useLoginProvider = (): NuboLoginContext => {
     isValidName: computed(() => join.isValidName),
     isValidPassword: computed(() => join.isValidPassword),
     isValidCode: computed(() => join.isValidCode),
+    isRequestedReset: computed(() => join.isRequestedReset),
     oauthGoogleUrl: `${config.public.goapi}/auth/google/request`,
     oauthNaverUrl: `${config.public.goapi}/auth/naver/request`,
     oauthKakaoUrl: `${config.public.goapi}/auth/kakao/request`,
+    resetCode: computed({
+      get: () => join.resetCode,
+      set: (val: string) => (join.resetCode = val),
+    }),
+    resetTarget: computed({
+      get: () => join.resetTarget,
+      set: (val: number) => (join.resetTarget = val),
+    }),
+    resetPassword: computed({
+      get: () => join.resetPassword,
+      set: (val: string) => (join.resetPassword = val),
+    }),
+    resetPassword2: computed({
+      get: () => join.resetPassword2,
+      set: (val: string) => (join.resetPassword2 = val),
+    }),
     login: onSubmit,
     isUsedEmail: async () => {
       await join.isUsedEmail()
@@ -66,9 +83,15 @@ export const useLoginProvider = (): NuboLoginContext => {
     submit: async () => {
       await join.submit()
     },
-    resetJoinForm: () => join.reset(),
+    clearJoinForm: () => join.clear(),
     verify: async () => {
       await join.verify()
+    },
+    requestResetPassword: async () => {
+      await join.requestResetPassword()
+    },
+    updateUserPassword: async () => {
+      await join.updatePassword()
     },
   }
 }

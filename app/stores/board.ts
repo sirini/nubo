@@ -14,7 +14,7 @@ export const useBoardStore = defineStore("board", () => {
   const config = useRuntimeConfig()
   const error = ref<unknown>(null)
   const latestLimit = ref<number>(5)
-  const pending = ref<boolean>(false)
+  const isLoading = ref<boolean>(false)
   const view = ref<BoardViewResult>(BOARD_VIEW_RESULT)
   const list = ref<BoardListResult>(BOARD_LIST_RESULT)
   const page = ref<number>(1)
@@ -37,9 +37,9 @@ export const useBoardStore = defineStore("board", () => {
 
   // 게시글 본문 내용 가져오기
   const getInitView = async (id: string, postUid: number) => {
-    if (pending.value) return
+    if (isLoading.value) return
     try {
-      pending.value = true
+      isLoading.value = true
       const response = await loadInitBoardView({
         id,
         postUid,
@@ -54,15 +54,15 @@ export const useBoardStore = defineStore("board", () => {
       view.value.post.writer.name = recoverChars(view.value.post.writer.name)
       view.value.post.writer.signature = recoverChars(view.value.post.writer.signature)
     } finally {
-      pending.value = false
+      isLoading.value = false
     }
   }
 
   // 게시글 목록 가져오기
   const getInitList = async (id: string) => {
-    if (pending.value) return
+    if (isLoading.value) return
     try {
-      pending.value = true
+      isLoading.value = true
       const response = await loadInitBoardList({
         id,
         option: option.value,
@@ -84,7 +84,7 @@ export const useBoardStore = defineStore("board", () => {
       })
       list.value = response.result
     } finally {
-      pending.value = false
+      isLoading.value = false
     }
   }
 
@@ -160,7 +160,7 @@ export const useBoardStore = defineStore("board", () => {
   return {
     error,
     latestLimit,
-    pending,
+    isLoading,
     view,
     list,
     page,

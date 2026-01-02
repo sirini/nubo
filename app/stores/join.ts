@@ -1,8 +1,17 @@
 import { toast } from "vue-sonner"
+import { useResetPasswordTemplate } from "~/skins/login/nubo-basic-login/resetPasswordTemplate"
 import { useVerifyCodeTemplate } from "~/skins/login/nubo-basic-login/verifyCodeTemplate"
 
 export const useJoinStore = defineStore("join", () => {
-  const { checkUsedEmail, checkUsedName, submitJoinForm, verifyUser } = useAuth()
+  const {
+    checkUsedEmail,
+    checkUsedName,
+    submitJoinForm,
+    verifyUser,
+    updateUserPassword,
+    resetUserPassword,
+  } = useAuth()
+  const config = useRuntimeConfig()
   const code = ref<string>("")
   const email = ref<string>("")
   const name = ref<string>("")
@@ -14,14 +23,18 @@ export const useJoinStore = defineStore("join", () => {
   const isValidName = ref<boolean>(false)
   const isValidPassword = ref<boolean>(false)
   const isValidCode = ref<boolean>(false)
+  const isRequestedReset = ref<boolean>(false)
+  const resetCode = ref<string>("")
+  const resetTarget = ref<number>(0)
+  const resetPassword = ref<string>("")
+  const resetPassword2 = ref<string>("")
+  const EMAIL_REGEX =
+    /^(?!.*\.\.)(?!\.)(?!.*\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@(?:(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,}$/
+  const PW_REGET = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9\s])[^\s]{8,}$/
 
   // 이미 등록된 이메일 주소인지 확인 (true: 이미 사용중)
   const isUsedEmail = async () => {
-    if (
-      /^(?!.*\.\.)(?!\.)(?!.*\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@(?:(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,}$/.test(
-        email.value,
-      ) === false
-    ) {
+    if (EMAIL_REGEX.test(email.value) === false) {
       toast(`⚠️ 이메일 형식이 올바르지 않습니다: ${email.value}`)
       return
     }
@@ -75,8 +88,7 @@ export const useJoinStore = defineStore("join", () => {
 
   // 입력한 비밀번호가 유효한지 확인
   const submit = async () => {
-    const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9\s])[^\s]{8,}$/
-    if (!pwRegex.test(password.value) || !pwRegex.test(password2.value)) {
+    if (!PW_REGET.test(password.value) || !PW_REGET.test(password2.value)) {
       toast(`⚠️ 비밀번호는 8글자 이상, 영문/숫자/특수기호 조합이 필요합니다`)
       password.value = ""
       password2.value = ""
@@ -154,8 +166,80 @@ export const useJoinStore = defineStore("join", () => {
     }
   }
 
+  // 비밀번호 초기화 요청 보내기
+  const requestResetPassword = async () => {
+    if (!EMAIL_REGEX.test(email.value)) {
+      toast(`⚠️ 이메일 형식이 올바르지 않습니다: ${email.value}`)
+      return
+    }
+    try {
+      isLoading.value = true
+      const mailTemplate = useResetPasswordTemplate()
+      const response = await resetUserPassword({
+        email: email.value,
+        template: mailTemplate.template,
+      })
+      if (!response.success) {
+        toast(`❌ 비밀번호 초기화 요청을 보내지 못했습니다: ${response.error}`)
+        return
+      }
+      if (!response.result) {
+        toast(
+          `❌ 비밀번호를 초기화하지 못했습니다: ${config.public.adminId} 으로 초기화 요청을 보내주세요!`,
+        )
+        return
+      }
+      toast(`✅ 요청을 보냈습니다: 이메일에서 받은편지함 혹은 스팸함을 확인해주세요`)
+      isRequestedReset.value = true
+    } catch (e) {
+      toast(`❌ 비밀번호 초기화 요청을 보내지 못했습니다: ${e}`)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // 새 비밀번호로 업데이트하기
+  const updatePassword = async () => {
+    if (!PW_REGET.test(resetPassword.value) || !PW_REGET.test(resetPassword2.value)) {
+      toast(`⚠️ 비밀번호는 8글자 이상, 영문/숫자/특수기호 조합이 필요합니다`)
+      resetPassword.value = ""
+      resetPassword2.value = ""
+      return
+    }
+    if (resetPassword.value !== resetPassword2.value) {
+      toast(`⚠️ 입력한 비밀번호가 서로 다릅니다`)
+      resetPassword.value = ""
+      resetPassword2.value = ""
+      return
+    }
+    try {
+      isLoading.value = true
+      const response = await updateUserPassword({
+        code: resetCode.value,
+        target: resetTarget.value,
+        password: resetPassword.value,
+      })
+      if (!response.success) {
+        toast(`❌ 비밀번호를 변경하지 못했습니다: ${response.error}`)
+        return
+      }
+      if (!response.result) {
+        toast(`❌ 인증 코드가 올바르지 않습니다, 다시 메일을 확인해보세요`)
+        return
+      }
+      toast(`✅ 비밀번호를 성공적으로 변경하였습니다, 로그인 페이지로 곧 이동합니다`)
+      setTimeout(() => {
+        navigateTo(`/auth/login`)
+      }, 3000)
+    } catch (e) {
+      toast(`❌ 비밀번호를 변경하지 못했습니다: ${e}`)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // 입력값들 초기화하고 이메일 입력부터 다시 진행
-  const reset = () => {
+  const clear = () => {
     email.value = ""
     name.value = ""
     password.value = ""
@@ -178,11 +262,18 @@ export const useJoinStore = defineStore("join", () => {
     isValidName,
     isValidPassword,
     isValidCode,
+    isRequestedReset,
+    resetCode,
+    resetTarget,
+    resetPassword,
+    resetPassword2,
 
     submit,
     isUsedEmail,
     isUsedName,
-    reset,
+    clear,
     verify,
+    requestResetPassword,
+    updatePassword,
   }
 })

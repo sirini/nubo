@@ -4,7 +4,8 @@ export const useHomeProvider = (): NuboHomeContext => {
   const home = useHomeStore()
 
   return {
-    pending: computed(() => home.pending),
+    isLoading: computed(() => home.isLoading),
+    isLastPost: computed(() => home.isLastPost),
     posts: computed(() => home.posts),
     loadMorePosts: async () => {
       await home.loadMore()

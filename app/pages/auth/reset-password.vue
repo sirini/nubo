@@ -10,7 +10,7 @@ const config = useRuntimeConfig()
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.login
-  return defineAsyncComponent(() => import(`~/skins/login/${skinName}/Login.vue`))
+  return defineAsyncComponent(() => import(`~/skins/login/${skinName}/ResetPassword.vue`))
 })
 
 provide(nuboLoginKey, useLoginProvider())
