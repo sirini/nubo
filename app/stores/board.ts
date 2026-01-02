@@ -124,10 +124,9 @@ export const useBoardStore = defineStore("board", () => {
       if (isLiked) {
         toast(`✅ 이 게시글에 좋아요를 남겼습니다`)
       }
+      view.value.post.liked = isLiked
     } catch (e) {
       toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${e}`)
-    } finally {
-      view.value.post.liked = isLiked
     }
   }
 
