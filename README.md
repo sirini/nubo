@@ -170,6 +170,18 @@ server {
       alias /var/www/nubo.git/upload/;
       autoindex off;
     }
+
+    # GOAPI 프록시 (OAuth2 콜백 처리 등에 사용)
+    location /goapi/ {
+        proxy_pass http://localhost:3006;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
 }
 ```
 
