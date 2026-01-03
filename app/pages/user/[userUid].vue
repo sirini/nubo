@@ -16,7 +16,7 @@ const limit = 5
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.profile
-  return defineAsyncComponent(() => import(`../../skins/profile/${skinName}/Profile.vue`))
+  return defineAsyncComponent(() => import(`~/skins/profile/${skinName}/Profile.vue`))
 })
 
 await Promise.all([

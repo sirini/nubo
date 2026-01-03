@@ -15,7 +15,7 @@ home.keyword = ""
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.home
-  return defineAsyncComponent(() => import(`../skins/home/${skinName}/Home.vue`))
+  return defineAsyncComponent(() => import(`~/skins/home/${skinName}/Home.vue`))
 })
 
 await home.getInitLatestPosts({ reset: true })

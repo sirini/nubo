@@ -15,7 +15,7 @@ const home = useHomeStore()
 
 const selectedSkin = computed(() => {
   const skinName = config.public.defaultSkins.layout
-  return defineAsyncComponent(() => import(`../skins/layout/${skinName}/Layout.vue`))
+  return defineAsyncComponent(() => import(`~/skins/layout/${skinName}/Layout.vue`))
 })
 
 await home.getInitMenus()
