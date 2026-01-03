@@ -109,21 +109,23 @@ npm run build
 npm run preview  # 로컬에서 빌드 결과 확인
 ```
 
-실제 배포 환경에서는 **PM2** (권장), systemd, Docker 등으로 `node .output/server/index.mjs`를 장기 실행하거나 Nuxt Preview를 프로세스 매니저로 등록할 수 있습니다. NUBO에서는 Nuxt4 및 GOAPI 바이너리 모두 PM2에서 실행하시는 걸 권장합니다. 만약 트래픽이 많은 웹사이트라면, PM2의 클러스터 모드를 이용하여 프론트엔드만 2~4개 병렬 실행하시면 됩니다.
+- 실제 배포 환경에서는 **PM2** (권장), systemd, Docker 등으로 `node .output/server/index.mjs`를 장기 실행하거나 Nuxt Preview를 프로세스 매니저로 등록할 수 있습니다.
+- NUBO에서는 Nuxt4 및 GOAPI 바이너리 모두 PM2에서 실행하시는 걸 권장합니다.
+- 만약 트래픽이 많은 웹사이트라면, PM2의 클러스터 모드를 이용하여 프론트엔드만 2~4개 병렬 실행하시면 됩니다.
 
 ```bash
-# Node.js) 4개의 NUBO 프론트엔드 인스턴스 생성 (자동 부하 분산)
+# Node.js 클러스터 활용) 4개의 NUBO 프론트엔드 인스턴스 생성 (자동 부하 분산)
 pm2 start .output/server/index.mjs --name "nubo-web" -i 4
 
-# GOAPI 백엔드 바이너리도 pm2로 실행하여 관리
+# GOAPI 백엔드 바이너리도 pm2로 실행하여 관리 가능
 pm2 start ./goapi-linux -name "nubo-api"
 ```
 
 ## 스킨 시스템 활용
 
 - `/app/skins/` 아래에 `layout` · `home` · `board` 등의 경로에서 NUBO의 기본 스킨들이 제공됩니다.
-- Tailwind 유틸리티와 shadcn-vue 컴포넌트를 선택적으로 사용하여 **색상/타이포 스케일을 쉽게 재정의** 할 수 있습니다.
-- 기본 스킨을 바탕으로 자신만의 디자인 감각을 녹여낸 신규 스킨 개발을 쉽게 해보실 수 있습니다.
+- `Tailwind` 유틸리티와 `shadcn-vue` 컴포넌트를 선택적으로 사용하여 **색상/타이포 스케일을 쉽게 재정의** 할 수 있습니다.
+- 기본 스킨을 바탕으로 자신만의 디자인 감각을 녹여낸 **신규 스킨 개발을 쉽게** 해보실 수 있습니다.
 - 복잡한 로직들을 모두 알 필요 없이 필요한 변수/함수만 꺼내서 쉽게 호출하여 누구나 자신만의 레이아웃 디자인, 홈 화면 디자인 및 게시판/로그인/프로필 등의 페이지를 디자인 할 수 있습니다.
 - 다른 사용자가 만들어준 다양하고 멋진 스킨들도 쉽게 공유할 수 있도록 지원할 예정입니다.
 
@@ -137,11 +139,16 @@ Nuxt SSR(3000)을 업스트림으로 두고 HTTPS 종단을 처리하는 예시 
 server {
     listen 80;
     listen 443 ssl;
+
+    # 사용하시는 도메인
     server_name example.com;
 
     # SSL 설정은 인증서/키 경로에 맞춰 별도 구성 (Certbot 등을 활용하시는 걸 권장합니다)
     # ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
     # ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    # 루트 경로 지정 (npm run build 시 만들어지는 dist 폴더를 지정하시면 편합니다)
+    root /var/www/nubo.git/dist;
 
     # SSR 렌더링
     location / {
@@ -149,6 +156,15 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 첨부파일 업로드 크기 제한 설정 (서버 사정에 맞춰서 조절하세요)
+    client_max_body_size 50M;
+
+    # 업로드 경로 지정 (이미지 등의 첨부파일에 정상적으로 접근하려면 반드시 설정해야 합니다)
+    location /upload/ {
+      alias /var/www/nubo.git/upload/;
+      autoindex off;
     }
 }
 ```
