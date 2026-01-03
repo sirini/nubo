@@ -2,6 +2,7 @@ import { toast } from "vue-sonner"
 import type { ChatHistory, ChatItem } from "~/types/chat"
 
 export const useChatStore = defineStore("chat", () => {
+  const auth = useAuthStore()
   const isLoading = ref<boolean>(false)
   const list = ref<ChatItem[]>([])
   const history = ref<ChatHistory[]>([])
@@ -12,6 +13,7 @@ export const useChatStore = defineStore("chat", () => {
 
   // 채팅 목록 불러오기
   const getChatList = async () => {
+    if (!auth.isLoggedIn) return
     try {
       isLoading.value = true
       const response = await loadChatList(limit.value)
@@ -29,6 +31,7 @@ export const useChatStore = defineStore("chat", () => {
 
   // 상대방과의 채팅 기록 가져오기
   const getChatHistory = async (target: number) => {
+    if (!auth.isLoggedIn) return
     try {
       isLoading.value = true
       targetUserUid.value = target
@@ -49,7 +52,7 @@ export const useChatStore = defineStore("chat", () => {
 
   // 채팅 메시지 보내기
   const send = useDebounceFn(async (userUid: number) => {
-    if (targetUserUid.value < 1) return
+    if (targetUserUid.value < 1 || !auth.isLoggedIn) return
     try {
       isLoading.value = true
       const response = await sendChatMessage(targetUserUid.value, message.value)
