@@ -1,6 +1,6 @@
 # 🐿️ Nubo
 
-<p align="left">
+<p align="center">
   <img src="https://img.shields.io/github/license/sirini/nubo?style=flat-square&color=5D6D7E" alt="license">
   <img src="https://img.shields.io/github/stars/sirini/nubo?style=flat-square&color=F4D03F" alt="stars">
   <img src="https://img.shields.io/github/last-commit/sirini/nubo?style=flat-square&color=2ECC71" alt="last commit">
@@ -10,11 +10,11 @@
 
 ### 🛠 Tech Stack
 
-| Category     | Tools                                                                                                                                                                                                                                                                                                               |
-| :----------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Frontend** | ![Nuxt](https://img.shields.io/badge/Nuxt_4-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white) ![Vue](https://img.shields.io/badge/Vue_3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white) |
-| **Backend**  | ![Go](https://img.shields.io/badge/Go_Fiber_v3-00ADD8?style=flat-square&logo=go&logoColor=white) ![Bun](https://img.shields.io/badge/Bun-000000?style=flat-square&logo=bun&logoColor=white)                                                                                                                         |
-| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)                                                                                                                                                                                                                    |
+| Category     | Tools                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend** | ![Nuxt](https://img.shields.io/badge/Nuxt_4-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white) ![Vue](https://img.shields.io/badge/Vue_3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white) ![Pinia](https://img.shields.io/badge/Pinia-FFE148?style=flat-square&logo=pinia&logoColor=black) ![Tailwind](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white) ![Shadcn](https://img.shields.io/badge/Shadcn_Vue-000000?style=flat-square&logo=shadcnui&logoColor=white) |
+| **Backend**  | ![Go](https://img.shields.io/badge/Go_Fiber_v3-00ADD8?style=flat-square&logo=go&logoColor=white)                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=flat-square&logo=mariadb&logoColor=white)                                                                                                                                                                                                                                                                                                                        |
 
 ## 주요 강점
 
@@ -32,6 +32,7 @@
 
   - TSBOARD에서 사용하던 DB 스키마를 그대로 활용하므로 추가 마이그레이션 없이 바로 NUBO로 교체하여 운영 가능합니다.
   - 기존 TSBOARD 사용자는 `nubo.git/env.sample` 파일을 먼저 `.env` 로 변경한 후 `tsboard.git/.env` 파일에서 아래의 DB 설정 부분을 `nubo.git/.env`에 적용하고 추가로 필요한 설정 후에 바로 사용 가능합니다.
+  - (아래 예시)
 
   ```conf
   # 데이터베이스 세팅 (DB_UNIX_SOCKET 경로를 모를 경우 공란 유지)
