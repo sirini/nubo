@@ -131,7 +131,7 @@ pm2 start ./goapi-linux -name "nubo-api"
 
 ## Nginx 리버스 프록시 예시
 
-Nuxt SSR(3000)을 업스트림으로 두고 HTTPS 종단을 처리하는 예시 설정입니다.
+- Nuxt SSR(3000)을 업스트림으로 두고 HTTPS 종단을 처리하는 예시 설정입니다.
 
 ```nginx
 # /etc/nginx/sites-available/nubo.conf
@@ -153,9 +153,13 @@ server {
     # SSR 렌더링
     location / {
         proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
     }
 
     # 첨부파일 업로드 크기 제한 설정 (서버 사정에 맞춰서 조절하세요)
