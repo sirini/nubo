@@ -13,7 +13,7 @@ join.resetTarget = parseInt(route.params.userUid as string)
 join.resetCode = route.params.code as string
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.login
+  const skinName = config.public.skins.login
   return defineAsyncComponent(() => import(`~/skins/login/${skinName}/ChangePassword.vue`))
 })
 

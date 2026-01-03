@@ -5,7 +5,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.privacy
+  const skinName = config.public.skins.privacy
   return defineAsyncComponent(() => import(`~/skins/privacy/${skinName}/Privacy.vue`))
 })
 </script>

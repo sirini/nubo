@@ -15,7 +15,7 @@ const targetUserUid = computed(() => parseInt(route.params.userUid as string))
 const limit = 5
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.profile
+  const skinName = config.public.skins.profile
   return defineAsyncComponent(() => import(`~/skins/profile/${skinName}/Profile.vue`))
 })
 

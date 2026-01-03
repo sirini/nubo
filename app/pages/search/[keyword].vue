@@ -11,7 +11,7 @@ const config = useRuntimeConfig()
 const home = useHomeStore()
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.home
+  const skinName = config.public.skins.home
   return defineAsyncComponent(() => import(`~/skins/home/${skinName}/Home.vue`))
 })
 

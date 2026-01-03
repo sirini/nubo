@@ -16,7 +16,7 @@ board.option = SEARCH.TITLE as Search
 board.keyword = ""
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.board
+  const skinName = config.public.skins.board
   return defineAsyncComponent(() => import(`~/skins/board/${skinName}/List.vue`))
 })
 

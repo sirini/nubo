@@ -17,7 +17,7 @@ board.option = (board.options[route.params.option as string] || SEARCH.TITLE) as
 board.keyword = decodeURIComponent(route.params.keyword as string)
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.board
+  const skinName = config.public.skins.board
   return defineAsyncComponent(() => import(`~/skins/board/${skinName}/List.vue`))
 })
 

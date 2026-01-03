@@ -18,7 +18,7 @@ edit.postUid = parseInt(route.params.postUid as string)
 await edit.loadBoardConfig(boardId)
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.board
+  const skinName = config.public.skins.board
   return defineAsyncComponent(() => import(`~/skins/board/${skinName}/Modify.vue`))
 })
 

@@ -7,7 +7,7 @@ const config = useRuntimeConfig()
 const auth = useAuthStore()
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.login
+  const skinName = config.public.skins.login
   return defineAsyncComponent(() => import(`~/skins/login/${skinName}/Logout.vue`))
 })
 

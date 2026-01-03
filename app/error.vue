@@ -5,7 +5,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.error
+  const skinName = config.public.skins.error
   return defineAsyncComponent(() => import(`./skins/error/${skinName}/Error.vue`))
 })
 </script>

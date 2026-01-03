@@ -14,7 +14,7 @@ const auth = useAuthStore()
 const home = useHomeStore()
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.layout
+  const skinName = config.public.skins.layout
   return defineAsyncComponent(() => import(`~/skins/layout/${skinName}/Layout.vue`))
 })
 

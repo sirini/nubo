@@ -16,7 +16,7 @@ const auth = useAuthStore()
 const boardId = route.params.id as string
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.defaultSkins.board
+  const skinName = config.public.skins.board
   return defineAsyncComponent(() => import(`~/skins/board/${skinName}/Write.vue`))
 })
 

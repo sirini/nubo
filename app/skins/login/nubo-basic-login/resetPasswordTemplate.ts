@@ -31,8 +31,8 @@ export const useResetPasswordTemplate = () => {
               </p>
 
               <div style="background-color: #1e2128; padding: 30px; border-radius: 8px; margin-bottom: 40px;">
-                <a href="${config.public.url}/auth/change-password/{{UserUid}}/{{Code}}" target="_blank" style="text-decoration: none; font-family: 'Courier New', Courier, monospace; color: #ffffff; ">
-                  ${config.public.url}/auth/change-password/{{UserUid}}/{{Code}}
+                <a href="${config.public.domain}/auth/change-password/{{UserUid}}/{{Code}}" target="_blank" style="text-decoration: none; font-family: 'Courier New', Courier, monospace; color: #ffffff; ">
+                  ${config.public.domain}/auth/change-password/{{UserUid}}/{{Code}}
                 </a>
               </div>
 
@@ -46,7 +46,7 @@ export const useResetPasswordTemplate = () => {
         <table width="600" border="0" cellspacing="0" cellpadding="0" style="margin-top: 30px;">
           <tr>
             <td align="center" style="font-size: 13px; color: #888888; line-height: 1.5;">
-              이 메일은 <a href="${config.public.url}" style="color: #4a90e2; text-decoration: none; font-weight: bold;">${config.public.title}</a> 에서 발송되었습니다.<br>
+              이 메일은 <a href="${config.public.domain}" style="color: #4a90e2; text-decoration: none; font-weight: bold;">${config.public.title}</a> 에서 발송되었습니다.<br>
             </td>
           </tr>
         </table>

@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
       setCookie(event, AUTH_KEY, accessToken, {
         httpOnly: true,
         path: "/",
-        maxAge: 60 * 60 * parseInt(config.public.accessTokenHours),
+        maxAge: 60 * 60 * parseInt(config.public.auth.accessTokenHours),
       })
     }
 
