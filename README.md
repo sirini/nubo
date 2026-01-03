@@ -1,14 +1,60 @@
-# 🌌 Nubo
+# 🐿️ Nubo
 
-Nuxt 4와 GoFiber v3 조합으로 다시 태어난 커뮤니티/웹사이트 빌더입니다. TSBOARD의 자산을 그대로 계승하면서 SSR(Server Side Rendering)을 통한 SEO(Search Engine Optimization), 스킨 기반 UI 커스터마이징, 개선된 검색·페이징 경험을 한 번에 제공합니다.
+<p align="left">
+  <img src="https://img.shields.io/github/license/sirini/nubo?style=flat-square&color=5D6D7E" alt="license">
+  <img src="https://img.shields.io/github/stars/sirini/nubo?style=flat-square&color=F4D03F" alt="stars">
+  <img src="https://img.shields.io/github/last-commit/sirini/nubo?style=flat-square&color=2ECC71" alt="last commit">
+</p>
+
+`Nuxt 4`와 `GoFiber v3` 조합으로 다시 태어난 커뮤니티 / 웹사이트 빌더입니다. `TSBOARD`의 자산을 그대로 계승하면서 SSR(Server Side Rendering)을 통한 SEO(Search Engine Optimization), **스킨 기반 UI 커스터마이징**, 개선된 검색 · 페이징 경험을 한 번에 제공합니다.
+
+### 🛠 Tech Stack
+
+| Category     | Tools                                                                                                                                                                                                                                                                                                               |
+| :----------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Frontend** | ![Nuxt](https://img.shields.io/badge/Nuxt_4-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white) ![Vue](https://img.shields.io/badge/Vue_3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white) |
+| **Backend**  | ![Go](https://img.shields.io/badge/Go_Fiber_v3-00ADD8?style=flat-square&logo=go&logoColor=white) ![Bun](https://img.shields.io/badge/Bun-000000?style=flat-square&logo=bun&logoColor=white)                                                                                                                         |
+| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)                                                                                                                                                                                                                    |
 
 ## 주요 강점
 
-- **개선된 백엔드 엔진**: TSBOARD에서 검증된 GoFiber v3 기반 엔진을 한층 다듬어 높은 성능과 안정성을 제공합니다. 백엔드 코드는 별도로 진행중인 GOAPI([sirini/goapi](https://github.com/sirini/goapi)) 프로젝트를 기반으로 합니다.
-- **스킨 시스템 내장**: 전체 레이아웃부터 게시판·로그인 화면까지 스킨만 교체하면 즉시 테마가 바뀝니다. 제로보드4/그누보드5 감성을 모던 웹에서 재현하면서도 shadcn-vue + Tailwind CSS 조합으로 새로운 스킨 개발을 더 쉽고 빠르게 해보실 수 있습니다.
-- **DB 호환성 유지**: TSBOARD에서 사용하던 DB 스키마를 그대로 활용하므로 추가 마이그레이션 없이 바로 NUBO로 교체하여 운영 가능합니다.
-- **SSR로 강화된 SEO**: Nuxt 4 기반 SSR로 검색 엔진 친화적이며, Hydration 이후에는 Vue 3 + Pinia의 반응형 경험을 그대로 누릴 수 있습니다.
-- **UX/검색 품질 개선**: TSBOARD 대비 더 정확한 페이징, 고도화된 검색 옵션, 정돈된 인터랙션을 기본 제공하여 별도 커스터마이징 없이도 완성도 높은 커뮤니티를 구축할 수 있습니다.
+- **개선된 백엔드 엔진**
+
+  - TSBOARD에서 검증된 `GoFiber v3` 기반 엔진을 한층 다듬어 높은 성능과 안정성을 제공합니다. 백엔드 코드는 별도로 진행중인 GOAPI([sirini/goapi](https://github.com/sirini/goapi)) 프로젝트를 기반으로 합니다.
+
+- **스킨 시스템 내장**
+
+  - 전체 레이아웃부터 게시판 · 로그인 화면까지 스킨만 교체하면 즉시 화면이 바뀝니다. 제로보드4 / 그누보드5 감성을 모던 웹에서 재현하면서도 shadcn-vue + Tailwind CSS 조합으로 새로운 스킨 개발을 더 쉽고 빠르게 해보실 수 있습니다.
+  - 디자이너분들이 최대한 복잡한 로직은 건드리지 않아도 되도록 필수적인 변수나 함수들은 필요할 때만 꺼내서 쓸 수 있도록 구성하였습니다. 덕분에 스킨 디자인을 위해 타입스크립트 언어나 Vue3 프레임워크 혹은 shadcn-vue와 같은 라이브러리를 최소한으로 배우기만 해도 됩니다.
+  - `nubo-basic-board` 와 같은 기본 게시판 스킨을 직접 수정해 보세요!
+
+- **DB 호환성 유지**
+
+  - TSBOARD에서 사용하던 DB 스키마를 그대로 활용하므로 추가 마이그레이션 없이 바로 NUBO로 교체하여 운영 가능합니다.
+  - 기존 TSBOARD 사용자는 `nubo.git/env.sample` 파일을 먼저 `.env` 로 변경한 후 `tsboard.git/.env` 파일에서 아래의 DB 설정 부분을 `nubo.git/.env`에 적용하고 추가로 필요한 설정 후에 바로 사용 가능합니다.
+
+  ```conf
+  # 데이터베이스 세팅 (DB_UNIX_SOCKET 경로를 모를 경우 공란 유지)
+  DB_HOST=localhost
+  DB_USER=root
+  DB_PASS=_______
+  DB_NAME=tsboard
+  DB_TABLE_PREFIX=tsb_
+  DB_UNIX_SOCKET=/var/run/mysqld/mysqld.sock
+  DB_MAX_IDLE=10
+  DB_MAX_OPEN=10
+  ```
+
+- **SSR로 강화된 SEO**
+
+  - Nuxt 4 기반 SSR로 검색 엔진 친화적이며, Hydration 이후에는 Vue 3 + Pinia의 반응형 경험을 그대로 누릴 수 있습니다.
+  - shadcn-vue가 제공하는 기본적인 접근성 덕분에 검색 엔진 뿐만 아니라 AI 서비스들에서도 페이지가 더 쉽게 읽혀집니다.
+  - 검색 노출이 불필요한 관리 화면이나 회원 간 1:1 채팅, 글작성 페이지 등은 여전히 클라이언트에서 화면이 만들어져 성능과 보안 모두 챙겼습니다.
+
+- **UX / 검색 품질 개선**
+
+  - TSBOARD 대비 더 정확한 페이징, 고도화된 검색 옵션, 정돈된 인터랙션을 기본 제공하여 별도 커스터마이징 없이도 완성도 높은 커뮤니티를 구축할 수 있습니다.
+  - 화면 크기에 따라 매끄럽게 사이트 디자인이 반응합니다. 또한 모바일 기기에서의 UI 접근성이 더욱 개선되었습니다.
 
 ## 기술 스택
 
@@ -20,8 +66,12 @@ Nuxt 4와 GoFiber v3 조합으로 다시 태어난 커뮤니티/웹사이트 빌
 
 ### 1) 사전 준비
 
-- Node.js 24 LTS 이상
-- MySQL/MariaDB 인스턴스 (TSBOARD 스키마 그대로 사용)
+- 64bit CPU가 탑재된 (가상)서버에서 적어도 2개 이상의 CPU 코어
+- 64bit Linux(WSL2 포함) 혹은 Mac OS
+- 이미지 리사이즈 등의 작업에 필요한 `libvips-dev` 라이브러리 사전 설치
+- `Node.js` 24 LTS 이상 권장 (`Bun` 은 v1.3 이상, `Deno` 는 v2.0 이상 권장)
+- Nginx 웹서버 (Certbot 등으로 SSL 인증서 설치 가능해야 함)
+- MySQL / MariaDB 인스턴스
 - 서버 실행용 포트: Nuxt(기본 3000), GOAPI(기본 3006)
 
 ### 2) 프로젝트 클론 및 환경 변수 설정
@@ -61,7 +111,7 @@ npm run preview  # 로컬에서 빌드 결과 확인
 실제 배포 환경에서는 **PM2** (권장), systemd, Docker 등으로 `node .output/server/index.mjs`를 장기 실행하거나 Nuxt Preview를 프로세스 매니저로 등록할 수 있습니다. NUBO에서는 Nuxt4 및 GOAPI 바이너리 모두 PM2에서 실행하시는 걸 권장합니다. 만약 트래픽이 많은 웹사이트라면, PM2의 클러스터 모드를 이용하여 프론트엔드만 2~4개 병렬 실행하시면 됩니다.
 
 ```bash
-# 4개의 NUBO 프론트엔드 인스턴스 생성 (자동 부하 분산)
+# Node.js) 4개의 NUBO 프론트엔드 인스턴스 생성 (자동 부하 분산)
 pm2 start .output/server/index.mjs --name "nubo-web" -i 4
 
 # GOAPI 백엔드 바이너리도 pm2로 실행하여 관리
@@ -70,8 +120,8 @@ pm2 start ./goapi-linux -name "nubo-api"
 
 ## 스킨 시스템 활용
 
-- `/app/skins/` 디렉터리 아래에 `layout` · `home` · `board` 등의 경로에서 NUBO의 기본 스킨들이 제공됩니다.
-- Tailwind 유틸리티와 shadcn-vue 컴포넌트를 선택적으로 사용하여 색상/타이포 스케일을 쉽게 재정의할 수 있습니다.
+- `/app/skins/` 아래에 `layout` · `home` · `board` 등의 경로에서 NUBO의 기본 스킨들이 제공됩니다.
+- Tailwind 유틸리티와 shadcn-vue 컴포넌트를 선택적으로 사용하여 **색상/타이포 스케일을 쉽게 재정의** 할 수 있습니다.
 - 기본 스킨을 바탕으로 자신만의 디자인 감각을 녹여낸 신규 스킨 개발을 쉽게 해보실 수 있습니다.
 - 복잡한 로직들을 모두 알 필요 없이 필요한 변수/함수만 꺼내서 쉽게 호출하여 누구나 자신만의 레이아웃 디자인, 홈 화면 디자인 및 게시판/로그인/프로필 등의 페이지를 디자인 할 수 있습니다.
 - 다른 사용자가 만들어준 다양하고 멋진 스킨들도 쉽게 공유할 수 있도록 지원할 예정입니다.
@@ -83,28 +133,18 @@ Nuxt SSR(3000)을 업스트림으로 두고 HTTPS 종단을 처리하는 예시 
 ```nginx
 # /etc/nginx/sites-available/nubo.conf
 
-upstream nubo_web {
-    server 127.0.0.1:3000;
-}
-
 server {
     listen 80;
     listen 443 ssl;
     server_name example.com;
 
-    # SSL 설정은 인증서/키 경로에 맞춰 별도 구성
+    # SSL 설정은 인증서/키 경로에 맞춰 별도 구성 (Certbot 등을 활용하시는 걸 권장합니다)
     # ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
     # ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
 
-    # 정적 파일 캐싱 (필요 시 경로 조정)
-    location /_nuxt/ {
-        proxy_pass http://nubo_web;
-        proxy_cache_valid 200 1h;
-    }
-
     # SSR 렌더링
     location / {
-        proxy_pass http://nubo_web;
+        proxy_pass http://localhost:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
