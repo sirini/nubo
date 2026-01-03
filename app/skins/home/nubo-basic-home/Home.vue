@@ -1,5 +1,7 @@
 <template>
   <section class="container mx-auto py-4">
+    <HeroSection />
+
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
       <HomeMainPostCard :post="post" v-for="post in posts" :key="post.uid" />
     </div>
@@ -33,6 +35,7 @@
 import { ArrowDownFromLineIcon, CheckCircle2Icon } from "lucide-vue-next"
 import { Spinner } from "~/components/ui/spinner"
 import { useNuboHomeContext } from "~/types/nubo-skin-keys"
+import HeroSection from "./components/HeroSection.vue"
 import HomeMainPostCard from "./components/HomeMainPostCard.vue"
 
 const scrollObserverRef = ref<HTMLDivElement | null>(null)
