@@ -131,7 +131,8 @@ pm2 start ./goapi-linux -name "nubo-api"
 
 ## Nginx 리버스 프록시 예시
 
-- Nuxt SSR(3000)을 업스트림으로 두고 HTTPS 종단을 처리하는 예시 설정입니다.
+- Nuxt SSR(3000 포트) 및 GOAPI(3006 포트)를 / 와 /goapi 경로에 매핑합니다.
+- /goapi/ 경로 매핑은 OAuth 소셜 로그인(구글, 네이버, 카카오) 기능을 위해서만 필요합니다.
 
 ```nginx
 # /etc/nginx/sites-available/nubo.conf
@@ -160,11 +161,18 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
+    }
 
-        # 아래 설정은 OAuth 로그인 시 헤더 크기 문제로 502 Bad Gateway 에러가 생기는 문제를 해결합니다
-        proxy_buffer_size          128k;
-        proxy_buffers              4 256k;
-        proxy_busy_buffers_size    256k;
+    # 소셜 로그인 동작을 위한 GOAPI 포트 매핑
+    location /goapi {
+        proxy_pass http://127.0.0.1:3006;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
     }
 
     # 첨부파일 업로드 크기 제한 설정 (서버 사정에 맞춰서 조절하세요)
