@@ -54,9 +54,9 @@ export const useLoginProvider = (): NuboLoginContext => {
     isValidPassword: computed(() => join.isValidPassword),
     isValidCode: computed(() => join.isValidCode),
     isRequestedReset: computed(() => join.isRequestedReset),
-    oauthGoogleUrl: `${config.public.domain}${config.public.apiBase}/oauth/google/request`,
-    oauthNaverUrl: `${config.public.domain}${config.public.apiBase}/oauth/naver/request`,
-    oauthKakaoUrl: `${config.public.domain}${config.public.apiBase}/oauth/kakao/request`,
+    oauthGoogleUrl: `${config.public.domain}/${config.public.goapiBase}/auth/google/request`,
+    oauthNaverUrl: `${config.public.domain}/${config.public.goapiBase}/auth/naver/request`,
+    oauthKakaoUrl: `${config.public.domain}/${config.public.goapiBase}/auth/kakao/request`,
     resetCode: computed({
       get: () => join.resetCode,
       set: (val: string) => (join.resetCode = val),

@@ -164,8 +164,8 @@ server {
     }
 
     # 소셜 로그인 동작을 위한 GOAPI 포트 매핑
-    location /goapi {
-        proxy_pass http://127.0.0.1:3006;
+    location /goapi/ {
+        proxy_pass http://127.0.0.1:3006/goapi/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
