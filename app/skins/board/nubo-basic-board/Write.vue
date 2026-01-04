@@ -27,7 +27,7 @@
         </CardFooter>
       </Card>
 
-      <CommonVLoadingDialog message="게시글을 저장하고 있습니다" />
+      <CommonVLoadingDialog v-model="isWriting" message="게시글을 저장하고 있습니다" />
     </div>
   </section>
 </template>
@@ -41,6 +41,6 @@ import EditorPostOptions from "./components/EditorPostOptions.vue"
 import EditorTiptapEditor from "./components/EditorTiptapEditor.vue"
 import EditorTitle from "./components/EditorTitle.vue"
 
-const { writeNewPost } = useNuboWriteContext()
+const { isWriting, writeNewPost } = useNuboWriteContext()
 const { content, config } = useNuboEditorContext()
 </script>
