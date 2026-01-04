@@ -150,7 +150,7 @@ server {
     # 루트 경로 지정 (npm run build 시 만들어지는 dist 폴더를 지정하시면 편합니다)
     root /var/www/nubo.git/dist;
 
-    # SSR 렌더링
+    # Nuxt4의 Nitro서버 포트를 / 경로로 매칭
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
@@ -160,6 +160,11 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
+
+        # 아래 설정은 OAuth 로그인 시 헤더 크기 문제로 502 Bad Gateway 에러가 생기는 문제를 해결합니다
+        proxy_buffer_size          128k;
+        proxy_buffers              4 256k;
+        proxy_busy_buffers_size    256k;
     }
 
     # 첨부파일 업로드 크기 제한 설정 (서버 사정에 맞춰서 조절하세요)
