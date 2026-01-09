@@ -8,12 +8,12 @@
         </CardHeader>
 
         <CardContent class="space-y-4">
-          <EditorPostOptions />
-          <EditorDragDropUpload />
-          <EditorDragDropUploadedFiles />
-          <EditorTitle />
-          <EditorTiptapEditor v-model="content" :config="config" />
-          <EditorHashtag />
+          <WritePostOptions />
+          <WriteDragDropUpload />
+          <WriteDragDropUploadedFiles />
+          <WriteTitle />
+          <WriteTiptapEditor v-model="content" :config="config" />
+          <WriteHashtag />
         </CardContent>
 
         <CardFooter class="flex justify-between items-center border-t">
@@ -45,12 +45,12 @@
 
 <script setup lang="ts">
 import { useNuboEditorContext, useNuboWriteContext } from "~/types/nubo-skin-keys"
-import EditorDragDropUpload from "./components/EditorDragDropUpload.vue"
-import EditorDragDropUploadedFiles from "./components/EditorDragDropUploadedFiles.vue"
-import EditorHashtag from "./components/EditorHashtag.vue"
-import EditorPostOptions from "./components/EditorPostOptions.vue"
-import EditorTiptapEditor from "./components/EditorTiptapEditor.vue"
-import EditorTitle from "./components/EditorTitle.vue"
+import WriteDragDropUpload from "./components/write/WriteDragDropUpload.vue"
+import WriteDragDropUploadedFiles from "./components/write/WriteDragDropUploadedFiles.vue"
+import WriteHashtag from "./components/write/WriteHashtag.vue"
+import WritePostOptions from "./components/write/WritePostOptions.vue"
+import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
+import WriteTitle from "./components/write/WriteTitle.vue"
 
 const { config, content } = useNuboEditorContext()
 const { isConfirmDialog, isWriting, modifyExistPost, removeAttachedFile } = useNuboWriteContext()

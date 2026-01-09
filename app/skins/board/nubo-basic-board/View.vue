@@ -30,16 +30,16 @@
 
 <script setup lang="ts">
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
-import ViewAttachmentList from "./components/ViewAttachmentList.vue"
-import ViewBreadcrumb from "./components/ViewBreadcrumb.vue"
-import ViewCommentList from "./components/ViewCommentList.vue"
-import ViewImageCarousel from "./components/ViewImageCarousel.vue"
-import ViewListButton from "./components/ViewListButton.vue"
-import ViewMainContent from "./components/ViewMainContent.vue"
-import ViewModifyButton from "./components/ViewModifyButton.vue"
-import ViewRelatedContent from "./components/ViewRelatedContent.vue"
-import ViewWriteButton from "./components/ViewWriteButton.vue"
-import ViewWriteComment from "./components/ViewWriteComment.vue"
+import ViewAttachmentList from "./components/view/ViewAttachmentList.vue"
+import ViewBreadcrumb from "./components/view/ViewBreadcrumb.vue"
+import ViewCommentList from "./components/view/ViewCommentList.vue"
+import ViewImageCarousel from "./components/view/ViewImageCarousel.vue"
+import ViewListButton from "./components/view/ViewListButton.vue"
+import ViewMainContent from "./components/view/ViewMainContent.vue"
+import ViewModifyButton from "./components/view/ViewModifyButton.vue"
+import ViewRelatedContent from "./components/view/ViewRelatedContent.vue"
+import ViewWriteButton from "./components/view/ViewWriteButton.vue"
+import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 
 const { view, config } = useNuboViewContext()
 </script>

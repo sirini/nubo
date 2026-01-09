@@ -2,6 +2,7 @@ import tailwindcss from "@tailwindcss/vite"
 import { resolve } from "pathe"
 
 const env = process.env
+const IS_DEV = env.NODE_ENV === "development"
 const GOAPI_PORT = env.NUXT_PUBLIC_GOAPI_PORT || "3006"
 const GOAPI_BASE = env.NUXT_PUBLIC_GOAPI_BASE || "goapi"
 const GOAPI_URL = `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_BASE}`
@@ -84,12 +85,14 @@ export default defineNuxtConfig({
 
   // 업로드 폴더 경로 설정
   nitro: {
-    publicAssets: [
-      {
-        baseURL: "/upload",
-        dir: resolve("./upload"),
-        fallthrough: true,
-      },
-    ],
+    publicAssets: IS_DEV
+      ? [
+          {
+            baseURL: "/upload",
+            dir: resolve("./upload"),
+            fallthrough: true,
+          },
+        ]
+      : [],
   },
 })

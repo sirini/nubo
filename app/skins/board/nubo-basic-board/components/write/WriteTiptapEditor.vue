@@ -117,8 +117,8 @@
       </div>
 
       <EditorContent :editor="ed as unknown as Editor" class="tiptap p-4 focus:outline-none" />
-      <EditorAddLink />
-      <EditorImageUpload />
+      <WriteAddLink />
+      <WriteImageUpload />
     </div>
     <Toaster />
   </ClientOnly>
@@ -142,8 +142,8 @@ import {
 } from "lucide-vue-next"
 import type { BoardConfig } from "~/types/board"
 import { useNuboEditorContext } from "~/types/nubo-skin-keys"
-import EditorAddLink from "./EditorAddLink.vue"
-import EditorImageUpload from "./EditorImageUpload.vue"
+import WriteAddLink from "./WriteAddLink.vue"
+import WriteImageUpload from "./WriteImageUpload.vue"
 
 const edit = useEditorStore()
 const props = defineProps<{ modelValue: string; config: BoardConfig }>()

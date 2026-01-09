@@ -16,7 +16,7 @@
       <div class="flex flex-col gap-2">
         <div class="flex items-center">
           <NuxtLink :to="`/board/${config.id}/${post.uid}`">
-            <span class="font-medium text-base leading-snug">{{ recoverChars(post.title) }}</span>
+            <span class="text-base leading-snug">{{ recoverChars(post.title) }}</span>
             <span v-if="post.comment > 0" class="text-primary text-xs font-bold ml-2"
               >[{{ post.comment }}]
             </span>

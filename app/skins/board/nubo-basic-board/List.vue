@@ -30,10 +30,10 @@
 <script setup lang="ts">
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { useNuboListContext } from "~/types/nubo-skin-keys"
-import ListFooter from "./components/ListFooter.vue"
-import ListHeader from "./components/ListHeader.vue"
-import ListNoticeRow from "./components/ListNoticeRow.vue"
-import ListPostRow from "./components/ListPostRow.vue"
+import ListFooter from "./components/list/ListFooter.vue"
+import ListHeader from "./components/list/ListHeader.vue"
+import ListNoticeRow from "./components/list/ListNoticeRow.vue"
+import ListPostRow from "./components/list/ListPostRow.vue"
 
 const { config } = useNuboListContext()
 </script>

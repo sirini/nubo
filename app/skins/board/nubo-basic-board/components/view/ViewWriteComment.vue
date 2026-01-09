@@ -1,5 +1,5 @@
 <template>
-  <EditorTiptapEditor v-model="edit.content" :config="view.config" />
+  <WriteTiptapEditor v-model="edit.content" :config="view.config" />
   <Button
     variant="outline"
     class="w-full mt-3 cursor-pointer"
@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
-import EditorTiptapEditor from "./EditorTiptapEditor.vue"
+import WriteTiptapEditor from "../write/WriteTiptapEditor.vue"
 
 const edit = useEditorStore()
 const { isLoggedIn, view, commentTarget, writeNewComment, writeReplyComment, modifyExistComment } =
