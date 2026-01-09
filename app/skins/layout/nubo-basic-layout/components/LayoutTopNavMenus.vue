@@ -4,10 +4,14 @@
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="w-full md:w-auto flex justify-between md:block">
           <LayoutTopMenu />
+
+          <Button variant="outline" icon class="md:hidden" @click="isShow = !isShow">
+            <SearchIcon />
+          </Button>
         </div>
 
-        <div class="w-full md:w-auto">
-          <LayoutTopSearch class="w-full" />
+        <div class="md:block" :class="isShow ? 'block w-full md:max-w-80' : 'hidden'">
+          <LayoutTopSearch />
         </div>
       </div>
     </div>
@@ -15,6 +19,9 @@
 </template>
 
 <script setup lang="ts">
+import { SearchIcon } from "lucide-vue-next"
 import LayoutTopMenu from "./LayoutTopMenu.vue"
 import LayoutTopSearch from "./LayoutTopSearch.vue"
+
+const isShow = ref<boolean>(false)
 </script>
