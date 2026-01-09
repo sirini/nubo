@@ -13,7 +13,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const edit = useEditorStore()
 const boardId = route.params.id as string
-edit.postUid = parseInt(route.params.postUid as string)
+edit.postUid = parseInt(route.params.editTargetUid as string)
 
 await edit.loadBoardConfig(boardId)
 

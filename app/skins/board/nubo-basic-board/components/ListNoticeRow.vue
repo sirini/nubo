@@ -7,7 +7,7 @@
     <TableCell>
       <div class="flex flex-col gap-2">
         <div class="flex items-center">
-          <NuxtLink :to="`/board/${config.id}/view/${notice.uid}`">
+          <NuxtLink :to="`/board/${config.id}/${notice.uid}`">
             <span class="font-medium text-base leading-snug">{{ recoverChars(notice.title) }}</span>
             <span v-if="notice.comment > 0" class="text-primary text-xs font-bold ml-2"
               >[{{ notice.comment }}]

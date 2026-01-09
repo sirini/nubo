@@ -84,8 +84,12 @@ export default defineNuxtConfig({
 
   // 업로드 폴더 경로 설정
   nitro: {
-    publicAssets: import.meta.dev
-      ? [{ baseURL: "/upload", dir: resolve(process.cwd(), "upload") }]
-      : [],
+    publicAssets: [
+      {
+        baseURL: "/upload",
+        dir: resolve("./upload"),
+        fallthrough: true,
+      },
+    ],
   },
 })

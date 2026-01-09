@@ -416,7 +416,7 @@ export const useEditorStore = defineStore("editor", () => {
         return
       }
       if (response.result > 0) {
-        navigateTo(`/board/${config.value.id}/view/${response.result}`)
+        navigateTo(`/board/${config.value.id}/${response.result}`)
       }
     } catch (e) {
       toast(`❌ 게시글을 작성하지 못했습니다: ${e}`)
@@ -448,7 +448,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
-      navigateTo(`/board/${config.value.id}/view/${postUid.value}`)
+      navigateTo(`/board/${config.value.id}/${postUid.value}`)
     } catch (e) {
       toast(`❌ 게시글을 수정하지 못했습니다: ${e}`)
     } finally {
