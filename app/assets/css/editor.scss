@@ -60,6 +60,10 @@
     font-size: 1.1em;
   }
 
+  :where(h1, h2, h3) {
+    scroll-margin-top: 80px;
+  }
+
   mark {
     background-color: oklch(90% 0.14002 89.161);
     border-radius: 1rem;
@@ -70,22 +74,22 @@
   }
 
   code {
-    background-color: oklch(30% 0.02934 284.342);
+    background-color: oklch(25% 0.02934 284.342);
     color: #ffffff;
-    padding: 3px;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     margin-left: 0.2rem;
     margin-right: 0.2rem;
     border-radius: 1rem;
+    letter-spacing: 0.1rem;
     font-family: "JetBrains Mono", sans-serif;
   }
 
   pre {
     background: oklch(15% 0.01861 284.284);
-    color: #fff;
+    color: #ffffff;
     font-family: "JetBrains Mono", sans-serif;
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     border-radius: 1rem;
     margin: 1rem 0;
     overflow: auto;
@@ -94,7 +98,6 @@
       color: inherit;
       padding: 0;
       background: none;
-      font-size: 0.9rem;
     }
 
     .hljs-comment,

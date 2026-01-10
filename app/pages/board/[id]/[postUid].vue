@@ -7,6 +7,7 @@ import "~/assets/css/editor.scss"
 import { useEditorProvider } from "~/providers/editor"
 import { useViewProvider } from "~/providers/view"
 import { useWriteProvider } from "~/providers/write"
+import { BOARD_PREFIX } from "~/types/board"
 import { nuboEditorKey, nuboViewKey, nuboWriteKey } from "~/types/nubo-skin-keys"
 
 const config = useRuntimeConfig()
@@ -18,7 +19,12 @@ const postUid = parseInt(route.params.postUid as string, 10)
 
 const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
-  return defineAsyncComponent(() => import(`~/skins/board/${skinName}/View.vue`))
+  const boardType = BOARD_PREFIX[board.view.config.type]
+  return defineAsyncComponent(() =>
+    import(`~/skins/board/${skinName}/${boardType}View.vue`).catch(
+      () => import(`~/skins/board/${skinName}/DefaultView.vue`),
+    ),
+  )
 })
 
 await board.getInitView(boardId, postUid)

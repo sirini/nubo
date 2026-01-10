@@ -80,3 +80,11 @@ export const reqDelete = async <T>(url: string, query: Record<string, any>) => {
   const { $api } = useNuxtApp()
   return await $api<T>(url, { method: "DELETE", query })
 }
+
+// 게시글 본문의 길이를 바탕으로 예상 읽기 시간을 분 단위로 반환
+export const getReadingTime = (content: string, charPerMin: number = 500): number => {
+  const plainText = stripTags(content)
+  const charCount = plainText.trim().length
+  const readingTime = Math.ceil(charCount / charPerMin)
+  return readingTime > 0 ? readingTime : 1
+}

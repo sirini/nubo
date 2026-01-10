@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { useEditorProvider } from "~/providers/editor"
 import { useWriteProvider } from "~/providers/write"
+import { BOARD_PREFIX } from "~/types/board"
 import { nuboEditorKey, nuboWriteKey } from "~/types/nubo-skin-keys"
 
 definePageMeta({ middleware: "auth" as never })
@@ -17,7 +18,12 @@ const boardId = route.params.id as string
 
 const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
-  return defineAsyncComponent(() => import(`~/skins/board/${skinName}/Write.vue`))
+  const boardType = BOARD_PREFIX[edit.config.type]
+  return defineAsyncComponent(() =>
+    import(`~/skins/board/${skinName}/${boardType}Write.vue`).catch(
+      () => import(`~/skins/board/${skinName}/DefaultWrite.vue`),
+    ),
+  )
 })
 
 await edit.loadBoardConfig(boardId)

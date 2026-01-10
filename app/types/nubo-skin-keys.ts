@@ -6,6 +6,7 @@ import type {
   BoardWriterLatestComment,
   BoardWriterLatestPost,
   Search,
+  TableOfContent,
 } from "./board"
 import type { ChatHistory } from "./chat"
 import type { CommentResult } from "./comment"
@@ -50,6 +51,8 @@ export interface NuboViewContext {
   modifyExistComment: () => Promise<void>
   downloadFile: (fileUid: number) => Promise<void>
   likePost: (isLiked: boolean) => Promise<void>
+  makeTableOfContents: () => TableOfContent[]
+  updateReadingProgress: (element: string) => void
 }
 
 // [게시판 글쓰기] 화면에서 필요한 변수 & 함수들 정의

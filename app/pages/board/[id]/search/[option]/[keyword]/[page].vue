@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { useListProvider } from "~/providers/list"
-import { SEARCH, type Search } from "~/types/board"
+import { BOARD_PREFIX, SEARCH, type Search } from "~/types/board"
 import { nuboListKey } from "~/types/nubo-skin-keys"
 
 const route = useRoute()
@@ -18,7 +18,12 @@ board.keyword = decodeURIComponent(route.params.keyword as string)
 
 const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
-  return defineAsyncComponent(() => import(`~/skins/board/${skinName}/List.vue`))
+  const boardType = BOARD_PREFIX[board.list.config.type]
+  return defineAsyncComponent(() =>
+    import(`~/skins/board/${skinName}/${boardType}List.vue`).catch(
+      () => import(`~/skins/board/${skinName}/DefaultList.vue`),
+    ),
+  )
 })
 
 await board.getInitList(boardId)

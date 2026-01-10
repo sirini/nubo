@@ -25,22 +25,13 @@ export const BOARD_ACTION = {
   MODIFY: 4,
 }
 
-// 게시판 내 활동 타입을 문자열로 변환할 때 사용하는 상수
-export const BOARD_ACTION_NAME = {
-  [BOARD_ACTION.LIST]: "List",
-  [BOARD_ACTION.PAGING]: "Paging",
-  [BOARD_ACTION.VIEW]: "View",
-  [BOARD_ACTION.WRITE]: "Write",
-  [BOARD_ACTION.MODIFY]: "Modify",
-} as const
-
 // 객체 리터럴을 사용한 게시판 기본값 정의
 export const BOARD_PREFIX = {
-  [BOARD.GALLERY]: "gallery",
-  [BOARD.BLOG]: "blog",
-  [BOARD.WEBZINE]: "board",
-  [BOARD.TRADE]: "trade",
-  [BOARD.DEFAULT]: "board",
+  [BOARD.DEFAULT]: "Default",
+  [BOARD.GALLERY]: "Gallery",
+  [BOARD.BLOG]: "Blog",
+  [BOARD.WEBZINE]: "Webzine",
+  [BOARD.TRADE]: "Trade",
 } as const
 
 // 게시글 작성자 기본값 정의
@@ -361,4 +352,11 @@ export const SEARCH = {
   },
   IMAGEDESC: 12,
   NONE: 13,
+}
+
+// 목차 타입 정의
+export type TableOfContent = {
+  id: string
+  text: string
+  level: number
 }

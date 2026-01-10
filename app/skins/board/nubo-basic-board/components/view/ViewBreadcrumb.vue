@@ -6,11 +6,11 @@
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <Breadcrumb href="#">{{ BOARD_PREFIX[view.config.type] }}</Breadcrumb>
+        <Breadcrumb>{{ BOARD_PREFIX[view.config.type] }}</Breadcrumb>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem
-        ><BreadcrumbLink :href="`/${BOARD_PREFIX[view.config.type]}/${view.config.id}/page/1`">
+        ><BreadcrumbLink :href="`/board/${view.config.id}/page/1`">
           {{ view.config.id }}
         </BreadcrumbLink>
       </BreadcrumbItem>

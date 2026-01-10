@@ -7,6 +7,7 @@ import {
   type BoardListResult,
   type BoardViewResult,
   type Search,
+  type TableOfContent,
 } from "~/types/board"
 
 export const useBoardStore = defineStore("board", () => {
@@ -138,6 +139,7 @@ export const useBoardStore = defineStore("board", () => {
   const searchPost = () => {
     if (keyword.value.length < 2) {
       toast(`⚠️ 검색어는 2글자 이상 입력해주세요`)
+      navigateTo(`/board/${list.value.config.id}/page/1`)
       return
     }
     navigateTo(
@@ -155,6 +157,45 @@ export const useBoardStore = defineStore("board", () => {
       }/${encodeURIComponent(keyword.value)}/${targetPage}`
     }
     return `/board/${list.value.config.id}/page/${targetPage}`
+  }
+
+  // 본문 속에 헤딩 타이틀로 목차 구성하기
+  const makeTableOfContents = () => {
+    const results: TableOfContent[] = []
+    if (import.meta.server) return results
+
+    const el = document.querySelector(".nubo")
+    if (!el) return results
+
+    const headers = el.querySelectorAll("h1, h2, h3")
+    headers.forEach((e, i) => {
+      if (!e.id) {
+        e.id = `nubo-header-${i}`
+      }
+
+      results.push({
+        id: e.id,
+        text: (e as HTMLElement).innerText,
+        level: parseInt(e.tagName.replace("H", "")),
+      })
+    })
+
+    return results
+  }
+
+  // 본문 스크롤에 따라서 얼만큼 읽었는지 비율 반환
+  const updateReadingProgress = (elementId: string) => {
+    if (import.meta.server) return
+
+    const el = document.getElementById(elementId)
+    if (el) {
+      el.style.transform = `scaleX(0)`
+      window.addEventListener("scroll", () => {
+        const winScroll = document.documentElement.scrollTop
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight
+        el.style.transform = `scaleX(${winScroll / height})`
+      })
+    }
   }
 
   return {
@@ -175,5 +216,7 @@ export const useBoardStore = defineStore("board", () => {
     likePost,
     searchPost,
     setPagingUrl,
+    makeTableOfContents,
+    updateReadingProgress,
   }
 })

@@ -5,7 +5,7 @@
       <ViewStatusLine />
     </CardDescription>
   </CardHeader>
-  <CardContent class="leading-7 px-4 nubo">
+  <CardContent class="nubo leading-7 px-4">
     <div v-html="view.post.content"></div>
   </CardContent>
   <CardFooter class="px-4 justify-between">

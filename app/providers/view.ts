@@ -96,5 +96,7 @@ export const useViewProvider = (): NuboViewContext => {
     likePost: async (isLiked: boolean) => {
       await board.likePost(isLiked)
     },
+    makeTableOfContents: () => board.makeTableOfContents(),
+    updateReadingProgress: (element: string) => board.updateReadingProgress(element),
   }
 }

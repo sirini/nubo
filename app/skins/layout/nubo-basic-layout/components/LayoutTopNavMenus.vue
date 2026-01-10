@@ -5,7 +5,7 @@
         <div class="w-full md:w-auto flex justify-between md:block">
           <LayoutTopMenu />
 
-          <Button variant="outline" icon class="md:hidden" @click="isShow = !isShow">
+          <Button variant="outline" size="icon" class="md:hidden" @click="isShow = !isShow">
             <SearchIcon />
           </Button>
         </div>

@@ -18,7 +18,7 @@
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" icon v-show="page <= 1">
+        <Button variant="ghost" size="icon" v-show="page <= 1">
           <ChevronFirstIcon class="w-10 h-10 text-muted" />
         </Button>
 
@@ -30,7 +30,7 @@
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" icon v-show="page <= 1" class="mr-2">
+        <Button variant="ghost" size="icon" v-show="page <= 1" class="mr-2">
           <ChevronLeftIcon class="w-10 h-10 text-muted" />
         </Button>
 
@@ -57,7 +57,7 @@
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" icon v-show="page >= pageCount" class="ml-2">
+        <Button variant="ghost" size="icon" v-show="page >= pageCount" class="ml-2">
           <ChevronRightIcon class="w-10 h-10 text-muted" />
         </Button>
 
@@ -69,7 +69,7 @@
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" icon v-show="page >= pageCount">
+        <Button variant="ghost" size="icon" v-show="page >= pageCount">
           <ChevronLastIcon class="w-10 h-10 text-muted" />
         </Button>
       </PaginationContent>
