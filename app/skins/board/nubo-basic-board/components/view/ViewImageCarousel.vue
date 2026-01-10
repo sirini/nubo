@@ -1,5 +1,5 @@
 <template>
-  <Carousel @init-api="setApi" class="w-full relative group">
+  <Carousel @init-api="setApi" class="w-full relative group border-b shadow-lg">
     <CarouselContent>
       <CarouselItem v-for="(img, index) in view.images" :key="index">
         <div class="p-1">
@@ -33,7 +33,7 @@
       <CarouselNext class="hidden sm:flex right-3 cursor-pointer"
     /></CommonVTooltip>
 
-    <div class="flex justify-center mt-2">
+    <div class="flex justify-center my-3">
       <CommonVTooltip
         v-for="(i, idx) in count"
         :key="idx"
