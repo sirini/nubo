@@ -54,8 +54,8 @@ const { stop } = useIntersectionObserver(
     }
   },
   {
-    threshold: 0.8,
-    rootMargin: "0px",
+    threshold: 0.4,
+    rootMargin: "100px",
   },
 )
 </script>
