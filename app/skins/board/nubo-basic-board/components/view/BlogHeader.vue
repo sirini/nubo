@@ -1,6 +1,10 @@
 <template>
   <header class="relative w-full h-[60vh] md:h-[70vh] overflow-hidden rounded-t-lg">
-    <img :src="view.post.cover" class="w-full h-full object-cover select-none" />
+    <img
+      v-if="view.images.length > 0"
+      :src="view.images[0]?.thumbnail.large"
+      class="w-full h-full object-cover select-none"
+    />
     <div
       class="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent"
     ></div>
