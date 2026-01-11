@@ -1,5 +1,5 @@
 <template>
-  <section class="container mx-auto py-4">
+  <section class="container mx-auto py-4 max-w-5xl">
     <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-4 h-auto">
       <ProfileMain />
       <Card class="md:col-span-2 md:row-span-2 overflow-hidden p-0">

@@ -3,7 +3,7 @@
     <CardHeader class="border-b">
       <CardTitle class="flex items-center gap-2 font-medium"><slot /> {{ title }}</CardTitle>
     </CardHeader>
-    <CardContent class="flex items-center justify-center h-20 text-3xl font-medium mb-2">
+    <CardContent class="flex items-center justify-center h-20 text-2xl font-mono mb-2">
       {{ content }}
     </CardContent>
   </Card>
