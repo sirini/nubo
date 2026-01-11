@@ -1,6 +1,5 @@
 <template>
-  <LayoutTopNavMenus />
-  <div class="min-h-screen">
+  <div class="container mx-auto min-h-screen">
     <main class="flex items-center justify-center min-h-screen py-4">
       <Card class="w-full rounded-lg overflow-hidden shadow-lg max-w-sm">
         <CardHeader>
@@ -23,6 +22,4 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import LayoutTopNavMenus from "~/skins/layout/nubo-basic-layout/components/LayoutTopNavMenus.vue"
-</script>
+<script setup lang="ts"></script>

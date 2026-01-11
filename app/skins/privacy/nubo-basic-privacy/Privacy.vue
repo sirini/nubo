@@ -1,5 +1,5 @@
 <template>
-  <section class="container mx-auto py-4">
+  <section class="container mx-auto py-4 max-w-3xl">
     <div class="mb-10 text-center">
       <h1 class="text-2xl font-bold tracking-tight">개인정보 처리방침</h1>
       <div class="mt-4 text-lg text-muted-foreground">

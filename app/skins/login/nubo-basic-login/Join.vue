@@ -1,5 +1,5 @@
 <template>
-  <section class="flex items-center justify-center min-h-[80vh]">
+  <section class="flex items-center justify-center min-h-[calc(100dvh-70px)]">
     <Card class="w-full rounded-lg overflow-hidden shadow-lg max-w-sm">
       <CardHeader>
         <CardTitle class="text-xl">회원가입</CardTitle>
