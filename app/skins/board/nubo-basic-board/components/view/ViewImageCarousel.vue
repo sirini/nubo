@@ -14,11 +14,10 @@
             />
           </div>
           <div v-if="img.exif.model.length > 0" class="text-xs text-muted-foreground p-3 leading-5">
-            제조사: {{ img.exif.make }} · 모델명: {{ img.exif.model }} · 조리개: f{{
-              img.exif.aperture / 100
-            }}
-            · 노출: {{ img.exif.exposure / 1000 }}ms · 초점 거리: {{ img.exif.focalLength }}mm ·
-            원본 크기: {{ img.exif.width }} x {{ img.exif.height }} · 촬영일:
+            제조사: {{ img.exif.make }} · 모델명: {{ img.exif.model }} · 초점 거리:
+            {{ img.exif.focalLength }}mm · 조리개: f{{ img.exif.aperture / 100 }} · 노출:
+            {{ img.exif.exposure / 1000 }}ms · ISO: {{ img.exif.iso }} · 원본 크기:
+            {{ img.exif.width }} x {{ img.exif.height }} · 촬영일:
             {{ dateFull(img.exif.date) }}
           </div>
         </div>
