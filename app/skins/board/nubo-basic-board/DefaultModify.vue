@@ -1,6 +1,6 @@
 <template>
   <section class="container mx-auto py-4">
-    <div class="mx-auto" :style="`max-width: ${config.width}px`">
+    <div class="mx-auto" :class="`max-w-[${config.width}px]`">
       <Card>
         <CardHeader>
           <CardTitle>글 수정하기</CardTitle>

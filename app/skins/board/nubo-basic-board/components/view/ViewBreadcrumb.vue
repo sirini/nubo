@@ -6,17 +6,17 @@
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <Breadcrumb>{{ BOARD_PREFIX[view.config.type] }}</Breadcrumb>
+        <Breadcrumb>{{ BOARD_PREFIX[config.type] }}</Breadcrumb>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem
-        ><BreadcrumbLink :href="`/board/${view.config.id}/page/1`">
-          {{ view.config.id }}
+        ><BreadcrumbLink :href="`/board/${config.id}/page/1`">
+          {{ config.id }}
         </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        {{ view.config.info }}
+        {{ config.info }}
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>
@@ -26,5 +26,5 @@
 import { BOARD_PREFIX } from "~/types/board"
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
 
-const { view } = useNuboViewContext()
+const { config } = useNuboViewContext()
 </script>

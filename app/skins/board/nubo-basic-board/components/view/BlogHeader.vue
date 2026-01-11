@@ -10,7 +10,7 @@
         <Badge
           variant="outline"
           class="mb-4 backdrop-blur-sm border-white/20 text-white text-sm"
-          v-if="view.config.useCategory"
+          v-if="config.useCategory"
         >
           {{ view.post.category.name }}
         </Badge>
@@ -56,5 +56,5 @@
 import { CalendarIcon, ClockIcon, MessageCircleIcon } from "lucide-vue-next"
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
 
-const { view } = useNuboViewContext()
+const { view, config } = useNuboViewContext()
 </script>

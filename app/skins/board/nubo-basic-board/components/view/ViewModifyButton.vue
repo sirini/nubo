@@ -1,6 +1,6 @@
 <template>
   <CommonVTooltip content="본인이 작성하신 게시글을 수정합니다" v-if="isWriter">
-    <NuxtLink :to="`/board/${view.config.id}/${view.post.uid}/edit`" as-child class="gap-2">
+    <NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`" as-child class="gap-2">
       <Button variant="outline" class="cursor-pointer">
         <FilePenLineIcon class="w-4 h-4" />
         수정하기
@@ -13,5 +13,5 @@
 import { FilePenLineIcon } from "lucide-vue-next"
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
 
-const { view, isWriter } = useNuboViewContext()
+const { view, config, isWriter } = useNuboViewContext()
 </script>

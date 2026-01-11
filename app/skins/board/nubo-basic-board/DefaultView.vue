@@ -1,11 +1,11 @@
 <template>
   <section class="container mx-auto py-4">
-    <div class="mx-auto" :style="`max-width: ${config.width}px`">
+    <div class="mx-auto" :class="`max-w-[${config.width}px]`">
       <ViewBreadcrumb />
 
       <Card
         class="rounded-lg overflow-hidden shadow-lg pt-0 mb-4"
-        :style="`max-width: ${config.width}px`"
+        :class="`max-w-[${config.width}px]`"
       >
         <ViewImageCarousel v-if="view.images.length > 0" />
         <ViewAttachmentList />

@@ -1,6 +1,6 @@
 <template>
   <section class="container mx-auto py-4">
-    <div class="mx-auto" :style="`max-width: ${config.width}px`">
+    <div class="mx-auto" :class="`max-w-[${config.width}px]`">
       <GalleryHeader />
 
       <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">

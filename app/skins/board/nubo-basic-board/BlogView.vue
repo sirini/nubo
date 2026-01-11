@@ -1,7 +1,7 @@
 <template>
   <div
     class="relative min-h-screen bg-background mx-auto py-4"
-    :style="`max-width: ${view.config.width}px`"
+    :class="`max-w-[${config.width}px]`"
   >
     <div
       class="fixed top-0 left-0 w-full h-0.5 bg-primary z-50 origin-left"
@@ -57,7 +57,7 @@ import ViewTagBadges from "./components/view/ViewTagBadges.vue"
 import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 
-const { view, updateReadingProgress } = useNuboViewContext()
+const { view, config, updateReadingProgress } = useNuboViewContext()
 
 onMounted(() => {
   updateReadingProgress("reading-progress")
