@@ -1,10 +1,10 @@
 <template>
-  <Carousel @init-api="setApi" class="w-full relative group border-b shadow-lg">
+  <Carousel @init-api="setApi" class="w-full relative group">
     <CarouselContent>
       <CarouselItem v-for="(img, index) in view.images" :key="index">
         <div class="p-1">
           <div
-            class="overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative"
+            class="overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center relative"
           >
             <img
               :src="img.thumbnail.large"

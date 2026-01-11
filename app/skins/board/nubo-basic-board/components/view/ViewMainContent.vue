@@ -1,7 +1,9 @@
 <template>
   <CardHeader class="px-3">
-    <CardTitle class="my-2 text-2xl font-title px-1 leading-10">{{ view.post.title }}</CardTitle>
-    <CardDescription class="inline-flex items-center px-1 font-code">
+    <CardTitle class="my-2 text-2xl font-title px-1 leading-10">{{
+      recoverChars(view.post.title)
+    }}</CardTitle>
+    <CardDescription class="inline-flex items-center px-1 font-mono">
       <ViewStatusLine />
     </CardDescription>
   </CardHeader>

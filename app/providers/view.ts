@@ -15,7 +15,11 @@ export const useViewProvider = (): NuboViewContext => {
     comments: computed(() => comment.comments),
     isLoggedIn: computed(() => auth.isLoggedIn),
     isWriter: computed(() => auth.user.uid === board.view.post.writer.uid),
-    content: computed({ get: () => editor.content, set: (val: string) => (editor.content = val) }),
+    imgIdx: computed({
+      get: () => board.imgIdx,
+      set: (val: number) => (board.imgIdx = val),
+    }),
+    content: computed(() => editor.content),
     commentTarget: computed(() => comment.target),
     checkPermissionComment: (writerUid: number) => {
       if (auth.user.uid === 1) {

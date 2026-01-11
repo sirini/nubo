@@ -12,9 +12,9 @@
         <CardTitle
           class="line-clamp-1 mb-2 mt-4"
           :class="post.cover ? '' : 'line-clamp-6 leading-6'"
-          >{{ post.title }}</CardTitle
+          >{{ recoverChars(post.title) }}</CardTitle
         >
-        <CardDescription class="inline-flex items-center font-code">
+        <CardDescription class="inline-flex items-center font-mono">
           <HeartIcon :class="post.liked ? 'text-red-200 fill-current' : ''" class="w-3 h-3 mr-2" />
           {{ post.like }}
           <MessageCircleIcon class="w-3 h-3 ml-4 mr-2" />
@@ -27,8 +27,8 @@
       </CardHeader>
       <CardContent
         class="text-sm line-clamp-3 leading-6 px-3 mt-2"
-        :class="post.cover ? '' : 'line-clamp-6'"
-        >{{ stripTags(post.content) }}</CardContent
+        :class="post.cover ? '' : 'line-clamp-5'"
+        >{{ recoverChars(stripTags(post.content)) }}</CardContent
       >
     </NuxtLink>
   </Card>

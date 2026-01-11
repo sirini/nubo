@@ -29,7 +29,7 @@ export const useLayoutProvider = (): NuboLayoutContext => {
         toast("검색어는 2글자 이상 입력해주세요!")
         return
       }
-      router.push(`/search/${encodeURIComponent(home.keyword)}?option=${home.option}`)
+      router.push(`/search/${home.optionLabels[home.option]}/${encodeURIComponent(home.keyword)}`)
     },
     moveTop: () => {
       if (import.meta.client) {

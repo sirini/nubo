@@ -1,11 +1,12 @@
 import {
   type Board,
-  type BoardConfig,
-  type BoardListItem,
-  type Search,
   BOARD,
   BOARD_CONFIG,
   BOARD_LIST_ITEM,
+  type BoardConfig,
+  type BoardListItem,
+  SEARCH,
+  type Search,
 } from "~/types/board"
 
 export type HomeLang = 0 | 1 | 2
@@ -59,4 +60,13 @@ export type HomeLatestPostsParams = {
   option?: Search
   keyword?: string
   [key: string]: string | number | boolean | object | undefined
+}
+
+// 홈화면, 게시판에서 검색 옵션 정의
+export const HomeSearchOptions = {
+  title: SEARCH.TITLE,
+  content: SEARCH.CONTENT,
+  writer: SEARCH.WRITER,
+  tag: SEARCH.TAG,
+  imagedesc: SEARCH.IMAGEDESC,
 }

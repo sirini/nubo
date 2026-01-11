@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen">
     <LayoutTopNavMenus />
-    <main class="container mx-auto flex-1 px-4 py-6 min-h-[80vh]">
+    <main>
       <slot />
     </main>
     <LayoutFooter />

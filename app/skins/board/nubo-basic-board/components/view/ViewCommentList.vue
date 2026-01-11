@@ -1,10 +1,12 @@
 <template>
-  <section class="space-y-6 mt-8">
+  <section class="space-y-6">
     <div v-if="comments.length > 0" v-for="(co, index) in comments" :key="index" class="group">
-      <div
-        class="flex gap-4"
-        :class="co.uid !== co.replyUid ? 'mt-4 ml-5 space-y-6 border-l pl-5 border-muted/30' : ''"
-      >
+      <div class="flex gap-4" :class="co.uid !== co.replyUid ? 'mt-4 space-y-6' : ''">
+        <CornerDownRightIcon
+          class="w-4 h-4 mt-3 text-muted-foreground"
+          v-if="co.uid !== co.replyUid"
+        />
+
         <Avatar class="w-10 h-10 cursor-pointer">
           <AvatarImage :src="co.writer.profile" :alt="co.writer.name" />
           <AvatarFallback>{{ co.writer.name.at(0) || "U" }}</AvatarFallback>
@@ -12,9 +14,11 @@
 
         <div class="flex-1 space-y-1.5">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-semibold text-foreground">{{ co.writer.name }}</span>
-              <span class="text-xs text-muted-foreground">{{ dateFull(co.submitted) }}</span>
+            <div>
+              <div class="text-sm font-semibold text-foreground">
+                <span>{{ co.writer.name }}</span>
+              </div>
+              <div class="mt-2 text-xs text-muted">{{ dateFull(co.submitted) }}</div>
             </div>
 
             <DropdownMenu>
@@ -45,7 +49,7 @@
           </div>
 
           <div
-            class="text-sm text-foreground leading-relaxed whitespace-pre-wrap nubo"
+            class="nubo text-sm text-foreground leading-relaxed whitespace-pre-wrap"
             v-html="co.content"
           ></div>
 
@@ -101,7 +105,12 @@
 </template>
 
 <script setup lang="ts">
-import { EllipsisVerticalIcon, HeartIcon, MessageSquareIcon } from "lucide-vue-next"
+import {
+  CornerDownRightIcon,
+  EllipsisVerticalIcon,
+  HeartIcon,
+  MessageSquareIcon,
+} from "lucide-vue-next"
 import { useNuboViewContext } from "~/types/nubo-skin-keys"
 
 const {

@@ -9,6 +9,7 @@ import {
   type Search,
   type TableOfContent,
 } from "~/types/board"
+import { HomeSearchOptions } from "~/types/home"
 
 export const useBoardStore = defineStore("board", () => {
   const { loadInitBoardView, loadInitBoardList, like, download } = useBoard()
@@ -18,15 +19,10 @@ export const useBoardStore = defineStore("board", () => {
   const isLoading = ref<boolean>(false)
   const view = ref<BoardViewResult>(BOARD_VIEW_RESULT)
   const list = ref<BoardListResult>(BOARD_LIST_RESULT)
+  const imgIdx = ref<number>(0)
   const page = ref<number>(1)
   const option = ref<Search>(SEARCH.TITLE as Search)
-  const options = ref<Record<string, number>>({
-    title: SEARCH.TITLE,
-    content: SEARCH.CONTENT,
-    writer: SEARCH.WRITER,
-    tag: SEARCH.TAG,
-    imagedesc: SEARCH.IMAGEDESC,
-  })
+  const options = ref<Record<string, number>>(HomeSearchOptions)
   const optionLabels = computed(() => {
     const labels: Record<number, string> = {}
     for (const [key, value] of Object.entries(options.value)) {
@@ -204,6 +200,7 @@ export const useBoardStore = defineStore("board", () => {
     isLoading,
     view,
     list,
+    imgIdx,
     page,
     option,
     options,

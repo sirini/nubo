@@ -12,9 +12,10 @@
         <ViewMainContent />
       </Card>
 
+      <ViewWriterProfile class="py-4" />
       <ViewRelatedContent />
       <ViewWriteComment />
-      <ViewCommentList />
+      <ViewCommentList class="mt-8" />
 
       <div class="flex items-center justify-between my-12">
         <ViewListButton />
@@ -40,6 +41,7 @@ import ViewModifyButton from "./components/view/ViewModifyButton.vue"
 import ViewRelatedContent from "./components/view/ViewRelatedContent.vue"
 import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
+import ViewWriterProfile from "./components/view/ViewWriterProfile.vue"
 
 const { view, config } = useNuboViewContext()
 </script>

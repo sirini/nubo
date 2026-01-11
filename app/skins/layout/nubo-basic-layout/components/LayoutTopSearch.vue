@@ -7,11 +7,7 @@
     /></CommonVTooltip>
 
     <CommonVTooltip content="선택하신 검색 옵션과 키워드로 게시글을 찾아봅니다">
-      <Button
-        type="submit"
-        variant="outline"
-        class="text-foreground"
-        :disabled="searchKeyword.length < 2"
+      <Button type="submit" variant="outline" class="text-foreground cursor-pointer"
         >찾기</Button
       ></CommonVTooltip
     >

@@ -25,8 +25,8 @@ export interface NuboListContext {
   isLoggedIn: ComputedRef<boolean>
   page: ComputedRef<number>
   totalPostCount: ComputedRef<number>
-  option: ComputedRef<Search>
-  keyword: ComputedRef<string>
+  option: WritableComputedRef<Search>
+  keyword: WritableComputedRef<string>
   searchPost: () => void
   setPagingUrl: (targetUrl: number) => string
 }
@@ -38,6 +38,7 @@ export interface NuboViewContext {
   comments: ComputedRef<CommentResult[]>
   isLoggedIn: ComputedRef<boolean>
   isWriter: ComputedRef<boolean>
+  imgIdx: WritableComputedRef<number>
   content: ComputedRef<string>
   commentTarget: ComputedRef<{ reply: number; remove: number; modify: number }>
   checkPermissionComment: (writerUid: number) => boolean
@@ -57,22 +58,22 @@ export interface NuboViewContext {
 
 // [게시판 글쓰기] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboWriteContext {
-  tag: ComputedRef<string>
+  tag: WritableComputedRef<string>
   tags: ComputedRef<string[]>
   tagSuggestions: ComputedRef<EditorTagItem[]>
   attaches: ComputedRef<File[]>
   isLoggedIn: ComputedRef<boolean>
-  isDragging: ComputedRef<boolean>
+  isDragging: WritableComputedRef<boolean>
   isPopOver: ComputedRef<Record<string, boolean>>
   isAdmin: ComputedRef<boolean>
-  isNotice: ComputedRef<boolean>
-  isSecret: ComputedRef<boolean>
-  categoryUid: ComputedRef<number>
+  isNotice: WritableComputedRef<boolean>
+  isSecret: WritableComputedRef<boolean>
+  categoryUid: WritableComputedRef<number>
   categories: ComputedRef<Pair[]>
-  title: ComputedRef<string>
-  titleSuggestions: ComputedRef<string[]>
+  title: WritableComputedRef<string>
+  titleSuggestions: WritableComputedRef<string[]>
   isSearchingTitles: ComputedRef<boolean>
-  isWriting: ComputedRef<boolean>
+  isWriting: WritableComputedRef<boolean>
   isConfirmDialog: ComputedRef<boolean>
   writeNewPost: () => Promise<void>
   dropAttaches: (event: DragEvent) => void
@@ -95,8 +96,8 @@ export interface NuboWriteContext {
 export interface NuboEditorContext {
   config: ComputedRef<BoardConfig>
   content: ComputedRef<string>
-  isAddLinkDialog: ComputedRef<boolean>
-  isImageUploadDialog: ComputedRef<boolean>
+  isAddLinkDialog: WritableComputedRef<boolean>
+  isImageUploadDialog: WritableComputedRef<boolean>
   isUploading: ComputedRef<boolean>
   imageSizeLimit: ComputedRef<{ profile: string; contentInsert: string; thumbnail: string }>
   previewInsertImages: ComputedRef<string[]>
@@ -138,12 +139,12 @@ export interface NuboProfileContext {
   isLoading: ComputedRef<boolean>
   chatHistories: ComputedRef<ChatHistory[]>
   chatMyUid: ComputedRef<number>
-  chatMessage: ComputedRef<string>
+  chatMessage: WritableComputedRef<string>
   editProfile: ComputedRef<EditProfileParam>
   reportReasons: ComputedRef<{ label: string; description: string }[]>
   isReportedUser: ComputedRef<boolean>
-  reportReason: ComputedRef<string>
-  reportDescription: ComputedRef<string>
+  reportReason: WritableComputedRef<string>
+  reportDescription: WritableComputedRef<string>
   isCheckedBlackList: ComputedRef<boolean>
   sendChatMessage: () => Promise<void>
   changeProfileImage: (event: Event) => void
@@ -167,8 +168,8 @@ export interface NuboLayoutContext {
   user: ComputedRef<UserMyResult>
   menus: ComputedRef<HomeSidebarGroupResult[]>
   searchOptions: ComputedRef<{ label: string; value: number }[]>
-  searchOption: ComputedRef<number>
-  searchKeyword: ComputedRef<string>
+  searchOption: WritableComputedRef<number>
+  searchKeyword: WritableComputedRef<string>
   search: (event: Event) => void
   moveTop: () => void
 }
@@ -177,11 +178,11 @@ export interface NuboLayoutContext {
 export interface NuboLoginContext {
   joinEmail: ComputedRef<string>
   joinName: ComputedRef<string>
-  joinPassword: ComputedRef<string>
-  joinPassword2: ComputedRef<string>
-  verifyCode: ComputedRef<string>
-  verifyTarget: ComputedRef<number>
-  isLoading: ComputedRef<boolean>
+  joinPassword: WritableComputedRef<string>
+  joinPassword2: WritableComputedRef<string>
+  verifyCode: WritableComputedRef<string>
+  verifyTarget: WritableComputedRef<number>
+  isLoading: WritableComputedRef<boolean>
   isValidEmail: ComputedRef<boolean>
   isValidName: ComputedRef<boolean>
   isValidPassword: ComputedRef<boolean>
@@ -190,10 +191,10 @@ export interface NuboLoginContext {
   oauthGoogleUrl: string
   oauthNaverUrl: string
   oauthKakaoUrl: string
-  resetCode: ComputedRef<string>
-  resetTarget: ComputedRef<number>
-  resetPassword: ComputedRef<string>
-  resetPassword2: ComputedRef<string>
+  resetCode: WritableComputedRef<string>
+  resetTarget: WritableComputedRef<number>
+  resetPassword: WritableComputedRef<string>
+  resetPassword2: WritableComputedRef<string>
   login: (e?: Event | undefined) => Promise<void | undefined>
   isUsedEmail: () => Promise<void>
   isUsedName: () => Promise<void>

@@ -58,6 +58,24 @@
             </DropdownMenuPortal>
           </DropdownMenuSub>
         </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuLabel class="text-gray-500 text-xs">기타</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuItem as-child class="w-full cursor-pointer">
+            <NuxtLink to="/" class="inline-flex gap-3 items-center">
+              <HomeIcon class="w-4 h-4" />첫 화면
+            </NuxtLink>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuGroup>
+          <DropdownMenuItem as-child class="w-full cursor-pointer">
+            <NuxtLink to="/privacy" class="inline-flex gap-3 items-center">
+              <ShieldCheckIcon class="w-4 h-4" /> 개인정보 보호정책</NuxtLink
+            >
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
 
@@ -70,7 +88,15 @@
 </template>
 
 <script setup lang="ts">
-import { FolderOpenIcon, FoldersIcon, LogInIcon, LogOutIcon, MenuIcon } from "lucide-vue-next"
+import {
+  FolderOpenIcon,
+  FoldersIcon,
+  HomeIcon,
+  LogInIcon,
+  LogOutIcon,
+  MenuIcon,
+  ShieldCheckIcon,
+} from "lucide-vue-next"
 import { useNuboLayoutContext } from "~/types/nubo-skin-keys"
 
 const config = useRuntimeConfig()

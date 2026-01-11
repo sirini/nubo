@@ -12,8 +12,16 @@ const config = useRuntimeConfig()
 const board = useBoardStore()
 const boardId = route.params.id as string
 const page = parseInt(route.params.page as string)
+const options = ref<Record<string, number>>({
+  title: SEARCH.TITLE,
+  content: SEARCH.CONTENT,
+  writer: SEARCH.WRITER,
+  tag: SEARCH.TAG,
+  imagedesc: SEARCH.IMAGEDESC,
+})
 board.page = page > 0 ? page : 1
-board.option = (board.options[route.params.option as string] || SEARCH.TITLE) as Search
+
+board.option = (options[route.params.option as string] || SEARCH.TITLE) as Search
 board.keyword = decodeURIComponent(route.params.keyword as string)
 
 const selectedSkin = computed(() => {

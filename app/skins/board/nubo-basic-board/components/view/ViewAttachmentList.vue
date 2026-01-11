@@ -20,7 +20,7 @@
         v-for="(file, index) in view.files"
         :key="index"
         @click="downloadFile(file.uid)"
-        class="border-b px-4 py-3 font-code text-sm inline-flex items-center cursor-pointer w-full hover:bg-muted hover:text-blue-500 transition-colors"
+        class="border-b px-4 py-3 font-mono text-sm inline-flex items-center cursor-pointer w-full hover:bg-muted hover:text-blue-500 transition-colors"
       >
         <DownloadIcon class="w-4 h-4 mr-3" />
         <span class="text-xs">{{ file.name }}</span>

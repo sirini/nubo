@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import { toast } from "vue-sonner"
 import { SEARCH, type Search } from "~/types/board"
-import type { HomePostItem, HomeSidebarGroupResult } from "~/types/home"
+import { HomeSearchOptions, type HomePostItem, type HomeSidebarGroupResult } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
   const { loadInitPosts, loadMorePosts, loadInitHomeMenus } = useHome()
@@ -11,6 +11,14 @@ export const useHomeStore = defineStore("home", () => {
   const keyword = ref<string>("")
   const menus = ref<HomeSidebarGroupResult[]>([])
   const option = ref<Search>(SEARCH.TITLE as Search)
+  const options = ref<Record<string, number>>(HomeSearchOptions)
+  const optionLabels = computed(() => {
+    const labels: Record<number, string> = {}
+    for (const [key, value] of Object.entries(options.value)) {
+      labels[value] = key
+    }
+    return labels
+  })
   const isLoading = ref<boolean>(false)
   const isLastPost = ref<boolean>(false)
   const posts = ref<HomePostItem[]>([])
@@ -117,6 +125,8 @@ export const useHomeStore = defineStore("home", () => {
     keyword,
     menus,
     option,
+    options,
+    optionLabels,
     isLoading,
     isLastPost,
     posts,
