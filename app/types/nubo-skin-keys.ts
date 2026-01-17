@@ -1,5 +1,5 @@
 import type { InjectionKey } from "vue"
-import type { AdminMenu } from "./admin"
+import type { AdminDashboard, AdminDashboardStatistic, AdminMenu } from "./admin"
 import type {
   BoardConfig,
   BoardListItem,
@@ -18,9 +18,22 @@ import type { EditProfileParam, UserInfoResult, UserMyResult } from "./user"
 
 // [관리자] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboAdminContext {
+  user: ComputedRef<UserMyResult>
   panel: ComputedRef<any>
   menu: ComputedRef<AdminMenu>
+  dashboard: ComputedRef<AdminDashboard>
+  statUser: ComputedRef<AdminDashboardStatistic>
+  statPost: ComputedRef<AdminDashboardStatistic>
+  statReply: ComputedRef<AdminDashboardStatistic>
+  statVisit: ComputedRef<AdminDashboardStatistic>
+  statFile: ComputedRef<AdminDashboardStatistic>
+  statImage: ComputedRef<AdminDashboardStatistic>
   openMenu: (menu: AdminMenu) => void
+  loadInitDashboard: (
+    daysForStat: number,
+    limitForLatest: number,
+    limitForItem: number,
+  ) => Promise<void>
 }
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의
