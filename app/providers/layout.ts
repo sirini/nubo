@@ -8,6 +8,7 @@ export const useLayoutProvider = (): NuboLayoutContext => {
   const home = useHomeStore()
 
   return {
+    isAdmin: computed(() => auth.isAdmin),
     isLoggedIn: computed(() => auth.isLoggedIn),
     user: computed(() => auth.user),
     menus: computed(() => home.menus),

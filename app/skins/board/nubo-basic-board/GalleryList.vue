@@ -1,5 +1,5 @@
 <template>
-  <section class="container mx-auto py-4">
+  <section class="container mx-auto py-6">
     <div class="mx-auto" :style="`max-width: ${config.width}px`">
       <GalleryHeader />
 

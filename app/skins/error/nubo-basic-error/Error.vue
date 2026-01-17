@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto min-h-screen">
-    <main class="flex items-center justify-center min-h-screen py-4">
+    <main class="flex items-center justify-center min-h-screen py-6">
       <Card class="w-full rounded-lg overflow-hidden shadow-lg max-w-sm">
         <CardHeader>
           <CardTitle class="text-xl">잘못된 접근</CardTitle>

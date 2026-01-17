@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background mx-auto py-4" :style="`max-width: ${config.width}px`">
+  <div class="min-h-screen bg-background mx-auto py-6" :style="`max-width: ${config.width}px`">
     <BlogHeader />
 
     <section class="container mx-auto py-16 md:py-24">

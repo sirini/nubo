@@ -8,6 +8,7 @@ const GOAPI_URL = `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_BASE}`
 
 // 기본 스킨 설정
 const defaultSkins = {
+  admin: "nubo-basic-admin",
   layout: "nubo-basic-layout",
   home: "nubo-basic-home",
   login: "nubo-basic-login",

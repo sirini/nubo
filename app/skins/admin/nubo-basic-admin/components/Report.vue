@@ -1,0 +1,1 @@
+<template>Report</template>

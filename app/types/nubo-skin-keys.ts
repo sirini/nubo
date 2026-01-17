@@ -1,4 +1,5 @@
 import type { InjectionKey } from "vue"
+import type { AdminMenu } from "./admin"
 import type {
   BoardConfig,
   BoardListItem,
@@ -14,6 +15,13 @@ import type { Pair } from "./common"
 import type { EditorInsertImageResult, EditorTagItem } from "./editor"
 import type { HomePostItem, HomeSidebarGroupResult } from "./home"
 import type { EditProfileParam, UserInfoResult, UserMyResult } from "./user"
+
+// [관리자] 화면에서 필요한 변수 & 함수들 정의
+export interface NuboAdminContext {
+  panel: ComputedRef<any>
+  menu: ComputedRef<AdminMenu>
+  openMenu: (menu: AdminMenu) => void
+}
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboListContext {
@@ -164,6 +172,7 @@ export interface NuboHomeContext {
 
 // [레이아웃] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboLayoutContext {
+  isAdmin: ComputedRef<boolean>
   isLoggedIn: ComputedRef<boolean>
   user: ComputedRef<UserMyResult>
   menus: ComputedRef<HomeSidebarGroupResult[]>
@@ -205,6 +214,7 @@ export interface NuboLoginContext {
   updateUserPassword: () => Promise<void>
 }
 
+export const nuboAdminKey: InjectionKey<NuboAdminContext> = Symbol("nuboAdminContext")
 export const nuboListKey: InjectionKey<NuboListContext> = Symbol("nuboListContext")
 export const nuboViewKey: InjectionKey<NuboViewContext> = Symbol("nuboViewContext")
 export const nuboWriteKey: InjectionKey<NuboWriteContext> = Symbol("nuboWriteContext")
@@ -214,8 +224,17 @@ export const nuboLayoutKey: InjectionKey<NuboLayoutContext> = Symbol("nuboLayout
 export const nuboLoginKey: InjectionKey<NuboLoginContext> = Symbol("nuboLoginContext")
 export const nuboProfileKey: InjectionKey<NuboProfileContext> = Symbol("nuboProfileContext")
 
+// [관리자] 화면에 필요한 변수 & 함수들 가져오기
+export const useNuboAdminContext = () => {
+  const context = inject(nuboAdminKey)
+  if (!context) {
+    throw new Error("useAdminContext must be used within a proper provider")
+  }
+  return context
+}
+
 // [게시판 글목록] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboListContext() {
+export const useNuboListContext = () => {
   const context = inject(nuboListKey)
   if (!context) {
     throw new Error("useNuboListContext must be used within a proper provider")
@@ -224,7 +243,7 @@ export function useNuboListContext() {
 }
 
 // [게시판 글보기] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboViewContext() {
+export const useNuboViewContext = () => {
   const context = inject(nuboViewKey)
   if (!context) {
     throw new Error("useNuboViewContext must be used within a proper provider")
@@ -233,7 +252,7 @@ export function useNuboViewContext() {
 }
 
 // [게시판 글쓰기] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboWriteContext() {
+export const useNuboWriteContext = () => {
   const context = inject(nuboWriteKey)
   if (!context) {
     throw new Error("useNuboWriteContext must be used within a proper provider")
@@ -242,7 +261,7 @@ export function useNuboWriteContext() {
 }
 
 // [에디터] 에 필요한 변수 & 함수들 가져오기
-export function useNuboEditorContext() {
+export const useNuboEditorContext = () => {
   const context = inject(nuboEditorKey)
   if (!context) {
     throw new Error("useNuboEditorContext must be used within a proper provider")
@@ -251,7 +270,7 @@ export function useNuboEditorContext() {
 }
 
 // [홈] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboHomeContext() {
+export const useNuboHomeContext = () => {
   const context = inject(nuboHomeKey)
   if (!context) {
     throw new Error("useNuboHomeContext must be used within a proper provider")
@@ -260,7 +279,7 @@ export function useNuboHomeContext() {
 }
 
 // [레이아웃] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboLayoutContext() {
+export const useNuboLayoutContext = () => {
   const context = inject(nuboLayoutKey)
   if (!context) {
     throw new Error("useNuboLayoutContext must be used within a proper provider")
@@ -269,7 +288,7 @@ export function useNuboLayoutContext() {
 }
 
 // [로그인] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboLoginContext() {
+export const useNuboLoginContext = () => {
   const context = inject(nuboLoginKey)
   if (!context) {
     throw new Error("useNuboLoginContext must be used within a proper provider")
@@ -278,7 +297,7 @@ export function useNuboLoginContext() {
 }
 
 // [프로필] 화면에 필요한 변수 & 함수들 가져오기
-export function useNuboProfileContext() {
+export const useNuboProfileContext = () => {
   const context = inject(nuboProfileKey)
   if (!context) {
     throw new Error("useNuboProfileContext must be used within a proper provider")

@@ -1,5 +1,5 @@
 <template>
-  <section class="container mx-auto py-4">
+  <section class="container mx-auto py-6 px-4">
     <HeroSection v-if="!isSearching" />
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">

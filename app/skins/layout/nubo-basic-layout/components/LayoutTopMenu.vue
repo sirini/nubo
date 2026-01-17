@@ -75,6 +75,11 @@
               <ShieldCheckIcon class="w-4 h-4" /> 개인정보 보호정책</NuxtLink
             >
           </DropdownMenuItem>
+          <DropdownMenuItem as-child class="w-full cursor-pointer" v-if="isAdmin">
+            <NuxtLink to="/admin" class="inline-flex gap-3 items-center">
+              <CogIcon class="w-4 h-4" /> 관리화면
+            </NuxtLink>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -89,6 +94,7 @@
 
 <script setup lang="ts">
 import {
+  CogIcon,
   FolderOpenIcon,
   FoldersIcon,
   HomeIcon,
@@ -100,5 +106,5 @@ import {
 import { useNuboLayoutContext } from "~/types/nubo-skin-keys"
 
 const config = useRuntimeConfig()
-const { isLoggedIn, user, menus } = useNuboLayoutContext()
+const { isLoggedIn, isAdmin, user, menus } = useNuboLayoutContext()
 </script>
