@@ -41,9 +41,9 @@
         </header>
 
         <section class="flex-1 overflow-y-auto p-8">
-          <KeepAlive :max="10">
+          <ScrollArea class="max-h-60">
             <component :is="panel" :key="menu" />
-          </KeepAlive>
+          </ScrollArea>
         </section>
       </main>
     </div>
@@ -63,7 +63,6 @@ import { ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_REPORT, ADMIN_USER } from "~/types/
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 
 const { panel, menu, openMenu } = useNuboAdminContext()
-
 const menuItems = [
   { label: "대시보드", value: ADMIN_DASHBOARD, icon: LayoutDashboardIcon },
   { label: "게시판 관리", value: ADMIN_BOARD, icon: FileTextIcon },

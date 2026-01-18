@@ -66,3 +66,11 @@ export type AdminDashboardLatestContent = AdminDashboardReport & {
   id: string
   type: Board
 }
+
+// 대시보드에서 그래프 출력용 타입 정의
+export type AdminDashboardGraphData = {
+  date: Date
+  post: number
+  comment: number
+  visit: number
+}

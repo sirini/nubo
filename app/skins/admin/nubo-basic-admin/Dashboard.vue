@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[minmax(180px,auto)]">
     <Card
-      class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent border-none ring-1 ring-border"
+      class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent"
     >
       <div class="space-y-2">
         <h3 class="text-2xl font-bold tracking-tight">
@@ -33,10 +33,10 @@
       </div>
     </Card>
 
-    <Card class="md:col-span-4 p-6 overflow-hidden border-none shadow-lg ring-1 ring-border">
+    <Card class="md:col-span-4 p-6 overflow-hidden">
       <CardHeader class="p-0 mb-4">
         <CardTitle class="text-sm font-bold tracking-widest text-muted-foreground"
-          >방문자 현황</CardTitle
+          >일주일간 방문자 현황</CardTitle
         >
       </CardHeader>
 
@@ -51,7 +51,7 @@
 
       <div class="h-24 flex items-end gap-1.5">
         <div
-          v-for="(history, index) in statVisit.history"
+          v-for="(history, index) in statVisit.history.slice(0, 7)"
           :key="index"
           class="flex flex-1 flex-col justify-end items-center group relative h-full"
         >
@@ -78,25 +78,10 @@
       </div>
     </Card>
 
-    <Card class="md:col-span-8 md:row-span-2 p-6 flex flex-col">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <CardTitle>커뮤니티 트래픽</CardTitle>
-          <CardDescription class="pt-2">최근 7일간의 게시글 및 방문자 추이</CardDescription>
-        </div>
-        <Tabs defaultValue="posts" class="w-50">
-          <TabsList class="grid w-full grid-cols-2">
-            <TabsTrigger value="posts">게시글</TabsTrigger>
-            <TabsTrigger value="users">방문자</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-      <div
-        class="flex-1 border-2 border-dashed rounded-xl flex items-center justify-center text-muted-foreground"
-      >
-        Main Chart Area
-      </div>
-    </Card>
+    <div class="md:col-span-8 md:row-span-2 flex flex-col">
+      <Skeleton class="w-full h-full rounded-xl" v-if="isLoading" />
+      <DashboardGraph v-else :statPost="statPost" :statReply="statReply" :statVisit="statVisit" />
+    </div>
 
     <Card class="md:col-span-4 p-6">
       <CardTitle class="text-sm font-medium mb-4 text-muted-foreground">서버 리소스</CardTitle>
@@ -136,26 +121,24 @@
 
 <script setup lang="ts">
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import DashboardGraph from "./components/DashboardGraph.vue"
 
-const {
-  user,
-  dashboard,
-  statUser,
-  statPost,
-  statReply,
-  statVisit,
-  statFile,
-  statImage,
-  statUploadUsage,
-  loadInitDashboard,
-} = useNuboAdminContext()
-
-onActivated(async () => {
-  await loadInitDashboard(7, 5, 5)
-})
-
+const { user, statPost, statReply, statVisit, statFile, statUploadUsage, loadInitDashboard } =
+  useNuboAdminContext()
+const isLoading = ref<boolean>(false)
 const maxVisit = computed(() => {
   const visits = statVisit.value.history.map((h) => h.visit)
   return Math.max(...visits)
+})
+
+onMounted(async () => {
+  try {
+    if (statVisit.value.history.length < 1) {
+      isLoading.value = true
+      await loadInitDashboard(90, 5, 5)
+    }
+  } finally {
+    isLoading.value = false
+  }
 })
 </script>

@@ -1,8 +1,8 @@
-import { toast } from "vue-sonner"
 import type { AdminDashboard, AdminMenu } from "~/types/admin"
 
 export const useAdminStore = defineStore("admin", () => {
-  const { loadGeneralStatistic, loadGeneralLatest, loadGeneralItem, loadGeneralUploadUsage } = useAdmin()
+  const { loadGeneralStatistic, loadGeneralLatest, loadGeneralItem, loadGeneralUploadUsage } =
+    useAdmin()
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -30,33 +30,26 @@ export const useAdminStore = defineStore("admin", () => {
     limitForLatest: number,
     limitForItem: number,
   ) => {
-    const respStat = await loadGeneralStatistic(daysForStat)
-    if (!respStat.success) {
-      toast(`❌ 대시보드용 기본적인 통계 데이터를 가져오지 못했습니다: ${respStat.error}`)
-      return
-    }
-    dashboard.value.statistic = respStat.result
+    const results = await Promise.allSettled([
+      loadGeneralStatistic(daysForStat),
+      loadGeneralLatest(limitForLatest),
+      loadGeneralItem(limitForItem),
+      loadGeneralUploadUsage("./upload"),
+    ])
+    const [stat, latest, item, usage] = results
 
-    const respLatest = await loadGeneralLatest(limitForLatest)
-    if (!respLatest.success) {
-      toast(`❌ 대시보드용 최근 게시글/댓글/신고글을 가져오지 못했습니다: ${respLatest.error}`)
-      return
+    if (stat.status === "fulfilled" && stat.value.success) {
+      dashboard.value.statistic = stat.value.result
     }
-    dashboard.value.latest = respLatest.result
-
-    const respItem = await loadGeneralItem(limitForItem)
-    if (!respItem.success) {
-      toast(`❌ 대시보드용 그룹/게시판/회원 최근 목록들을 가져오지 못했습니다: ${respItem.error}`)
-      return
+    if (latest.status === "fulfilled" && latest.value.success) {
+      dashboard.value.latest = latest.value.result
     }
-    dashboard.value.item = respItem.result
-
-    const respUsage = await loadGeneralUploadUsage("./upload")
-    if (!respUsage.success) {
-      toast(`❌ 대시보드용 업로드 폴더 용량을 가져오지 못했습니다: ${respUsage.error}`)
-      return
+    if (item.status === "fulfilled" && item.value.success) {
+      dashboard.value.item = item.value.result
     }
-    uploadUsage.value = respUsage.result
+    if (usage.status === "fulfilled" && usage.value.success) {
+      uploadUsage.value = usage.value.result
+    }
   }
 
   return {
