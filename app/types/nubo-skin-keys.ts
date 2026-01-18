@@ -28,6 +28,7 @@ export interface NuboAdminContext {
   statVisit: ComputedRef<AdminDashboardStatistic>
   statFile: ComputedRef<AdminDashboardStatistic>
   statImage: ComputedRef<AdminDashboardStatistic>
+  statUploadUsage: ComputedRef<number>
   openMenu: (menu: AdminMenu) => void
   loadInitDashboard: (
     daysForStat: number,

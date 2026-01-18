@@ -35,7 +35,7 @@
 
     <Card class="md:col-span-4 p-6 overflow-hidden border-none shadow-lg ring-1 ring-border">
       <CardHeader class="p-0 mb-4">
-        <CardTitle class="text-xs font-bold uppercase tracking-widest text-muted-foreground"
+        <CardTitle class="text-sm font-bold tracking-widest text-muted-foreground"
           >방문자 현황</CardTitle
         >
       </CardHeader>
@@ -99,12 +99,17 @@
     </Card>
 
     <Card class="md:col-span-4 p-6">
-      <CardTitle class="text-sm font-medium mb-4">서버 리소스</CardTitle>
+      <CardTitle class="text-sm font-medium mb-4 text-muted-foreground">서버 리소스</CardTitle>
       <div class="space-y-6">
         <div class="space-y-2">
-          <div class="flex justify-between text-xs">
-            <span>Disk Usage</span>
-            <span class="font-bold">12.34 GB</span>
+          <div class="flex justify-between text-sm">
+            <span class="font-mono uppercase">Disk Usage</span>
+            <span class="font-mono font-bold">{{ num(statUploadUsage) }}B</span>
+          </div>
+
+          <div class="flex justify-between text-sm">
+            <span class="font-mono uppercase">files</span>
+            <span class="font-mono font-bold">{{ num(statFile.total) }}</span>
           </div>
         </div>
       </div>
@@ -141,6 +146,7 @@ const {
   statVisit,
   statFile,
   statImage,
+  statUploadUsage,
   loadInitDashboard,
 } = useNuboAdminContext()
 

@@ -2,7 +2,7 @@ import { toast } from "vue-sonner"
 import type { AdminDashboard, AdminMenu } from "~/types/admin"
 
 export const useAdminStore = defineStore("admin", () => {
-  const { loadGeneralStatistic, loadGeneralLatest, loadGeneralItem } = useAdmin()
+  const { loadGeneralStatistic, loadGeneralLatest, loadGeneralItem, loadGeneralUploadUsage } = useAdmin()
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -17,6 +17,7 @@ export const useAdminStore = defineStore("admin", () => {
     latest: { posts: [], comments: [], reports: [] },
     item: { groups: [], boards: [], members: [] },
   })
+  const uploadUsage = ref<number>(0)
 
   // 관리화면에서 메뉴 열기
   const openMenu = (newMenu: AdminMenu) => {
@@ -49,12 +50,20 @@ export const useAdminStore = defineStore("admin", () => {
       return
     }
     dashboard.value.item = respItem.result
+
+    const respUsage = await loadGeneralUploadUsage("./upload")
+    if (!respUsage.success) {
+      toast(`❌ 대시보드용 업로드 폴더 용량을 가져오지 못했습니다: ${respUsage.error}`)
+      return
+    }
+    uploadUsage.value = respUsage.result
   }
 
   return {
     skin,
     menu,
     dashboard,
+    uploadUsage,
 
     openMenu,
     loadInitDashboard,

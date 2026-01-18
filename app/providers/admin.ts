@@ -23,6 +23,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     statVisit: computed(() => admin.dashboard.statistic.visit),
     statFile: computed(() => admin.dashboard.statistic.file),
     statImage: computed(() => admin.dashboard.statistic.image),
+    statUploadUsage: computed(() => admin.uploadUsage),
     openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
     loadInitDashboard: (daysForStat: number, limitForLatest: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForLatest, limitForItem),
