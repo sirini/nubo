@@ -1,5 +1,11 @@
 import { toast } from "vue-sonner"
-import type { AdminDashboard, AdminLatestComment, AdminMenu, AdminReportItem } from "~/types/admin"
+import {
+  type AdminDashboard,
+  type AdminLatestComment,
+  type AdminLatestPost,
+  type AdminMenu,
+  type AdminReportItem,
+} from "~/types/admin"
 import { SEARCH, type Search } from "~/types/board"
 
 export const useAdminStore = defineStore("admin", () => {
@@ -9,6 +15,7 @@ export const useAdminStore = defineStore("admin", () => {
     loadGeneralUploadUsage,
     loadReportList,
     loadCommentList,
+    loadPostList,
   } = useAdmin()
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
@@ -27,6 +34,7 @@ export const useAdminStore = defineStore("admin", () => {
   const uploadUsage = ref<number>(0)
   const latestReports = ref<AdminReportItem[]>([])
   const latestComments = ref<AdminLatestComment[]>([])
+  const latestPosts = ref<AdminLatestPost[]>([])
 
   // 관리화면에서 메뉴 열기
   const openMenu = (newMenu: AdminMenu) => {
@@ -92,6 +100,25 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  // 최근 게시글 목록 가져오기
+  const loadInitPostList = async (limit: number) => {
+    try {
+      const response = await loadPostList({
+        page: 1,
+        limit,
+        option: SEARCH.TITLE as Search,
+        keyword: "",
+      })
+      if (!response.success || !response.result) {
+        toast(`최근 게시글 목록을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      latestPosts.value = response.result
+    } catch (e) {
+      toast(`최근 게시글 목록을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     skin,
     menu,
@@ -99,10 +126,12 @@ export const useAdminStore = defineStore("admin", () => {
     uploadUsage,
     latestReports,
     latestComments,
+    latestPosts,
 
     openMenu,
     loadInitDashboard,
     loadInitReportList,
     loadInitCommentList,
+    loadInitPostList,
   }
 })

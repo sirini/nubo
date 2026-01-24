@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[minmax(180px,auto)]">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)]">
     <Card
       class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent"
     >
@@ -126,10 +126,58 @@
           class="flex gap-3 text-sm border-b pb-3 last:border-0 last:pb-0"
         >
           <Badge variant="secondary" class="h-6">{{ comment.name }}</Badge>
-          <div class="flex-1 truncate space-y-2">
-            <p class="font-medium truncate">{{ recoverChars(stripTags(comment.content)) }}</p>
-            <p class="text-xs text-muted-foreground">
-              {{ recoverChars(comment.writer.name) }} · {{ date(comment.date) }}
+          <div class="flex-1 truncate">
+            <NuxtLink
+              :to="`/board/${comment.id}/${comment.postUid}`"
+              class="hover:text-primary transition-colors duration-300"
+            >
+              <p class="font-medium truncate">{{ recoverChars(stripTags(comment.content)) }}</p>
+            </NuxtLink>
+            <p class="text-xs text-muted-foreground flex items-center gap-4 mt-1.5">
+              <span class="inline-flex items-center gap-1.5"
+                ><User2Icon class="w-3 h-3" /> {{ recoverChars(comment.writer.name) }}</span
+              >
+              <span class="inline-flex items-center gap-1.5"
+                ><Calendar1Icon class="w-3 h-3" /> {{ date(comment.date) }}</span
+              >
+              <span class="inline-flex items-center gap-1.5"
+                ><HeartIcon class="w-3 h-3" /> {{ num(comment.like) }}</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </Card>
+
+    <Card class="md:col-span-6 p-6">
+      <CardTitle class="text-sm font-medium mb-4 text-muted-foreground">최근 게시글</CardTitle>
+      <div class="space-y-4">
+        <div
+          v-for="(post, index) in latestPosts"
+          :key="index"
+          class="flex gap-3 text-sm border-b pb-3 last:border-0 last:pb-0"
+        >
+          <Badge variant="secondary" class="h-6">{{ post.name }}</Badge>
+          <div class="flex-1 truncate">
+            <NuxtLink
+              :to="`/board/${post.id}/${post.uid}`"
+              class="hover:text-primary transition-colors duration-300"
+            >
+              <p class="font-medium truncate">{{ recoverChars(stripTags(post.title)) }}</p>
+            </NuxtLink>
+            <p class="text-xs text-muted-foreground flex items-center gap-4 mt-1.5">
+              <span class="inline-flex items-center gap-2"
+                ><User2Icon class="w-3 h-3" /> {{ recoverChars(post.writer.name) }}</span
+              >
+              <span class="inline-flex items-center gap-1.5"
+                ><Calendar1Icon class="w-3 h-3" /> {{ date(post.date) }}</span
+              >
+              <span class="inline-flex items-center gap-1.5"
+                ><HeartIcon class="w-3 h-3" /> {{ num(post.like) }}</span
+              >
+              <span class="inline-flex items-center gap-1.5">
+                <MessageCircleIcon class="w-3 h-3" /> {{ num(post.comment) }}
+              </span>
             </p>
           </div>
         </div>
@@ -139,6 +187,7 @@
 </template>
 
 <script setup lang="ts">
+import { Calendar1Icon, HeartIcon, MessageCircleIcon, User2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
@@ -151,9 +200,11 @@ const {
   statUploadUsage,
   latestReports,
   latestComments,
+  latestPosts,
   loadInitDashboard,
   loadInitReportList,
   loadInitCommentList,
+  loadInitPostList,
 } = useNuboAdminContext()
 const isLoading = ref<boolean>(false)
 const maxVisit = computed(() => {
@@ -163,12 +214,11 @@ const maxVisit = computed(() => {
 
 onMounted(async () => {
   try {
+    Promise.all([loadInitReportList(3), loadInitCommentList(5), loadInitPostList(5)])
     if (statVisit.value.history.length < 1) {
       isLoading.value = true
       await loadInitDashboard(90, 5)
     }
-    await loadInitReportList(3)
-    await loadInitCommentList(3)
   } finally {
     isLoading.value = false
   }

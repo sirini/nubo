@@ -115,3 +115,10 @@ export type AdminLatestComment = AdminLatestCommon & {
   content: string
   postUid: number
 }
+
+// 최근 게시글 반환값 정의
+export type AdminLatestPost = AdminLatestCommon & {
+  title: string
+  comment: number
+  hit: number
+}

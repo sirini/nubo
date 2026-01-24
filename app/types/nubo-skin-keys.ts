@@ -3,6 +3,7 @@ import type {
   AdminDashboard,
   AdminDashboardStatistic,
   AdminLatestComment,
+  AdminLatestPost,
   AdminMenu,
   AdminReportItem,
 } from "./admin"
@@ -37,10 +38,12 @@ export interface NuboAdminContext {
   statUploadUsage: ComputedRef<number>
   latestReports: ComputedRef<AdminReportItem[]>
   latestComments: ComputedRef<AdminLatestComment[]>
+  latestPosts: ComputedRef<AdminLatestPost[]>
   openMenu: (menu: AdminMenu) => void
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
   loadInitReportList: (limit: number) => Promise<void>
   loadInitCommentList: (limit: number) => Promise<void>
+  loadInitPostList: (limit: number) => Promise<void>
 }
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의

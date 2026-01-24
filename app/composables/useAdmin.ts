@@ -1,10 +1,11 @@
-import type {
-  AdminDashboardItem,
-  AdminDashboardStatisticResult,
-  AdminLatestComment,
-  AdminLatestParam,
-  AdminReportItem,
-  AdminReportParam,
+import {
+  type AdminDashboardItem,
+  type AdminDashboardStatisticResult,
+  type AdminLatestComment,
+  type AdminLatestParam,
+  type AdminLatestPost,
+  type AdminReportItem,
+  type AdminReportParam,
 } from "~/types/admin"
 import type { Resp } from "~/types/common"
 
@@ -46,11 +47,19 @@ export const useAdmin = () => {
     })
   }
 
+  // 게시글 목록 가져오기
+  const loadPostList = async (param: AdminLatestParam) => {
+    return await reqGet<Resp<AdminLatestPost[]>>("/admin/latest/posts", {
+      ...param,
+    })
+  }
+
   return {
     loadGeneralStatistic,
     loadGeneralItem,
     loadGeneralUploadUsage,
     loadReportList,
     loadCommentList,
+    loadPostList,
   }
 }
