@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const token = getCookie(event, AUTH_KEY)
   const searchString = getRequestURL(event).search
 
-  return proxyRequest(event, `${config.apiBaseInternal}/admin/report/search${searchString}`, {
+  return proxyRequest(event, `${config.apiBaseInternal}/admin/latest/comments${searchString}`, {
     fetchOptions: {
       headers: {
         Authorization: `Bearer ${token}`,

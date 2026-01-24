@@ -101,17 +101,36 @@
     </Card>
 
     <Card class="md:col-span-4 p-6">
-      <CardTitle class="text-sm font-medium mb-4">미결 신고 사항</CardTitle>
+      <CardTitle class="text-sm font-medium mb-4 text-muted-foreground">미결 신고 사항</CardTitle>
       <div class="space-y-4">
         <div
-          v-for="i in 2"
-          :key="i"
+          v-for="(report, index) in latestReports"
+          :key="index"
           class="flex gap-3 text-sm border-b pb-3 last:border-0 last:pb-0"
         >
           <Badge variant="destructive" class="h-5">신고</Badge>
-          <div class="flex-1 truncate">
-            <p class="font-medium truncate">부적절한 게시글 제목...</p>
-            <p class="text-xs text-muted-foreground">2분 전</p>
+          <div class="flex-1 truncate space-y-2">
+            <p class="font-medium truncate">{{ report.request }}</p>
+            <p class="text-xs text-muted-foreground">{{ date(report.date) }}</p>
+          </div>
+        </div>
+      </div>
+    </Card>
+
+    <Card class="md:col-span-6 p-6">
+      <CardTitle class="text-sm font-medium mb-4 text-muted-foreground">최근 댓글</CardTitle>
+      <div class="space-y-4">
+        <div
+          v-for="(comment, index) in latestComments"
+          :key="index"
+          class="flex gap-3 text-sm border-b pb-3 last:border-0 last:pb-0"
+        >
+          <Badge variant="secondary" class="h-6">{{ comment.name }}</Badge>
+          <div class="flex-1 truncate space-y-2">
+            <p class="font-medium truncate">{{ recoverChars(stripTags(comment.content)) }}</p>
+            <p class="text-xs text-muted-foreground">
+              {{ recoverChars(comment.writer.name) }} · {{ date(comment.date) }}
+            </p>
           </div>
         </div>
       </div>
@@ -123,8 +142,19 @@
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
-const { user, statPost, statReply, statVisit, statFile, statUploadUsage, loadInitDashboard } =
-  useNuboAdminContext()
+const {
+  user,
+  statPost,
+  statReply,
+  statVisit,
+  statFile,
+  statUploadUsage,
+  latestReports,
+  latestComments,
+  loadInitDashboard,
+  loadInitReportList,
+  loadInitCommentList,
+} = useNuboAdminContext()
 const isLoading = ref<boolean>(false)
 const maxVisit = computed(() => {
   const visits = statVisit.value.history.map((h) => h.visit)
@@ -135,8 +165,10 @@ onMounted(async () => {
   try {
     if (statVisit.value.history.length < 1) {
       isLoading.value = true
-      await loadInitDashboard(90, 5, 5)
+      await loadInitDashboard(90, 5)
     }
+    await loadInitReportList(3)
+    await loadInitCommentList(3)
   } finally {
     isLoading.value = false
   }

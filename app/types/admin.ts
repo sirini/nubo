@@ -1,4 +1,4 @@
-import type { Board, BoardWriter } from "./board"
+import type { Board, BoardWriter, Search, Status } from "./board"
 import type { Pair } from "./common"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
@@ -73,4 +73,45 @@ export type AdminDashboardGraphData = {
   post: number
   comment: number
   visit: number
+}
+
+// (댓)글 검색하기에 필요한 파라미터 정의
+export type AdminLatestParam = {
+  page: number
+  limit: number
+  option: Search
+  keyword: string
+}
+
+// 신고 목록 검색하기에 필요한 파라미터 정의
+export type AdminReportParam = AdminLatestParam & {
+  isSolved: boolean
+}
+
+// 신고 목록 반환값 정의
+export type AdminReportItem = {
+  uid: number
+  to: BoardWriter
+  from: BoardWriter
+  request: string
+  response: string
+  date: number
+}
+
+// 최근 (댓)글 출력에 필요한 공통 반환값 정의
+export type AdminLatestCommon = {
+  uid: number
+  id: string
+  type: Board
+  name: string
+  like: number
+  date: number
+  status: Status
+  writer: BoardWriter
+}
+
+// 최근 댓글 반환값 정의
+export type AdminLatestComment = AdminLatestCommon & {
+  content: string
+  postUid: number
 }

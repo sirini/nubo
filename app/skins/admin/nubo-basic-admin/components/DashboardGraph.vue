@@ -38,7 +38,32 @@
 
     <CardContent class="p-4">
       <ChartContainer :config="chartConfig" class="aspect-auto h-72 w-full">
+        <svg style="width: 0; height: 0; position: absolute">
+          <defs>
+            <linearGradient id="fillVisit" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" :stop-color="chartConfig.visit.color" stop-opacity="0.3" />
+              <stop offset="95%" :stop-color="chartConfig.visit.color" stop-opacity="0" />
+            </linearGradient>
+
+            <linearGradient id="fillPost" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" :stop-color="chartConfig.post.color" stop-opacity="0.3" />
+              <stop offset="95%" :stop-color="chartConfig.post.color" stop-opacity="0" />
+            </linearGradient>
+
+            <linearGradient id="fillComment" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" :stop-color="chartConfig.comment.color" stop-opacity="0.3" />
+              <stop offset="95%" :stop-color="chartConfig.comment.color" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+        </svg>
+
         <VisXYContainer :data="filterRange" :y-domain="[0, yMax]" :margin="{ left: 0, right: 0 }">
+          <VisArea
+            v-if="activeMetrics.visit"
+            :x="(d: any) => d.date"
+            :y="(d: any) => d.visit"
+            color="url(#fillVisit)"
+          />
           <VisLine
             v-if="activeMetrics.visit"
             :x="(d: any) => d.date"
@@ -46,12 +71,26 @@
             :color="chartConfig.visit.color"
             :line-width="2"
           />
+
+          <VisArea
+            v-if="activeMetrics.post"
+            :x="(d: any) => d.date"
+            :y="(d: any) => d.post"
+            color="url(#fillPost)"
+          />
           <VisLine
             v-if="activeMetrics.post"
             :x="(d: any) => d.date"
             :y="(d: any) => d.post"
             :color="chartConfig.post.color"
             :line-width="2"
+          />
+
+          <VisArea
+            v-if="activeMetrics.comment"
+            :x="(d: any) => d.date"
+            :y="(d: any) => d.comment"
+            color="url(#fillComment)"
           />
           <VisLine
             v-if="activeMetrics.comment"
@@ -109,7 +148,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { VisAxis, VisLine, VisXYContainer } from "@unovis/vue"
+import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 
 const { statPost, statReply, statVisit } = useNuboAdminContext()

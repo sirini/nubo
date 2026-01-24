@@ -1,7 +1,10 @@
 import type {
   AdminDashboardItem,
-  AdminDashboardLatest,
   AdminDashboardStatisticResult,
+  AdminLatestComment,
+  AdminLatestParam,
+  AdminReportItem,
+  AdminReportParam,
 } from "~/types/admin"
 import type { Resp } from "~/types/common"
 
@@ -22,13 +25,6 @@ export const useAdmin = () => {
     })
   }
 
-  // 최신 게시글/댓글/신고 가져오기
-  const loadGeneralLatest = async (limit: number) => {
-    return await reqGet<Resp<AdminDashboardLatest>>("/admin/dashboard/latest", {
-      limit,
-    })
-  }
-
   // 업로드 폴더 사용량 가져오기
   const loadGeneralUploadUsage = async (path: string) => {
     return await reqGet<Resp<number>>("/admin/dashboard/usage", {
@@ -36,10 +32,25 @@ export const useAdmin = () => {
     })
   }
 
+  // 신고 목록 가져오기
+  const loadReportList = async (param: AdminReportParam) => {
+    return await reqGet<Resp<AdminReportItem[]>>("/admin/report/reports", {
+      ...param,
+    })
+  }
+
+  // 댓글 목록 가져오기
+  const loadCommentList = async (param: AdminLatestParam) => {
+    return await reqGet<Resp<AdminLatestComment[]>>("/admin/latest/comments", {
+      ...param,
+    })
+  }
+
   return {
     loadGeneralStatistic,
     loadGeneralItem,
-    loadGeneralLatest,
     loadGeneralUploadUsage,
+    loadReportList,
+    loadCommentList,
   }
 }
