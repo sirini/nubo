@@ -9,6 +9,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     Board: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Board.vue`)),
     User: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/User.vue`)),
     Report: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Report.vue`)),
+    Skin: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Skin.vue`)),
     System: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/System.vue`)),
   }
 

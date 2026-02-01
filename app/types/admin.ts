@@ -2,13 +2,14 @@ import type { Board, BoardWriter, Search, Status } from "./board"
 import type { Pair } from "./common"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
-export type AdminMenu = "Dashboard" | "Board" | "User" | "Report" | "System"
+export type AdminMenu = "Dashboard" | "Board" | "User" | "Report" | "Skin" | "System"
 
 // 관리화면 컴포넌트명 상수로 정의
 export const ADMIN_DASHBOARD: AdminMenu = "Dashboard"
 export const ADMIN_BOARD: AdminMenu = "Board"
 export const ADMIN_USER: AdminMenu = "User"
 export const ADMIN_REPORT: AdminMenu = "Report"
+export const ADMIN_SKIN: AdminMenu = "Skin"
 export const ADMIN_SYSTEM: AdminMenu = "System"
 
 // 대시보드 대표 타입 정의
