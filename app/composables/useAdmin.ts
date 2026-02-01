@@ -1,6 +1,8 @@
 import {
   type AdminDashboardItem,
   type AdminDashboardStatisticResult,
+  type AdminGroupConfig,
+  type AdminGroupListResult,
   type AdminLatestComment,
   type AdminLatestParam,
   type AdminLatestPost,
@@ -10,8 +12,6 @@ import {
 import type { Resp } from "~/types/common"
 
 export const useAdmin = () => {
-  const config = useRuntimeConfig()
-
   // 간단 통계 데이터 가져오기
   const loadGeneralStatistic = async (days: number) => {
     return await reqGet<Resp<AdminDashboardStatisticResult>>("/admin/dashboard/statistic", {
@@ -33,24 +33,36 @@ export const useAdmin = () => {
     })
   }
 
-  // 신고 목록 가져오기
+  // 최근 신고 목록 가져오기
   const loadReportList = async (param: AdminReportParam) => {
     return await reqGet<Resp<AdminReportItem[]>>("/admin/report/reports", {
       ...param,
     })
   }
 
-  // 댓글 목록 가져오기
+  // 최근 댓글 목록 가져오기
   const loadCommentList = async (param: AdminLatestParam) => {
     return await reqGet<Resp<AdminLatestComment[]>>("/admin/latest/comments", {
       ...param,
     })
   }
 
-  // 게시글 목록 가져오기
+  // 최근 게시글 목록 가져오기
   const loadPostList = async (param: AdminLatestParam) => {
     return await reqGet<Resp<AdminLatestPost[]>>("/admin/latest/posts", {
       ...param,
+    })
+  }
+
+  // 게시판 그룹 목록 가져오기
+  const loadGroupList = async () => {
+    return await reqGet<Resp<AdminGroupConfig[]>>("/admin/group/list/load", {})
+  }
+
+  // 선택한 그룹의 설정 및 소속 게시판들 가져오기
+  const loadGroupInfo = async (id: string) => {
+    return await reqGet<Resp<AdminGroupListResult>>("/admin/group/general/load", {
+      id,
     })
   }
 
@@ -61,5 +73,7 @@ export const useAdmin = () => {
     loadReportList,
     loadCommentList,
     loadPostList,
+    loadGroupList,
+    loadGroupInfo,
   }
 }

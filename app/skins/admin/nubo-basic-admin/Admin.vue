@@ -33,14 +33,9 @@
           class="flex h-16 items-center justify-between border-b px-8 bg-background/95 backdrop-blur"
         >
           <h2 class="text-lg font-semibold tracking-tight">Dashboard</h2>
-          <div class="flex items-center gap-4">
-            <Button variant="outline" size="icon" class="rounded-full">
-              <BellIcon class="w-4 h-4" />
-            </Button>
-          </div>
         </header>
 
-        <section class="flex-1 overflow-y-auto p-8">
+        <section class="flex-1 overflow-y-auto">
           <ScrollArea class="max-h-60">
             <component :is="panel" :key="menu" />
           </ScrollArea>
@@ -52,7 +47,6 @@
 
 <script setup lang="ts">
 import {
-  BellIcon,
   CogIcon,
   FileTextIcon,
   LayoutDashboardIcon,

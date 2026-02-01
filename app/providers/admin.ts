@@ -28,11 +28,15 @@ export const useAdminProvider = (): NuboAdminContext => {
     latestReports: computed(() => admin.latestReports),
     latestComments: computed(() => admin.latestComments),
     latestPosts: computed(() => admin.latestPosts),
+    groups: computed(() => admin.groups),
+    groupInfo: computed(() => admin.groupInfo),
     openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForItem),
     loadInitReportList: (limit: number) => admin.loadInitReportList(limit),
     loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
+    loadInitGroupList: () => admin.loadInitGroupList(),
+    loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
   }
 }

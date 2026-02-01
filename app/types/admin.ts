@@ -1,4 +1,4 @@
-import type { Board, BoardWriter, Search, Status } from "./board"
+import { BOARD_WRITER, type Board, type BoardWriter, type Search, type Status } from "./board"
 import type { Pair } from "./common"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
@@ -122,4 +122,43 @@ export type AdminLatestPost = AdminLatestCommon & {
   title: string
   comment: number
   hit: number
+}
+
+// 그룹 관리화면 일반 설정들 반환값 정의
+export type AdminGroupConfig = {
+  uid: number
+  id: string
+  count: number
+  manager: BoardWriter
+}
+
+// 그룹 관리화면 일반 설정들 기본값
+export const ADMIN_GROUP_CONFIG: AdminGroupConfig = {
+  uid: 0,
+  id: "",
+  count: 0,
+  manager: BOARD_WRITER,
+}
+
+// 그룹 설정 및 소속 게시판들 정보 반환값 정의
+export type AdminGroupListResult = {
+  config: AdminGroupConfig
+  boards: AdminGroupBoardItem[]
+}
+
+// 그룹 관리화면 게시판 및 통계 목록 반환값 정의
+export type AdminGroupBoardItem = AdminGroupConfig & {
+  id: string
+  type: Board
+  name: string
+  info: string
+  total: AdminGroupBoardStatus
+}
+
+// 게시판별 간단 통계 반환값 정의
+export type AdminGroupBoardStatus = {
+  post: number
+  comment: number
+  file: number
+  image: number
 }

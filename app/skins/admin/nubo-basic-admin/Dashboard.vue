@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)]">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)] p-6">
     <Card
       class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent"
     >

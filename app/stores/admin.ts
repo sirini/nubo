@@ -1,6 +1,9 @@
 import { toast } from "vue-sonner"
 import {
+  ADMIN_GROUP_CONFIG,
   type AdminDashboard,
+  type AdminGroupConfig,
+  type AdminGroupListResult,
   type AdminLatestComment,
   type AdminLatestPost,
   type AdminMenu,
@@ -16,6 +19,8 @@ export const useAdminStore = defineStore("admin", () => {
     loadReportList,
     loadCommentList,
     loadPostList,
+    loadGroupList,
+    loadGroupInfo,
   } = useAdmin()
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
@@ -35,6 +40,8 @@ export const useAdminStore = defineStore("admin", () => {
   const latestReports = ref<AdminReportItem[]>([])
   const latestComments = ref<AdminLatestComment[]>([])
   const latestPosts = ref<AdminLatestPost[]>([])
+  const groups = ref<AdminGroupConfig[]>([])
+  const groupInfo = ref<AdminGroupListResult>({ config: ADMIN_GROUP_CONFIG, boards: [] })
 
   // 관리화면에서 메뉴 열기
   const openMenu = (newMenu: AdminMenu) => {
@@ -119,6 +126,34 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  // 그룹 목록 가져오기
+  const loadInitGroupList = async () => {
+    try {
+      const response = await loadGroupList()
+      if (!response.success) {
+        toast(`게시판 그룹 목록을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      groups.value = response.result
+    } catch (e) {
+      toast(`게시판 그룹 목록을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
+  // (선택된) 그룹 설정 및 소속 게시판들 가져오기
+  const loadSelectedGroupInfo = async (id: string) => {
+    try {
+      const response = await loadGroupInfo(id)
+      if (!response.success) {
+        toast(`게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      groupInfo.value = response.result
+    } catch (e) {
+      toast(`게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     skin,
     menu,
@@ -127,11 +162,15 @@ export const useAdminStore = defineStore("admin", () => {
     latestReports,
     latestComments,
     latestPosts,
+    groups,
+    groupInfo,
 
     openMenu,
     loadInitDashboard,
     loadInitReportList,
     loadInitCommentList,
     loadInitPostList,
+    loadInitGroupList,
+    loadSelectedGroupInfo,
   }
 })
