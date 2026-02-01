@@ -96,6 +96,11 @@
             <span class="font-mono uppercase">files</span>
             <span class="font-mono font-bold">{{ num(statFile.total) }}</span>
           </div>
+
+          <div class="flex justify-between text-sm">
+            <span class="font-mono uppercase">images</span>
+            <span class="font-mono font-bold">{{ num(statImage.total) }}</span>
+          </div>
         </div>
       </div>
     </Card>
@@ -197,6 +202,7 @@ const {
   statReply,
   statVisit,
   statFile,
+  statImage,
   statUploadUsage,
   latestReports,
   latestComments,
