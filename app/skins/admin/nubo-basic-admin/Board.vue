@@ -39,11 +39,17 @@
           <h2 class="text-xl font-bold">{{ groupInfo.config.id }}</h2>
         </div>
         <div class="flex gap-2">
+          <CommonVTooltip :content="`${groupInfo.config.id} 그룹을 삭제합니다`">
+            <Button variant="outline" size="sm" class="gap-2 cursor-pointer text-red-300">
+              <Trash2Icon class="w-4 h-4" /> 그룹 삭제
+            </Button>
+          </CommonVTooltip>
+
           <CommonVTooltip
             :content="`${groupInfo.config.id} 그룹에 속한 모든 게시판을 대상으로 동일 설정을 적용합니다`"
           >
             <Button variant="outline" size="sm" class="gap-2 cursor-pointer">
-              <Settings2Icon class="w-4 h-4" /> 그룹 일괄 설정
+              <Settings2Icon class="w-4 h-4" /> 일괄 설정
             </Button>
           </CommonVTooltip>
           <CommonVTooltip :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`">
@@ -104,6 +110,7 @@ import {
   LayoutPanelLeftIcon,
   PlusIcon,
   Settings2Icon,
+  Trash2Icon,
 } from "lucide-vue-next"
 import { BOARD_PREFIX } from "~/types/board"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
