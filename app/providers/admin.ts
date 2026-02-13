@@ -38,5 +38,8 @@ export const useAdminProvider = (): NuboAdminContext => {
     loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
     loadInitGroupList: () => admin.loadInitGroupList(),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
+    openChangeGroupIdDialog: (groupUid: number) => admin.openChangeGroupIdDialog(groupUid),
+    closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
+    changeGroupId: (newGroupId: string): Promise<boolean> => admin.toUpdateGroupId(newGroupId),
   }
 }

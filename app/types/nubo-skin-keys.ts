@@ -50,6 +50,9 @@ export interface NuboAdminContext {
   loadInitPostList: (limit: number) => Promise<void>
   loadInitGroupList: () => Promise<void>
   loadSelectedGroupInfo: (id: string) => Promise<void>
+  openChangeGroupIdDialog: (groupUid: number) => void
+  closeChangeGroupIdDialog: () => void
+  changeGroupId: (newGroupId: string) => Promise<boolean>
 }
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의

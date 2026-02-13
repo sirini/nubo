@@ -21,7 +21,9 @@ export const useAdminStore = defineStore("admin", () => {
     loadPostList,
     loadGroupList,
     loadGroupInfo,
+    updateGroupId,
   } = useAdmin()
+  const isGroupNameChangeDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -42,6 +44,7 @@ export const useAdminStore = defineStore("admin", () => {
   const latestPosts = ref<AdminLatestPost[]>([])
   const groups = ref<AdminGroupConfig[]>([])
   const groupInfo = ref<AdminGroupListResult>({ config: ADMIN_GROUP_CONFIG, boards: [] })
+  const targetGroupUid = ref<number>(0)
 
   // 관리화면에서 메뉴 열기
   const openMenu = (newMenu: AdminMenu) => {
@@ -154,7 +157,35 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  // 그룹명 변경하기 다이얼로그 띄우기
+  const openChangeGroupIdDialog = (groupUid: number) => {
+    targetGroupUid.value = groupUid
+    isGroupNameChangeDialog.value = true
+  }
+
+  // 그룹명 변경하기 다이얼로그 닫기
+  const closeChangeGroupIdDialog = () => {
+    targetGroupUid.value = 0
+    isGroupNameChangeDialog.value = false
+  }
+
+  // 그룹명 변경하기
+  const toUpdateGroupId = async (newGroupId: string): Promise<boolean> => {
+    try {
+      const response = await updateGroupId(targetGroupUid.value, newGroupId)
+      if (!response.success) {
+        toast(`그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${response.error}`)
+        return false
+      }
+      return true
+    } catch (e) {
+      toast(`그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${e}`)
+    }
+    return false
+  }
+
   return {
+    isGroupNameChangeDialog,
     skin,
     menu,
     dashboard,
@@ -172,5 +203,8 @@ export const useAdminStore = defineStore("admin", () => {
     loadInitPostList,
     loadInitGroupList,
     loadSelectedGroupInfo,
+    openChangeGroupIdDialog,
+    closeChangeGroupIdDialog,
+    toUpdateGroupId,
   }
 })

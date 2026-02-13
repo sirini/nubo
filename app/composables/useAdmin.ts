@@ -66,6 +66,14 @@ export const useAdmin = () => {
     })
   }
 
+  // 그룹명(ID) 변경하기
+  const updateGroupId = async (groupUid: number, newGroupId: string) => {
+    return await reqPost<Resp<null>>("/admin/group/list/update", {
+      groupUid,
+      newGroupId,
+    })
+  }
+
   return {
     loadGeneralStatistic,
     loadGeneralItem,
@@ -75,5 +83,6 @@ export const useAdmin = () => {
     loadPostList,
     loadGroupList,
     loadGroupInfo,
+    updateGroupId,
   }
 }

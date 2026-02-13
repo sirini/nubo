@@ -39,22 +39,41 @@
           <h2 class="text-xl font-bold">{{ groupInfo.config.id }}</h2>
         </div>
         <div class="flex gap-2">
-          <CommonVTooltip :content="`${groupInfo.config.id} 그룹을 삭제합니다`">
-            <Button variant="outline" size="sm" class="gap-2 cursor-pointer text-red-300">
-              <Trash2Icon class="w-4 h-4" /> 그룹 삭제
+          <CommonVTooltip
+            :content="`${groupInfo.config.id} 그룹을 삭제합니다 (기본 그룹은 삭제 불가)`"
+          >
+            <Button
+              variant="outline"
+              size="icon"
+              class="gap-2 cursor-pointer text-red-300"
+              :disabled="groupInfo.config.uid === 1"
+            >
+              <Trash2Icon class="w-4 h-4" />
+            </Button>
+          </CommonVTooltip>
+
+          <CommonVTooltip :content="`${groupInfo.config.id}를 다른 이름으로 변경합니다`">
+            <Button
+              variant="outline"
+              size="icon"
+              class="gap-2 cursor-pointer"
+              @click="openChangeGroupIdDialog(groupInfo.config.uid)"
+            >
+              <TextCursorInputIcon class="w-4 h-4" />
             </Button>
           </CommonVTooltip>
 
           <CommonVTooltip
             :content="`${groupInfo.config.id} 그룹에 속한 모든 게시판을 대상으로 동일 설정을 적용합니다`"
           >
-            <Button variant="outline" size="sm" class="gap-2 cursor-pointer">
-              <Settings2Icon class="w-4 h-4" /> 일괄 설정
+            <Button variant="outline" size="icon" class="gap-2 cursor-pointer">
+              <Settings2Icon class="w-4 h-4" />
             </Button>
           </CommonVTooltip>
+
           <CommonVTooltip :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`">
-            <Button size="sm" class="gap-2 text-foreground cursor-pointer">
-              <PlusIcon class="w-4 h-4" /> 새 게시판 추가
+            <Button size="icon" class="gap-2 text-foreground cursor-pointer">
+              <PlusIcon class="w-4 h-4" />
             </Button>
           </CommonVTooltip>
         </div>
@@ -99,6 +118,8 @@
           </TableBody>
         </Table>
       </ScrollArea>
+
+      <BoardChangeGroupName />
     </main>
   </div>
 </template>
@@ -110,14 +131,17 @@ import {
   LayoutPanelLeftIcon,
   PlusIcon,
   Settings2Icon,
+  TextCursorInputIcon,
   Trash2Icon,
 } from "lucide-vue-next"
 import { BOARD_PREFIX } from "~/types/board"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import BoardChangeGroupName from "./components/dialogs/BoardChangeGroupName.vue"
 
 const config = useRuntimeConfig()
 const selectedGroupId = ref<string>("")
-const { groups, groupInfo, loadInitGroupList, loadSelectedGroupInfo } = useNuboAdminContext()
+const { groups, groupInfo, loadInitGroupList, loadSelectedGroupInfo, openChangeGroupIdDialog } =
+  useNuboAdminContext()
 
 onMounted(async () => {
   await loadInitGroupList()
