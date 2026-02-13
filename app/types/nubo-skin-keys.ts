@@ -43,6 +43,8 @@ export interface NuboAdminContext {
   latestPosts: ComputedRef<AdminLatestPost[]>
   groups: ComputedRef<AdminGroupConfig[]>
   groupInfo: ComputedRef<AdminGroupListResult>
+  isGroupNameChangeDialog: ComputedRef<boolean>
+  isCreateNewBoardDialog: ComputedRef<boolean>
   openMenu: (menu: AdminMenu) => void
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
   loadInitReportList: (limit: number) => Promise<void>
@@ -53,6 +55,8 @@ export interface NuboAdminContext {
   openChangeGroupIdDialog: (groupUid: number) => void
   closeChangeGroupIdDialog: () => void
   changeGroupId: (newGroupId: string) => Promise<boolean>
+  openCreateNewBoardDialog: (groupUid: number) => void
+  closeCreateNewBoardDialog: () => void
 }
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의

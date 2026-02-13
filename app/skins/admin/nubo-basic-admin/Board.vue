@@ -63,16 +63,12 @@
             </Button>
           </CommonVTooltip>
 
-          <CommonVTooltip
-            :content="`${groupInfo.config.id} 그룹에 속한 모든 게시판을 대상으로 동일 설정을 적용합니다`"
-          >
-            <Button variant="outline" size="icon" class="gap-2 cursor-pointer">
-              <Settings2Icon class="w-4 h-4" />
-            </Button>
-          </CommonVTooltip>
-
           <CommonVTooltip :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`">
-            <Button size="icon" class="gap-2 text-foreground cursor-pointer">
+            <Button
+              size="icon"
+              class="gap-2 text-foreground cursor-pointer"
+              @click="openCreateNewBoardDialog(groupInfo.config.uid)"
+            >
               <PlusIcon class="w-4 h-4" />
             </Button>
           </CommonVTooltip>
@@ -119,7 +115,8 @@
         </Table>
       </ScrollArea>
 
-      <BoardChangeGroupName />
+      <BoardChangeGroupNameDialog />
+      <BoardCreateNewBoardDialog />
     </main>
   </div>
 </template>
@@ -136,12 +133,19 @@ import {
 } from "lucide-vue-next"
 import { BOARD_PREFIX } from "~/types/board"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
-import BoardChangeGroupName from "./components/dialogs/BoardChangeGroupName.vue"
+import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
+import BoardCreateNewBoardDialog from "./components/dialogs/BoardCreateNewBoardDialog.vue"
 
 const config = useRuntimeConfig()
 const selectedGroupId = ref<string>("")
-const { groups, groupInfo, loadInitGroupList, loadSelectedGroupInfo, openChangeGroupIdDialog } =
-  useNuboAdminContext()
+const {
+  groups,
+  groupInfo,
+  loadInitGroupList,
+  loadSelectedGroupInfo,
+  openChangeGroupIdDialog,
+  openCreateNewBoardDialog,
+} = useNuboAdminContext()
 
 onMounted(async () => {
   await loadInitGroupList()

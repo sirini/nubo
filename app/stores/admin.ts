@@ -24,6 +24,7 @@ export const useAdminStore = defineStore("admin", () => {
     updateGroupId,
   } = useAdmin()
   const isGroupNameChangeDialog = ref<boolean>(false)
+  const isCreateNewBoardDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -170,7 +171,7 @@ export const useAdminStore = defineStore("admin", () => {
   }
 
   // 그룹명 변경하기
-  const toUpdateGroupId = async (newGroupId: string): Promise<boolean> => {
+  const changeGroupId = async (newGroupId: string): Promise<boolean> => {
     try {
       const response = await updateGroupId(targetGroupUid.value, newGroupId)
       if (!response.success) {
@@ -184,8 +185,20 @@ export const useAdminStore = defineStore("admin", () => {
     return false
   }
 
+  // 새 게시판 추가하기 다이얼로그 띄우기
+  const openCreateNewBoardDialog = (groupUid: number) => {
+    targetGroupUid.value = groupUid
+    isCreateNewBoardDialog.value = true
+  }
+
+  // 새 게시판 추가하기 다이얼로그 닫기
+  const closeCreateNewBoardDialog = () => {
+    isCreateNewBoardDialog.value = false
+  }
+
   return {
     isGroupNameChangeDialog,
+    isCreateNewBoardDialog,
     skin,
     menu,
     dashboard,
@@ -205,6 +218,8 @@ export const useAdminStore = defineStore("admin", () => {
     loadSelectedGroupInfo,
     openChangeGroupIdDialog,
     closeChangeGroupIdDialog,
-    toUpdateGroupId,
+    changeGroupId,
+    openCreateNewBoardDialog,
+    closeCreateNewBoardDialog,
   }
 })

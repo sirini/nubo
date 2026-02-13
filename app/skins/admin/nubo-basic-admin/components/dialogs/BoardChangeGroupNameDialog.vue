@@ -1,11 +1,10 @@
 <template>
-  <Dialog v-model:open="admin.isGroupNameChangeDialog">
+  <Dialog v-model:open="isGroupNameChangeDialog" @update:open="handleOpenChange">
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
         <DialogTitle>그룹명 변경</DialogTitle>
         <DialogDescription>변경하실 그룹명을 입력해보세요</DialogDescription>
       </DialogHeader>
-
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
           <div class="relative flex items-center">
@@ -15,6 +14,7 @@
               placeholder="새 그룹명을 입력하세요"
               class="pr-10"
               auto-focus
+              autocomplete="off"
             />
 
             <div class="absolute right-3">
@@ -26,7 +26,7 @@
       </div>
       <DialogFooter>
         <Button
-          variant="ghost"
+          variant="outline"
           type="button"
           @click="closeChangeGroupIdDialog"
           class="cursor-pointer"
@@ -49,12 +49,16 @@
 import { AlertCircleIcon, CheckCircle2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 
-const admin = useAdminStore()
 const newGroupId = ref<string>("")
 const isAvailable = ref<boolean>(false)
 const isValid = computed(() => newGroupId.value.length > 1)
-const { closeChangeGroupIdDialog, changeGroupId, loadInitGroupList, loadSelectedGroupInfo } =
-  useNuboAdminContext()
+const {
+  isGroupNameChangeDialog,
+  closeChangeGroupIdDialog,
+  changeGroupId,
+  loadInitGroupList,
+  loadSelectedGroupInfo,
+} = useNuboAdminContext()
 
 // 그룹 ID값 변경하기
 const updateGroupId = async () => {
@@ -62,6 +66,13 @@ const updateGroupId = async () => {
   if (isAvailable.value) {
     loadInitGroupList()
     loadSelectedGroupInfo(newGroupId.value)
+    closeChangeGroupIdDialog()
+  }
+}
+
+// 다이얼로그 창 상태 변화 확인
+const handleOpenChange = (open: boolean) => {
+  if (!open) {
     closeChangeGroupIdDialog()
   }
 }

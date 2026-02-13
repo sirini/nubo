@@ -30,6 +30,8 @@ export const useAdminProvider = (): NuboAdminContext => {
     latestPosts: computed(() => admin.latestPosts),
     groups: computed(() => admin.groups),
     groupInfo: computed(() => admin.groupInfo),
+    isGroupNameChangeDialog: computed(() => admin.isGroupNameChangeDialog),
+    isCreateNewBoardDialog: computed(() => admin.isCreateNewBoardDialog),
     openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForItem),
@@ -40,6 +42,8 @@ export const useAdminProvider = (): NuboAdminContext => {
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
     openChangeGroupIdDialog: (groupUid: number) => admin.openChangeGroupIdDialog(groupUid),
     closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
-    changeGroupId: (newGroupId: string): Promise<boolean> => admin.toUpdateGroupId(newGroupId),
+    changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
+    openCreateNewBoardDialog: (groupUid: number) => admin.openCreateNewBoardDialog(groupUid),
+    closeCreateNewBoardDialog: () => admin.closeCreateNewBoardDialog(),
   }
 }
