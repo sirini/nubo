@@ -1,6 +1,7 @@
 import { toast } from "vue-sonner"
 import {
   ADMIN_GROUP_CONFIG,
+  type AdminBoardCreateParam,
   type AdminDashboard,
   type AdminGroupConfig,
   type AdminGroupListResult,
@@ -22,9 +23,9 @@ export const useAdminStore = defineStore("admin", () => {
     loadGroupList,
     loadGroupInfo,
     updateGroupId,
+    createNewBoard,
   } = useAdmin()
   const isGroupNameChangeDialog = ref<boolean>(false)
-  const isCreateNewBoardDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -185,20 +186,23 @@ export const useAdminStore = defineStore("admin", () => {
     return false
   }
 
-  // 새 게시판 추가하기 다이얼로그 띄우기
-  const openCreateNewBoardDialog = (groupUid: number) => {
-    targetGroupUid.value = groupUid
-    isCreateNewBoardDialog.value = true
-  }
-
-  // 새 게시판 추가하기 다이얼로그 닫기
-  const closeCreateNewBoardDialog = () => {
-    isCreateNewBoardDialog.value = false
+  // 새 게시판 생성하기
+  const createBoard = async (param: AdminBoardCreateParam): Promise<number> => {
+    try {
+      const response = await createNewBoard(param)
+      if (!response.success) {
+        toast(`새 게시판을 생성하지 못했습니다: ${response.error}`)
+        return 0
+      }
+      return response.result
+    } catch (e) {
+      toast(`새 게시판을 생성하지 못했습니다: ${e}`)
+    }
+    return 0
   }
 
   return {
     isGroupNameChangeDialog,
-    isCreateNewBoardDialog,
     skin,
     menu,
     dashboard,
@@ -219,7 +223,6 @@ export const useAdminStore = defineStore("admin", () => {
     openChangeGroupIdDialog,
     closeChangeGroupIdDialog,
     changeGroupId,
-    openCreateNewBoardDialog,
-    closeCreateNewBoardDialog,
+    createBoard,
   }
 })

@@ -28,7 +28,12 @@
         <TableCell class="text-center">{{ num(board.total.comment) }}</TableCell>
         <TableCell class="text-center">
           <CommonVTooltip content="게시판 설정을 변경하거나, 삭제할 수 있습니다">
-            <Button variant="outline" size="icon" class="w-8 h-8 cursor-pointer">
+            <Button
+              variant="outline"
+              size="icon"
+              class="w-8 h-8 cursor-pointer"
+              @click="changePanel('edit', board.id)"
+            >
               <Settings2Icon class="w-4 h-4" />
             </Button>
           </CommonVTooltip>
@@ -45,4 +50,6 @@ import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 
 const config = useRuntimeConfig()
 const { groupInfo } = useNuboAdminContext()
+
+defineProps<{ changePanel: Function }>()
 </script>

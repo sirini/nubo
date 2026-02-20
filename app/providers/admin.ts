@@ -1,4 +1,4 @@
-import type { AdminMenu } from "~/types/admin"
+import type { AdminBoardCreateParam, AdminMenu } from "~/types/admin"
 import type { NuboAdminContext } from "~/types/nubo-skin-keys"
 
 export const useAdminProvider = (): NuboAdminContext => {
@@ -14,36 +14,34 @@ export const useAdminProvider = (): NuboAdminContext => {
   }
 
   return {
-    user: computed(() => auth.user),
-    panel: computed(() => adminViews[admin.menu] || adminViews.Dashboard),
-    menu: computed(() => admin.menu),
     dashboard: computed(() => admin.dashboard),
-    statUser: computed(() => admin.dashboard.statistic.member),
-    statPost: computed(() => admin.dashboard.statistic.post),
-    statReply: computed(() => admin.dashboard.statistic.reply),
-    statVisit: computed(() => admin.dashboard.statistic.visit),
-    statFile: computed(() => admin.dashboard.statistic.file),
-    statImage: computed(() => admin.dashboard.statistic.image),
-    statUploadUsage: computed(() => admin.uploadUsage),
-    latestReports: computed(() => admin.latestReports),
+    groupInfo: computed(() => admin.groupInfo),
+    groups: computed(() => admin.groups),
+    isGroupNameChangeDialog: computed(() => admin.isGroupNameChangeDialog),
     latestComments: computed(() => admin.latestComments),
     latestPosts: computed(() => admin.latestPosts),
-    groups: computed(() => admin.groups),
-    groupInfo: computed(() => admin.groupInfo),
-    isGroupNameChangeDialog: computed(() => admin.isGroupNameChangeDialog),
-    isCreateNewBoardDialog: computed(() => admin.isCreateNewBoardDialog),
-    openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
+    latestReports: computed(() => admin.latestReports),
+    menu: computed(() => admin.menu),
+    panel: computed(() => adminViews[admin.menu] || adminViews.Dashboard),
+    statFile: computed(() => admin.dashboard.statistic.file),
+    statImage: computed(() => admin.dashboard.statistic.image),
+    statPost: computed(() => admin.dashboard.statistic.post),
+    statReply: computed(() => admin.dashboard.statistic.reply),
+    statUploadUsage: computed(() => admin.uploadUsage),
+    statUser: computed(() => admin.dashboard.statistic.member),
+    statVisit: computed(() => admin.dashboard.statistic.visit),
+    user: computed(() => auth.user),
+    changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
+    closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
+    loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForItem),
-    loadInitReportList: (limit: number) => admin.loadInitReportList(limit),
-    loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
-    loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
     loadInitGroupList: () => admin.loadInitGroupList(),
+    loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
+    loadInitReportList: (limit: number) => admin.loadInitReportList(limit),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
     openChangeGroupIdDialog: (groupUid: number) => admin.openChangeGroupIdDialog(groupUid),
-    closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
-    changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
-    openCreateNewBoardDialog: (groupUid: number) => admin.openCreateNewBoardDialog(groupUid),
-    closeCreateNewBoardDialog: () => admin.closeCreateNewBoardDialog(),
+    openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
+    createBoard: (param: AdminBoardCreateParam) => admin.createBoard(param),
   }
 }

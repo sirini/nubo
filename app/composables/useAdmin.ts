@@ -1,4 +1,5 @@
 import {
+  type AdminBoardCreateParam,
   type AdminDashboardItem,
   type AdminDashboardStatisticResult,
   type AdminGroupConfig,
@@ -74,6 +75,11 @@ export const useAdmin = () => {
     })
   }
 
+  // 새 게시판 생성하기
+  const createNewBoard = async (param: AdminBoardCreateParam) => {
+    return await reqPost<Resp<number>>("/admin/board/general/create", param)
+  }
+
   return {
     loadGeneralStatistic,
     loadGeneralItem,
@@ -84,5 +90,6 @@ export const useAdmin = () => {
     loadGroupList,
     loadGroupInfo,
     updateGroupId,
+    createNewBoard,
   }
 }

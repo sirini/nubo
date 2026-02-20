@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:open="isCreateNewBoardDialog" @update:open="handleOpenChange">
+  <Dialog @update:open="handleOpenChange">
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
         <DialogTitle>새 게시판</DialogTitle>
@@ -281,13 +281,7 @@
       </ScrollArea>
 
       <DialogFooter class="mt-4">
-        <Button
-          variant="outline"
-          type="button"
-          class="cursor-pointer"
-          @click="closeCreateNewBoardDialog"
-          >취소</Button
-        >
+        <Button variant="outline" type="button" class="cursor-pointer">취소</Button>
         <Button
           type="submit"
           class="cursor-pointer text-foreground"
@@ -301,130 +295,18 @@
 </template>
 
 <script setup lang="ts">
-import { toTypedSchema } from "@vee-validate/zod"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 import { useForm, Field as VeeField } from "vee-validate"
-import { z } from "zod"
 import { toast } from "vue-sonner"
+import { useBoardFormSchema } from "../boardFormSchema"
 
-const formSchema = toTypedSchema(
-  z.object({
-    id: z
-      .string()
-      .min(2, "게시판 ID는 영문 소문자 기준으로 최소 2글자 이상이어야 합니다.")
-      .max(30, "게시판 ID는 영문 소문자 기준으로 최대 30글자 이하여야 합니다.")
-      .regex(/^\w+$/, "게시판 ID는 영문 소문자, 숫자 및 언더스코어만 가능합니다."),
-
-    name: z
-      .string()
-      .min(2, "게시판 이름은 2글자 이상이어야 합니다.")
-      .max(20, "게시판 이름은 20글자 이하여야 합니다."),
-
-    type: z.coerce
-      .number({
-        invalid_type_error: "숫자만 입력 가능합니다.",
-      })
-      .int("정수만 입력 가능합니다.")
-      .min(0, "게시판 타입은 0 (= 게시판) 이상이어야 합니다.")
-      .max(2, "게시판 타입은 2 (= 블로그) 이하여야 합니다.")
-      .default(0),
-
-    rowCount: z.coerce
-      .number({
-        invalid_type_error: "숫자만 입력 가능합니다.",
-      })
-      .int("정수만 입력 가능합니다.")
-      .min(1, "게시판 목록은 최소 1개 이상의 게시글이 보여야 합니다.")
-      .max(200, "게시판 목록은 최대 200개까지 출력 가능합니다.")
-      .default(20),
-
-    width: z.coerce
-      .number({
-        invalid_type_error: "숫자만 입력 가능합니다.",
-      })
-      .int("정수만 입력 가능합니다.")
-      .min(350, "게시판 가로폭은 350px 이상이어야 합니다.")
-      .max(8196, "게시판 최대폭은 8196px 이하여야 합니다.")
-      .default(1000),
-
-    info: z
-      .string()
-      .min(2, "게시판 설명은 2글자 이상이어야 합니다.")
-      .max(100, "게시판 설명은 100글자 이하여야 합니다."),
-
-    levelList: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(0, "목록보기 레벨 제한은 0(=비회원) 이상이어야 합니다.")
-      .max(10, "목록보기 레벨 제한은 10 이하여야 합니다.")
-      .default(0),
-
-    levelView: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(0, "글보기 레벨 제한은 0(=비회원) 이상이어야 합니다.")
-      .max(10, "글보기 레벨 제한은 10 이하여야 합니다.")
-      .default(0),
-
-    levelWrite: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(1, "글 작성 레벨 제한은 1(=회원) 이상이어야 합니다.")
-      .max(10, "글 작성 레벨 제한은 10 이하여야 합니다.")
-      .default(1),
-
-    levelComment: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(1, "댓글 작성 레벨 제한은 1(=회원) 이상이어야 합니다.")
-      .max(10, "댓글 작성 레벨 제한은 10 이하여야 합니다.")
-      .default(1),
-
-    levelDownload: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(0, "다운로드 레벨 제한은 0(=비회원) 이상이어야 합니다.")
-      .max(10, "다운로드 레벨 제한은 10 이하여야 합니다.")
-      .default(0),
-
-    pointView: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(-100000, "글보기에 필요한 포인트는 -100,000 이상이어야 합니다. ")
-      .max(100000, "글보기시 획득 가능한 포인트는 100,000 이하여야 합니다.")
-      .default(0),
-
-    pointWrite: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(-100000, "글작성에 필요한 포인트는 -100,000 이상이어야 합니다.")
-      .max(100000, "글작성시 획득 가능한 포인트는 100,000 이하여야 합니다.")
-      .default(5),
-
-    pointComment: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(-100000, "댓글 작성에 필요한 포인트는 -100,000 이상이어야 합니다.")
-      .max(100000, "댓글 작성시 획득 가능한 포인트는 100,000 이하여야 합니다.")
-      .default(2),
-
-    pointDownload: z.coerce
-      .number({ invalid_type_error: "숫자만 입력 가능합니다." })
-      .int("정수만 입력 가능합니다.")
-      .min(-100000, "다운로드에 필요한 포인트는 -100,000 이상이어야 합니다.")
-      .max(100000, "다운로드시 획득 가능한 포인트는 100,000 이하여야 합니다.")
-      .default(-5),
-  }),
-)
+const formSchema = useBoardFormSchema()
 
 const { handleSubmit, resetForm } = useForm({
-  validationSchema: formSchema,
+  validationSchema: formSchema.validationSchema,
   initialValues: {
     id: "",
   },
 })
-
-const { isCreateNewBoardDialog, closeCreateNewBoardDialog } = useNuboAdminContext()
 
 // 새 게시판 생성 요청 날리기
 const onSubmit = handleSubmit(async (data) => {
@@ -435,7 +317,6 @@ const onSubmit = handleSubmit(async (data) => {
 const handleOpenChange = (open: boolean) => {
   if (!open) {
     resetForm()
-    closeCreateNewBoardDialog()
   }
 }
 </script>

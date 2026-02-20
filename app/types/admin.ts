@@ -162,3 +162,24 @@ export type AdminGroupBoardStatus = {
   file: number
   image: number
 }
+
+// 새 게시판 생성하기에 필요한 파라미터 정의
+export type AdminBoardCreateParam = {
+  categories: string
+  groupUid: number
+  id: string
+  info: string
+  levelComment: number
+  levelDownload: number
+  levelList: number
+  levelView: number
+  name: string
+  pointComment: number
+  pointDownload: number
+  pointView: number
+  pointWrite: number
+  rowCount: number
+  type: Board
+  useCategory: boolean
+  width: number
+}

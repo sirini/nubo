@@ -63,20 +63,39 @@
             </Button>
           </CommonVTooltip>
 
-          <CommonVTooltip :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`">
-            <Button
-              size="icon"
-              class="gap-2 text-foreground cursor-pointer"
-              @click="openCreateNewBoardDialog(groupInfo.config.uid)"
-            >
+          <CommonVTooltip
+            :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`"
+            v-if="boardPanel !== 'new'"
+          >
+            <Button size="icon" class="cursor-pointer text-foreground" @click="changePanel('new')">
               <PlusIcon class="w-4 h-4" />
+            </Button>
+          </CommonVTooltip>
+
+          <CommonVTooltip
+            :content="`${groupInfo.config.id} 그룹 소속 게시판 목록 보기로 돌아갑니다`"
+            v-else
+          >
+            <Button
+              variant="outline"
+              size="icon"
+              class="cursor-pointer text-foreground"
+              @click="changePanel('list')"
+            >
+              <ArrowLeftIcon class="w-4 h-4" />
             </Button>
           </CommonVTooltip>
         </div>
       </header>
 
       <ScrollArea class="h-[calc(100dvh-215px)]">
-        <BoardListTable />
+        <BoardNew
+          :change-panel="changePanel"
+          :group-uid="groupInfo.config.uid"
+          v-if="boardPanel === 'new'"
+        />
+        <BoardEdit :change-panel="changePanel" v-else-if="boardPanel === 'edit'" />
+        <BoardList :change-panel="changePanel" v-else />
       </ScrollArea>
 
       <BoardChangeGroupNameDialog />
@@ -86,6 +105,7 @@
 
 <script setup lang="ts">
 import {
+  ArrowLeftIcon,
   ComponentIcon,
   LayoutPanelLeftIcon,
   PlusIcon,
@@ -93,20 +113,19 @@ import {
   Trash2Icon,
 } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import BoardEdit from "./components/BoardEdit.vue"
+import BoardList from "./components/BoardList.vue"
+import BoardNew from "./components/BoardNew.vue"
 import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
-import BoardListTable from "./components/BoardListTable.vue"
 
-const config = useRuntimeConfig()
+type BoardPanel = "list" | "new" | "edit"
 const selectedGroupId = ref<string>("")
-const {
-  groups,
-  groupInfo,
-  loadInitGroupList,
-  loadSelectedGroupInfo,
-  openChangeGroupIdDialog,
-  openCreateNewBoardDialog,
-} = useNuboAdminContext()
+const selectedBoardId = ref<string>("")
+const boardPanel = ref<BoardPanel>("list")
+const { groups, groupInfo, loadInitGroupList, loadSelectedGroupInfo, openChangeGroupIdDialog } =
+  useNuboAdminContext()
 
+// 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기
 onMounted(async () => {
   await loadInitGroupList()
   const defaultGroup = groups.value.at(0)
@@ -116,10 +135,18 @@ onMounted(async () => {
   }
 })
 
+// 그룹 ID가 변경되면 소속 게시판 목록도 업데이트
 watch(
   () => selectedGroupId.value,
   (newId) => {
     loadSelectedGroupInfo(newId)
   },
 )
+
+// 게시판 목록 영역 내용 변경하기
+const changePanel = (panel: BoardPanel, editBoardId: string = "") => {
+  boardPanel.value = panel
+  selectedBoardId.value = editBoardId
+  loadSelectedGroupInfo(selectedGroupId.value)
+}
 </script>
