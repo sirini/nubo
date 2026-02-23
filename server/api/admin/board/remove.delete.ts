@@ -5,15 +5,11 @@ export default defineEventHandler(async (event) => {
   const token = getCookie(event, AUTH_KEY)
   const searchString = getRequestURL(event).search
 
-  return proxyRequest(
-    event,
-    `${config.apiBaseInternal}/admin/group/general/boardids${searchString}`,
-    {
-      fetchOptions: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  return proxyRequest(event, `${config.apiBaseInternal}/admin/board/remove${searchString}`, {
+    fetchOptions: {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     },
-  )
+  })
 })

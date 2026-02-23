@@ -2,6 +2,8 @@ import { toast } from "vue-sonner"
 import {
   ADMIN_GROUP_CONFIG,
   type AdminBoardCreateParam,
+  type AdminBoardModifyParam,
+  type AdminBoardResult,
   type AdminDashboard,
   type AdminGroupConfig,
   type AdminGroupListResult,
@@ -10,7 +12,8 @@ import {
   type AdminMenu,
   type AdminReportItem,
 } from "~/types/admin"
-import { SEARCH, type Search } from "~/types/board"
+import { BOARD_CONFIG, SEARCH, type Search } from "~/types/board"
+import type { Pair } from "~/types/common"
 
 export const useAdminStore = defineStore("admin", () => {
   const {
@@ -22,10 +25,14 @@ export const useAdminStore = defineStore("admin", () => {
     loadPostList,
     loadGroupList,
     loadGroupInfo,
+    loadBoardConfig,
     updateGroupId,
     createNewBoard,
+    modifyExistBoard,
+    removeExistBoard,
   } = useAdmin()
   const isGroupNameChangeDialog = ref<boolean>(false)
+  const isBoardRemoveConfirmDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -47,6 +54,7 @@ export const useAdminStore = defineStore("admin", () => {
   const groups = ref<AdminGroupConfig[]>([])
   const groupInfo = ref<AdminGroupListResult>({ config: ADMIN_GROUP_CONFIG, boards: [] })
   const targetGroupUid = ref<number>(0)
+  const targetBoard = ref<Pair>({ uid: 0, name: "" })
 
   // 관리화면에서 메뉴 열기
   const openMenu = (newMenu: AdminMenu) => {
@@ -84,12 +92,12 @@ export const useAdminStore = defineStore("admin", () => {
         isSolved: false,
       })
       if (!response.success || !response.result) {
-        toast(`최근 신고 목록을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 최근 신고 목록을 가져오지 못했습니다: ${response.error}`)
         return
       }
       latestReports.value = response.result
     } catch (e) {
-      toast(`최근 신고 목록을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 최근 신고 목록을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -103,12 +111,12 @@ export const useAdminStore = defineStore("admin", () => {
         keyword: "",
       })
       if (!response.success || !response.result) {
-        toast(`최근 댓글 목록을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 최근 댓글 목록을 가져오지 못했습니다: ${response.error}`)
         return
       }
       latestComments.value = response.result
     } catch (e) {
-      toast(`최근 댓글 목록을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 최근 댓글 목록을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -122,12 +130,12 @@ export const useAdminStore = defineStore("admin", () => {
         keyword: "",
       })
       if (!response.success || !response.result) {
-        toast(`최근 게시글 목록을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 최근 게시글 목록을 가져오지 못했습니다: ${response.error}`)
         return
       }
       latestPosts.value = response.result
     } catch (e) {
-      toast(`최근 게시글 목록을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 최근 게시글 목록을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -136,12 +144,12 @@ export const useAdminStore = defineStore("admin", () => {
     try {
       const response = await loadGroupList()
       if (!response.success) {
-        toast(`게시판 그룹 목록을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 게시판 그룹 목록을 가져오지 못했습니다: ${response.error}`)
         return
       }
       groups.value = response.result
     } catch (e) {
-      toast(`게시판 그룹 목록을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 게시판 그룹 목록을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -150,12 +158,12 @@ export const useAdminStore = defineStore("admin", () => {
     try {
       const response = await loadGroupInfo(id)
       if (!response.success) {
-        toast(`게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${response.error}`)
+        toast(`❌ 게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${response.error}`)
         return
       }
       groupInfo.value = response.result
     } catch (e) {
-      toast(`게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${e}`)
+      toast(`❌ 게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${e}`)
     }
   }
 
@@ -176,12 +184,13 @@ export const useAdminStore = defineStore("admin", () => {
     try {
       const response = await updateGroupId(targetGroupUid.value, newGroupId)
       if (!response.success) {
-        toast(`그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${response.error}`)
+        toast(`❌ 그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${response.error}`)
         return false
       }
+      toast(`✅ 그룹명을 ${newGroupId}(으)로 변경하였습니다`)
       return true
     } catch (e) {
-      toast(`그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${e}`)
+      toast(`❌ 그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${e}`)
     }
     return false
   }
@@ -191,18 +200,83 @@ export const useAdminStore = defineStore("admin", () => {
     try {
       const response = await createNewBoard(param)
       if (!response.success) {
-        toast(`새 게시판을 생성하지 못했습니다: ${response.error}`)
+        toast(`❌ 새 게시판을 생성하지 못했습니다: ${response.error}`)
         return 0
       }
+      toast(`✅ ${param.id} 게시판을 생성하였습니다`)
       return response.result
     } catch (e) {
-      toast(`새 게시판을 생성하지 못했습니다: ${e}`)
+      toast(`❌ 새 게시판을 생성하지 못했습니다: ${e}`)
     }
     return 0
   }
 
+  // 기존 게시판 수정하기
+  const modifyBoard = async (param: AdminBoardModifyParam): Promise<boolean> => {
+    try {
+      const response = await modifyExistBoard(param)
+      if (!response.success) {
+        toast(`❌ ${param.id} 게시판 설정을 수정하지 못했습니다: ${response.error}`)
+        return false
+      }
+      toast(`✅ ${param.id} 게시판 설정을 수정하였습니다`)
+      return true
+    } catch (e) {
+      toast(`❌ ${param.id} 게시판 설정을 수정하지 못했습니다: ${e}`)
+    }
+    return false
+  }
+
+  // 기존 게시판 정보 가져오기
+  const getBoardConfig = async (id: string): Promise<AdminBoardResult> => {
+    let result: AdminBoardResult = { config: BOARD_CONFIG, groups: [] }
+    try {
+      const response = await loadBoardConfig(id)
+      if (!response.success) {
+        toast(`❌ ${id} 게시판의 기존 설정값을 가져오지 못했습니다: ${response.error}`)
+        return result
+      }
+      result = response.result
+    } catch (e) {
+      toast(`❌ ${id} 게시판의 기존 설정값을 가져오지 못했습니다: ${e}`)
+    }
+    return result
+  }
+
+  // 게시판 삭제하기 시 확인용 다이얼로그 창 띄우기
+  const openBoardRemoveConfirmDialog = (boardUid: number, boardId: string) => {
+    targetBoard.value = { uid: boardUid, name: boardId }
+    isBoardRemoveConfirmDialog.value = true
+  }
+
+  // 게시판 삭제하기 시 확인용 다이얼로그 창 닫기
+  const closeBoardRemoveConfirmDialog = () => {
+    targetBoard.value = { uid: 0, name: "" }
+    isBoardRemoveConfirmDialog.value = false
+  }
+
+  // 게시판 실제로 삭제하기
+  const removeBoard = async () => {
+    if (targetBoard.value.uid < 1) {
+      toast(`⚠️ 삭제할 게시판이 지정되지 않았습니다`)
+      return
+    }
+
+    try {
+      const response = await removeExistBoard(targetBoard.value.uid)
+      if (!response.success) {
+        toast(`❌ 게시판을 삭제하지 못했습니다: ${response.error}`)
+        return
+      }
+      toast(`✅ 게시판을 정상적으로 삭제하였습니다`)
+    } catch (e) {
+      toast(`❌ 게시판을 삭제하지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     isGroupNameChangeDialog,
+    isBoardRemoveConfirmDialog,
     skin,
     menu,
     dashboard,
@@ -212,6 +286,7 @@ export const useAdminStore = defineStore("admin", () => {
     latestPosts,
     groups,
     groupInfo,
+    targetBoard,
 
     openMenu,
     loadInitDashboard,
@@ -224,5 +299,10 @@ export const useAdminStore = defineStore("admin", () => {
     closeChangeGroupIdDialog,
     changeGroupId,
     createBoard,
+    modifyBoard,
+    getBoardConfig,
+    openBoardRemoveConfirmDialog,
+    closeBoardRemoveConfirmDialog,
+    removeBoard,
   }
 })

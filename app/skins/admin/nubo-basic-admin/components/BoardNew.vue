@@ -20,7 +20,12 @@
         </CommonVTooltip>
 
         <CommonVTooltip content="입력한 내용들을 모두 초기화합니다">
-          <Button variant="ghost" class="items-center gap-2 cursor-pointer" @click="resetForm">
+          <Button
+            type="button"
+            variant="ghost"
+            class="items-center gap-2 cursor-pointer"
+            @click="resetForm"
+          >
             <RotateCcwIcon class="w-4 h-4" />
             <span>초기화</span>
           </Button>
@@ -42,6 +47,7 @@
 <script setup lang="ts">
 import { ArrowLeftIcon, RotateCcwIcon, SquareCheckBigIcon } from "lucide-vue-next"
 import { useForm } from "vee-validate"
+import { toast } from "vue-sonner"
 import type { AdminBoardCreateParam } from "~/types/admin"
 import { BOARD } from "~/types/board"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
@@ -49,18 +55,15 @@ import BoardFieldGroup from "./BoardFieldGroup.vue"
 import { useBoardFormSchema } from "./boardFormSchema"
 
 const schema = useBoardFormSchema()
-const { createBoard } = useNuboAdminContext()
-
-const props = defineProps<{
-  changePanel: Function
-  groupUid: number
-}>()
+const { groupInfo, createBoard } = useNuboAdminContext()
+const props = defineProps<{ changePanel: Function }>()
 
 // 스키마 지정 및 초기값 설정
 const { handleSubmit, resetForm } = useForm({
   validationSchema: schema.validationSchema,
   initialValues: {
-    groupUid: props.groupUid,
+    adminUid: 1,
+    groupUid: groupInfo.value.config.uid,
     type: BOARD.DEFAULT,
     categories: "일반,유머,정보",
     rowCount: 20,
@@ -79,11 +82,16 @@ const { handleSubmit, resetForm } = useForm({
 })
 
 // 새 게시판 생성 요청 전송
-const onSubmit = handleSubmit(async (data) => {
-  const param = data as AdminBoardCreateParam
-  const boardUid = await createBoard(param)
-  if (boardUid > 0) {
-    props.changePanel("list")
-  }
-})
+const onSubmit = handleSubmit(
+  async (data) => {
+    const param = data as AdminBoardCreateParam
+    const boardUid = await createBoard(param)
+    if (boardUid > 0) {
+      props.changePanel("list")
+    }
+  },
+  ({ errors, values, results }) => {
+    toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
+  },
+)
 </script>

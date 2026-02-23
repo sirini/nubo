@@ -1,6 +1,8 @@
 import type { InjectionKey } from "vue"
 import type {
   AdminBoardCreateParam,
+  AdminBoardModifyParam,
+  AdminBoardResult,
   AdminDashboard,
   AdminDashboardStatistic,
   AdminGroupConfig,
@@ -28,34 +30,41 @@ import type { EditProfileParam, UserInfoResult, UserMyResult } from "./user"
 
 // [관리자] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboAdminContext {
-  user: ComputedRef<UserMyResult>
-  panel: ComputedRef<any>
-  menu: ComputedRef<AdminMenu>
   dashboard: ComputedRef<AdminDashboard>
-  statUser: ComputedRef<AdminDashboardStatistic>
-  statPost: ComputedRef<AdminDashboardStatistic>
-  statReply: ComputedRef<AdminDashboardStatistic>
-  statVisit: ComputedRef<AdminDashboardStatistic>
-  statFile: ComputedRef<AdminDashboardStatistic>
-  statImage: ComputedRef<AdminDashboardStatistic>
-  statUploadUsage: ComputedRef<number>
-  latestReports: ComputedRef<AdminReportItem[]>
+  groupInfo: ComputedRef<AdminGroupListResult>
+  groups: ComputedRef<AdminGroupConfig[]>
+  isBoardRemoveConfirmDialog: ComputedRef<boolean>
+  isGroupNameChangeDialog: ComputedRef<boolean>
   latestComments: ComputedRef<AdminLatestComment[]>
   latestPosts: ComputedRef<AdminLatestPost[]>
-  groups: ComputedRef<AdminGroupConfig[]>
-  groupInfo: ComputedRef<AdminGroupListResult>
-  isGroupNameChangeDialog: ComputedRef<boolean>
-  openMenu: (menu: AdminMenu) => void
-  loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
-  loadInitReportList: (limit: number) => Promise<void>
-  loadInitCommentList: (limit: number) => Promise<void>
-  loadInitPostList: (limit: number) => Promise<void>
-  loadInitGroupList: () => Promise<void>
-  loadSelectedGroupInfo: (id: string) => Promise<void>
-  openChangeGroupIdDialog: (groupUid: number) => void
-  closeChangeGroupIdDialog: () => void
+  latestReports: ComputedRef<AdminReportItem[]>
+  menu: ComputedRef<AdminMenu>
+  panel: ComputedRef<any>
+  statFile: ComputedRef<AdminDashboardStatistic>
+  statImage: ComputedRef<AdminDashboardStatistic>
+  statPost: ComputedRef<AdminDashboardStatistic>
+  statReply: ComputedRef<AdminDashboardStatistic>
+  statUploadUsage: ComputedRef<number>
+  statUser: ComputedRef<AdminDashboardStatistic>
+  statVisit: ComputedRef<AdminDashboardStatistic>
+  targetBoard: ComputedRef<Pair>
+  user: ComputedRef<UserMyResult>
   changeGroupId: (newGroupId: string) => Promise<boolean>
+  closeBoardRemoveConfirmDialog: () => void
+  closeChangeGroupIdDialog: () => void
   createBoard: (param: AdminBoardCreateParam) => Promise<number>
+  getBoardConfig: (id: string) => Promise<AdminBoardResult>
+  loadInitCommentList: (limit: number) => Promise<void>
+  loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
+  loadInitGroupList: () => Promise<void>
+  loadInitPostList: (limit: number) => Promise<void>
+  loadInitReportList: (limit: number) => Promise<void>
+  loadSelectedGroupInfo: (id: string) => Promise<void>
+  modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>
+  openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) => void
+  openChangeGroupIdDialog: (groupUid: number) => void
+  openMenu: (menu: AdminMenu) => void
+  removeBoard: () => Promise<void>
 }
 
 // [게시판 글목록] 화면에서 필요한 변수 & 함수들 정의

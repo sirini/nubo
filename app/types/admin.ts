@@ -1,4 +1,11 @@
-import { BOARD_WRITER, type Board, type BoardWriter, type Search, type Status } from "./board"
+import {
+  BOARD_WRITER,
+  type Board,
+  type BoardConfig,
+  type BoardWriter,
+  type Search,
+  type Status,
+} from "./board"
 import type { Pair } from "./common"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
@@ -165,6 +172,7 @@ export type AdminGroupBoardStatus = {
 
 // 새 게시판 생성하기에 필요한 파라미터 정의
 export type AdminBoardCreateParam = {
+  adminUid: number
   categories: string
   groupUid: number
   id: string
@@ -182,4 +190,15 @@ export type AdminBoardCreateParam = {
   type: Board
   useCategory: boolean
   width: number
+}
+
+// 게시판 수정하기에 필요한 파라미터 정의
+export type AdminBoardModifyParam = AdminBoardCreateParam & {
+  boardUid: number
+}
+
+// 게시판 설정값 및 그룹 목록 반환값 정의
+export type AdminBoardResult = {
+  config: BoardConfig
+  groups: Pair[]
 }

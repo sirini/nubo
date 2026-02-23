@@ -1,37 +1,39 @@
 <template>
   <FieldGroup class="gap-3">
+    <BoardSelect
+      name="groupUid"
+      label="그룹 변경"
+      :items="groupList"
+      description="소속 그룹 변경"
+    />
+
     <BoardField
       name="id"
       label="ID"
-      description="영문 소문자, 숫자 및 언더 스코어 기호만 가능 (예: free)"
+      :description="
+        isModifying
+          ? `한 번 생성된 게시판 ID는 수정불가`
+          : `영문 소문자, 숫자 및 언더 스코어 기호만 가능`
+      "
+      :disabled="isModifying"
       placeholder="free"
     />
 
-    <BoardField
-      name="name"
-      label="이름"
-      description="이 게시판의 이름 (예: 자유게시판)"
-      placeholder="자유게시판"
-    />
+    <BoardField name="name" label="이름" description="이 게시판의 이름" placeholder="자유게시판" />
 
-    <BoardSelect
-      name="type"
-      label="타입"
-      :items="boardTypes"
-      description="게시판의 형태 지정 (예: 게시판)"
-    />
+    <BoardSelect name="type" label="타입" :items="types" description="게시판의 형태 지정" />
 
     <BoardField
       name="rowCount"
       label="행 개수"
-      description="한 페이지에 보여줄 게시글 수 (예: 20)"
+      description="한 페이지에 보여줄 게시글 수"
       placeholder="20"
     />
 
     <BoardField
       name="width"
       label="너비"
-      description="게시판의 최대 가로폭 너비 (예: 1000)"
+      description="게시판의 최대 가로폭 너비"
       placeholder="1000"
     />
 
@@ -66,21 +68,21 @@
       name="levelList"
       label="목록보기"
       :items="levels"
-      description="게시판 목록을 볼 때 요구되는 레벨 (0 = 비회원)"
+      description="목록을 볼 때 요구되는 레벨 (0 = 비회원)"
     />
 
     <BoardSelect
       name="levelView"
       label="글보기"
       :items="levels"
-      description="게시글을 볼 때 요구되는 레벨 (0 = 비회원)"
+      description="글을 볼 때 요구되는 레벨 (0 = 비회원)"
     />
 
     <BoardSelect
       name="levelWrite"
       label="글작성"
       :items="levels.slice(1)"
-      description="게시글 작성에 요구되는 레벨 (비회원은 불가)"
+      description="글 작성에 요구되는 레벨 (비회원은 불가)"
     />
 
     <BoardSelect
@@ -107,7 +109,7 @@
     <BoardField
       name="pointView"
       label="글보기"
-      description="게시글 보기 때 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
+      description="글 보기 때 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
       placeholder="0"
       input-class="w-16"
     />
@@ -115,7 +117,7 @@
     <BoardField
       name="pointWrite"
       label="글작성"
-      description="게시글 작성시 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
+      description="글 작성시 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
       placeholder="5"
       input-class="w-16"
     />
@@ -141,14 +143,20 @@
 <script setup lang="ts">
 import { useFormValues } from "vee-validate"
 import { BOARD } from "~/types/board"
+import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 import BoardCheckbox from "./BoardCheckbox.vue"
 import BoardField from "./BoardField.vue"
 import BoardSelect from "./BoardSelect.vue"
 
 const values = useFormValues()
+const { groups } = useNuboAdminContext()
+const isModifying = computed(() => values.value.boardUid > 0)
+
+// 그룹 목록
+const groupList = groups.value.map((grp) => ({ name: grp.id, value: grp.uid }))
 
 // 게시판 형태들
-const boardTypes = [
+const types = [
   { name: "게시판", value: BOARD.DEFAULT },
   { name: "갤러리", value: BOARD.GALLERY },
   { name: "블로그", value: BOARD.BLOG },

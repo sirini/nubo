@@ -17,7 +17,7 @@
           <Button
             v-for="group in groups"
             :key="group.uid"
-            @click="selectedGroupId = group.id"
+            @click="changeGroup(group.id)"
             class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
             :class="
               selectedGroupId === group.id
@@ -89,16 +89,17 @@
       </header>
 
       <ScrollArea class="h-[calc(100dvh-215px)]">
-        <BoardNew
+        <BoardNew :change-panel="changePanel" v-if="boardPanel === 'new'" />
+        <BoardEdit
+          :selected-board-id="selectedBoardId"
           :change-panel="changePanel"
-          :group-uid="groupInfo.config.uid"
-          v-if="boardPanel === 'new'"
+          v-else-if="boardPanel === 'edit'"
         />
-        <BoardEdit :change-panel="changePanel" v-else-if="boardPanel === 'edit'" />
         <BoardList :change-panel="changePanel" v-else />
       </ScrollArea>
 
       <BoardChangeGroupNameDialog />
+      <BoardRemoveConfirmDialog :change-panel="changePanel" />
     </main>
   </div>
 </template>
@@ -117,6 +118,7 @@ import BoardEdit from "./components/BoardEdit.vue"
 import BoardList from "./components/BoardList.vue"
 import BoardNew from "./components/BoardNew.vue"
 import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
+import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDialog.vue"
 
 type BoardPanel = "list" | "new" | "edit"
 const selectedGroupId = ref<string>("")
@@ -130,23 +132,22 @@ onMounted(async () => {
   await loadInitGroupList()
   const defaultGroup = groups.value.at(0)
   if (defaultGroup) {
-    selectedGroupId.value = defaultGroup.id
-    await loadSelectedGroupInfo(defaultGroup.id)
+    changeGroup(defaultGroup.id)
   }
 })
 
-// 그룹 ID가 변경되면 소속 게시판 목록도 업데이트
-watch(
-  () => selectedGroupId.value,
-  (newId) => {
-    loadSelectedGroupInfo(newId)
-  },
-)
-
 // 게시판 목록 영역 내용 변경하기
-const changePanel = (panel: BoardPanel, editBoardId: string = "") => {
+const changePanel = async (panel: BoardPanel, editBoardId: string = "") => {
   boardPanel.value = panel
   selectedBoardId.value = editBoardId
-  loadSelectedGroupInfo(selectedGroupId.value)
+  await loadInitGroupList()
+  await loadSelectedGroupInfo(selectedGroupId.value)
+}
+
+// 그룹 변경하기
+const changeGroup = async (groupId: string) => {
+  selectedGroupId.value = groupId
+  await loadSelectedGroupInfo(groupId)
+  changePanel("list")
 }
 </script>

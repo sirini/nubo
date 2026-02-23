@@ -20,7 +20,7 @@
     <TableBody>
       <TableRow v-for="board in groupInfo.boards" :key="board.uid">
         <TableCell class="font-medium text-center"> {{ board.name }} </TableCell>
-        <TableCell class="text-center">{{ BOARD_PREFIX[board.type] }}</TableCell>
+        <TableCell class="text-center">{{ showTypeName(board.type) }}</TableCell>
         <TableCell class="text-center">
           <Badge variant="secondary">{{ config.public.skins.board }}</Badge>
         </TableCell>
@@ -45,11 +45,23 @@
 
 <script setup lang="ts">
 import { InfoIcon, Settings2Icon } from "lucide-vue-next"
-import { BOARD_PREFIX } from "~/types/board"
+import { BOARD, type Board } from "~/types/board"
 import { useNuboAdminContext } from "~/types/nubo-skin-keys"
 
 const config = useRuntimeConfig()
 const { groupInfo } = useNuboAdminContext()
 
 defineProps<{ changePanel: Function }>()
+
+// 게시판의 형태 반환
+const showTypeName = (type: Board) => {
+  switch (type) {
+    case BOARD.GALLERY:
+      return "Gallery"
+    case BOARD.BLOG:
+      return "Blog"
+    default:
+      return "Board"
+  }
+}
 </script>

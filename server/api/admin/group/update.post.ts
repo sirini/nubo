@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const token = getCookie(event, AUTH_KEY)
 
-  return proxyRequest(event, `${config.apiBaseInternal}/admin/board/general/change/width`, {
+  return proxyRequest(event, `${config.apiBaseInternal}/admin/group/update`, {
     fetchOptions: {
       headers: {
         Authorization: `Bearer ${token}`,

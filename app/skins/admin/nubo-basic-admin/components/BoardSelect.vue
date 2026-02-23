@@ -16,7 +16,7 @@
               <SelectValue :placeholder="placeholder" />
             </SelectTrigger>
             <SelectContent position="item-aligned">
-              <SelectItem v-for="(item, idx) in items" :value="item.value">{{
+              <SelectItem v-for="(item, idx) in items" :key="idx" :value="item.value">{{
                 item.name
               }}</SelectItem>
             </SelectContent>
@@ -48,7 +48,7 @@ withDefaults(
     inputClass?: string
   }>(),
   {
-    placeholder: "선택",
+    placeholder: "게시판",
     labelWidth: "w-16",
     inputClass: "max-w-28",
   },

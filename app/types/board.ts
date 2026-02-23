@@ -5,15 +5,13 @@ import type { Pair } from "./common"
 export const WRITE_RESULT_FAIL = -1
 
 // 게시판 타입 재정의
-export type Board = 0 | 1 | 2 | 3
+export type Board = 1 | 2 | 3 | 4 | 9
 
 // 게시판 타입 기본값
 export const BOARD = {
   DEFAULT: 0,
   GALLERY: 1,
   BLOG: 2,
-  WEBZINE: 3,
-  TRADE: 4,
 }
 
 // 게시판 내 활동 기본값 정의
@@ -30,8 +28,6 @@ export const BOARD_PREFIX = {
   [BOARD.DEFAULT]: "Default",
   [BOARD.GALLERY]: "Gallery",
   [BOARD.BLOG]: "Blog",
-  [BOARD.WEBZINE]: "Webzine",
-  [BOARD.TRADE]: "Trade",
 } as const
 
 // 게시글 작성자 기본값 정의
@@ -140,7 +136,7 @@ export const BOARD_CONFIG: BoardConfig = {
   id: "",
   groupUid: 0,
   admin: { group: 0, board: 0 },
-  type: 0,
+  type: BOARD.DEFAULT as Board,
   name: "",
   info: "",
   rowCount: 0,

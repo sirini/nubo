@@ -1,5 +1,7 @@
 import {
   type AdminBoardCreateParam,
+  type AdminBoardModifyParam,
+  type AdminBoardResult,
   type AdminDashboardItem,
   type AdminDashboardStatisticResult,
   type AdminGroupConfig,
@@ -57,19 +59,26 @@ export const useAdmin = () => {
 
   // 게시판 그룹 목록 가져오기
   const loadGroupList = async () => {
-    return await reqGet<Resp<AdminGroupConfig[]>>("/admin/group/list/load", {})
+    return await reqGet<Resp<AdminGroupConfig[]>>("/admin/group/list", {})
   }
 
   // 선택한 그룹의 설정 및 소속 게시판들 가져오기
   const loadGroupInfo = async (id: string) => {
-    return await reqGet<Resp<AdminGroupListResult>>("/admin/group/general/load", {
+    return await reqGet<Resp<AdminGroupListResult>>("/admin/group/load", {
+      id,
+    })
+  }
+
+  // 기존 게시판 설정 가져오기
+  const loadBoardConfig = async (id: string) => {
+    return await reqGet<Resp<AdminBoardResult>>("/admin/board/load", {
       id,
     })
   }
 
   // 그룹명(ID) 변경하기
   const updateGroupId = async (groupUid: number, newGroupId: string) => {
-    return await reqPost<Resp<null>>("/admin/group/list/update", {
+    return await reqPost<Resp<null>>("/admin/group/update", {
       groupUid,
       newGroupId,
     })
@@ -77,7 +86,19 @@ export const useAdmin = () => {
 
   // 새 게시판 생성하기
   const createNewBoard = async (param: AdminBoardCreateParam) => {
-    return await reqPost<Resp<number>>("/admin/board/general/create", param)
+    return await reqPost<Resp<number>>("/admin/board/create", param)
+  }
+
+  // 기존 게시판 수정하기
+  const modifyExistBoard = async (param: AdminBoardModifyParam) => {
+    return await reqPost<Resp<null>>("/admin/board/modify", param)
+  }
+
+  // 기존 게시판 삭제하기
+  const removeExistBoard = async (boardUid: number) => {
+    return await reqDelete<Resp<void>>("/admin/board/remove", {
+      boardUid,
+    })
   }
 
   return {
@@ -89,7 +110,10 @@ export const useAdmin = () => {
     loadPostList,
     loadGroupList,
     loadGroupInfo,
+    loadBoardConfig,
     updateGroupId,
     createNewBoard,
+    modifyExistBoard,
+    removeExistBoard,
   }
 }

@@ -1,4 +1,4 @@
-import type { AdminBoardCreateParam, AdminMenu } from "~/types/admin"
+import type { AdminBoardCreateParam, AdminBoardModifyParam, AdminMenu } from "~/types/admin"
 import type { NuboAdminContext } from "~/types/nubo-skin-keys"
 
 export const useAdminProvider = (): NuboAdminContext => {
@@ -17,6 +17,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     dashboard: computed(() => admin.dashboard),
     groupInfo: computed(() => admin.groupInfo),
     groups: computed(() => admin.groups),
+    isBoardRemoveConfirmDialog: computed(() => admin.isBoardRemoveConfirmDialog),
     isGroupNameChangeDialog: computed(() => admin.isGroupNameChangeDialog),
     latestComments: computed(() => admin.latestComments),
     latestPosts: computed(() => admin.latestPosts),
@@ -30,9 +31,13 @@ export const useAdminProvider = (): NuboAdminContext => {
     statUploadUsage: computed(() => admin.uploadUsage),
     statUser: computed(() => admin.dashboard.statistic.member),
     statVisit: computed(() => admin.dashboard.statistic.visit),
+    targetBoard: computed(() => admin.targetBoard),
     user: computed(() => auth.user),
     changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
+    closeBoardRemoveConfirmDialog: () => admin.closeBoardRemoveConfirmDialog(),
     closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
+    createBoard: (param: AdminBoardCreateParam) => admin.createBoard(param),
+    getBoardConfig: (id: string) => admin.getBoardConfig(id),
     loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForItem),
@@ -40,8 +45,11 @@ export const useAdminProvider = (): NuboAdminContext => {
     loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
     loadInitReportList: (limit: number) => admin.loadInitReportList(limit),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
+    modifyBoard: (param: AdminBoardModifyParam) => admin.modifyBoard(param),
+    openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) =>
+      admin.openBoardRemoveConfirmDialog(boardUid, boardId),
     openChangeGroupIdDialog: (groupUid: number) => admin.openChangeGroupIdDialog(groupUid),
     openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
-    createBoard: (param: AdminBoardCreateParam) => admin.createBoard(param),
+    removeBoard: () => admin.removeBoard(),
   }
 }

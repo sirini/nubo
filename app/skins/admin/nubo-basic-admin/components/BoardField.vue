@@ -16,6 +16,7 @@
             :placeholder="placeholder"
             :aria-invalid="!!errors.length"
             autocomplete="off"
+            :disabled="disabled"
           />
         </slot>
       </div>
@@ -42,11 +43,13 @@ withDefaults(
     type?: string
     labelWidth?: string
     inputClass?: string
+    disabled?: boolean
   }>(),
   {
     labelWidth: "w-16",
     inputClass: "max-w-28",
     type: "text",
+    disabled: false,
   },
 )
 </script>
