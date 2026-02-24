@@ -29,6 +29,10 @@ export const useAdminProvider = (): NuboAdminContext => {
       get: () => admin.isGroupNameChangeDialog,
       set: (val) => (admin.isGroupNameChangeDialog = val),
     }),
+    isGroupRemoveConfirmDialog: computed({
+      get: () => admin.isGroupRemoveConfirmDialog,
+      set: (val) => (admin.isGroupRemoveConfirmDialog = val),
+    }),
     latestComments: computed(() => admin.latestComments),
     latestPosts: computed(() => admin.latestPosts),
     latestReports: computed(() => admin.latestReports),
@@ -42,11 +46,13 @@ export const useAdminProvider = (): NuboAdminContext => {
     statUser: computed(() => admin.dashboard.statistic.member),
     statVisit: computed(() => admin.dashboard.statistic.visit),
     targetBoard: computed(() => admin.targetBoard),
+    targetGroup: computed(() => admin.targetGroup),
     user: computed(() => auth.user),
     changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
     closeAddGroupDialog: () => admin.closeAddGroupDialog,
     closeBoardRemoveConfirmDialog: () => admin.closeBoardRemoveConfirmDialog(),
     closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
+    closeRemoveGroupConfirmDialog: () => admin.closeRemoveGroupConfirmDialog(),
     createBoard: (param: AdminBoardCreateParam) => admin.createBoard(param),
     createGroup: (newGroupId: string) => admin.createGroup(newGroupId),
     getBoardConfig: (id: string) => admin.getBoardConfig(id),
@@ -61,8 +67,12 @@ export const useAdminProvider = (): NuboAdminContext => {
     openAddGroupDialog: () => admin.openAddGroupDialog(),
     openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) =>
       admin.openBoardRemoveConfirmDialog(boardUid, boardId),
-    openChangeGroupIdDialog: (groupUid: number) => admin.openChangeGroupIdDialog(groupUid),
+    openChangeGroupIdDialog: (groupUid: number, oldName: string) =>
+      admin.openChangeGroupIdDialog(groupUid, oldName),
+    openRemoveGroupConfirmDialog: (groupUid: number, groupId: string) =>
+      admin.openRemoveGroupConfirmDialog(groupUid, groupId),
     openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
     removeBoard: () => admin.removeBoard(),
+    removeGroup: () => admin.removeGroup(),
   }
 }

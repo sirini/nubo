@@ -3,8 +3,11 @@
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
         <DialogTitle>그룹명 변경</DialogTitle>
-        <DialogDescription>변경하실 그룹명을 입력해보세요</DialogDescription>
+        <DialogDescription
+          >{{ targetGroup.name }} 그룹명을 다른 이름으로 변경해보세요</DialogDescription
+        >
       </DialogHeader>
+
       <div class="grid gap-4 py-4">
         <div class="grid gap-2">
           <div class="relative flex items-center">
@@ -24,6 +27,7 @@
           </div>
         </div>
       </div>
+
       <DialogFooter>
         <Button
           variant="outline"
@@ -53,6 +57,7 @@ const newGroupId = ref<string>("")
 const isAvailable = ref<boolean>(false)
 const isValid = computed(() => newGroupId.value.length > 1)
 const {
+  targetGroup,
   isGroupNameChangeDialog,
   closeChangeGroupIdDialog,
   changeGroupId,

@@ -22,6 +22,7 @@ export interface NuboAdminContext {
   isAddGroupDialog: WritableComputedRef<boolean>
   isBoardRemoveConfirmDialog: WritableComputedRef<boolean>
   isGroupNameChangeDialog: WritableComputedRef<boolean>
+  isGroupRemoveConfirmDialog: WritableComputedRef<boolean>
   latestComments: ComputedRef<AdminLatestComment[]>
   latestPosts: ComputedRef<AdminLatestPost[]>
   latestReports: ComputedRef<AdminReportItem[]>
@@ -35,11 +36,13 @@ export interface NuboAdminContext {
   statUser: ComputedRef<AdminDashboardStatistic>
   statVisit: ComputedRef<AdminDashboardStatistic>
   targetBoard: ComputedRef<Pair>
+  targetGroup: ComputedRef<Pair>
   user: ComputedRef<UserMyResult>
   changeGroupId: (newGroupId: string) => Promise<boolean>
   closeAddGroupDialog: () => void
   closeBoardRemoveConfirmDialog: () => void
   closeChangeGroupIdDialog: () => void
+  closeRemoveGroupConfirmDialog: () => void
   createBoard: (param: AdminBoardCreateParam) => Promise<number>
   createGroup: (newGroupId: string) => Promise<AdminGroupConfig>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
@@ -52,9 +55,11 @@ export interface NuboAdminContext {
   modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>
   openAddGroupDialog: () => void
   openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) => void
-  openChangeGroupIdDialog: (groupUid: number) => void
+  openChangeGroupIdDialog: (groupUid: number, oldName: string) => void
+  openRemoveGroupConfirmDialog: (groupUid: number, groupId: string) => void
   openMenu: (menu: AdminMenu) => void
   removeBoard: () => Promise<void>
+  removeGroup: () => Promise<void>
 }
 
 export const nuboAdminKey: InjectionKey<NuboAdminContext> = Symbol("nuboAdminContext")

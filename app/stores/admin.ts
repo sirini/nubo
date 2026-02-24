@@ -30,9 +30,11 @@ export const useAdminStore = defineStore("admin", () => {
     loadReportList,
     modifyExistBoard,
     removeExistBoard,
+    removeExistGroup,
     updateGroupId,
   } = useAdmin()
   const isGroupNameChangeDialog = ref<boolean>(false)
+  const isGroupRemoveConfirmDialog = ref<boolean>(false)
   const isBoardRemoveConfirmDialog = ref<boolean>(false)
   const isAddGroupDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
@@ -55,7 +57,7 @@ export const useAdminStore = defineStore("admin", () => {
   const latestPosts = ref<AdminLatestPost[]>([])
   const groups = ref<AdminGroupConfig[]>([])
   const groupInfo = ref<AdminGroupListResult>({ config: ADMIN_GROUP_CONFIG, boards: [] })
-  const targetGroupUid = ref<number>(0)
+  const targetGroup = ref<Pair>({ uid: 0, name: "" })
   const targetBoard = ref<Pair>({ uid: 0, name: "" })
 
   // 관리화면에서 메뉴 열기
@@ -170,21 +172,21 @@ export const useAdminStore = defineStore("admin", () => {
   }
 
   // 그룹명 변경하기 다이얼로그 띄우기
-  const openChangeGroupIdDialog = (groupUid: number) => {
-    targetGroupUid.value = groupUid
+  const openChangeGroupIdDialog = (groupUid: number, oldName: string) => {
+    targetGroup.value = { uid: groupUid, name: oldName }
     isGroupNameChangeDialog.value = true
   }
 
   // 그룹명 변경하기 다이얼로그 닫기
   const closeChangeGroupIdDialog = () => {
-    targetGroupUid.value = 0
+    targetGroup.value = { uid: 0, name: "" }
     isGroupNameChangeDialog.value = false
   }
 
   // 그룹명 변경하기
   const changeGroupId = async (newGroupId: string): Promise<boolean> => {
     try {
-      const response = await updateGroupId(targetGroupUid.value, newGroupId)
+      const response = await updateGroupId(targetGroup.value.uid, newGroupId)
       if (!response.success) {
         toast(`❌ 그룹명을 ${newGroupId}(으)로 변경하지 못했습니다: ${response.error}`)
         return false
@@ -303,6 +305,37 @@ export const useAdminStore = defineStore("admin", () => {
     return result
   }
 
+  // 그룹 삭제하기 다이얼로그 창 띄우기
+  const openRemoveGroupConfirmDialog = (groupUid: number, groupId: string) => {
+    targetGroup.value = { uid: groupUid, name: groupId }
+    isGroupRemoveConfirmDialog.value = true
+  }
+
+  // 그룹 삭제하기 다이얼로그 창 닫기
+  const closeRemoveGroupConfirmDialog = () => {
+    targetGroup.value = { uid: 0, name: "" }
+    isGroupRemoveConfirmDialog.value = false
+  }
+
+  // 그룹 삭제하기
+  const removeGroup = async () => {
+    if (targetGroup.value.uid < 2) {
+      toast(`⚠️ 삭제할 그룹이 지정되지 않았거나, 유효하지 않습니다`)
+      return
+    }
+
+    try {
+      const response = await removeExistGroup(targetGroup.value.uid)
+      if (!response.success) {
+        toast(`❌ ${targetGroup.value.name} 그룹을 삭제하지 못했습니다: ${response.error}`)
+        return
+      }
+      toast(`✅ ${targetGroup.value.name} 그룹을 삭제하였습니다`)
+    } catch (e) {
+      toast(`❌ ${targetGroup.value.name} 그룹을 삭제하지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     dashboard,
     groupInfo,
@@ -310,18 +343,21 @@ export const useAdminStore = defineStore("admin", () => {
     isAddGroupDialog,
     isBoardRemoveConfirmDialog,
     isGroupNameChangeDialog,
+    isGroupRemoveConfirmDialog,
     latestComments,
     latestPosts,
     latestReports,
     menu,
     skin,
     targetBoard,
+    targetGroup,
     uploadUsage,
 
     changeGroupId,
     closeAddGroupDialog,
     closeBoardRemoveConfirmDialog,
     closeChangeGroupIdDialog,
+    closeRemoveGroupConfirmDialog,
     createBoard,
     createGroup,
     getBoardConfig,
@@ -335,7 +371,9 @@ export const useAdminStore = defineStore("admin", () => {
     openAddGroupDialog,
     openBoardRemoveConfirmDialog,
     openChangeGroupIdDialog,
+    openRemoveGroupConfirmDialog,
     openMenu,
     removeBoard,
+    removeGroup,
   }
 })

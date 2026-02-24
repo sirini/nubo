@@ -1,6 +1,6 @@
 <template>
   <div class="flex w-full bg-background h-full">
-    <aside class="hidden w-56 border-r bg-muted/20 md:flex flex-col">
+    <aside class="hidden w-48 border-r bg-muted/20 md:flex flex-col">
       <div class="p-4 border-b flex items-center justify-between h-16">
         <h3 class="font-semibold flex items-center gap-2">
           <LayoutPanelLeftIcon class="w-4 h-4" /> 그룹 관리
@@ -52,6 +52,7 @@
               size="icon"
               class="gap-2 cursor-pointer text-red-300"
               :disabled="groupInfo.config.uid === 1"
+              @click="openRemoveGroupConfirmDialog(groupInfo.config.uid, groupInfo.config.id)"
             >
               <Trash2Icon class="w-4 h-4" />
             </Button>
@@ -62,7 +63,7 @@
               variant="outline"
               size="icon"
               class="gap-2 cursor-pointer"
-              @click="openChangeGroupIdDialog(groupInfo.config.uid)"
+              @click="openChangeGroupIdDialog(groupInfo.config.uid, groupInfo.config.id)"
             >
               <TextCursorInputIcon class="w-4 h-4" />
             </Button>
@@ -105,6 +106,7 @@
 
       <BoardAddGroupDialog :change-group="changeGroup" />
       <BoardChangeGroupNameDialog />
+      <BoardRemoveGroupConfirmDialog :change-panel="changePanel" />
       <BoardRemoveConfirmDialog :change-panel="changePanel" />
     </main>
   </div>
@@ -126,6 +128,7 @@ import BoardNew from "./components/BoardNew.vue"
 import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
 import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDialog.vue"
 import BoardAddGroupDialog from "./components/dialogs/BoardAddGroupDialog.vue"
+import BoardRemoveGroupConfirmDialog from "./components/dialogs/BoardRemoveGroupConfirmDialog.vue"
 
 type BoardPanel = "list" | "new" | "edit"
 const selectedGroupId = ref<string>("")
@@ -138,6 +141,7 @@ const {
   loadSelectedGroupInfo,
   openChangeGroupIdDialog,
   openAddGroupDialog,
+  openRemoveGroupConfirmDialog,
 } = useNuboAdminContext()
 
 // 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기

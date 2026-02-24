@@ -91,6 +91,13 @@ export const useAdmin = () => {
     })
   }
 
+  // 그룹 삭제하기
+  const removeExistGroup = async (groupUid: number) => {
+    return await reqDelete<Resp<null>>("/admin/group/remove", {
+      groupUid,
+    })
+  }
+
   // 새 게시판 생성하기
   const createNewBoard = async (param: AdminBoardCreateParam) => {
     return await reqPost<Resp<number>>("/admin/board/create", param)
@@ -103,7 +110,7 @@ export const useAdmin = () => {
 
   // 기존 게시판 삭제하기
   const removeExistBoard = async (boardUid: number) => {
-    return await reqDelete<Resp<void>>("/admin/board/remove", {
+    return await reqDelete<Resp<null>>("/admin/board/remove", {
       boardUid,
     })
   }
@@ -122,6 +129,7 @@ export const useAdmin = () => {
     loadReportList,
     modifyExistBoard,
     removeExistBoard,
+    removeExistGroup,
     updateGroupId,
   }
 }

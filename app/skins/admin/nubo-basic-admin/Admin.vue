@@ -1,13 +1,13 @@
 <template>
   <div class="flex container mx-auto min-h-[calc(100dvh-70px)] py-10 px-4">
     <div class="flex flex-1 border rounded-lg bg-background overflow-hidden shadow-xl">
-      <aside class="hidden w-56 border-r bg-muted/30 md:block">
+      <aside class="hidden w-48 border-r bg-muted/30 md:block">
         <div class="flex h-full flex-col gap-2">
           <div class="flex h-16 items-center border-b px-6">
             <CommonVTooltip content="관리화면 첫 페이지로 이동합니다">
-              <NuxtLink to="/admin" class="flex items-center gap-3 font-bold text-xl text-primary">
+              <NuxtLink to="/admin" class="flex items-center gap-3 font-bold text-lg text-primary">
                 <CogIcon class="w-4 h-4" />
-                <span class="font-mono">NUBO</span>
+                <span class="font-mono">Settings</span>
               </NuxtLink>
             </CommonVTooltip>
           </div>

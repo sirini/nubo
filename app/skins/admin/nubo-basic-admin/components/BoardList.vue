@@ -19,7 +19,15 @@
     </TableHeader>
     <TableBody>
       <TableRow v-for="board in groupInfo.boards" :key="board.uid">
-        <TableCell class="font-medium text-center"> {{ board.name }} </TableCell>
+        <TableCell class="text-center">
+          <NuxtLink
+            :to="`/board/${board.id}`"
+            class="flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors"
+          >
+            <ExternalLinkIcon class="w-4 h-4" />
+            <span>{{ board.name }}</span>
+          </NuxtLink>
+        </TableCell>
         <TableCell class="text-center">{{ showTypeName(board.type) }}</TableCell>
         <TableCell class="text-center">
           <Badge variant="secondary">{{ config.public.skins.board }}</Badge>
@@ -44,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { InfoIcon, Settings2Icon } from "lucide-vue-next"
+import { ExternalLinkIcon, InfoIcon, Settings2Icon } from "lucide-vue-next"
 import { BOARD, type Board } from "~/types/board"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 
