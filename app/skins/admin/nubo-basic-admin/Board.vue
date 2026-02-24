@@ -6,7 +6,12 @@
           <LayoutPanelLeftIcon class="w-4 h-4" /> 그룹 관리
         </h3>
         <CommonVTooltip content="새로운 그룹을 생성합니다">
-          <Button variant="outline" size="icon" class="w-8 h-8 cursor-pointer">
+          <Button
+            variant="outline"
+            size="icon"
+            class="w-8 h-8 cursor-pointer"
+            @click="openAddGroupDialog"
+          >
             <PlusIcon class="w-4 h-4" />
           </Button>
         </CommonVTooltip>
@@ -98,6 +103,7 @@
         <BoardList :change-panel="changePanel" v-else />
       </ScrollArea>
 
+      <BoardAddGroupDialog :change-group="changeGroup" />
       <BoardChangeGroupNameDialog />
       <BoardRemoveConfirmDialog :change-panel="changePanel" />
     </main>
@@ -119,13 +125,20 @@ import BoardList from "./components/BoardList.vue"
 import BoardNew from "./components/BoardNew.vue"
 import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
 import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDialog.vue"
+import BoardAddGroupDialog from "./components/dialogs/BoardAddGroupDialog.vue"
 
 type BoardPanel = "list" | "new" | "edit"
 const selectedGroupId = ref<string>("")
 const selectedBoardId = ref<string>("")
 const boardPanel = ref<BoardPanel>("list")
-const { groups, groupInfo, loadInitGroupList, loadSelectedGroupInfo, openChangeGroupIdDialog } =
-  useNuboAdminContext()
+const {
+  groups,
+  groupInfo,
+  loadInitGroupList,
+  loadSelectedGroupInfo,
+  openChangeGroupIdDialog,
+  openAddGroupDialog,
+} = useNuboAdminContext()
 
 // 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기
 onMounted(async () => {

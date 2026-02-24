@@ -19,8 +19,9 @@ export interface NuboAdminContext {
   dashboard: ComputedRef<AdminDashboard>
   groupInfo: ComputedRef<AdminGroupListResult>
   groups: ComputedRef<AdminGroupConfig[]>
-  isBoardRemoveConfirmDialog: ComputedRef<boolean>
-  isGroupNameChangeDialog: ComputedRef<boolean>
+  isAddGroupDialog: WritableComputedRef<boolean>
+  isBoardRemoveConfirmDialog: WritableComputedRef<boolean>
+  isGroupNameChangeDialog: WritableComputedRef<boolean>
   latestComments: ComputedRef<AdminLatestComment[]>
   latestPosts: ComputedRef<AdminLatestPost[]>
   latestReports: ComputedRef<AdminReportItem[]>
@@ -36,9 +37,11 @@ export interface NuboAdminContext {
   targetBoard: ComputedRef<Pair>
   user: ComputedRef<UserMyResult>
   changeGroupId: (newGroupId: string) => Promise<boolean>
+  closeAddGroupDialog: () => void
   closeBoardRemoveConfirmDialog: () => void
   closeChangeGroupIdDialog: () => void
   createBoard: (param: AdminBoardCreateParam) => Promise<number>
+  createGroup: (newGroupId: string) => Promise<AdminGroupConfig>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
   loadInitCommentList: (limit: number) => Promise<void>
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
@@ -47,6 +50,7 @@ export interface NuboAdminContext {
   loadInitReportList: (limit: number) => Promise<void>
   loadSelectedGroupInfo: (id: string) => Promise<void>
   modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>
+  openAddGroupDialog: () => void
   openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) => void
   openChangeGroupIdDialog: (groupUid: number) => void
   openMenu: (menu: AdminMenu) => void

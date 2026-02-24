@@ -17,8 +17,18 @@ export const useAdminProvider = (): NuboAdminContext => {
     dashboard: computed(() => admin.dashboard),
     groupInfo: computed(() => admin.groupInfo),
     groups: computed(() => admin.groups),
-    isBoardRemoveConfirmDialog: computed(() => admin.isBoardRemoveConfirmDialog),
-    isGroupNameChangeDialog: computed(() => admin.isGroupNameChangeDialog),
+    isAddGroupDialog: computed({
+      get: () => admin.isAddGroupDialog,
+      set: (val) => (admin.isAddGroupDialog = val),
+    }),
+    isBoardRemoveConfirmDialog: computed({
+      get: () => admin.isBoardRemoveConfirmDialog,
+      set: (val) => (admin.isBoardRemoveConfirmDialog = val),
+    }),
+    isGroupNameChangeDialog: computed({
+      get: () => admin.isGroupNameChangeDialog,
+      set: (val) => (admin.isGroupNameChangeDialog = val),
+    }),
     latestComments: computed(() => admin.latestComments),
     latestPosts: computed(() => admin.latestPosts),
     latestReports: computed(() => admin.latestReports),
@@ -34,9 +44,11 @@ export const useAdminProvider = (): NuboAdminContext => {
     targetBoard: computed(() => admin.targetBoard),
     user: computed(() => auth.user),
     changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
+    closeAddGroupDialog: () => admin.closeAddGroupDialog,
     closeBoardRemoveConfirmDialog: () => admin.closeBoardRemoveConfirmDialog(),
     closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
     createBoard: (param: AdminBoardCreateParam) => admin.createBoard(param),
+    createGroup: (newGroupId: string) => admin.createGroup(newGroupId),
     getBoardConfig: (id: string) => admin.getBoardConfig(id),
     loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
@@ -46,6 +58,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     loadInitReportList: (limit: number) => admin.loadInitReportList(limit),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
     modifyBoard: (param: AdminBoardModifyParam) => admin.modifyBoard(param),
+    openAddGroupDialog: () => admin.openAddGroupDialog(),
     openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) =>
       admin.openBoardRemoveConfirmDialog(boardUid, boardId),
     openChangeGroupIdDialog: (groupUid: number) => admin.openChangeGroupIdDialog(groupUid),

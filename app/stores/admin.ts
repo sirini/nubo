@@ -12,27 +12,29 @@ import {
   type AdminMenu,
   type AdminReportItem,
 } from "~/types/admin"
-import { BOARD_CONFIG, SEARCH, type Search } from "~/types/board"
+import { BOARD_CONFIG, BOARD_WRITER, SEARCH, type Search } from "~/types/board"
 import type { Pair } from "~/types/common"
 
 export const useAdminStore = defineStore("admin", () => {
   const {
-    loadGeneralStatistic,
-    loadGeneralItem,
-    loadGeneralUploadUsage,
-    loadReportList,
-    loadCommentList,
-    loadPostList,
-    loadGroupList,
-    loadGroupInfo,
-    loadBoardConfig,
-    updateGroupId,
     createNewBoard,
+    createNewGroup,
+    loadBoardConfig,
+    loadCommentList,
+    loadGeneralItem,
+    loadGeneralStatistic,
+    loadGeneralUploadUsage,
+    loadGroupInfo,
+    loadGroupList,
+    loadPostList,
+    loadReportList,
     modifyExistBoard,
     removeExistBoard,
+    updateGroupId,
   } = useAdmin()
   const isGroupNameChangeDialog = ref<boolean>(false)
   const isBoardRemoveConfirmDialog = ref<boolean>(false)
+  const isAddGroupDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -274,35 +276,66 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  // 그룹 추가하기 다이얼로그 창 띄우기
+  const openAddGroupDialog = () => {
+    isAddGroupDialog.value = true
+  }
+
+  // 그룹 추가하기 다이얼로그 창 닫기
+  const closeAddGroupDialog = () => {
+    isAddGroupDialog.value = false
+  }
+
+  // 새 그룹 생성하기
+  const createGroup = async (newGroupId: string) => {
+    let result: AdminGroupConfig = { uid: 0, id: newGroupId, count: 0, manager: BOARD_WRITER }
+    try {
+      const response = await createNewGroup(newGroupId)
+      if (!response.success) {
+        toast(`❌ 게시판 그룹을 생성하지 못했습니다: ${response.error}`)
+        return result
+      }
+      toast(`✅ ${newGroupId} 그룹을 생성하였습니다`)
+      return result
+    } catch (e) {
+      toast(`❌ 게시판 그룹을 생성하지 못했습니다: ${e}`)
+    }
+    return result
+  }
+
   return {
-    isGroupNameChangeDialog,
-    isBoardRemoveConfirmDialog,
-    skin,
-    menu,
     dashboard,
-    uploadUsage,
-    latestReports,
+    groupInfo,
+    groups,
+    isAddGroupDialog,
+    isBoardRemoveConfirmDialog,
+    isGroupNameChangeDialog,
     latestComments,
     latestPosts,
-    groups,
-    groupInfo,
+    latestReports,
+    menu,
+    skin,
     targetBoard,
+    uploadUsage,
 
-    openMenu,
-    loadInitDashboard,
-    loadInitReportList,
-    loadInitCommentList,
-    loadInitPostList,
-    loadInitGroupList,
-    loadSelectedGroupInfo,
-    openChangeGroupIdDialog,
-    closeChangeGroupIdDialog,
     changeGroupId,
-    createBoard,
-    modifyBoard,
-    getBoardConfig,
-    openBoardRemoveConfirmDialog,
+    closeAddGroupDialog,
     closeBoardRemoveConfirmDialog,
+    closeChangeGroupIdDialog,
+    createBoard,
+    createGroup,
+    getBoardConfig,
+    loadInitCommentList,
+    loadInitDashboard,
+    loadInitGroupList,
+    loadInitPostList,
+    loadInitReportList,
+    loadSelectedGroupInfo,
+    modifyBoard,
+    openAddGroupDialog,
+    openBoardRemoveConfirmDialog,
+    openChangeGroupIdDialog,
+    openMenu,
     removeBoard,
   }
 })

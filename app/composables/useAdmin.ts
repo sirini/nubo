@@ -76,6 +76,13 @@ export const useAdmin = () => {
     })
   }
 
+  // 새 그룹 생성하기
+  const createNewGroup = async (newGroupId: string) => {
+    return await reqPost<Resp<AdminGroupConfig>>("/admin/group/create", {
+      newGroupId,
+    })
+  }
+
   // 그룹명(ID) 변경하기
   const updateGroupId = async (groupUid: number, newGroupId: string) => {
     return await reqPost<Resp<null>>("/admin/group/update", {
@@ -102,18 +109,19 @@ export const useAdmin = () => {
   }
 
   return {
-    loadGeneralStatistic,
-    loadGeneralItem,
-    loadGeneralUploadUsage,
-    loadReportList,
-    loadCommentList,
-    loadPostList,
-    loadGroupList,
-    loadGroupInfo,
-    loadBoardConfig,
-    updateGroupId,
     createNewBoard,
+    createNewGroup,
+    loadBoardConfig,
+    loadCommentList,
+    loadGeneralItem,
+    loadGeneralStatistic,
+    loadGeneralUploadUsage,
+    loadGroupInfo,
+    loadGroupList,
+    loadPostList,
+    loadReportList,
     modifyExistBoard,
     removeExistBoard,
+    updateGroupId,
   }
 }
