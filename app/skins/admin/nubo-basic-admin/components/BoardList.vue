@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { InfoIcon, Settings2Icon } from "lucide-vue-next"
 import { BOARD, type Board } from "~/types/board"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const config = useRuntimeConfig()
 const { groupInfo } = useNuboAdminContext()

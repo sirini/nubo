@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboWriteContext } from "~/types/nubo-skin-keys"
+import { useNuboWriteContext } from "~/providers/contexts/write"
 
 const { isAdmin, isNotice, isSecret, categories, categoryUid } = useNuboWriteContext()
 </script>

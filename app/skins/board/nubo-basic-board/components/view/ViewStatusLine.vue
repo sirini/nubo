@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { EyeIcon, HeartIcon, MessageCircleIcon } from "lucide-vue-next"
 import { date, num } from "~/composables/useUtils"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view } = useNuboViewContext()
 </script>

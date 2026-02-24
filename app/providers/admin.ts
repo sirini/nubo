@@ -1,5 +1,5 @@
 import type { AdminBoardCreateParam, AdminBoardModifyParam, AdminMenu } from "~/types/admin"
-import type { NuboAdminContext } from "~/types/nubo-skin-keys"
+import type { NuboAdminContext } from "./contexts/admin"
 
 export const useAdminProvider = (): NuboAdminContext => {
   const admin = useAdminStore()

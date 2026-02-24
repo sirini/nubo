@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "~/components/ui/table"
-import { useNuboListContext } from "~/types/nubo-skin-keys"
+import { useNuboListContext } from "~/providers/contexts/list"
 import ListFooter from "./components/list/ListFooter.vue"
 import ListHeader from "./components/list/ListHeader.vue"
 import ListNoticeRow from "./components/list/ListNoticeRow.vue"

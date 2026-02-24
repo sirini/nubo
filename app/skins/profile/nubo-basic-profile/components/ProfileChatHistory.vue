@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { SendIcon } from "lucide-vue-next"
 import type { ScrollArea } from "~/components/ui/scroll-area"
-import { useNuboProfileContext } from "~/types/nubo-skin-keys"
+import { useNuboProfileContext } from "~/providers/contexts/profile"
 
 // 채팅 메시지 전송 시 스크롤을 하단으로 옮기기
 const scrollToBottom = useDebounceFn(() => {

@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboListContext } from "~/types/nubo-skin-keys"
+import { useNuboListContext } from "~/providers/contexts/list"
 import BlogHeader from "./components/list/BlogHeader.vue"
 import BlogPostRow from "./components/list/BlogPostRow.vue"
 import ListFooter from "./components/list/ListFooter.vue"

@@ -103,7 +103,7 @@ import {
   MenuIcon,
   ShieldCheckIcon,
 } from "lucide-vue-next"
-import { useNuboLayoutContext } from "~/types/nubo-skin-keys"
+import { useNuboLayoutContext } from "~/providers/contexts/layout"
 
 const config = useRuntimeConfig()
 const { isLoggedIn, isAdmin, user, menus } = useNuboLayoutContext()

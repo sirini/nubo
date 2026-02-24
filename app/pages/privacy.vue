@@ -4,8 +4,6 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
-const selectedSkin = computed(() => {
-  const skinName = config.public.skins.privacy
-  return defineAsyncComponent(() => import(`~/skins/privacy/${skinName}/Privacy.vue`))
-})
+const modules = import.meta.glob("~/skins/privacy/*/Privacy.vue")
+const selectedSkin = getSkin(modules, config.public.skins.privacy, "nubo-basic-privacy")
 </script>

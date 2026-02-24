@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 import BlogHeader from "./components/view/BlogHeader.vue"
 import BlogTableOfContent from "./components/view/BlogTableOfContent.vue"
 import ViewBreadcrumb from "./components/view/ViewBreadcrumb.vue"

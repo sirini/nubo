@@ -143,7 +143,7 @@
 <script setup lang="ts">
 import { useFormValues } from "vee-validate"
 import { BOARD } from "~/types/board"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 import BoardCheckbox from "./BoardCheckbox.vue"
 import BoardField from "./BoardField.vue"
 import BoardSelect from "./BoardSelect.vue"

@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { BOARD_PREFIX } from "~/types/board"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { config } = useNuboViewContext()
 </script>

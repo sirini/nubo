@@ -6,7 +6,8 @@
 import { useEditorProvider } from "~/providers/editor"
 import { useWriteProvider } from "~/providers/write"
 import { BOARD_PREFIX } from "~/types/board"
-import { nuboEditorKey, nuboWriteKey } from "~/types/nubo-skin-keys"
+import { nuboEditorKey } from "~/providers/contexts/editor"
+import { nuboWriteKey } from "~/providers/contexts/write"
 
 definePageMeta({ middleware: "auth" as never })
 

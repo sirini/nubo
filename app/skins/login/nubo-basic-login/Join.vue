@@ -141,7 +141,7 @@
 <script setup lang="ts">
 import { BadgeCheckIcon, CheckIcon, LogInIcon, RotateCcwIcon, SendIcon } from "lucide-vue-next"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "~/components/ui/input-otp"
-import { useNuboLoginContext } from "~/types/nubo-skin-keys"
+import { useNuboLoginContext } from "~/providers/contexts/login"
 
 const {
   joinEmail,

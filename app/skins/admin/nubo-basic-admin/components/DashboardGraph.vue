@@ -149,7 +149,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { VisArea, VisAxis, VisLine, VisXYContainer } from "@unovis/vue"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const { statPost, statReply, statVisit } = useNuboAdminContext()
 

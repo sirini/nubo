@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboEditorContext } from "~/types/nubo-skin-keys"
+import { useNuboEditorContext } from "~/providers/contexts/editor"
 
 const url = ref<string>("")
 const { isAddLinkDialog, setLink } = useNuboEditorContext()

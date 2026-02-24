@@ -139,7 +139,7 @@
 
 <script setup lang="ts">
 import { LockKeyholeOpenIcon, LogInIcon, UserPlusIcon } from "lucide-vue-next"
-import { useNuboLoginContext } from "~/types/nubo-skin-keys"
+import { useNuboLoginContext } from "~/providers/contexts/login"
 
 const { oauthGoogleUrl, oauthNaverUrl, oauthKakaoUrl, login } = useNuboLoginContext()
 </script>

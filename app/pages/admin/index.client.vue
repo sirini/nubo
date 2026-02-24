@@ -5,17 +5,13 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner"
 import { useAdminProvider } from "~/providers/admin"
-import { nuboAdminKey } from "~/types/nubo-skin-keys"
+import { nuboAdminKey } from "~/providers/contexts/admin"
 
 const config = useRuntimeConfig()
 const auth = useAuthStore()
 const admin = useAdminStore()
-
-const selectedSkin = computed(() => {
-  const skinName = config.public.skins.admin
-  admin.skin = skinName
-  return defineAsyncComponent(() => import(`~/skins/admin/${skinName}/Admin.vue`))
-})
+const modules = import.meta.glob("~/skins/admin/*/Admin.vue")
+const selectedSkin = getSkin(modules, config.public.skins.login, "nubo-basic-admin")
 
 onMounted(() => {
   if (!auth.isAdmin) {

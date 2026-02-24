@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 import { CheckCircle2Icon } from "lucide-vue-next"
-import { useNuboProfileContext } from "~/types/nubo-skin-keys"
+import { useNuboProfileContext } from "~/providers/contexts/profile"
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 

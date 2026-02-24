@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view, imgIdx } = useNuboViewContext()
 </script>

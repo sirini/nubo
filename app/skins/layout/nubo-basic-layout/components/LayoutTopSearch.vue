@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboLayoutContext } from "~/types/nubo-skin-keys"
+import { useNuboLayoutContext } from "~/providers/contexts/layout"
 
 const { searchOptions, searchOption, searchKeyword, search } = useNuboLayoutContext()
 </script>

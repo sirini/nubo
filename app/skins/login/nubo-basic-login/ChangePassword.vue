@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { CheckIcon, LogInIcon } from "lucide-vue-next"
-import { useNuboLoginContext } from "~/types/nubo-skin-keys"
+import { useNuboLoginContext } from "~/providers/contexts/login"
 
 const { isLoading, resetPassword, resetPassword2, updateUserPassword } = useNuboLoginContext()
 </script>

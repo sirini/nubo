@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ArrowRightIcon } from "lucide-vue-next"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view } = useNuboViewContext()
 </script>

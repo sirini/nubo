@@ -1,5 +1,5 @@
 import { toast } from "vue-sonner"
-import type { NuboProfileContext } from "~/types/nubo-skin-keys"
+import type { NuboProfileContext } from "./contexts/profile"
 
 export const useProfileProvider = (): NuboProfileContext => {
   const auth = useAuthStore()

@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { LogOutIcon, ShieldCheckIcon, SirenIcon, UserRoundPenIcon } from "lucide-vue-next"
-import { useNuboProfileContext } from "~/types/nubo-skin-keys"
+import { useNuboProfileContext } from "~/providers/contexts/profile"
 import ProfileEditSheet from "./ProfileEditSheet.vue"
 
 const { isLoggedIn, isMe, profileUser, openReportForm } = useNuboProfileContext()

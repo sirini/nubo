@@ -88,3 +88,22 @@ export const getReadingTime = (content: string, charPerMin: number = 500): numbe
   const readingTime = Math.ceil(charCount / charPerMin)
   return readingTime > 0 ? readingTime : 1
 }
+
+// 주어진 스킨 경로에서 스킨 폴더명들을 맵 형태로 반환
+export const getSkin = (
+  modules: Record<string, () => Promise<unknown>>,
+  selSkinName: string,
+  defSkinName: string,
+) => {
+  const skinMap = Object.fromEntries(
+    Object.entries(modules).map(([path, loader]) => {
+      const name = path.split("/").slice(-2)[0]
+      return [name, loader]
+    }),
+  )
+
+  return computed(() => {
+    const loader = skinMap[selSkinName] ?? skinMap[defSkinName]
+    return loader ? defineAsyncComponent(loader) : null
+  })
+}

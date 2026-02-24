@@ -197,7 +197,7 @@
 
 <script setup lang="ts">
 import { Calendar1Icon, HeartIcon, MessageCircleIcon, User2Icon } from "lucide-vue-next"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
 const {

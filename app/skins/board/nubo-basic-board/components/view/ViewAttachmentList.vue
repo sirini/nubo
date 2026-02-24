@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { ChevronsUpDownIcon, DownloadIcon, FilesIcon } from "lucide-vue-next"
 import { num } from "~/composables/useUtils"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view, downloadFile } = useNuboViewContext()
 const isFileListOpen = ref<boolean>(false)

@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { ImageUpIcon, ListIcon, LogInIcon, SettingsIcon } from "lucide-vue-next"
-import { useNuboListContext } from "~/types/nubo-skin-keys"
+import { useNuboListContext } from "~/providers/contexts/list"
 
 const { isAdmin, isLoggedIn, config, page } = useNuboListContext()
 </script>

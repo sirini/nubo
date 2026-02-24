@@ -135,7 +135,8 @@
 
 <script setup lang="ts">
 import { ImageOffIcon, Trash2Icon } from "lucide-vue-next"
-import { useNuboEditorContext, useNuboWriteContext } from "~/types/nubo-skin-keys"
+import { useNuboEditorContext } from "~/providers/contexts/editor"
+import { useNuboWriteContext } from "~/providers/contexts/write"
 
 const {
   imageSizeLimit,

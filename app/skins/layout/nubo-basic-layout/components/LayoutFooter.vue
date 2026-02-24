@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { ArrowUpToLineIcon, CircleXIcon, HouseIcon } from "lucide-vue-next"
-import { useNuboLayoutContext } from "~/types/nubo-skin-keys"
+import { useNuboLayoutContext } from "~/providers/contexts/layout"
 
 // 스크롤 위치 감지
 const { y } = useWindowScroll()

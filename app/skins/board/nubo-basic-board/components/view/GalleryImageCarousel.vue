@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { DotIcon } from "lucide-vue-next"
 import type { CarouselApi } from "~/components/ui/carousel"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view, imgIdx } = useNuboViewContext()
 

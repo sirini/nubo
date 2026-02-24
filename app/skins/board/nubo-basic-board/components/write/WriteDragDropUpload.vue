@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { UploadCloudIcon, XIcon } from "lucide-vue-next"
 import { num } from "~/composables/useUtils"
-import { useNuboWriteContext } from "~/types/nubo-skin-keys"
+import { useNuboWriteContext } from "~/providers/contexts/write"
 
 const attachRef = ref<HTMLInputElement | null>(null)
 

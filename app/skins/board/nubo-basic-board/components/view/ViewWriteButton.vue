@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { PencilIcon } from "lucide-vue-next"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { config, isLoggedIn } = useNuboViewContext()
 </script>

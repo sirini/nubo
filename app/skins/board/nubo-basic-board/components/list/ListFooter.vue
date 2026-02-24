@@ -120,7 +120,7 @@ import {
   PaginationPrevious,
 } from "~/components/ui/pagination"
 import { SEARCH } from "~/types/board"
-import { useNuboListContext } from "~/types/nubo-skin-keys"
+import { useNuboListContext } from "~/providers/contexts/list"
 
 const { config, totalPostCount, page, option, keyword, searchPost, setPagingUrl } =
   useNuboListContext()

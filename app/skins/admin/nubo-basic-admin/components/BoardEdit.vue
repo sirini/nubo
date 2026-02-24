@@ -52,7 +52,7 @@ import { useForm } from "vee-validate"
 import { toast } from "vue-sonner"
 import type { AdminBoardModifyParam, AdminBoardResult } from "~/types/admin"
 import { BOARD_CONFIG } from "~/types/board"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 import BoardFieldGroup from "./BoardFieldGroup.vue"
 import { useBoardFormSchema } from "./boardFormSchema"
 

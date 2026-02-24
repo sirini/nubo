@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { Trash2Icon } from "lucide-vue-next"
 import { num } from "~/composables/useUtils"
-import { useNuboWriteContext } from "~/types/nubo-skin-keys"
+import { useNuboWriteContext } from "~/providers/contexts/write"
 
 const edit = useEditorStore()
 

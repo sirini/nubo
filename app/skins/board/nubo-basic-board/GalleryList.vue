@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboListContext } from "~/types/nubo-skin-keys"
+import { useNuboListContext } from "~/providers/contexts/list"
 import GalleryHeader from "./components/list/GalleryHeader.vue"
 import GalleryPostCol from "./components/list/GalleryPostCol.vue"
 import ListFooter from "./components/list/ListFooter.vue"

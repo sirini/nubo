@@ -113,7 +113,7 @@ import {
   TextCursorInputIcon,
   Trash2Icon,
 } from "lucide-vue-next"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 import BoardEdit from "./components/BoardEdit.vue"
 import BoardList from "./components/BoardList.vue"
 import BoardNew from "./components/BoardNew.vue"

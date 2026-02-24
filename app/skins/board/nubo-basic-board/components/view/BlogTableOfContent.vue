@@ -10,10 +10,10 @@
           activeHeaderId === header.id
             ? 'border-primary text-primary font-bold'
             : header.level === 3
-            ? 'pl-4 text-xs'
-            : header.level === 2
-            ? 'pl-2 text-sm'
-            : 'text-sm',
+              ? 'pl-4 text-xs'
+              : header.level === 2
+                ? 'pl-2 text-sm'
+                : 'text-sm',
         ]"
       >
         <a :href="`#${header.id}`" class="block transition-colors">{{ header.text }}</a>
@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import type { TableOfContent } from "~/types/board"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { makeTableOfContents, updateReadingProgress } = useNuboViewContext()
 const headers = ref<TableOfContent[]>([])

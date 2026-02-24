@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 import GalleryExif from "./components/view/GalleryExif.vue"
 import GalleryImageCarousel from "./components/view/GalleryImageCarousel.vue"
 import ViewCommentList from "./components/view/ViewCommentList.vue"

@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 import ViewLatestComments from "./ViewLatestComments.vue"
 import ViewLatestPosts from "./ViewLatestPosts.vue"
 

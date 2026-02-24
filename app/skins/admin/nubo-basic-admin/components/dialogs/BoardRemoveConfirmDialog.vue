@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { Trash2Icon } from "lucide-vue-next"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const props = defineProps<{ changePanel: Function }>()
 const { isBoardRemoveConfirmDialog, targetBoard, closeBoardRemoveConfirmDialog, removeBoard } =

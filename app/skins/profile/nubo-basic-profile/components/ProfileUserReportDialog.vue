@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboProfileContext } from "~/types/nubo-skin-keys"
+import { useNuboProfileContext } from "~/providers/contexts/profile"
 import ReportForm from "./ProfileReportForm.vue"
 
 const isDesktop = useMediaQuery("(min-width: 768px)")

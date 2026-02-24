@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { useListProvider } from "~/providers/list"
 import { BOARD_PREFIX, SEARCH, type Search } from "~/types/board"
-import { nuboListKey } from "~/types/nubo-skin-keys"
+import { nuboListKey } from "~/providers/contexts/list"
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -21,7 +21,7 @@ const options = ref<Record<string, number>>({
 })
 board.page = page > 0 ? page : 1
 
-board.option = (options[route.params.option as string] || SEARCH.TITLE) as Search
+board.option = (options.value[route.params.option as string] || SEARCH.TITLE) as Search
 board.keyword = decodeURIComponent(route.params.keyword as string)
 
 const selectedSkin = computed(() => {

@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { HeartIcon, PinIcon } from "lucide-vue-next"
 import { TableCell, TableRow } from "~/components/ui/table"
-import { useNuboListContext } from "~/types/nubo-skin-keys"
+import { useNuboListContext } from "~/providers/contexts/list"
 
 const { config, notices } = useNuboListContext()
 </script>

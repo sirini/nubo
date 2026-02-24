@@ -141,7 +141,7 @@ import {
   Undo,
 } from "lucide-vue-next"
 import type { BoardConfig } from "~/types/board"
-import { useNuboEditorContext } from "~/types/nubo-skin-keys"
+import { useNuboEditorContext } from "~/providers/contexts/editor"
 import WriteAddLink from "./WriteAddLink.vue"
 import WriteImageUpload from "./WriteImageUpload.vue"
 

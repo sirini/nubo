@@ -8,7 +8,9 @@ import { useEditorProvider } from "~/providers/editor"
 import { useViewProvider } from "~/providers/view"
 import { useWriteProvider } from "~/providers/write"
 import { BOARD_PREFIX } from "~/types/board"
-import { nuboEditorKey, nuboViewKey, nuboWriteKey } from "~/types/nubo-skin-keys"
+import { nuboEditorKey } from "~/providers/contexts/editor"
+import { nuboViewKey } from "~/providers/contexts/view"
+import { nuboWriteKey } from "~/providers/contexts/write"
 
 const config = useRuntimeConfig()
 const route = useRoute()

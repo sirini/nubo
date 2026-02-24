@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { CoinsIcon, GraduationCapIcon, UserRoundPlusIcon } from "lucide-vue-next"
-import { useNuboProfileContext } from "~/types/nubo-skin-keys"
+import { useNuboProfileContext } from "~/providers/contexts/profile"
 import ProfileChatHistory from "./components/ProfileChatHistory.vue"
 import ProfileLatestComments from "./components/ProfileLatestComments.vue"
 import ProfileLatestPosts from "./components/ProfileLatestPosts.vue"

@@ -4,14 +4,10 @@
 
 <script setup lang="ts">
 import { useLoginProvider } from "~/providers/login"
-import { nuboLoginKey } from "~/types/nubo-skin-keys"
+import { nuboLoginKey } from "~/providers/contexts/login"
 
 const config = useRuntimeConfig()
-
-const selectedSkin = computed(() => {
-  const skinName = config.public.skins.login
-  return defineAsyncComponent(() => import(`~/skins/login/${skinName}/ResetPassword.vue`))
-})
-
+const modules = import.meta.glob("~/skins/login/*/ResetPassword.vue")
+const selectedSkin = getSkin(modules, config.public.skins.login, "nubo-basic-login")
 provide(nuboLoginKey, useLoginProvider())
 </script>

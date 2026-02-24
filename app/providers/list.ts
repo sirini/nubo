@@ -1,5 +1,5 @@
 import type { Search } from "~/types/board"
-import type { NuboListContext } from "~/types/nubo-skin-keys"
+import type { NuboListContext } from "./contexts/list"
 
 export const useListProvider = (): NuboListContext => {
   const board = useBoardStore()

@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { Loader2Icon, XIcon } from "lucide-vue-next"
-import { useNuboWriteContext } from "~/types/nubo-skin-keys"
+import { useNuboWriteContext } from "~/providers/contexts/write"
 
 const { title, titleSuggestions, isSearchingTitles, selectSuggestedTitle } = useNuboWriteContext()
 </script>

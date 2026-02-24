@@ -83,7 +83,7 @@ import {
   ADMIN_SYSTEM,
   ADMIN_USER,
 } from "~/types/admin"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const config = useRuntimeConfig()
 const { panel, menu, openMenu } = useNuboAdminContext()

@@ -1,6 +1,6 @@
 import { toast } from "vue-sonner"
 import { SEARCH, type Search } from "~/types/board"
-import type { NuboLayoutContext } from "~/types/nubo-skin-keys"
+import type { NuboLayoutContext } from "./contexts/layout"
 
 export const useLayoutProvider = (): NuboLayoutContext => {
   const router = useRouter()

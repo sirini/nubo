@@ -44,7 +44,8 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboEditorContext, useNuboWriteContext } from "~/types/nubo-skin-keys"
+import { useNuboEditorContext } from "~/providers/contexts/editor"
+import { useNuboWriteContext } from "~/providers/contexts/write"
 import WriteDragDropUpload from "./components/write/WriteDragDropUpload.vue"
 import WriteDragDropUploadedFiles from "./components/write/WriteDragDropUploadedFiles.vue"
 import WriteHashtag from "./components/write/WriteHashtag.vue"

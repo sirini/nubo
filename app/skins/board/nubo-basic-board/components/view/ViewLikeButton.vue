@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { HeartIcon } from "lucide-vue-next"
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view, likePost } = useNuboViewContext()
 </script>

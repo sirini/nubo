@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { ArrowDownFromLineIcon, CheckCircle2Icon } from "lucide-vue-next"
 import { Spinner } from "~/components/ui/spinner"
-import { useNuboHomeContext } from "~/types/nubo-skin-keys"
+import { useNuboHomeContext } from "~/providers/contexts/home"
 import HeroSection from "./components/HeroSection.vue"
 import HomeMainPostCard from "./components/HomeMainPostCard.vue"
 

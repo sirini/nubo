@@ -1,5 +1,5 @@
 import { toast } from "vue-sonner"
-import type { NuboViewContext } from "~/types/nubo-skin-keys"
+import type { NuboViewContext } from "./contexts/view"
 
 export const useViewProvider = (): NuboViewContext => {
   const route = useRoute()

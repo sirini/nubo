@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { useLayoutProvider } from "~/providers/layout"
-import { nuboLayoutKey } from "~/types/nubo-skin-keys"
+import { nuboLayoutKey } from "~/providers/contexts/layout"
 
 const config = useRuntimeConfig()
 const { addVisitHistory } = useHome()

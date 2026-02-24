@@ -1,4 +1,4 @@
-import type { NuboEditorContext } from "~/types/nubo-skin-keys"
+import type { NuboEditorContext } from "./contexts/editor"
 
 export const useEditorProvider = (): NuboEditorContext => {
   const config = useRuntimeConfig()

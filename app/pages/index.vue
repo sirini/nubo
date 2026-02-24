@@ -6,17 +6,15 @@
 import "vue-sonner/style.css"
 import { useHomeProvider } from "~/providers/home"
 import { SEARCH, type Search } from "~/types/board"
-import { nuboHomeKey } from "~/types/nubo-skin-keys"
+import { nuboHomeKey } from "~/providers/contexts/home"
 
 const config = useRuntimeConfig()
 const home = useHomeStore()
+const modules = import.meta.glob("~/skins/home/*/Home.vue")
+const selectedSkin = getSkin(modules, config.public.skins.home, "nubo-basic-home")
+
 home.option = SEARCH.TITLE as Search
 home.keyword = ""
-
-const selectedSkin = computed(() => {
-  const skinName = config.public.skins.home
-  return defineAsyncComponent(() => import(`~/skins/home/${skinName}/Home.vue`))
-})
 
 await home.getInitLatestPosts({ reset: true })
 

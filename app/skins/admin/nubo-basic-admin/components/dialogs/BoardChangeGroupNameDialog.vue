@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { AlertCircleIcon, CheckCircle2Icon } from "lucide-vue-next"
-import { useNuboAdminContext } from "~/types/nubo-skin-keys"
+import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const newGroupId = ref<string>("")
 const isAvailable = ref<boolean>(false)

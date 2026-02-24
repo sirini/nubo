@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { useListProvider } from "~/providers/list"
 import { BOARD_PREFIX, SEARCH, type Search } from "~/types/board"
-import { nuboListKey } from "~/types/nubo-skin-keys"
+import { nuboListKey } from "~/providers/contexts/list"
 
 const route = useRoute()
 const config = useRuntimeConfig()

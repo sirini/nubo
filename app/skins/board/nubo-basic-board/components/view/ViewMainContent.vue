@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 import ViewLikeButton from "./ViewLikeButton.vue"
 import ViewStatusLine from "./ViewStatusLine.vue"
 import ViewTagBadges from "./ViewTagBadges.vue"

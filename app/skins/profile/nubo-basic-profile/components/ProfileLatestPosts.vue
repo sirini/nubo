@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { NotepadTextIcon } from "lucide-vue-next"
-import { useNuboProfileContext } from "~/types/nubo-skin-keys"
+import { useNuboProfileContext } from "~/providers/contexts/profile"
 
 const { userLatestPosts } = useNuboProfileContext()
 </script>

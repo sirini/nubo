@@ -1,7 +1,7 @@
 import { toTypedSchema } from "@vee-validate/zod"
 import { useForm } from "vee-validate"
 import * as z from "zod"
-import type { NuboLoginContext } from "~/types/nubo-skin-keys"
+import type { NuboLoginContext } from "./contexts/login"
 
 export const useLoginProvider = (): NuboLoginContext => {
   const config = useRuntimeConfig()

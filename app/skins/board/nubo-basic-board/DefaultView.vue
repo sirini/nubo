@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNuboViewContext } from "~/types/nubo-skin-keys"
+import { useNuboViewContext } from "~/providers/contexts/view"
 import ViewAttachmentList from "./components/view/ViewAttachmentList.vue"
 import ViewBreadcrumb from "./components/view/ViewBreadcrumb.vue"
 import ViewCommentList from "./components/view/ViewCommentList.vue"

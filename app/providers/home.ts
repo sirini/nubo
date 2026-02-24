@@ -1,4 +1,4 @@
-import type { NuboHomeContext } from "~/types/nubo-skin-keys"
+import type { NuboHomeContext } from "./contexts/home"
 
 export const useHomeProvider = (): NuboHomeContext => {
   const home = useHomeStore()
