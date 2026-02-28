@@ -11,6 +11,7 @@ import {
   type AdminLatestPost,
   type AdminMenu,
   type AdminReportItem,
+  type AdminUserListResult,
 } from "~/types/admin"
 import { BOARD_CONFIG, BOARD_WRITER, SEARCH, type Search } from "~/types/board"
 import type { Pair } from "~/types/common"
@@ -28,15 +29,20 @@ export const useAdminStore = defineStore("admin", () => {
     loadGroupList,
     loadPostList,
     loadReportList,
+    loadUserList,
+    loadUserInfo,
     modifyExistBoard,
+    modifyUserInfo,
     removeExistBoard,
     removeExistGroup,
+    removeUserAccount,
     updateGroupId,
   } = useAdmin()
   const isGroupNameChangeDialog = ref<boolean>(false)
   const isGroupRemoveConfirmDialog = ref<boolean>(false)
   const isBoardRemoveConfirmDialog = ref<boolean>(false)
   const isAddGroupDialog = ref<boolean>(false)
+  const isUserRemoveConfirmDialog = ref<boolean>(false)
   const skin = ref<string>("nubo-basic-admin")
   const menu = ref<AdminMenu>("Dashboard")
   const dashboard = ref<AdminDashboard>({
@@ -59,6 +65,12 @@ export const useAdminStore = defineStore("admin", () => {
   const groupInfo = ref<AdminGroupListResult>({ config: ADMIN_GROUP_CONFIG, boards: [] })
   const targetGroup = ref<Pair>({ uid: 0, name: "" })
   const targetBoard = ref<Pair>({ uid: 0, name: "" })
+  const targetUser = ref<Pair>({ uid: 0, name: "" })
+  const page = ref<number>(1)
+  const limit = ref<number>(15)
+  const option = ref<Search>(SEARCH.USER.NAME as Search)
+  const keyword = ref<string>("")
+  const userList = ref<AdminUserListResult>({ item: [], total: 0 })
 
   // 관리화면에서 메뉴 열기
   const openMenu = (newMenu: AdminMenu) => {
@@ -306,13 +318,13 @@ export const useAdminStore = defineStore("admin", () => {
   }
 
   // 그룹 삭제하기 다이얼로그 창 띄우기
-  const openRemoveGroupConfirmDialog = (groupUid: number, groupId: string) => {
+  const openGroupRemoveConfirmDialog = (groupUid: number, groupId: string) => {
     targetGroup.value = { uid: groupUid, name: groupId }
     isGroupRemoveConfirmDialog.value = true
   }
 
   // 그룹 삭제하기 다이얼로그 창 닫기
-  const closeRemoveGroupConfirmDialog = () => {
+  const closeGroupRemoveConfirmDialog = () => {
     targetGroup.value = { uid: 0, name: "" }
     isGroupRemoveConfirmDialog.value = false
   }
@@ -336,6 +348,57 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
+  // 사용자 목록 가져오기
+  const loadInitUserList = async () => {
+    try {
+      const response = await loadUserList({
+        page: page.value,
+        limit: limit.value,
+        option: option.value,
+        keyword: keyword.value,
+        isBlocked: false,
+      })
+      if (!response.success) {
+        toast(`❌ 사용자 목록을 가져오지 못했습니다: ${response.error}`)
+        return
+      }
+      userList.value = response.result
+    } catch (e) {
+      toast(`❌ 사용자 목록을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
+  // 사용자 삭제하기
+  const removeUser = async () => {
+    if (targetUser.value.uid < 2) {
+      toast(`⚠️ 삭제할 사용자가 지정되지 않았거나, 유효하지 않습니다`)
+      return
+    }
+
+    try {
+      const response = await removeUserAccount(targetUser.value.uid)
+      if (!response.success) {
+        toast(`❌ 사용자를 삭제하지 못했습니다: ${response.error}`)
+        return
+      }
+      toast(`✅ ${targetUser.value.name} 사용자 계정을 삭제하였습니다`)
+    } catch (e) {
+      toast(`❌ 사용자를 삭제하지 못했습니다: ${e}`)
+    }
+  }
+
+  // 사용자 삭제를 확인하는 다이얼로그 창 띄우기
+  const openUserRemoveConfirmDialog = (userUid: number, name: string) => {
+    targetUser.value = { uid: userUid, name }
+    isUserRemoveConfirmDialog.value = true
+  }
+
+  // 사용자 삭제를 확인하는 다이얼로그 창 닫기
+  const closeUserRemoveConfirmDialog = () => {
+    targetUser.value = { uid: 0, name: "" }
+    isUserRemoveConfirmDialog.value = false
+  }
+
   return {
     dashboard,
     groupInfo,
@@ -344,6 +407,7 @@ export const useAdminStore = defineStore("admin", () => {
     isBoardRemoveConfirmDialog,
     isGroupNameChangeDialog,
     isGroupRemoveConfirmDialog,
+    isUserRemoveConfirmDialog,
     latestComments,
     latestPosts,
     latestReports,
@@ -351,13 +415,20 @@ export const useAdminStore = defineStore("admin", () => {
     skin,
     targetBoard,
     targetGroup,
+    targetUser,
     uploadUsage,
+    page,
+    limit,
+    option,
+    keyword,
+    userList,
 
     changeGroupId,
     closeAddGroupDialog,
     closeBoardRemoveConfirmDialog,
     closeChangeGroupIdDialog,
-    closeRemoveGroupConfirmDialog,
+    closeGroupRemoveConfirmDialog,
+    closeUserRemoveConfirmDialog,
     createBoard,
     createGroup,
     getBoardConfig,
@@ -367,13 +438,16 @@ export const useAdminStore = defineStore("admin", () => {
     loadInitPostList,
     loadInitReportList,
     loadSelectedGroupInfo,
+    loadInitUserList,
     modifyBoard,
     openAddGroupDialog,
     openBoardRemoveConfirmDialog,
     openChangeGroupIdDialog,
-    openRemoveGroupConfirmDialog,
+    openGroupRemoveConfirmDialog,
+    openUserRemoveConfirmDialog,
     openMenu,
     removeBoard,
     removeGroup,
+    removeUser,
   }
 })

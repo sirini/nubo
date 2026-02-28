@@ -119,8 +119,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "~/components/ui/pagination"
-import { SEARCH } from "~/types/board"
 import { useNuboListContext } from "~/providers/contexts/list"
+import { SEARCH } from "~/types/board"
 
 const { config, totalPostCount, page, option, keyword, searchPost, setPagingUrl } =
   useNuboListContext()

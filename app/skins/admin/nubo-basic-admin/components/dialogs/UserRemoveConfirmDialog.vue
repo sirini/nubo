@@ -1,19 +1,19 @@
 <template>
-  <Dialog v-model:open="isGroupRemoveConfirmDialog" @update:open="handleOpenChange">
+  <Dialog v-model:open="isUserRemoveConfirmDialog" @update:open="handleOpenChange">
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
-        <DialogTitle>그룹 삭제</DialogTitle>
-        <DialogDescription>{{ targetGroup.name }} 그룹을 삭제합니다</DialogDescription>
+        <DialogTitle>사용자 계정 삭제</DialogTitle>
+        <DialogDescription>{{ targetUser.name }} 사용자 계정을 삭제합니다</DialogDescription>
       </DialogHeader>
 
-      <div class="py-4 space-y-4">
+      <div class="py-4 space-y-2">
         <p>
-          정말로 <strong class="text-primary">{{ targetGroup.name }}</strong> 그룹을
-          삭제하시겠습니까?
+          ⚠️ 정말로 <strong class="text-primary">{{ targetUser.name }}</strong> 사용자 계정을 삭제
+          하시겠습니까?
         </p>
         <p>
-          소속 게시판들은 <strong class="text-primary">기본 그룹 소속으로 변경</strong>되며,
-          게시글/댓글이 삭제되거나 게시판들의 접속 경로가 변경되진 않습니다.
+          {{ targetUser.name }} 사용자가 남긴 게시글들의 작성자는 "leaved"로 표기되며, 해당 사용자는
+          더 이상 로그인을 할 수 없습니다.
         </p>
       </div>
 
@@ -21,13 +21,13 @@
         <Button
           variant="outline"
           type="button"
-          @click="closeGroupRemoveConfirmDialog"
+          @click="closeUserRemoveConfirmDialog"
           class="cursor-pointer"
           >취소</Button
         >
 
         <CommonVTooltip
-          content="소속 게시판들은 기본 그룹으로 변경될 뿐, 다른 작업은 일어나지 않으므로 안심하세요!"
+          :content="`주의사항을 확인하였고 ${targetUser.name} 계정 삭제를 진행합니다`"
         >
           <Button
             type="submit"
@@ -49,20 +49,20 @@ import { Trash2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const props = defineProps<{ changePanel: Function }>()
-const { isGroupRemoveConfirmDialog, targetGroup, closeGroupRemoveConfirmDialog, removeGroup } =
+const { targetUser, isUserRemoveConfirmDialog, closeUserRemoveConfirmDialog, removeUser } =
   useNuboAdminContext()
 
 // 다이얼로그 창 상태 변화 확인
 const handleOpenChange = (open: boolean) => {
   if (!open) {
-    closeGroupRemoveConfirmDialog()
+    closeUserRemoveConfirmDialog()
   }
 }
 
-// 그룹 삭제하기
+// 사용자 계정 삭제하기
 const remove = async () => {
-  await removeGroup()
-  closeGroupRemoveConfirmDialog()
+  await removeUser()
+  closeUserRemoveConfirmDialog()
   props.changePanel("list")
 }
 </script>

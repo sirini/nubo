@@ -52,7 +52,7 @@
               size="icon"
               class="gap-2 cursor-pointer text-red-300"
               :disabled="groupInfo.config.uid === 1"
-              @click="openRemoveGroupConfirmDialog(groupInfo.config.uid, groupInfo.config.id)"
+              @click="openGroupRemoveConfirmDialog(groupInfo.config.uid, groupInfo.config.id)"
             >
               <Trash2Icon class="w-4 h-4" />
             </Button>
@@ -71,7 +71,7 @@
 
           <CommonVTooltip
             :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`"
-            v-if="boardPanel !== 'new'"
+            v-if="panel !== 'new'"
           >
             <Button size="icon" class="cursor-pointer text-foreground" @click="changePanel('new')">
               <PlusIcon class="w-4 h-4" />
@@ -95,11 +95,11 @@
       </header>
 
       <ScrollArea class="h-[calc(100dvh-215px)]">
-        <BoardNew :change-panel="changePanel" v-if="boardPanel === 'new'" />
+        <BoardNew :change-panel="changePanel" v-if="panel === 'new'" />
         <BoardEdit
           :selected-board-id="selectedBoardId"
           :change-panel="changePanel"
-          v-else-if="boardPanel === 'edit'"
+          v-else-if="panel === 'edit'"
         />
         <BoardList :change-panel="changePanel" v-else />
       </ScrollArea>
@@ -125,15 +125,15 @@ import { useNuboAdminContext } from "~/providers/contexts/admin"
 import BoardEdit from "./components/BoardEdit.vue"
 import BoardList from "./components/BoardList.vue"
 import BoardNew from "./components/BoardNew.vue"
+import BoardAddGroupDialog from "./components/dialogs/BoardAddGroupDialog.vue"
 import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
 import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDialog.vue"
-import BoardAddGroupDialog from "./components/dialogs/BoardAddGroupDialog.vue"
 import BoardRemoveGroupConfirmDialog from "./components/dialogs/BoardRemoveGroupConfirmDialog.vue"
 
-type BoardPanel = "list" | "new" | "edit"
+type Panel = "list" | "new" | "edit"
 const selectedGroupId = ref<string>("")
 const selectedBoardId = ref<string>("")
-const boardPanel = ref<BoardPanel>("list")
+const panel = ref<Panel>("list")
 const {
   groups,
   groupInfo,
@@ -141,7 +141,7 @@ const {
   loadSelectedGroupInfo,
   openChangeGroupIdDialog,
   openAddGroupDialog,
-  openRemoveGroupConfirmDialog,
+  openGroupRemoveConfirmDialog,
 } = useNuboAdminContext()
 
 // 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기
@@ -154,8 +154,8 @@ onMounted(async () => {
 })
 
 // 게시판 목록 영역 내용 변경하기
-const changePanel = async (panel: BoardPanel, editBoardId: string = "") => {
-  boardPanel.value = panel
+const changePanel = async (p: Panel, editBoardId: string = "") => {
+  panel.value = p
   selectedBoardId.value = editBoardId
   await loadInitGroupList()
   await loadSelectedGroupInfo(selectedGroupId.value)

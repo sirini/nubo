@@ -126,3 +126,13 @@ export type UserChangePasswordParam = {
   password: string
   target: number
 }
+
+// 사용자 정보 수정하기 시 필요한 파라미터 정의
+export type UpdateUserInfoParam = {
+  userUid: number
+  name: string
+  signature: string
+  password: string
+  profile: File | null
+  oldProfile: string
+}

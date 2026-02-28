@@ -11,8 +11,12 @@ import {
   type AdminLatestPost,
   type AdminReportItem,
   type AdminReportParam,
+  type AdminUserInfo,
+  type AdminUserListResult,
+  type AdminUserParam,
 } from "~/types/admin"
 import type { Resp } from "~/types/common"
+import type { UpdateUserInfoParam } from "~/types/user"
 
 export const useAdmin = () => {
   // 간단 통계 데이터 가져오기
@@ -115,6 +119,30 @@ export const useAdmin = () => {
     })
   }
 
+  // 사용자 목록 가져오기
+  const loadUserList = async (param: AdminUserParam) => {
+    return await reqGet<Resp<AdminUserListResult>>("/admin/user/list", param)
+  }
+
+  // 사용자 정보 가져오기
+  const loadUserInfo = async (userUid: number) => {
+    return await reqGet<Resp<AdminUserInfo>>("/admin/user/load", {
+      userUid,
+    })
+  }
+
+  // 사용자 정보 수정하기
+  const modifyUserInfo = async (param: UpdateUserInfoParam) => {
+    return await reqPatch<Resp<null>>("/admin/user/modify", param)
+  }
+
+  // 사용자 삭제하기
+  const removeUserAccount = async (userUid: number) => {
+    return await reqDelete<Resp<null>>("/admin/user/remove", {
+      userUid,
+    })
+  }
+
   return {
     createNewBoard,
     createNewGroup,
@@ -127,9 +155,13 @@ export const useAdmin = () => {
     loadGroupList,
     loadPostList,
     loadReportList,
+    loadUserInfo,
+    loadUserList,
     modifyExistBoard,
+    modifyUserInfo,
     removeExistBoard,
     removeExistGroup,
+    removeUserAccount,
     updateGroupId,
   }
 }

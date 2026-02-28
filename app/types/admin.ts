@@ -7,6 +7,7 @@ import {
   type Status,
 } from "./board"
 import type { Pair } from "./common"
+import type { UserBasicInfo } from "./user"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
 export type AdminMenu = "Dashboard" | "Board" | "User" | "Report" | "Skin" | "System"
@@ -201,4 +202,30 @@ export type AdminBoardModifyParam = AdminBoardCreateParam & {
 export type AdminBoardResult = {
   config: BoardConfig
   groups: Pair[]
+}
+
+// 사용자 목록 조회 시 필요한 파라미터 정의
+export type AdminUserParam = AdminLatestParam & {
+  isBlocked: boolean
+}
+
+// 사용자 목록 아이템
+export type AdminUserItem = UserBasicInfo & {
+  id: string
+  level: number
+  point: number
+  signup: number
+}
+
+// 사용자 목록 결과
+export type AdminUserListResult = {
+  item: AdminUserItem[]
+  total: number
+}
+
+// 사용자 정보 반환값 정의
+export type AdminUserInfo = BoardWriter & {
+  id: string
+  level: number
+  point: number
 }

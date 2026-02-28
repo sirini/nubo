@@ -4,7 +4,7 @@
       <TableRow>
         <TableHead class="text-center">이름</TableHead>
         <TableHead class="text-center">타입</TableHead>
-        <TableHead class="flex items-center gap-2 justify-center"
+        <TableHead class="flex items-center gap-2 justify-center cursor-help"
           >스킨
           <CommonVTooltip
             content="다음 번 업데이트에서 스킨을 쉽게 변경하실 수 있도록 지원하겠습니다"
@@ -53,8 +53,8 @@
 
 <script setup lang="ts">
 import { ExternalLinkIcon, InfoIcon, Settings2Icon } from "lucide-vue-next"
-import { BOARD, type Board } from "~/types/board"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
+import { BOARD, type Board } from "~/types/board"
 
 const config = useRuntimeConfig()
 const { groupInfo } = useNuboAdminContext()

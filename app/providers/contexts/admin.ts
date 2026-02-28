@@ -10,7 +10,9 @@ import type {
   AdminLatestPost,
   AdminMenu,
   AdminReportItem,
+  AdminUserListResult,
 } from "~/types/admin"
+import type { Search } from "~/types/board"
 import type { Pair } from "~/types/common"
 import type { UserMyResult } from "~/types/user"
 
@@ -23,10 +25,15 @@ export interface NuboAdminContext {
   isBoardRemoveConfirmDialog: WritableComputedRef<boolean>
   isGroupNameChangeDialog: WritableComputedRef<boolean>
   isGroupRemoveConfirmDialog: WritableComputedRef<boolean>
+  isUserRemoveConfirmDialog: WritableComputedRef<boolean>
+  keyword: WritableComputedRef<string>
   latestComments: ComputedRef<AdminLatestComment[]>
   latestPosts: ComputedRef<AdminLatestPost[]>
   latestReports: ComputedRef<AdminReportItem[]>
+  limit: WritableComputedRef<number>
   menu: ComputedRef<AdminMenu>
+  option: WritableComputedRef<Search>
+  page: WritableComputedRef<number>
   panel: ComputedRef<any>
   statFile: ComputedRef<AdminDashboardStatistic>
   statImage: ComputedRef<AdminDashboardStatistic>
@@ -37,12 +44,15 @@ export interface NuboAdminContext {
   statVisit: ComputedRef<AdminDashboardStatistic>
   targetBoard: ComputedRef<Pair>
   targetGroup: ComputedRef<Pair>
+  targetUser: ComputedRef<Pair>
   user: ComputedRef<UserMyResult>
+  userList: ComputedRef<AdminUserListResult>
   changeGroupId: (newGroupId: string) => Promise<boolean>
   closeAddGroupDialog: () => void
   closeBoardRemoveConfirmDialog: () => void
   closeChangeGroupIdDialog: () => void
-  closeRemoveGroupConfirmDialog: () => void
+  closeGroupRemoveConfirmDialog: () => void
+  closeUserRemoveConfirmDialog: () => void
   createBoard: (param: AdminBoardCreateParam) => Promise<number>
   createGroup: (newGroupId: string) => Promise<AdminGroupConfig>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
@@ -51,15 +61,18 @@ export interface NuboAdminContext {
   loadInitGroupList: () => Promise<void>
   loadInitPostList: (limit: number) => Promise<void>
   loadInitReportList: (limit: number) => Promise<void>
+  loadInitUserList: () => Promise<void>
   loadSelectedGroupInfo: (id: string) => Promise<void>
   modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>
   openAddGroupDialog: () => void
   openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) => void
   openChangeGroupIdDialog: (groupUid: number, oldName: string) => void
-  openRemoveGroupConfirmDialog: (groupUid: number, groupId: string) => void
+  openGroupRemoveConfirmDialog: (groupUid: number, groupId: string) => void
+  openUserRemoveConfirmDialog: (userUid: number, name: string) => void
   openMenu: (menu: AdminMenu) => void
   removeBoard: () => Promise<void>
   removeGroup: () => Promise<void>
+  removeUser: () => Promise<void>
 }
 
 export const nuboAdminKey: InjectionKey<NuboAdminContext> = Symbol("nuboAdminContext")
