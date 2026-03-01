@@ -1,13 +1,13 @@
 <template>
   <FieldGroup class="gap-3">
-    <BoardSelect
+    <InputSelect
       name="groupUid"
       label="그룹 변경"
       :items="groupList"
       description="소속 그룹 변경"
     />
 
-    <BoardField
+    <InputField
       name="id"
       label="ID"
       :description="
@@ -19,25 +19,25 @@
       placeholder="free"
     />
 
-    <BoardField name="name" label="이름" description="이 게시판의 이름" placeholder="자유게시판" />
+    <InputField name="name" label="이름" description="이 게시판의 이름" placeholder="자유게시판" />
 
-    <BoardSelect name="type" label="타입" :items="types" description="게시판의 형태 지정" />
+    <InputSelect name="type" label="타입" :items="types" description="게시판의 형태 지정" />
 
-    <BoardField
+    <InputField
       name="rowCount"
       label="행 개수"
       description="한 페이지에 보여줄 게시글 수"
       placeholder="20"
     />
 
-    <BoardField
+    <InputField
       name="width"
       label="너비"
       description="게시판의 최대 가로폭 너비"
       placeholder="1000"
     />
 
-    <BoardField
+    <InputField
       name="info"
       label="설명"
       input-class="max-w-52"
@@ -45,10 +45,10 @@
       placeholder="자유롭게 이야기를 나누는 공간"
     />
 
-    <BoardCheckbox name="useCategory" label="분류" description="카테고리 사용 여부 선택" />
+    <InputCheckbox name="useCategory" label="분류" description="카테고리 사용 여부 선택" />
 
     <div v-show="values.useCategory">
-      <BoardField
+      <InputField
         name="categories"
         label="분류들"
         input-class="max-w-52"
@@ -64,35 +64,35 @@
       사용자의 레벨에 따라 할 수 있는 작업들을 제한할 수 있습니다 (0 = 비회원)
     </p>
 
-    <BoardSelect
+    <InputSelect
       name="levelList"
       label="목록보기"
       :items="levels"
       description="목록을 볼 때 요구되는 레벨 (0 = 비회원)"
     />
 
-    <BoardSelect
+    <InputSelect
       name="levelView"
       label="글보기"
       :items="levels"
       description="글을 볼 때 요구되는 레벨 (0 = 비회원)"
     />
 
-    <BoardSelect
+    <InputSelect
       name="levelWrite"
       label="글작성"
       :items="levels.slice(1)"
       description="글 작성에 요구되는 레벨 (비회원은 불가)"
     />
 
-    <BoardSelect
+    <InputSelect
       name="levelComment"
       label="댓글작성"
       :items="levels.slice(1)"
       description="댓글 작성에 요구되는 레벨 (비회원은 불가)"
     />
 
-    <BoardSelect
+    <InputSelect
       name="levelDownload"
       label="다운로드"
       :items="levels"
@@ -106,7 +106,7 @@
       사용자들의 포인트를 차감하거나 획득할 수 있도록 합니다
     </p>
 
-    <BoardField
+    <InputField
       name="pointView"
       label="글보기"
       description="글 보기 때 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
@@ -114,7 +114,7 @@
       input-class="w-16"
     />
 
-    <BoardField
+    <InputField
       name="pointWrite"
       label="글작성"
       description="글 작성시 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
@@ -122,7 +122,7 @@
       input-class="w-16"
     />
 
-    <BoardField
+    <InputField
       name="pointComment"
       label="댓글작성"
       description="댓글 작성시 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
@@ -130,7 +130,7 @@
       input-class="w-16"
     />
 
-    <BoardField
+    <InputField
       name="pointDownload"
       label="다운로드"
       description="다운로드시 차감/획득할 포인트 설정 (차감 ≤ 0 ≤ 획득)"
@@ -142,11 +142,11 @@
 
 <script setup lang="ts">
 import { useFormValues } from "vee-validate"
-import { BOARD } from "~/types/board"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
-import BoardCheckbox from "./BoardCheckbox.vue"
-import BoardField from "./BoardField.vue"
-import BoardSelect from "./BoardSelect.vue"
+import { BOARD } from "~/types/board"
+import InputCheckbox from "./InputCheckbox.vue"
+import InputField from "./InputField.vue"
+import InputSelect from "./InputSelect.vue"
 
 const values = useFormValues()
 const { groups } = useNuboAdminContext()

@@ -7,13 +7,17 @@
           <h2 class="text-xl font-bold">사용자 관리</h2>
         </div>
         <div class="flex gap-2">
-          <CommonVTooltip content="새로운 사용자를 추가합니다">
-            <Button
-              class="cursor-pointer text-foreground"
-              @click="toast('TODO: 사용자 추가 기능 구현하기')"
-            >
+          <CommonVTooltip content="새로운 사용자를 추가합니다" v-if="panel === 'list'">
+            <Button class="cursor-pointer text-foreground" @click="changePanel('new')">
               <PlusIcon class="w-4 h-4" />
               <span>새 사용자 추가</span>
+            </Button>
+          </CommonVTooltip>
+
+          <CommonVTooltip content="사용자 목록 보기" v-else>
+            <Button variant="outline" class="cursor-pointer" @click="changePanel('list')">
+              <ListIcon class="w-4 h-4" />
+              <span>목록</span>
             </Button>
           </CommonVTooltip>
         </div>
@@ -35,8 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentIcon, PlusIcon } from "lucide-vue-next"
-import { toast } from "vue-sonner"
+import { ComponentIcon, ListIcon, PlusIcon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import UserEdit from "./components/UserEdit.vue"
 import UserList from "./components/UserList.vue"
@@ -57,5 +60,8 @@ onMounted(async () => {
 const changePanel = async (p: Panel, editUserUid: number = 0) => {
   panel.value = p
   selectedUserUid.value = editUserUid
+  if (p === "list") {
+    await loadInitUserList()
+  }
 }
 </script>

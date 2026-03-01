@@ -204,6 +204,23 @@ export type AdminBoardResult = {
   groups: Pair[]
 }
 
+// 새 사용자 계정 추가시 필요한 파라미터 정의
+export type AdminUserCreateParam = {
+  id: string
+  name: string
+  password: string
+  profile: File | null
+  oldProfile: string
+  level: number
+  point: number
+  signature: string
+}
+
+// 기존 사용자 계정 수정하기시 필요한 파라미터 정의
+export type AdminUserModifyParam = AdminUserCreateParam & {
+  userUid: number
+}
+
 // 사용자 목록 조회 시 필요한 파라미터 정의
 export type AdminUserParam = AdminLatestParam & {
   isBlocked: boolean

@@ -11,6 +11,7 @@ import {
   type AdminLatestPost,
   type AdminReportItem,
   type AdminReportParam,
+  type AdminUserCreateParam,
   type AdminUserInfo,
   type AdminUserListResult,
   type AdminUserParam,
@@ -143,9 +144,27 @@ export const useAdmin = () => {
     })
   }
 
+  // 새 사용자 계정 추가하기
+  const createUserAccount = async (param: AdminUserCreateParam) => {
+    const fd = new FormData()
+    fd.append("id", param.id)
+    fd.append("name", param.name)
+    fd.append("password", param.password)
+    fd.append("level", param.level.toString())
+    fd.append("point", param.point.toString())
+    fd.append("signature", param.signature)
+
+    if (param.profile) {
+      fd.append("profile", param.profile)
+    }
+
+    return await reqPost<Resp<number>>("/admin/user/create", fd)
+  }
+
   return {
     createNewBoard,
     createNewGroup,
+    createUserAccount,
     loadBoardConfig,
     loadCommentList,
     loadGeneralItem,

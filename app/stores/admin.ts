@@ -11,6 +11,7 @@ import {
   type AdminLatestPost,
   type AdminMenu,
   type AdminReportItem,
+  type AdminUserCreateParam,
   type AdminUserListResult,
 } from "~/types/admin"
 import { BOARD_CONFIG, BOARD_WRITER, SEARCH, type Search } from "~/types/board"
@@ -20,6 +21,7 @@ export const useAdminStore = defineStore("admin", () => {
   const {
     createNewBoard,
     createNewGroup,
+    createUserAccount,
     loadBoardConfig,
     loadCommentList,
     loadGeneralItem,
@@ -399,6 +401,21 @@ export const useAdminStore = defineStore("admin", () => {
     isUserRemoveConfirmDialog.value = false
   }
 
+  // 사용자 계정 생성하기
+  const createUser = async (param: AdminUserCreateParam) => {
+    try {
+      const response = await createUserAccount(param)
+      if (!response.success) {
+        toast(`❌ 새 계정을 추가하지 못했습니다: ${response.error}`)
+        return 0
+      }
+      return response.result
+    } catch (e) {
+      toast(`❌ 새 계정을 추가하지 못했습니다: ${e}`)
+    }
+    return 0
+  }
+
   return {
     dashboard,
     groupInfo,
@@ -431,6 +448,7 @@ export const useAdminStore = defineStore("admin", () => {
     closeUserRemoveConfirmDialog,
     createBoard,
     createGroup,
+    createUser,
     getBoardConfig,
     loadInitCommentList,
     loadInitDashboard,

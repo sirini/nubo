@@ -9,7 +9,6 @@ import { nuboAdminKey } from "~/providers/contexts/admin"
 
 const config = useRuntimeConfig()
 const auth = useAuthStore()
-const admin = useAdminStore()
 const modules = import.meta.glob("~/skins/admin/*/Admin.vue")
 const selectedSkin = getSkin(modules, config.public.skins.login, "nubo-basic-admin")
 

@@ -1,4 +1,9 @@
-import type { AdminBoardCreateParam, AdminBoardModifyParam, AdminMenu } from "~/types/admin"
+import type {
+  AdminBoardCreateParam,
+  AdminBoardModifyParam,
+  AdminMenu,
+  AdminUserCreateParam,
+} from "~/types/admin"
 import type { NuboAdminContext } from "./contexts/admin"
 
 export const useAdminProvider = (): NuboAdminContext => {
@@ -66,6 +71,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     closeUserRemoveConfirmDialog: () => admin.closeUserRemoveConfirmDialog(),
     createBoard: (param: AdminBoardCreateParam) => admin.createBoard(param),
     createGroup: (newGroupId: string) => admin.createGroup(newGroupId),
+    createUser: (param: AdminUserCreateParam) => admin.createUser(param),
     getBoardConfig: (id: string) => admin.getBoardConfig(id),
     loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>

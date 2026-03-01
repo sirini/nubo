@@ -10,6 +10,7 @@ import type {
   AdminLatestPost,
   AdminMenu,
   AdminReportItem,
+  AdminUserCreateParam,
   AdminUserListResult,
 } from "~/types/admin"
 import type { Search } from "~/types/board"
@@ -55,6 +56,7 @@ export interface NuboAdminContext {
   closeUserRemoveConfirmDialog: () => void
   createBoard: (param: AdminBoardCreateParam) => Promise<number>
   createGroup: (newGroupId: string) => Promise<AdminGroupConfig>
+  createUser: (param: AdminUserCreateParam) => Promise<number>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
   loadInitCommentList: (limit: number) => Promise<void>
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
