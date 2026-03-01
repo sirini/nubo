@@ -47,7 +47,6 @@
 <script setup lang="ts">
 import { ArrowLeftIcon, RotateCcwIcon, SquareCheckBigIcon } from "lucide-vue-next"
 import { useForm } from "vee-validate"
-import { toast } from "vue-sonner"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import type { AdminUserCreateParam } from "~/types/admin"
 import UserFieldGroup from "./UserFieldGroup.vue"
@@ -59,7 +58,7 @@ const props = defineProps<{ changePanel: Function }>()
 
 // 스키마 지정 및 초기값 설정
 const { handleSubmit, resetForm } = useForm({
-  validationSchema: schema.validationSchema,
+  validationSchema: schema.newValidationSchema,
   initialValues: {
     id: "tsboard@nubohub.org",
     name: "홍길동",
@@ -83,7 +82,7 @@ const onSubmit = handleSubmit(
     }
   },
   ({ errors, values, results }) => {
-    toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
+    // toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
   },
 )
 </script>

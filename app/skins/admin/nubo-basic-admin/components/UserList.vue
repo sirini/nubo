@@ -2,7 +2,7 @@
   <Table>
     <TableHeader>
       <TableRow>
-        <TableHead class="flex items-center gap-2 justify-center cursor-help">이름 (ID) </TableHead>
+        <TableHead class="text-center">이름 <span class="text-muted">(ID)</span> </TableHead>
         <TableHead class="text-center">레벨</TableHead>
         <TableHead class="text-center">포인트</TableHead>
         <TableHead class="text-center">가입일</TableHead>
@@ -15,7 +15,7 @@
           class="flex items-center gap-2 cursor-pointer"
           @click="changePanel('edit', user.uid)"
         >
-          <Avatar>
+          <Avatar class="ml-2">
             <AvatarImage :src="user.profile" alt="profile image" />
             <AvatarFallback class="text-xs">{{ user.name.substring(0, 2) }}</AvatarFallback>
           </Avatar>

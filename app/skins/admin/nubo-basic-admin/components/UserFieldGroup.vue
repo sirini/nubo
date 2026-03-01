@@ -29,11 +29,17 @@
       description="이메일 주소 입력"
       placeholder="tsboard@nubohub.org"
       input-class="max-w-48"
+      :disabled="isModifying"
     />
 
     <InputField name="name" label="이름" description="닉네임 입력" placeholder="홍길동" />
 
-    <InputField name="password" label="비밀번호" description="비밀번호 입력" type="password" />
+    <InputField
+      name="password"
+      label="비밀번호"
+      :description="isModifying ? '(바꾸길 원할때만) 비번 입력' : '비밀번호 입력'"
+      type="password"
+    />
 
     <InputField
       name="confirmPassword"

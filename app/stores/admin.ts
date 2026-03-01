@@ -12,7 +12,9 @@ import {
   type AdminMenu,
   type AdminReportItem,
   type AdminUserCreateParam,
+  type AdminUserInfo,
   type AdminUserListResult,
+  type AdminUserModifyParam,
 } from "~/types/admin"
 import { BOARD_CONFIG, BOARD_WRITER, SEARCH, type Search } from "~/types/board"
 import type { Pair } from "~/types/common"
@@ -370,7 +372,7 @@ export const useAdminStore = defineStore("admin", () => {
     }
   }
 
-  // 사용자 삭제하기
+  // 사용자 계정 삭제하기
   const removeUser = async () => {
     if (targetUser.value.uid < 2) {
       toast(`⚠️ 삭제할 사용자가 지정되지 않았거나, 유효하지 않습니다`)
@@ -416,6 +418,47 @@ export const useAdminStore = defineStore("admin", () => {
     return 0
   }
 
+  // 사용자 계정 수정하기
+  const modifyUser = async (param: AdminUserModifyParam) => {
+    try {
+      if (!param.password) {
+        param.password = ""
+      }
+      const response = await modifyUserInfo(param)
+      if (!response.success) {
+        toast(`❌ 사용자 정보를 수정하지 못했습니다: ${response.error}`)
+        return false
+      }
+      toast(`✅ ${param.name} 사용자 정보를 수정하였습니다`)
+      return true
+    } catch (e) {
+      toast(`❌ 사용자 정보를 수정하지 못했습니다: ${e}`)
+    }
+    return false
+  }
+
+  // 개별 사용자 정보 가져오기
+  const getUserInfo = async (userUid: number) => {
+    let result: AdminUserInfo = {
+      ...BOARD_WRITER,
+      id: "",
+      level: 0,
+      point: 0,
+    }
+
+    try {
+      const response = await loadUserInfo(userUid)
+      if (!response.success) {
+        toast(`❌ 사용자 정보를 가져오지 못했습니다: ${response.error}`)
+        return result
+      }
+      return response.result
+    } catch (e) {
+      toast(`❌ 사용자 정보를 가져오지 못했습니다: ${e}`)
+    }
+    return result
+  }
+
   return {
     dashboard,
     groupInfo,
@@ -450,6 +493,7 @@ export const useAdminStore = defineStore("admin", () => {
     createGroup,
     createUser,
     getBoardConfig,
+    getUserInfo,
     loadInitCommentList,
     loadInitDashboard,
     loadInitGroupList,
@@ -458,6 +502,7 @@ export const useAdminStore = defineStore("admin", () => {
     loadSelectedGroupInfo,
     loadInitUserList,
     modifyBoard,
+    modifyUser,
     openAddGroupDialog,
     openBoardRemoveConfirmDialog,
     openChangeGroupIdDialog,

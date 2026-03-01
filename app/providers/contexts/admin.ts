@@ -11,7 +11,9 @@ import type {
   AdminMenu,
   AdminReportItem,
   AdminUserCreateParam,
+  AdminUserInfo,
   AdminUserListResult,
+  AdminUserModifyParam,
 } from "~/types/admin"
 import type { Search } from "~/types/board"
 import type { Pair } from "~/types/common"
@@ -58,6 +60,7 @@ export interface NuboAdminContext {
   createGroup: (newGroupId: string) => Promise<AdminGroupConfig>
   createUser: (param: AdminUserCreateParam) => Promise<number>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
+  getUserInfo: (userUid: number) => Promise<AdminUserInfo>
   loadInitCommentList: (limit: number) => Promise<void>
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
   loadInitGroupList: () => Promise<void>
@@ -66,6 +69,7 @@ export interface NuboAdminContext {
   loadInitUserList: () => Promise<void>
   loadSelectedGroupInfo: (id: string) => Promise<void>
   modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>
+  modifyUser: (param: AdminUserModifyParam) => Promise<boolean>
   openAddGroupDialog: () => void
   openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) => void
   openChangeGroupIdDialog: (groupUid: number, oldName: string) => void

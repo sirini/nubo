@@ -3,6 +3,7 @@ import type {
   AdminBoardModifyParam,
   AdminMenu,
   AdminUserCreateParam,
+  AdminUserModifyParam,
 } from "~/types/admin"
 import type { NuboAdminContext } from "./contexts/admin"
 
@@ -73,6 +74,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     createGroup: (newGroupId: string) => admin.createGroup(newGroupId),
     createUser: (param: AdminUserCreateParam) => admin.createUser(param),
     getBoardConfig: (id: string) => admin.getBoardConfig(id),
+    getUserInfo: (userUid: number) => admin.getUserInfo(userUid),
     loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForItem),
@@ -82,6 +84,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     loadInitUserList: () => admin.loadInitUserList(),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
     modifyBoard: (param: AdminBoardModifyParam) => admin.modifyBoard(param),
+    modifyUser: (param: AdminUserModifyParam) => admin.modifyUser(param),
     openAddGroupDialog: () => admin.openAddGroupDialog(),
     openBoardRemoveConfirmDialog: (boardUid: number, boardId: string) =>
       admin.openBoardRemoveConfirmDialog(boardUid, boardId),

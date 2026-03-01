@@ -14,10 +14,10 @@ import {
   type AdminUserCreateParam,
   type AdminUserInfo,
   type AdminUserListResult,
+  type AdminUserModifyParam,
   type AdminUserParam,
 } from "~/types/admin"
 import type { Resp } from "~/types/common"
-import type { UpdateUserInfoParam } from "~/types/user"
 
 export const useAdmin = () => {
   // 간단 통계 데이터 가져오기
@@ -133,8 +133,20 @@ export const useAdmin = () => {
   }
 
   // 사용자 정보 수정하기
-  const modifyUserInfo = async (param: UpdateUserInfoParam) => {
-    return await reqPatch<Resp<null>>("/admin/user/modify", param)
+  const modifyUserInfo = async (param: AdminUserModifyParam) => {
+    const fd = new FormData()
+    fd.append("userUid", param.userUid.toString())
+    fd.append("name", param.name)
+    fd.append("password", param.password)
+    fd.append("level", param.level.toString())
+    fd.append("point", param.point.toString())
+    fd.append("oldProfile", param.oldProfile)
+    fd.append("signature", param.signature)
+
+    if (param.profile) {
+      fd.append("profile", param.profile)
+    }
+    return await reqPost<Resp<null>>("/admin/user/modify", fd)
   }
 
   // 사용자 삭제하기
@@ -157,7 +169,6 @@ export const useAdmin = () => {
     if (param.profile) {
       fd.append("profile", param.profile)
     }
-
     return await reqPost<Resp<number>>("/admin/user/create", fd)
   }
 
