@@ -104,6 +104,8 @@ export const useAuth = () => {
     })
   }
 
+  // 신고 목록 가져오기
+
   return {
     loadInitUserInfo,
     loadInitOtherUserInfo,

@@ -104,14 +104,14 @@ export const useAdminStore = defineStore("admin", () => {
   }
 
   // 최근 신고글 가져오기
-  const loadInitReportList = async (limit: number) => {
+  const loadInitReportList = async (isSolved: boolean = false) => {
     try {
       const response = await loadReportList({
-        page: 1,
-        limit,
-        option: SEARCH.REPORT.REQUEST as Search,
-        keyword: "",
-        isSolved: false,
+        page: page.value,
+        limit: limit.value,
+        option: option.value,
+        keyword: keyword.value,
+        isSolved,
       })
       if (!response.success || !response.result) {
         toast(`❌ 최근 신고 목록을 가져오지 못했습니다: ${response.error}`)

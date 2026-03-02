@@ -10,7 +10,7 @@ import {
   type AdminLatestParam,
   type AdminLatestPost,
   type AdminReportItem,
-  type AdminReportParam,
+  type AdminReportSearchParam,
   type AdminUserCreateParam,
   type AdminUserInfo,
   type AdminUserListResult,
@@ -42,7 +42,7 @@ export const useAdmin = () => {
   }
 
   // 최근 신고 목록 가져오기
-  const loadReportList = async (param: AdminReportParam) => {
+  const loadReportList = async (param: AdminReportSearchParam) => {
     return await reqGet<Resp<AdminReportItem[]>>("/admin/report/reports", {
       ...param,
     })

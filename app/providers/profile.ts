@@ -13,7 +13,10 @@ export const useProfileProvider = (): NuboProfileContext => {
     profileUser: computed(() => auth.otherUser),
     myPoint: computed(() => auth.user.point),
     isMe: computed(() => auth.otherUser.uid === auth.user.uid),
-    isOpenReportForm: computed(() => report.isOpenReportForm),
+    isOpenReportForm: computed({
+      get: () => report.isOpenReportForm,
+      set: (val) => (report.isOpenReportForm = val),
+    }),
     isLoading: computed(() => chat.isLoading),
     chatHistories: computed(() => chat.history),
     chatMyUid: computed(() => auth.user.uid),
@@ -55,7 +58,10 @@ export const useProfileProvider = (): NuboProfileContext => {
       get: () => report.description,
       set: (val: string) => (report.description = val),
     }),
-    isCheckedBlackList: computed(() => report.isCheckedBlackList),
+    isCheckedBlackList: computed({
+      get: () => report.isCheckedBlackList,
+      set: (val) => (report.isCheckedBlackList = val),
+    }),
     sendChatMessage: async () => {
       await chat.send(auth.user.uid)
     },

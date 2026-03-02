@@ -83,7 +83,7 @@ export const useAdminProvider = (): NuboAdminContext => {
       admin.loadInitDashboard(daysForStat, limitForItem),
     loadInitGroupList: () => admin.loadInitGroupList(),
     loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
-    loadInitReportList: (limit: number) => admin.loadInitReportList(limit),
+    loadInitReportList: (isSolved: boolean) => admin.loadInitReportList(isSolved),
     loadInitUserList: () => admin.loadInitUserList(),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
     modifyBoard: (param: AdminBoardModifyParam) => admin.modifyBoard(param),

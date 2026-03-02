@@ -67,7 +67,7 @@ export interface NuboAdminContext {
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
   loadInitGroupList: () => Promise<void>
   loadInitPostList: (limit: number) => Promise<void>
-  loadInitReportList: (limit: number) => Promise<void>
+  loadInitReportList: (isSolved: boolean) => Promise<void>
   loadInitUserList: () => Promise<void>
   loadSelectedGroupInfo: (id: string) => Promise<void>
   modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>

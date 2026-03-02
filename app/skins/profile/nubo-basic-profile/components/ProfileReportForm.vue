@@ -41,9 +41,11 @@
     <div class="space-y-3 mt-6">
       <div class="text-sm font-medium text-muted-foreground">내 블랙리스트에 추가</div>
       <Label
+        for="checkBlackList"
         class="hover:bg-accent/30 flex items-start gap-3 rounded-lg border p-4 has-aria-checked:border-blue-900 has-aria-checked:bg-blue-950 cursor-pointer"
       >
         <Checkbox
+          id="checkBlackList"
           v-model="isCheckedBlackList"
           :disabled="isReportedUser"
           class="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"

@@ -93,7 +93,7 @@ export type AdminLatestParam = {
 }
 
 // 신고 목록 검색하기에 필요한 파라미터 정의
-export type AdminReportParam = AdminLatestParam & {
+export type AdminReportSearchParam = AdminLatestParam & {
   isSolved: boolean
 }
 
@@ -105,6 +105,7 @@ export type AdminReportItem = {
   request: string
   response: string
   date: number
+  solved: boolean
 }
 
 // 최근 (댓)글 출력에 필요한 공통 반환값 정의

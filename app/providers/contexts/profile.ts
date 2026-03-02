@@ -4,29 +4,29 @@ import type { EditProfileParam, UserInfoResult } from "~/types/user"
 
 // [프로필] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboProfileContext {
-  isLoggedIn: ComputedRef<boolean>
-  userLatestPosts: ComputedRef<BoardWriterLatestPost[]>
-  userLatestComments: ComputedRef<BoardWriterLatestComment[]>
-  profileUser: ComputedRef<UserInfoResult>
-  isMe: ComputedRef<boolean>
-  myPoint: ComputedRef<number>
-  isOpenReportForm: ComputedRef<boolean>
-  isLoading: ComputedRef<boolean>
   chatHistories: ComputedRef<ChatHistory[]>
-  chatMyUid: ComputedRef<number>
   chatMessage: WritableComputedRef<string>
+  chatMyUid: ComputedRef<number>
   editProfile: ComputedRef<EditProfileParam>
-  reportReasons: ComputedRef<{ label: string; description: string }[]>
+  isCheckedBlackList: WritableComputedRef<boolean>
+  isLoading: ComputedRef<boolean>
+  isLoggedIn: ComputedRef<boolean>
+  isMe: ComputedRef<boolean>
+  isOpenReportForm: WritableComputedRef<boolean>
   isReportedUser: ComputedRef<boolean>
-  reportReason: WritableComputedRef<string>
+  myPoint: ComputedRef<number>
+  profileUser: ComputedRef<UserInfoResult>
   reportDescription: WritableComputedRef<string>
-  isCheckedBlackList: ComputedRef<boolean>
-  sendChatMessage: () => Promise<void>
+  reportReason: WritableComputedRef<string>
+  reportReasons: ComputedRef<{ label: string; description: string }[]>
+  userLatestComments: ComputedRef<BoardWriterLatestComment[]>
+  userLatestPosts: ComputedRef<BoardWriterLatestPost[]>
   changeProfileImage: (event: Event) => void
-  updateMyProfile: () => Promise<void>
+  closeReportForm: () => void
   openReportForm: (userUid: number) => void
   reportBadUser: () => Promise<void>
-  closeReportForm: () => void
+  sendChatMessage: () => Promise<void>
+  updateMyProfile: () => Promise<void>
 }
 
 export const nuboProfileKey: InjectionKey<NuboProfileContext> = Symbol("nuboProfileContext")
