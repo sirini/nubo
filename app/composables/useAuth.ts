@@ -6,6 +6,7 @@ import type {
   UserChangePasswordParam,
   UserInfoResult,
   UserMyResult,
+  UserPermissionManageParam,
 } from "~/types/user"
 
 export const useAuth = () => {
@@ -53,6 +54,7 @@ export const useAuth = () => {
     fd.append("name", param.name)
     fd.append("signature", param.signature)
     fd.append("password", param.password)
+
     if (param.profile) {
       fd.append("profile", param.profile)
     }
@@ -90,9 +92,22 @@ export const useAuth = () => {
     return await reqPost<Resp<boolean>>("/auth/user/change-password", param)
   }
 
+  // 사용자의 각 작업별 권한 변경하기
+  const updateUserPermission = async (param: UserPermissionManageParam) => {
+    return await reqPost<Resp<null>>("/auth/user/manage", param)
+  }
+
+  // 사용자의 현재 작업별 권한 정보 가져오기
+  const loadInitUserPermission = async (targetUserUid: number) => {
+    return await reqGet<Resp<UserPermissionManageParam>>("/auth/user/permission", {
+      targetUserUid,
+    })
+  }
+
   return {
     loadInitUserInfo,
     loadInitOtherUserInfo,
+    loadInitUserPermission,
     doLogin,
     doLogout,
     updateRefreshToken,
@@ -103,5 +118,6 @@ export const useAuth = () => {
     verifyUser,
     resetUserPassword,
     updateUserPassword,
+    updateUserPermission,
   }
 }

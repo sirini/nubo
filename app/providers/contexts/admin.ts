@@ -17,7 +17,7 @@ import type {
 } from "~/types/admin"
 import type { Search } from "~/types/board"
 import type { Pair } from "~/types/common"
-import type { UserMyResult } from "~/types/user"
+import type { UserMyResult, UserPermissionManageParam } from "~/types/user"
 
 // [관리자] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboAdminContext {
@@ -51,6 +51,7 @@ export interface NuboAdminContext {
   user: ComputedRef<UserMyResult>
   userList: ComputedRef<AdminUserListResult>
   changeGroupId: (newGroupId: string) => Promise<boolean>
+  changeUserPermission: (param: UserPermissionManageParam) => Promise<void>
   closeAddGroupDialog: () => void
   closeBoardRemoveConfirmDialog: () => void
   closeChangeGroupIdDialog: () => void
@@ -61,6 +62,7 @@ export interface NuboAdminContext {
   createUser: (param: AdminUserCreateParam) => Promise<number>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
   getUserInfo: (userUid: number) => Promise<AdminUserInfo>
+  getUserPermission: (userUid: number) => Promise<UserPermissionManageParam>
   loadInitCommentList: (limit: number) => Promise<void>
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
   loadInitGroupList: () => Promise<void>

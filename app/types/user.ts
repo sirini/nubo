@@ -81,19 +81,19 @@ export type UserPermissionResult = {
 }
 
 // 사용자 권한 및 로그인, 신고 내역 정의
-export type UserPermissionReportResult = UserPermissionResult & {
+export type UserPermissionManageParam = UserPermissionResult & {
   login: boolean
   userUid: number
   response: string
 }
 
 // 사용자 권한 및 로그인, 신고 내역 기본값
-export const USER_PERMISSION_REPORT_RESULT: UserPermissionReportResult = {
-  writePost: false,
-  writeComment: false,
-  sendChatMessage: false,
-  sendReport: false,
-  login: false,
+export const USER_PERMISSION_MANAGE_PARAM: UserPermissionManageParam = {
+  writePost: true,
+  writeComment: true,
+  sendChatMessage: true,
+  sendReport: true,
+  login: true,
   userUid: 0,
   response: "",
 }

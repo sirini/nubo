@@ -5,6 +5,7 @@ import type {
   AdminUserCreateParam,
   AdminUserModifyParam,
 } from "~/types/admin"
+import type { UserPermissionManageParam } from "~/types/user"
 import type { NuboAdminContext } from "./contexts/admin"
 
 export const useAdminProvider = (): NuboAdminContext => {
@@ -65,6 +66,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     user: computed(() => auth.user),
     userList: computed(() => admin.userList),
     changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
+    changeUserPermission: (param: UserPermissionManageParam) => admin.changeUserPermission(param),
     closeAddGroupDialog: () => admin.closeAddGroupDialog,
     closeBoardRemoveConfirmDialog: () => admin.closeBoardRemoveConfirmDialog(),
     closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
@@ -75,6 +77,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     createUser: (param: AdminUserCreateParam) => admin.createUser(param),
     getBoardConfig: (id: string) => admin.getBoardConfig(id),
     getUserInfo: (userUid: number) => admin.getUserInfo(userUid),
+    getUserPermission: (userUid: number) => admin.getUserPermission(userUid),
     loadInitCommentList: (limit: number) => admin.loadInitCommentList(limit),
     loadInitDashboard: (daysForStat: number, limitForItem: number) =>
       admin.loadInitDashboard(daysForStat, limitForItem),

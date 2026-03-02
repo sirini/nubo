@@ -1,9 +1,30 @@
 <template>
-  <form id="modifyUserAccount" @submit="onSubmit" class="p-6">
+  <form id="modifyUserAccount" @submit="onEditSubmit" class="p-6">
     <FieldSet>
       <FieldLegend class="text-xl">사용자 계정 수정하기</FieldLegend>
       <FieldDescription>사용자 계정 정보를 수정하거나 삭제할 수 있습니다</FieldDescription>
       <UserFieldGroup />
+      <Separator />
+
+      <FieldGroup class="gap-3">
+        <InputCheckbox
+          name="login"
+          label="로그인"
+          description="로그인 허용 (체크 해제 시 차단됨)"
+        />
+        <InputCheckbox name="writePost" label="글쓰기" description="글쓰기 작업 허용" />
+        <InputCheckbox name="writeComment" label="댓글쓰기" description="댓글 작성 작업 허용" />
+        <InputCheckbox
+          name="sendChatMessage"
+          label="메시지"
+          description="다른 사용자와 1:1 대화 허용"
+        />
+        <InputCheckbox
+          name="sendReport"
+          label="신고하기"
+          description="다른 사용자를 신고할 수 있게 허용"
+        />
+      </FieldGroup>
     </FieldSet>
 
     <div class="flex items-center justify-between mt-12">
@@ -34,7 +55,7 @@
 
       <div>
         <CommonVTooltip content="위에 입력한 내용대로 새 사용자 계정을 추가합니다">
-          <Button class="items-center gap-2 cursor-pointer text-foreground" @click="onSubmit">
+          <Button class="items-center gap-2 cursor-pointer text-foreground" @click="onEditSubmit">
             <SquareCheckBigIcon class="w-4 h-4" />
             <span>제출</span>
           </Button>
@@ -49,6 +70,8 @@ import { ArrowLeftIcon, SquareCheckBigIcon, Trash2Icon } from "lucide-vue-next"
 import { useForm } from "vee-validate"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import type { AdminUserModifyParam } from "~/types/admin"
+import type { UserPermissionManageParam } from "~/types/user"
+import InputCheckbox from "./InputCheckbox.vue"
 import UserFieldGroup from "./UserFieldGroup.vue"
 import { useUserFormSchema } from "./userFormSchema"
 
@@ -57,14 +80,20 @@ const props = defineProps<{
   changePanel: Function
 }>()
 const schema = useUserFormSchema()
-const { modifyUser, getUserInfo, openUserRemoveConfirmDialog } = useNuboAdminContext()
+const {
+  changeUserPermission,
+  modifyUser,
+  getUserInfo,
+  getUserPermission,
+  openUserRemoveConfirmDialog,
+} = useNuboAdminContext()
 const user = await getUserInfo(props.selectedUserUid)
+const permission = await getUserPermission(user.uid)
 
 // 스키마 지정 및 기존 값들 가져오기
 const { handleSubmit } = useForm({
   validationSchema: schema.modifyValidationSchema,
   initialValues: {
-    userUid: user.uid,
     id: user.id,
     name: recoverChars(user.name),
     profile: null,
@@ -72,14 +101,37 @@ const { handleSubmit } = useForm({
     level: user.level,
     point: user.point,
     signature: recoverChars(user.signature),
+    ...permission,
   },
 })
 
 // 사용자 정보 수정 요청 전송
-const onSubmit = handleSubmit(
+const onEditSubmit = handleSubmit(
   async (data) => {
-    const param = data as AdminUserModifyParam
-    const isDone = await modifyUser(param)
+    const modifyParam: AdminUserModifyParam = {
+      id: data.id,
+      name: data.name,
+      password: data.password || "",
+      profile: data.profile,
+      oldProfile: data.oldProfile,
+      level: data.level,
+      point: data.point,
+      signature: data.signature,
+      userUid: data.userUid || 0,
+    }
+    const isDone = await modifyUser(modifyParam)
+
+    const permParam: UserPermissionManageParam = {
+      writePost: data.writePost,
+      writeComment: data.writeComment,
+      sendChatMessage: data.sendChatMessage,
+      sendReport: data.sendReport,
+      login: data.login,
+      userUid: data.userUid || 0,
+      response: "",
+    }
+    await changeUserPermission(permParam)
+
     if (isDone) {
       props.changePanel("list")
     }

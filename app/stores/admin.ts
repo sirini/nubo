@@ -18,6 +18,7 @@ import {
 } from "~/types/admin"
 import { BOARD_CONFIG, BOARD_WRITER, SEARCH, type Search } from "~/types/board"
 import type { Pair } from "~/types/common"
+import { USER_PERMISSION_MANAGE_PARAM, type UserPermissionManageParam } from "~/types/user"
 
 export const useAdminStore = defineStore("admin", () => {
   const {
@@ -42,6 +43,7 @@ export const useAdminStore = defineStore("admin", () => {
     removeUserAccount,
     updateGroupId,
   } = useAdmin()
+  const { loadInitUserPermission, updateUserPermission } = useAuth()
   const isGroupNameChangeDialog = ref<boolean>(false)
   const isGroupRemoveConfirmDialog = ref<boolean>(false)
   const isBoardRemoveConfirmDialog = ref<boolean>(false)
@@ -439,7 +441,7 @@ export const useAdminStore = defineStore("admin", () => {
 
   // 개별 사용자 정보 가져오기
   const getUserInfo = async (userUid: number) => {
-    let result: AdminUserInfo = {
+    const result: AdminUserInfo = {
       ...BOARD_WRITER,
       id: "",
       level: 0,
@@ -455,6 +457,36 @@ export const useAdminStore = defineStore("admin", () => {
       return response.result
     } catch (e) {
       toast(`❌ 사용자 정보를 가져오지 못했습니다: ${e}`)
+    }
+    return result
+  }
+
+  // 사용자의 각 작업별 권한 변경하기
+  const changeUserPermission = async (param: UserPermissionManageParam) => {
+    try {
+      const response = await updateUserPermission(param)
+      if (!response.success) {
+        toast(`❌ 사용자의 권한을 변경하지 못했습니다: ${response.error}`)
+        return
+      }
+      toast(`✅ 사용자의 권한을 변경하였습니다`)
+    } catch (e) {
+      toast(`❌ 사용자의 권한을 변경하지 못했습니다: ${e}`)
+    }
+  }
+
+  // 사용자의 현재 작업별 권한 정보 가져오기
+  const getUserPermission = async (targetUserUid: number) => {
+    const result: UserPermissionManageParam = USER_PERMISSION_MANAGE_PARAM
+    try {
+      const response = await loadInitUserPermission(targetUserUid)
+      if (!response.success) {
+        toast(`❌ 사용자의 현재 권한 정보를 가져오지 못했습니다: ${response.error}`)
+        return result
+      }
+      return response.result
+    } catch (e) {
+      toast(`❌ 사용자의 현재 권한 정보를 가져오지 못했습니다: ${e}`)
     }
     return result
   }
@@ -484,6 +516,7 @@ export const useAdminStore = defineStore("admin", () => {
     userList,
 
     changeGroupId,
+    changeUserPermission,
     closeAddGroupDialog,
     closeBoardRemoveConfirmDialog,
     closeChangeGroupIdDialog,
@@ -494,6 +527,7 @@ export const useAdminStore = defineStore("admin", () => {
     createUser,
     getBoardConfig,
     getUserInfo,
+    getUserPermission,
     loadInitCommentList,
     loadInitDashboard,
     loadInitGroupList,

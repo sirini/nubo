@@ -86,6 +86,13 @@ export const useUserFormSchema = () => {
           .min(100, "신규 사용자는 최소 100 포인트 이상 부여해야 합니다")
           .max(100_000, "신규 사용자는 최대 100,000 포인트 이하로만 부여해야 합니다"),
         signature: z.string(),
+
+        // 사용자 권한 설정값들 (별도 엔드포인트에서 처리)
+        writePost: z.boolean(),
+        writeComment: z.boolean(),
+        sendChatMessage: z.boolean(),
+        sendReport: z.boolean(),
+        login: z.boolean(),
       })
       .superRefine(({ password, confirmPassword }, ctx) => {
         if (password || confirmPassword) {
