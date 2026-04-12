@@ -1,6 +1,6 @@
 import { toast } from "vue-sonner"
-import { useResetPasswordTemplate } from "~/skins/login/nubo-basic-login/resetPasswordTemplate"
-import { useVerifyCodeTemplate } from "~/skins/login/nubo-basic-login/verifyCodeTemplate"
+import { useResetPasswordTemplate } from "~/skins/nubo-basic-login/resetPasswordTemplate"
+import { useVerifyCodeTemplate } from "~/skins/nubo-basic-login/verifyCodeTemplate"
 
 export const useJoinStore = defineStore("join", () => {
   const {

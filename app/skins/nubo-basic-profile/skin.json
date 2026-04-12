@@ -1,0 +1,11 @@
+{
+  "key": "nubo-basic-profile",
+  "name": "기본 프로필 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "기본적인 프로필 보기 및 1:1 대화 기능을 내장한 스킨입니다",
+  "preview": "preview.png",
+  "features": ["다크모드", "반응형 그리드"],
+  "min_nubo_version": "1.2.0"
+}

@@ -4,8 +4,6 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
-const selectedSkin = computed(() => {
-  const skinName = config.public.skins.error
-  return defineAsyncComponent(() => import(`./skins/error/${skinName}/Error.vue`))
-})
+const modules = import.meta.glob("~/skins/*/Error.vue")
+const selectedSkin = getSkin(modules, config.public.skins.error, "nubo-basic-error")
 </script>

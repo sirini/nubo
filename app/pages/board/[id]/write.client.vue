@@ -3,11 +3,11 @@
 </template>
 
 <script setup lang="ts">
+import { nuboEditorKey } from "~/providers/contexts/editor"
+import { nuboWriteKey } from "~/providers/contexts/write"
 import { useEditorProvider } from "~/providers/editor"
 import { useWriteProvider } from "~/providers/write"
 import { BOARD_PREFIX } from "~/types/board"
-import { nuboEditorKey } from "~/providers/contexts/editor"
-import { nuboWriteKey } from "~/providers/contexts/write"
 
 definePageMeta({ middleware: "auth" as never })
 
@@ -21,8 +21,8 @@ const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
   const boardType = BOARD_PREFIX[edit.config.type]
   return defineAsyncComponent(() =>
-    import(`~/skins/board/${skinName}/${boardType}Write.vue`).catch(
-      () => import(`~/skins/board/${skinName}/DefaultWrite.vue`),
+    import(`~/skins/${skinName}/${boardType}Write.vue`).catch(
+      () => import(`~/skins/${skinName}/DefaultWrite.vue`),
     ),
   )
 })

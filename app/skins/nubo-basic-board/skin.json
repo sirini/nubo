@@ -1,0 +1,12 @@
+{
+  "type": "board",
+  "key": "nubo-basic-board",
+  "name": "기본 게시판 및 갤러리 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "기본적인 게시판 및 갤러리에서 사용 가능한 스킨입니다",
+  "preview": "preview.png",
+  "features": ["다크모드", "반응형 그리드"],
+  "min_nubo_version": "1.2.0"
+}

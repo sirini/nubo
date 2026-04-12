@@ -4,13 +4,13 @@
 
 <script setup lang="ts">
 import "~/assets/css/editor.scss"
+import { nuboEditorKey } from "~/providers/contexts/editor"
+import { nuboViewKey } from "~/providers/contexts/view"
+import { nuboWriteKey } from "~/providers/contexts/write"
 import { useEditorProvider } from "~/providers/editor"
 import { useViewProvider } from "~/providers/view"
 import { useWriteProvider } from "~/providers/write"
 import { BOARD_PREFIX } from "~/types/board"
-import { nuboEditorKey } from "~/providers/contexts/editor"
-import { nuboViewKey } from "~/providers/contexts/view"
-import { nuboWriteKey } from "~/providers/contexts/write"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -23,8 +23,8 @@ const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
   const boardType = BOARD_PREFIX[board.view.config.type]
   return defineAsyncComponent(() =>
-    import(`~/skins/board/${skinName}/${boardType}View.vue`).catch(
-      () => import(`~/skins/board/${skinName}/DefaultView.vue`),
+    import(`~/skins/${skinName}/${boardType}View.vue`).catch(
+      () => import(`~/skins/${skinName}/DefaultView.vue`),
     ),
   )
 })

@@ -1,1 +1,0 @@
-<template>Skin</template>

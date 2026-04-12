@@ -12,12 +12,12 @@ export const useAdminProvider = (): NuboAdminContext => {
   const admin = useAdminStore()
   const auth = useAuthStore()
   const adminViews: Record<AdminMenu, any> = {
-    Dashboard: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Dashboard.vue`)),
-    Board: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Board.vue`)),
-    User: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/User.vue`)),
-    Report: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Report.vue`)),
-    Skin: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/Skin.vue`)),
-    System: defineAsyncComponent(() => import(`~/skins/admin/${admin.skin}/System.vue`)),
+    Dashboard: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Dashboard.vue`)),
+    Board: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Board.vue`)),
+    User: defineAsyncComponent(() => import(`~/skins/${admin.skin}/User.vue`)),
+    Report: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Report.vue`)),
+    Skin: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Skin.vue`)),
+    System: defineAsyncComponent(() => import(`~/skins/${admin.skin}/System.vue`)),
   }
 
   return {

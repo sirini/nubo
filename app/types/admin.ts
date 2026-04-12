@@ -1,3 +1,5 @@
+import type { LucideProps } from "lucide-vue-next"
+import type { FunctionalComponent } from "vue"
 import {
   BOARD_WRITER,
   type Board,
@@ -11,6 +13,17 @@ import type { UserBasicInfo } from "./user"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
 export type AdminMenu = "Dashboard" | "Board" | "User" | "Report" | "Skin" | "System"
+
+// 스킨 타입 정의
+export type AdminSkinType =
+  | "layout"
+  | "home"
+  | "admin"
+  | "login"
+  | "profile"
+  | "privacy"
+  | "error"
+  | "board"
 
 // 관리화면 컴포넌트명 상수로 정의
 export const ADMIN_DASHBOARD: AdminMenu = "Dashboard"
@@ -246,4 +259,27 @@ export type AdminUserInfo = BoardWriter & {
   id: string
   level: number
   point: number
+}
+
+// 스킨 페이지에서 카테고리 정의
+export type AdminSkinCategory = {
+  id: AdminSkinType
+  name: string
+  desc: string
+  icon: FunctionalComponent<LucideProps, {}, any, {}>
+  span: string
+}
+
+// 스킨 JSON 타입
+export type AdminSkinInfo = {
+  type: AdminSkinType
+  key: string
+  name: string
+  version: string
+  author: string
+  website: string
+  description: string
+  preview: string
+  features: string[]
+  min_nubo_version: string
 }

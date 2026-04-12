@@ -23,6 +23,22 @@
 
     <InputSelect name="type" label="타입" :items="types" description="게시판의 형태 지정" />
 
+    <div class="flex items-center gap-4">
+      <FieldLabel class="w-16 justify-end text-muted-foreground">스킨</FieldLabel>
+      <div>
+        <SkinChangeDialog type="board">
+          <Button variant="outline" class="text-xs px-2 flex items-center gap-2 cursor-pointer">
+            <PaintbrushIcon class="w-4 h-4" />
+            <span>nubo-basic-board</span>
+          </Button>
+        </SkinChangeDialog>
+      </div>
+
+      <FieldDescription class="flex-1">
+        <span class="text-muted">스킨 변경하기</span>
+      </FieldDescription>
+    </div>
+
     <InputField
       name="rowCount"
       label="행 개수"
@@ -141,12 +157,15 @@
 </template>
 
 <script setup lang="ts">
+import { PaintbrushIcon } from "lucide-vue-next"
 import { useFormValues } from "vee-validate"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
+import type { AdminSkinInfo } from "~/types/admin"
 import { BOARD } from "~/types/board"
 import InputCheckbox from "./InputCheckbox.vue"
 import InputField from "./InputField.vue"
 import InputSelect from "./InputSelect.vue"
+import SkinChangeDialog from "./dialogs/SkinChangeDialog.vue"
 
 const values = useFormValues()
 const { groups } = useNuboAdminContext()
@@ -160,6 +179,22 @@ const types = [
   { name: "게시판", value: BOARD.DEFAULT },
   { name: "갤러리", value: BOARD.GALLERY },
   { name: "블로그", value: BOARD.BLOG },
+]
+
+// 게시판 스킨 선택하기
+const skins: AdminSkinInfo[] = [
+  {
+    type: "board",
+    key: "nubo-basic-board",
+    name: "기본 게시판 및 갤러리 스킨",
+    version: "0.1.0",
+    author: "sirini",
+    website: "https://nubohub.org",
+    description: "기본적인 게시판 및 갤러리에서 사용 가능한 스킨입니다",
+    preview: "preview.png",
+    features: ["다크모드", "반응형 그리드"],
+    min_nubo_version: "1.2.0",
+  },
 ]
 
 // 레벨 제한 목록

@@ -1,0 +1,11 @@
+{
+  "key": "nubo-basic-privacy",
+  "name": "기본 개인정보 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "기본적인 개인정보 처리방침을 표시한 스킨입니다",
+  "preview": "preview.png",
+  "features": ["다크모드", "반응형 그리드"],
+  "min_nubo_version": "1.1.0"
+}

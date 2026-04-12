@@ -4,13 +4,13 @@
 
 <script setup lang="ts">
 import "vue-sonner/style.css"
+import { nuboHomeKey } from "~/providers/contexts/home"
 import { useHomeProvider } from "~/providers/home"
 import { SEARCH, type Search } from "~/types/board"
-import { nuboHomeKey } from "~/providers/contexts/home"
 
 const config = useRuntimeConfig()
 const home = useHomeStore()
-const modules = import.meta.glob("~/skins/home/*/Home.vue")
+const modules = import.meta.glob("~/skins/*/Home.vue")
 const selectedSkin = getSkin(modules, config.public.skins.home, "nubo-basic-home")
 
 home.option = SEARCH.TITLE as Search

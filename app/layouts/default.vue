@@ -5,18 +5,15 @@
 </template>
 
 <script setup lang="ts">
-import { useLayoutProvider } from "~/providers/layout"
 import { nuboLayoutKey } from "~/providers/contexts/layout"
+import { useLayoutProvider } from "~/providers/layout"
 
 const config = useRuntimeConfig()
 const { addVisitHistory } = useHome()
 const auth = useAuthStore()
 const home = useHomeStore()
-
-const selectedSkin = computed(() => {
-  const skinName = config.public.skins.layout
-  return defineAsyncComponent(() => import(`~/skins/layout/${skinName}/Layout.vue`))
-})
+const modules = import.meta.glob("~/skins/*/Layout.vue")
+const selectedSkin = getSkin(modules, config.public.skins.layout, "nubo-basic-layout")
 
 await home.getInitMenus()
 
