@@ -43,6 +43,8 @@ export const useAdmin = () => {
 
   // 최근 신고 목록 가져오기
   const loadReportList = async (param: AdminReportSearchParam) => {
+    console.log(param) /// DEBUG
+
     return await reqGet<Resp<AdminReportItem[]>>("/admin/report/reports", {
       ...param,
     })

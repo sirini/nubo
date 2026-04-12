@@ -104,11 +104,11 @@ export const useAdminStore = defineStore("admin", () => {
   }
 
   // 최근 신고글 가져오기
-  const loadInitReportList = async (isSolved: boolean = false) => {
+  const loadInitReportList = async (isSolved: boolean = false, limit: number = 3) => {
     try {
       const response = await loadReportList({
         page: page.value,
-        limit: limit.value,
+        limit,
         option: option.value,
         keyword: keyword.value,
         isSolved,
