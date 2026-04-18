@@ -19,11 +19,17 @@ const defaultSkins = {
 }
 
 export default defineNuxtConfig({
+  // 사이트 타이틀, 기본 폴더 시작점 설정
+  app: {
+    head: {
+      titleTemplate: "nubo | a new unified board" /* 본인 사이트에 맞춰 수정 필요 */,
+    },
+  },
   srcDir: "app/",
   compatibilityDate: "2025-05-15",
   devtools: { enabled: false },
 
-  // 실행 시 환경 변수
+  // 실행 시 환경 변수 (env.NUXT_PUBLIC_ 으로 시작하는 변수들은 .env 파일에서 참조합니다)
   runtimeConfig: {
     apiBaseInternal: GOAPI_URL, // SSR에서 사용할 서버 측 주소
     public: {
@@ -49,9 +55,19 @@ export default defineNuxtConfig({
   },
 
   // UI 스타일
-  css: ["~/assets/css/tailwind.css"],
+  css: ["~/assets/css/tailwind.css", "~/assets/css/font.css"],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        "clsx",
+        "tailwind-merge",
+        "vue-sonner",
+        "lucide-vue-next",
+        "class-variance-authority",
+        "reka-ui",
+      ],
+    },
   },
   colorMode: { classSuffix: "" },
   shadcn: { prefix: "", componentDir: "~/components/ui" },
@@ -59,7 +75,6 @@ export default defineNuxtConfig({
   // Modules Configuration
   modules: [
     "@nuxt/eslint",
-    "@nuxt/fonts",
     "@nuxt/icon",
     "@nuxt/image",
     "@nuxt/scripts",
@@ -68,20 +83,6 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@vueuse/nuxt",
   ],
-
-  // 폰트
-  fonts: {
-    families: [
-      { name: "Inter", provider: "google" },
-      { name: "JetBrains Mono", provider: "google" },
-      { name: "Pretendard", provider: "local" },
-    ],
-  },
-  app: {
-    head: {
-      titleTemplate: "nubo | a new unified board",
-    },
-  },
 
   // 업로드 폴더 경로 설정
   nitro: {

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative min-h-screen bg-background mx-auto py-6"
+    class="relative min-h-screen bg-background mx-auto p-4"
     :style="`max-width: ${config.width}px`"
   >
     <div

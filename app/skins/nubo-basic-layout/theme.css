@@ -8,8 +8,6 @@
  * (팁 3: https://www.shadcn-vue.com/colors 사이트를 참조하세요)
  */
 
-@import url("~/assets/css/fonts/pretendardvariable-gov.css");
-
 :root {
   --radius: 0.65rem;
   --background: oklch(1 0 0);

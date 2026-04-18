@@ -1,6 +1,11 @@
 import { reqGet } from "~/composables/useUtils"
 import { IS_VISITED, type Resp } from "~/types/common"
-import type { HomePostItem, HomeLatestPostsParams, HomeSidebarGroupResult } from "~/types/home"
+import type {
+  HomePostItem,
+  HomeLatestPostsParams,
+  HomeSidebarGroupResult,
+  HomePostResult,
+} from "~/types/home"
 
 export const useHome = () => {
   const config = useRuntimeConfig()
@@ -21,21 +26,19 @@ export const useHome = () => {
 
   // 홈 화면 메뉴 가져오기
   const loadInitHomeMenus = async () => {
-    const { data, error } = await useFetch<Resp<HomeSidebarGroupResult[]>>("/home/sidebar/links", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-    })
-    return resp(data.value)
+    return await reqGet<Resp<HomeSidebarGroupResult[]>>("/home/sidebar/links", {})
   }
 
-  // 홈 화면에서 게시글들 목록 조회하기
+  // 홈 화면에서 (검색된 or 전체) 게시글들 목록 조회하기
   const loadInitPosts = async (params: HomeLatestPostsParams) => {
-    const { data, error } = await useFetch<Resp<HomePostItem[]>>("/home/latest", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      params,
+    return await reqGet<Resp<HomePostItem[]>>("/home/latest", params)
+  }
+
+  // 홈 화면에서 게시판 ID로 게시글들을 조회하기
+  const loadInitPostsById = async (id: string, limit: number) => {
+    return await reqGet<Resp<HomePostResult>>(`/home/latest/${id}`, {
+      limit,
     })
-    return resp(data.value)
   }
 
   // 홈 화면에서 이전 게시글들을 더 가져오기
@@ -47,6 +50,7 @@ export const useHome = () => {
     addVisitHistory,
     loadInitHomeMenus,
     loadInitPosts,
+    loadInitPostsById,
     loadMorePosts,
   }
 }

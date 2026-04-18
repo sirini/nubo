@@ -1,0 +1,80 @@
+/* inter-200 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 200;
+  src: url("~/assets/css/fonts/inter-v20-latin-200.woff2") format("woff2");
+}
+/* inter-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  src: url("~/assets/css/fonts/inter-v20-latin-regular.woff2") format("woff2");
+}
+/* inter-700 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  src: url("~/assets/css/fonts/inter-v20-latin-700.woff2") format("woff2");
+}
+/* inter-900 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 900;
+  src: url("~/assets/css/fonts/inter-v20-latin-900.woff2") format("woff2");
+}
+/* Pretendard */
+@font-face {
+  font-family: "Pretendard GOV Variable";
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url("~/assets/css/fonts/PretendardGOVVariable.woff2") format("woff2-variations");
+}
+/* jetbrains-mono-200 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 200;
+  src: url("/fonts/jetbrains-mono-v24-latin-200.woff2") format("woff2");
+}
+/* jetbrains-mono-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/jetbrains-mono-v24-latin-regular.woff2") format("woff2");
+}
+/* jetbrains-mono-500 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 500;
+  src: url("/fonts/jetbrains-mono-v24-latin-500.woff2") format("woff2");
+}
+/* jetbrains-mono-700 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 700;
+  src: url("/fonts/jetbrains-mono-v24-latin-700.woff2") format("woff2");
+}
+/* jetbrains-mono-800 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 800;
+  src: url("/fonts/jetbrains-mono-v24-latin-800.woff2") format("woff2");
+}

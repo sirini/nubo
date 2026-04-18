@@ -1,5 +1,5 @@
 <template>
-  <section class="container mx-auto py-6">
+  <section class="container mx-auto p-4">
     <div class="mx-auto" :style="`max-width: ${config.width}px`">
       <ListHeader />
 

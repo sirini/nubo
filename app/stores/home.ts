@@ -1,10 +1,15 @@
 import { defineStore } from "pinia"
 import { toast } from "vue-sonner"
-import { SEARCH, type Search } from "~/types/board"
-import { HomeSearchOptions, type HomePostItem, type HomeSidebarGroupResult } from "~/types/home"
+import { BOARD_CONFIG, SEARCH, type Search } from "~/types/board"
+import {
+  HomeSearchOptions,
+  type HomePostItem,
+  type HomePostResult,
+  type HomeSidebarGroupResult,
+} from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
-  const { loadInitPosts, loadMorePosts, loadInitHomeMenus } = useHome()
+  const { loadInitPosts, loadInitPostsById, loadMorePosts, loadInitHomeMenus } = useHome()
   const bunch = ref<number>(20)
   const error = ref<unknown>(null)
   const initialized = ref<boolean>(false)
@@ -41,7 +46,7 @@ export const useHomeStore = defineStore("home", () => {
     posts.value = merged
   }
 
-  // 목록 조회 (초기/검색/더보기 공용)
+  // (검색된 or 전체) 게시글들 가져오기
   const getInitLatestPosts = async (opts?: { reset?: boolean }) => {
     if (isLoading.value) return
     try {
@@ -70,6 +75,24 @@ export const useHomeStore = defineStore("home", () => {
     }
   }
 
+  // 지정된 게시판 ID로 게시글들 가져오기
+  const getInitLatestPostsById = async (id: string, limit: number): Promise<HomePostResult> => {
+    const result: HomePostResult = { items: [], config: BOARD_CONFIG }
+    if (isLoading.value) return result
+    try {
+      isLoading.value = true
+      const response = await loadInitPostsById(id, limit)
+
+      if (!response.success || !response.result) {
+        toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
+        return result
+      }
+      return response.result
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // 초기 페이지 로드 시 상단 메뉴들 가져오기
   const getInitMenus = async () => {
     const response = await loadInitHomeMenus()
@@ -80,7 +103,7 @@ export const useHomeStore = defineStore("home", () => {
     menus.value = response.result
   }
 
-  // 이전 게시글 더 가져오기
+  // (검색된 or 전체) 이전 게시글 더 가져오기
   const loadMore = async () => {
     if (isLoading.value) return
     try {
@@ -133,6 +156,7 @@ export const useHomeStore = defineStore("home", () => {
     sinceUid,
 
     getInitLatestPosts,
+    getInitLatestPostsById,
     getInitMenus,
     loadMore,
     reset,

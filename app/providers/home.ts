@@ -10,5 +10,6 @@ export const useHomeProvider = (): NuboHomeContext => {
     loadMorePosts: async () => {
       await home.loadMore()
     },
+    getPostsById: async (id: string, limit: number) => home.getInitLatestPostsById(id, limit),
   }
 }
