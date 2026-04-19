@@ -36,7 +36,7 @@
 
                 <div
                   v-else
-                  class="flex items-center justify-center w-full p-3 h-42 aspect-video transition-transform tracking-wider text-muted-foreground line-clamp-6"
+                  class="flex items-center justify-center w-full p-3 h-42 aspect-video transition-transform tracking-wider text-muted text-sm line-clamp-3"
                 >
                   {{ recoverChars(stripTags(post.content)) }}
                 </div>

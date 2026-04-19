@@ -1,35 +1,33 @@
 <template>
   <div class="mx-auto">
-    <div class="flex flex-col lg:flex-row gap-0 overflow-hidden h-[calc(100dvh-70px)]">
+    <div class="flex flex-col lg:flex-row gap-0 overflow-hidden h-auto lg:h-[calc(100dvh-70px)]">
       <section class="flex-1 flex items-center justify-center bg-black/20">
         <GalleryImageCarousel />
 
         <div v-if="!view.images.length" class="text-zinc-500">No images</div>
       </section>
 
-      <aside class="w-full lg:w-95 flex flex-col bg-card h-full">
-        <ScrollArea class="h-auto lg:h-[calc(100dvh-70px)]">
-          <div class="p-4 space-y-4">
-            <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
+      <aside class="w-full lg:w-95 flex flex-col bg-card">
+        <ScrollArea class="p-4 space-y-4 lg:h-full">
+          <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
 
-            <ViewWriterProfile />
-            <Card>
-              <ViewMainContent />
-            </Card>
+          <ViewWriterProfile />
+          <Card>
+            <ViewMainContent />
+          </Card>
 
-            <div class="rounded-lg border p-4">
-              <ViewCommentList />
-            </div>
+          <div class="rounded-lg border p-4">
+            <ViewCommentList />
+          </div>
 
-            <ViewWriteComment />
+          <ViewWriteComment />
 
-            <div class="flex items-center justify-between my-12">
-              <ViewListButton />
+          <div class="flex items-center justify-between my-12">
+            <ViewListButton />
 
-              <div class="inline-flex gap-3 items-center">
-                <ViewModifyButton />
-                <ViewWriteButton />
-              </div>
+            <div class="inline-flex gap-3 items-center">
+              <ViewModifyButton />
+              <ViewWriteButton />
             </div>
           </div>
         </ScrollArea>
