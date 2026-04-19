@@ -12,19 +12,19 @@
     <WhatsNew />
     <Comparison />
     <SkinSystem />
-    <ClickToAction />
+    <ClickToAction v-model="isLanding" />
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from "vue"
-import HeroSection from "./components/landing/HeroSection.vue"
-import WhatsNew from "./components/landing/WhatsNew.vue"
-import Comparison from "./components/landing/Comparison.vue"
-import SkinSystem from "./components/landing/SkinSystem.vue"
 import ClickToAction from "./components/landing/ClickToAction.vue"
+import Comparison from "./components/landing/Comparison.vue"
 import Footer from "./components/landing/Footer.vue"
+import HeroSection from "./components/landing/HeroSection.vue"
+import SkinSystem from "./components/landing/SkinSystem.vue"
+import WhatsNew from "./components/landing/WhatsNew.vue"
 
 const isLanding = defineModel()
 let observer: IntersectionObserver | null = null
