@@ -6,19 +6,33 @@
       :key="index"
     >
       <NuxtLink :to="`/board/${post.id}/${post.uid}`">
-        <img
-          v-if="post.cover"
-          :src="post.cover"
-          alt="cover image"
-          class="w-full aspect-square object-cover transition-transform hover:scale-105"
-        />
+        <div v-if="post.cover" class="relative">
+          <img
+            :src="post.cover"
+            alt="cover image"
+            class="w-full aspect-video object-cover transition-transform"
+          />
+          <div
+            class="absolute bottom-0 w-full h-full bg-linear-to-t from-[#15151F]/50 to-transparent"
+          ></div>
+        </div>
+
+        <div
+          v-else
+          class="flex items-center justify-center w-full p-3 h-42 aspect-video transition-transform tracking-wider text-muted-foreground line-clamp-6"
+        >
+          {{ recoverChars(stripTags(post.content)) }}
+        </div>
 
         <CardHeader class="px-3">
           <CardTitle
             class="line-clamp-1 mb-2 mt-4"
             :class="post.cover ? '' : 'line-clamp-6 leading-6'"
-            >{{ recoverChars(post.title) }}</CardTitle
           >
+            <span class="hover:text-primary transition-colors">
+              {{ recoverChars(post.title) }}
+            </span>
+          </CardTitle>
           <CardDescription class="inline-flex items-center font-mono">
             <HeartIcon
               :class="post.liked ? 'text-red-200 fill-current' : ''"
@@ -33,11 +47,9 @@
             <span class="hidden xl:inline">{{ date(post.submitted) }}</span>
           </CardDescription>
         </CardHeader>
-        <CardContent
-          class="text-sm line-clamp-3 leading-6 px-3 mt-2"
-          :class="post.cover ? '' : 'line-clamp-5'"
-          >{{ recoverChars(stripTags(post.content)) }}</CardContent
-        >
+        <CardContent class="text-sm line-clamp-3 leading-6 px-3 mt-2"
+          >{{ recoverChars(stripTags(post.content)) }}
+        </CardContent>
       </NuxtLink>
     </Card>
   </div>

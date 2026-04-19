@@ -8,11 +8,11 @@
         backgroundSize: '72px 72px',
       }"
     />
-    <HeroSection v-model="isLanding" />
+    <HeroSection />
     <WhatsNew />
     <Comparison />
     <SkinSystem />
-    <ClickToAction v-model="isLanding" />
+    <ClickToAction />
     <Footer />
   </div>
 </template>
@@ -26,7 +26,6 @@ import HeroSection from "./components/landing/HeroSection.vue"
 import SkinSystem from "./components/landing/SkinSystem.vue"
 import WhatsNew from "./components/landing/WhatsNew.vue"
 
-const isLanding = defineModel()
 let observer: IntersectionObserver | null = null
 
 onMounted(() => {

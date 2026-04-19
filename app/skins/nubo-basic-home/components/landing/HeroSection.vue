@@ -79,10 +79,11 @@
 
 <script setup lang="ts">
 import { ArrowRightIcon, ExternalLinkIcon, GitBranchIcon, PanelTopIcon } from "lucide-vue-next"
+import { useNuboHomeContext } from "~/providers/contexts/home"
 
 // 실제 홈 화면 이동 시 이후에 랜딩 페이지로 되돌아가지 않도록 하기
 const router = useRouter()
-const isLanding = defineModel()
+const { isLanding } = useNuboHomeContext()
 const moveToPage = () => {
   isLanding.value = false
   router.push("/")

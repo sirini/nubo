@@ -26,6 +26,7 @@ export const useHomeStore = defineStore("home", () => {
   })
   const isLoading = ref<boolean>(false)
   const isLastPost = ref<boolean>(false)
+  const isLanding = ref<boolean>(true)
   const posts = ref<HomePostItem[]>([])
   const sinceUid = ref<number>(0)
 
@@ -150,6 +151,7 @@ export const useHomeStore = defineStore("home", () => {
     option,
     options,
     optionLabels,
+    isLanding,
     isLoading,
     isLastPost,
     posts,

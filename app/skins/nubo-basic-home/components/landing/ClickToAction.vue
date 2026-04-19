@@ -21,9 +21,9 @@
           <Button
             as-child
             size="lg"
-            class="group h-12 px-7 rounded-xl border-0 bg-linear-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white font-medium shadow-[0_0_40px_-8px_rgba(168,85,247,0.65)] hover:shadow-[0_0_60px_-4px_rgba(168,85,247,0.85)] transition-shadow font-black"
+            class="group h-12 px-7 rounded-xl border-0 bg-linear-to-r from-indigo-500 via-purple-500 to-fuchsia-500 text-white shadow-[0_0_40px_-8px_rgba(168,85,247,0.65)] hover:shadow-[0_0_60px_-4px_rgba(168,85,247,0.85)] transition-shadow font-black"
           >
-            <NuxtLink @click="moveToPage">
+            <NuxtLink @click="moveToPage" class="cursor-pointer">
               <PanelTopIcon class="w-4 h-4 mr-2" />
               첫 화면으로 이동
               <ArrowRightIcon class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
@@ -87,10 +87,11 @@
 
 <script setup lang="ts">
 import { ArrowRightIcon, BrushIcon, DatabaseIcon, PanelTopIcon } from "lucide-vue-next"
+import { useNuboHomeContext } from "~/providers/contexts/home"
 
 // 실제 홈 화면 이동 시 이후에 랜딩 페이지로 되돌아가지 않도록 하기
 const router = useRouter()
-const isLanding = defineModel()
+const { isLanding } = useNuboHomeContext()
 const moveToPage = () => {
   isLanding.value = false
   router.push("/")
