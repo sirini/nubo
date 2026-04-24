@@ -15,7 +15,7 @@
         <div class="flex items-center justify-between gap-2">
           <div class="flex-1">
             <NuxtLink :to="`/board/${post.board.id}/${post.postUid}`">
-              <span class="line-clamp-1">{{ post.title }}</span>
+              <span class="line-clamp-1">{{ recoverChars(post.title) }}</span>
             </NuxtLink>
           </div>
 

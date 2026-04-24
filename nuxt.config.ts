@@ -108,6 +108,7 @@ export default defineNuxtConfig({
         "highlight.js/lib/languages/rust",
         "highlight.js/lib/languages/typescript",
         "lowlight",
+        "isomorphic-dompurify",
       ],
     },
   },
