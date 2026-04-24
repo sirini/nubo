@@ -30,7 +30,7 @@ await board.getInitList(boardId)
 watch(
   () => route.params,
   async (newParams) => {
-    board.page = parseInt(newParams.page as string)
+    board.page = parseInt((newParams?.page || "1") as string)
     await board.getInitList(newParams.id as string)
   },
 )

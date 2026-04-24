@@ -1,4 +1,33 @@
+import { AUTH_KEY, type Resp } from "~/types/common"
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  return proxyRequest(event, `${config.apiBaseInternal}/auth/refresh`)
+  const body = await readBody(event)
+
+  try {
+    const response = await $fetch<Resp<string>>(`${config.apiBaseInternal}/auth/refresh`, {
+      method: "POST",
+      body,
+    })
+    if (!response.success) {
+      return response
+    }
+
+    const accessToken = response.result
+    if (accessToken) {
+      setCookie(event, AUTH_KEY, accessToken, {
+        httpOnly: true,
+        path: "/",
+        maxAge: 60 * 60 * parseInt(config.public.auth.accessTokenHours),
+      })
+    }
+
+    return response
+  } catch (error: any) {
+    throw createError({
+      status: error.response?.status || 401,
+      statusText: error.response?.statusText || "Refreshing access token failed",
+      data: error.data,
+    })
+  }
 })

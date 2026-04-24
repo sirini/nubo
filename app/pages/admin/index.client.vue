@@ -10,7 +10,7 @@ import { nuboAdminKey } from "~/providers/contexts/admin"
 const config = useRuntimeConfig()
 const auth = useAuthStore()
 const modules = import.meta.glob("~/skins/*/Admin.vue")
-const selectedSkin = getSkin(modules, config.public.skins.login, "nubo-basic-admin")
+const selectedSkin = getSkin(modules, config.public.skins.admin, "nubo-basic-admin")
 
 onMounted(() => {
   if (!auth.isAdmin) {

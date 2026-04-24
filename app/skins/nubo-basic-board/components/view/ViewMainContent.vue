@@ -8,7 +8,7 @@
     </CardDescription>
   </CardHeader>
   <CardContent class="nubo leading-7 px-4">
-    <div v-html="view.post.content"></div>
+    <div v-html="sanitize(view.post.content)"></div>
   </CardContent>
   <CardFooter class="px-4 justify-between">
     <ViewTagBadges />
@@ -30,4 +30,5 @@ import ViewStatusLine from "./ViewStatusLine.vue"
 import ViewTagBadges from "./ViewTagBadges.vue"
 
 const { view } = useNuboViewContext()
+const { sanitize } = useSanitize()
 </script>

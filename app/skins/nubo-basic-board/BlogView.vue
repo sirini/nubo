@@ -17,7 +17,7 @@
 
         <CardContent class="lg:col-span-9 px-0">
           <div class="nubo leading-7">
-            <div v-html="view.post.content"></div>
+            <div v-html="sanitize(view.post.content)"></div>
           </div>
         </CardContent>
       </main>
@@ -57,9 +57,9 @@ import ViewTagBadges from "./components/view/ViewTagBadges.vue"
 import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 
-const { view, config, updateReadingProgress } = useNuboViewContext()
+const { view, config, updateReadingProgress, clearReadingProgress } = useNuboViewContext()
+const { sanitize } = useSanitize()
 
-onMounted(() => {
-  updateReadingProgress("reading-progress")
-})
+onMounted(() => updateReadingProgress("reading-progress"))
+onBeforeUnmount(() => clearReadingProgress())
 </script>

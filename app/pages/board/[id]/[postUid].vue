@@ -36,6 +36,7 @@ watch(
   () => route.params,
   async (newParams) => {
     await board.getInitView(newParams.id as string, parseInt(newParams.postUid as string, 10))
+    await comment.getInitComments(board.view)
     comment.page = 1
   },
 )

@@ -39,6 +39,8 @@ await board.getInitList(boardId)
 watch(
   () => route.params,
   async (newParams) => {
+    board.option = (options.value[route.params.option as string] || SEARCH.TITLE) as Search
+    board.keyword = decodeURIComponent(route.params.keyword as string)
     board.page = parseInt(newParams.page as string)
     await board.getInitList(newParams.id as string)
   },

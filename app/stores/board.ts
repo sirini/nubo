@@ -31,6 +31,7 @@ export const useBoardStore = defineStore("board", () => {
     return labels
   })
   const keyword = ref<string>("")
+  const readingProgressController = ref<AbortController | null>(null)
 
   // 게시글 본문 내용 가져오기
   const getInitView = async (id: string, postUid: number) => {
@@ -179,18 +180,38 @@ export const useBoardStore = defineStore("board", () => {
     return results
   }
 
-  // 본문 스크롤에 따라서 얼만큼 읽었는지 비율 반환
+  // 본문 스크롤에 따라서 얼만큼 읽었는지 비율 표시하기
   const updateReadingProgress = (elementId: string) => {
     if (import.meta.server) return
 
     const el = document.getElementById(elementId)
-    if (el) {
-      el.style.transform = `scaleX(0)`
-      window.addEventListener("scroll", () => {
+    if (!el) return
+
+    if (readingProgressController.value) {
+      readingProgressController.value.abort()
+    }
+
+    readingProgressController.value = new AbortController()
+    const { signal } = readingProgressController.value
+
+    el.style.transform = `scaleX(0)`
+    el.style.transformOrigin = "left"
+    window.addEventListener(
+      "scroll",
+      () => {
         const winScroll = document.documentElement.scrollTop
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight
         el.style.transform = `scaleX(${winScroll / height})`
-      })
+      },
+      { signal },
+    )
+  }
+
+  // 본문 스크롤에 따라서 얼만큼 읽었는지 보는 부분 정리하기
+  const clearReadingProgress = () => {
+    if (readingProgressController.value) {
+      readingProgressController.value.abort()
+      readingProgressController.value = null
     }
   }
 
@@ -215,5 +236,6 @@ export const useBoardStore = defineStore("board", () => {
     setPagingUrl,
     makeTableOfContents,
     updateReadingProgress,
+    clearReadingProgress,
   }
 })

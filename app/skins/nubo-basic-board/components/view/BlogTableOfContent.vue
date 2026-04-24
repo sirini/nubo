@@ -23,10 +23,10 @@
 </template>
 
 <script setup lang="ts">
-import type { TableOfContent } from "~/types/board"
 import { useNuboViewContext } from "~/providers/contexts/view"
+import type { TableOfContent } from "~/types/board"
 
-const { makeTableOfContents, updateReadingProgress } = useNuboViewContext()
+const { makeTableOfContents } = useNuboViewContext()
 const headers = ref<TableOfContent[]>([])
 const activeHeaderId = ref<string>("")
 

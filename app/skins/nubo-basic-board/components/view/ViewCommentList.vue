@@ -50,7 +50,7 @@
 
           <div
             class="nubo text-sm text-foreground leading-relaxed whitespace-pre-wrap"
-            v-html="co.content"
+            v-html="sanitize(co.content)"
           ></div>
 
           <div class="flex items-center gap-2 pt-4">
@@ -93,7 +93,7 @@
     </div>
 
     <CommonVConfirmDialog
-      v-model="isConfirmDialog"
+      v-model="isConfirmRemoveCommentDialog"
       title="댓글 삭제"
       desc="정말로 선택하신 댓글을 삭제하시겠습니까?"
       cancel-text="그대로 두기"
@@ -115,6 +115,7 @@ import { useNuboViewContext } from "~/providers/contexts/view"
 
 const {
   comments,
+  isConfirmRemoveCommentDialog,
   checkPermissionComment,
   likeComment,
   confirmRemoveComment,
@@ -122,6 +123,5 @@ const {
   setModifyComment,
   setReplyComment,
 } = useNuboViewContext()
-
-const isConfirmDialog = ref<boolean>(false)
+const { sanitize } = useSanitize()
 </script>

@@ -13,6 +13,10 @@ export const useViewProvider = (): NuboViewContext => {
     view: computed(() => board.view),
     config: computed(() => board.view.config),
     comments: computed(() => comment.comments),
+    isConfirmRemoveCommentDialog: computed({
+      get: () => comment.isConfirmDialog,
+      set: (val) => (comment.isConfirmDialog = val),
+    }),
     isLoggedIn: computed(() => auth.isLoggedIn),
     isWriter: computed(() => auth.user.uid === board.view.post.writer.uid),
     imgIdx: computed({
@@ -102,5 +106,6 @@ export const useViewProvider = (): NuboViewContext => {
     },
     makeTableOfContents: () => board.makeTableOfContents(),
     updateReadingProgress: (element: string) => board.updateReadingProgress(element),
+    clearReadingProgress: () => board.clearReadingProgress(),
   }
 }

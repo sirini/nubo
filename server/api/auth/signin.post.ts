@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   try {
     const response = await $fetch<Resp<UserMyResult>>(`${config.apiBaseInternal}/auth/signin`, {
       method: "POST",
-      body: body,
+      body,
     })
     if (!response.success) {
       return response
@@ -26,8 +26,8 @@ export default defineEventHandler(async (event) => {
     return response
   } catch (error: any) {
     throw createError({
-      statusCode: error.response?.status || 401,
-      statusMessage: error.response?.statusText || "Login Failed",
+      status: error.response?.status || 401,
+      statusText: error.response?.statusText || "Login Failed",
       data: error.data,
     })
   }
