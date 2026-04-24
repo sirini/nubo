@@ -21,7 +21,7 @@
           </CommonVTooltip>
           <CommonVTooltip content="지금까지 작성된 총 댓글 개수 (삭제 포함)">
             <div>
-              <p class="text-xs text-muted-foreground uppercase tracking-wider mb-1">replys</p>
+              <p class="text-xs text-muted-foreground uppercase tracking-wider mb-1">comments</p>
               <p class="text-xl font-mono font-bold">{{ statReply.total }}</p>
             </div>
           </CommonVTooltip>

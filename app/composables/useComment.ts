@@ -1,25 +1,18 @@
 import type {
-  CommentListResult,
+  CommentLikeParam,
   CommentListParam,
-  CommentWriteParam,
+  CommentListResult,
   CommentModifyParam,
   CommentRemoveParam,
   CommentReplyParam,
-  CommentLikeParam,
+  CommentWriteParam,
 } from "~/types/comment"
 import type { Resp } from "~/types/common"
 
 export const useComment = () => {
-  const config = useRuntimeConfig()
-
   // 댓글 목록 가져오기
   const loadInitCommentList = async (params: CommentListParam) => {
-    const { data } = await useFetch<Resp<CommentListResult>>("/comment/list", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      params,
-    })
-    return resp(data.value)
+    return await reqGet<Resp<CommentListResult>>("/comment/list", params)
   }
 
   // 댓글에 좋아요 남기기

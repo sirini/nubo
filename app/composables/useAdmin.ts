@@ -35,10 +35,8 @@ export const useAdmin = () => {
   }
 
   // 업로드 폴더 사용량 가져오기
-  const loadGeneralUploadUsage = async (path: string) => {
-    return await reqGet<Resp<number>>("/admin/dashboard/usage", {
-      path,
-    })
+  const loadGeneralUploadUsage = async () => {
+    return await reqGet<Resp<number>>("/admin/dashboard/usage", {})
   }
 
   // 최근 신고 목록 가져오기

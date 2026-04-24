@@ -1,14 +1,13 @@
 import { reqGet } from "~/composables/useUtils"
 import { IS_VISITED, type Resp } from "~/types/common"
 import type {
-  HomePostItem,
   HomeLatestPostsParams,
-  HomeSidebarGroupResult,
+  HomePostItem,
   HomePostResult,
+  HomeSidebarGroupResult,
 } from "~/types/home"
 
 export const useHome = () => {
-  const config = useRuntimeConfig()
   const today = new Date().toISOString().slice(0, 10)
 
   // 방문 기록 추가하기

@@ -1,4 +1,4 @@
-import { AUTH_KEY, type Resp } from "~/types/common"
+import { AUTH_KEY, REFRESH_KEY, type Resp } from "~/types/common"
 import type { UserMyResult } from "~/types/user"
 
 export default defineEventHandler(async (event) => {
@@ -15,11 +15,21 @@ export default defineEventHandler(async (event) => {
     }
 
     const accessToken = response.result.token
+    const refreshToken = response.result.refresh
+
     if (accessToken) {
       setCookie(event, AUTH_KEY, accessToken, {
         httpOnly: true,
         path: "/",
         maxAge: 60 * 60 * parseInt(config.public.auth.accessTokenHours),
+      })
+    }
+
+    if (refreshToken) {
+      setCookie(event, REFRESH_KEY, refreshToken, {
+        httpOnly: true,
+        path: "/",
+        maxAge: 60 * 60 * 24 * parseInt(config.public.auth.refreshTokenDays),
       })
     }
 

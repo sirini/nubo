@@ -12,11 +12,10 @@ export const useReportStore = defineStore("report", () => {
   const targetUserUid = ref<number>(0)
 
   // 이미 신고된 건인지, 이미 내 블랙리스트에 추가되었는지 확인
-  const loadReportStatus = async () => {
-    if (targetUserUid.value < 1) return
-
+  const loadReportStatus = async (target: number) => {
     try {
-      const response = await getReportStatus(targetUserUid.value)
+      targetUserUid.value = target
+      const response = await getReportStatus(target)
       if (!response.success || !response.result) {
         toast(`❌ 신고 여부 및 블랙 리스트 추가 등의 정보를 가져오지 못했습니다: ${response.error}`)
         return
@@ -43,7 +42,7 @@ export const useReportStore = defineStore("report", () => {
   // 신고하기 클릭 시 서버로 제출
   const send = async () => {
     if (targetUserUid.value < 1) {
-      toast(`⚠️ 삭제할 대상이 지정되지 않았습니다`)
+      toast(`⚠️ 신고 대상이 지정되지 않았습니다`)
       return
     }
     if (description.value.length < 10) {

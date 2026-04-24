@@ -23,35 +23,20 @@ export const useBoard = () => {
 
   // 게시글 본문 내용 가져오기
   const loadInitBoardView = async (params: BoardViewParam) => {
-    const { data } = await useFetch<Resp<BoardViewResult>>("/board/view", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      params,
-    })
-    return resp(data.value)
+    return await reqGet<Resp<BoardViewResult>>("/board/view", params)
   }
 
   // 게시글 목록 가져오기
   const loadInitBoardList = async (params: BoardListParam) => {
-    const { data } = await useFetch<Resp<BoardListResult>>("/board/list", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      params,
-    })
-    return resp(data.value)
+    return await reqGet<Resp<BoardListResult>>("/board/list", params)
   }
 
   // 특정 회원의 최근 (댓)글들 가져오기
   const loadInitUserLatestContent = async (targetUserUid: number, limit: number = 5) => {
-    const { data } = await useFetch<Resp<BoardWriterLatestContent>>("/board/user/latest", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      params: {
-        targetUserUid,
-        limit,
-      },
+    return await reqGet<Resp<BoardWriterLatestContent>>("/board/user/latest", {
+      targetUserUid,
+      limit,
     })
-    return resp(data.value)
   }
 
   // 게시글에 좋아요 남기기 (혹은 취소하기)

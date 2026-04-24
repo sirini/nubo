@@ -1,5 +1,5 @@
 <template>
-  <Collapsible v-if="view.files.length > 0" v-model:open="isFileListOpen" class="border-t">
+  <Collapsible v-model:open="isFileListOpen" class="border-t">
     <div class="flex items-center justify-between w-full p-3">
       <h4
         class="text-sm cursor-pointer pl-1 flex items-center gap-2"

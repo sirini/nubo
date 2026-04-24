@@ -35,55 +35,43 @@ export const useBoardStore = defineStore("board", () => {
 
   // 게시글 본문 내용 가져오기
   const getInitView = async (id: string, postUid: number) => {
-    if (isLoading.value) return
-    try {
-      isLoading.value = true
-      const response = await loadInitBoardView({
-        id,
-        postUid,
-        latestLimit: latestLimit.value,
-      })
+    const response = await loadInitBoardView({
+      id,
+      postUid,
+      latestLimit: latestLimit.value,
+    })
 
-      if (!response.success || !response.result) {
-        toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response.error}`)
-        return
-      }
-      view.value = response.result
-      view.value.post.writer.name = recoverChars(view.value.post.writer.name)
-      view.value.post.writer.signature = recoverChars(view.value.post.writer.signature)
-    } finally {
-      isLoading.value = false
+    if (!response.success || !response.result) {
+      toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response.error}`)
+      return
     }
+    view.value = response.result
+    view.value.post.writer.name = recoverChars(view.value.post.writer.name)
+    view.value.post.writer.signature = recoverChars(view.value.post.writer.signature)
   }
 
   // 게시글 목록 가져오기
   const getInitList = async (id: string) => {
-    if (isLoading.value) return
-    try {
-      isLoading.value = true
-      const response = await loadInitBoardList({
-        id,
-        option: option.value,
-        keyword: keyword.value,
-        page: page.value,
-      })
+    const response = await loadInitBoardList({
+      id,
+      option: option.value,
+      keyword: keyword.value,
+      page: page.value,
+    })
 
-      if (!response.success || !response.result) {
-        toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response.error}`)
-        return
-      }
-      response.result.notices.map((notice) => {
-        notice.title = recoverChars(notice.title)
-        notice.writer.name = recoverChars(notice.writer.name)
-      })
-      response.result.posts.map((post) => {
-        post.title = recoverChars(post.title)
-        post.writer.name = recoverChars(post.writer.name)
-      })
-      list.value = response.result
-    } finally {
-      isLoading.value = false
+    if (!response.success || !response.result) {
+      toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response.error}`)
+      return
     }
+    response.result.notices.map((notice) => {
+      notice.title = recoverChars(notice.title)
+      notice.writer.name = recoverChars(notice.writer.name)
+    })
+    response.result.posts.map((post) => {
+      post.title = recoverChars(post.title)
+      post.writer.name = recoverChars(post.writer.name)
+    })
+    list.value = response.result
   }
 
   // 첨부파일 다운로드하기

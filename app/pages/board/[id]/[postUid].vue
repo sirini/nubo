@@ -29,15 +29,16 @@ const selectedSkin = computed(() => {
   )
 })
 
-await board.getInitView(boardId, postUid)
-await comment.getInitComments(board.view)
+await Promise.all([board.getInitView(boardId, postUid), comment.getInitComments(board.view)])
 
 watch(
   () => route.params,
   async (newParams) => {
-    await board.getInitView(newParams.id as string, parseInt(newParams.postUid as string, 10))
-    await comment.getInitComments(board.view)
     comment.page = 1
+    await Promise.all([
+      board.getInitView(newParams.id as string, parseInt(newParams.postUid as string, 10)),
+      comment.getInitComments(board.view),
+    ])
   },
 )
 

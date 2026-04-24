@@ -44,7 +44,7 @@
   font-family: "JetBrains Mono";
   font-style: normal;
   font-weight: 200;
-  src: url("/fonts/jetbrains-mono-v24-latin-200.woff2") format("woff2");
+  src: url("~/assets/css/fonts/jetbrains-mono-v24-latin-200.woff2") format("woff2");
 }
 /* jetbrains-mono-regular - latin */
 @font-face {
@@ -52,7 +52,7 @@
   font-family: "JetBrains Mono";
   font-style: normal;
   font-weight: 400;
-  src: url("/fonts/jetbrains-mono-v24-latin-regular.woff2") format("woff2");
+  src: url("~/assets/css/fonts/jetbrains-mono-v24-latin-regular.woff2") format("woff2");
 }
 /* jetbrains-mono-500 - latin */
 @font-face {
@@ -60,7 +60,7 @@
   font-family: "JetBrains Mono";
   font-style: normal;
   font-weight: 500;
-  src: url("/fonts/jetbrains-mono-v24-latin-500.woff2") format("woff2");
+  src: url("~/assets/css/fonts/jetbrains-mono-v24-latin-500.woff2") format("woff2");
 }
 /* jetbrains-mono-700 - latin */
 @font-face {
@@ -68,7 +68,7 @@
   font-family: "JetBrains Mono";
   font-style: normal;
   font-weight: 700;
-  src: url("/fonts/jetbrains-mono-v24-latin-700.woff2") format("woff2");
+  src: url("~/assets/css/fonts/jetbrains-mono-v24-latin-700.woff2") format("woff2");
 }
 /* jetbrains-mono-800 - latin */
 @font-face {
@@ -76,5 +76,5 @@
   font-family: "JetBrains Mono";
   font-style: normal;
   font-weight: 800;
-  src: url("/fonts/jetbrains-mono-v24-latin-800.woff2") format("woff2");
+  src: url("~/assets/css/fonts/jetbrains-mono-v24-latin-800.woff2") format("woff2");
 }

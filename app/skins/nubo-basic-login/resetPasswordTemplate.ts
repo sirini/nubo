@@ -25,7 +25,7 @@ export const useResetPasswordTemplate = () => {
         <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
           <tr>
             <td style="padding: 50px 40px; text-align: center;">
-              <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 700; color: #1e2128;">이메일 주소 인증</h1>
+              <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 700; color: #1e2128;">비밀번호 재설정</h1>
               <p style="margin: 0 0 40px 0; font-size: 16px; color: #4a4a4a; line-height: 1.6;">
                 아래의 URL를 클릭하거나 브라우저 주소창에 입력하세요.
               </p>

@@ -45,7 +45,7 @@
           variant="destructive"
           class="flex items-center gap-2 cursor-pointer"
           @click="openReportForm(profileUser.uid)"
-          :disabled="profileUser.admin || !isLoggedIn"
+          :disabled="profileUser.admin"
         >
           <SirenIcon class="w-4 h-4" />신고하기
         </Button>

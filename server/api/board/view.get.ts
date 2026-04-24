@@ -16,24 +16,18 @@ export default defineEventHandler(async (event) => {
     viewedPosts = []
   }
 
-  // 조회수 업데이트 여부 체크 (24시간 내 중복 업데이트 금지)
-  let needUpdateHit = 0
-  if (!viewedPosts.includes(postUid)) {
-    needUpdateHit = 1
-    viewedPosts.push(postUid)
-
-    setCookie(event, HIT_KEY, JSON.stringify(viewedPosts), {
-      httpOnly: true,
-      path: "/",
-      maxAge: 60 * 60 * 24,
-    })
-  }
-
+  const isAlreadyViewed = viewedPosts.includes(postUid)
+  const needUpdateHit = isAlreadyViewed ? 0 : 1
   const token = getCookie(event, AUTH_KEY)
+
   try {
-    const response = await $fetch<Resp<BoardViewResult>>(`${config.apiBaseInternal}/board/view`, {
+    //
+    // TODO: 하이드레이션 미스매치 문제 해결
+    //
+    const response = await $fetch<Resp<BoardViewResult>>("/board/view", {
+      baseURL: config.apiBaseInternal,
       method: "GET",
-      params: {
+      query: {
         id,
         postUid,
         needUpdateHit,
@@ -43,6 +37,15 @@ export default defineEventHandler(async (event) => {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     })
+
+    if (response.success && needUpdateHit === 1) {
+      viewedPosts.push(postUid)
+      setCookie(event, HIT_KEY, JSON.stringify(viewedPosts), {
+        path: "/",
+        maxAge: 60 * 60 * 24,
+      })
+    }
+
     return response
   } catch (e: any) {
     throw createError({

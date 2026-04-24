@@ -88,7 +88,7 @@ export const useAdminStore = defineStore("admin", () => {
     const results = await Promise.allSettled([
       loadGeneralStatistic(daysForStat),
       loadGeneralItem(limitForItem),
-      loadGeneralUploadUsage("./upload"),
+      loadGeneralUploadUsage(),
     ])
     const [stat, item, usage] = results
 

@@ -1,15 +1,15 @@
 import DOMPurify from "isomorphic-dompurify"
 
 export const useSanitize = () => {
+  DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+    if (node.tagName === "A") {
+      node.setAttribute("target", "_blank")
+      node.setAttribute("rel", "noopener noreferrer")
+    }
+  })
+
   // 허용된 HTML 태그만 걸러서 출력되도록 하기
   const sanitize = (dirty: string): string => {
-    DOMPurify.addHook("afterSanitizeAttributes", (node) => {
-      if (node.tagName === "A") {
-        node.setAttribute("target", "_blank")
-        node.setAttribute("rel", "noopener noreferrer")
-      }
-    })
-
     return DOMPurify.sanitize(dirty, {
       ALLOWED_TAGS: [
         "a",

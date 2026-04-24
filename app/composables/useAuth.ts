@@ -14,23 +14,16 @@ export const useAuth = () => {
 
   // 사용자 정보를 기존 토큰 정보로 가져와서 반환
   const loadInitUserInfo = async () => {
-    const { data } = await useFetch<Resp<UserMyResult>>("/auth/load", {
+    return await $fetch<Resp<UserMyResult>>("/auth/load", {
       baseURL: config.public.apiBase,
       method: "GET",
+      headers: useRequestHeaders(["cookie"]) as unknown as Record<string, string>,
     })
-    return resp(data.value)
   }
 
   // 다른 사용자의 공개된 정보를 가져와서 반환
   const loadInitOtherUserInfo = async (targetUserUid: number) => {
-    const { data } = await useFetch<Resp<UserInfoResult>>("/auth/user/info", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      params: {
-        targetUserUid,
-      },
-    })
-    return resp(data.value)
+    return await reqGet<Resp<UserInfoResult>>("/auth/user/info", { targetUserUid })
   }
 
   // 로그인 처리하기

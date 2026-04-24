@@ -3,8 +3,8 @@ import { resolve } from "pathe"
 
 const env = process.env
 const GOAPI_PORT = env.NUXT_PUBLIC_GOAPI_PORT || "3006"
-const GOAPI_BASE = env.NUXT_PUBLIC_GOAPI_BASE || "goapi"
-const GOAPI_URL = `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_BASE}`
+const GOAPI_PATH = env.NUXT_PUBLIC_GOAPI_PATH || "goapi"
+const GOAPI_URL = `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_PATH}`
 
 // 기본 스킨 설정
 const defaultSkins = {
@@ -35,7 +35,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: "/api",
       goapi: GOAPI_URL,
-      goapiBase: GOAPI_BASE,
+      goapiBase: GOAPI_PATH,
       version: env.NUXT_PUBLIC_VERSION || "v1.1.0",
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
       title: env.NUXT_PUBLIC_TITLE || "The NUBO | Nuxt4 based Board",
@@ -109,6 +109,10 @@ export default defineNuxtConfig({
         "highlight.js/lib/languages/typescript",
         "lowlight",
         "isomorphic-dompurify",
+        "@vee-validate/zod",
+        "vee-validate",
+        "zod",
+        "@unovis/vue",
       ],
     },
   },

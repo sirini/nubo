@@ -3,11 +3,15 @@ import { AUTH_KEY, type Resp } from "~/types/common"
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const body = await readBody(event)
+  const cookie = getHeader(event, "cookie") || ""
 
   try {
     const response = await $fetch<Resp<string>>(`${config.apiBaseInternal}/auth/refresh`, {
       method: "POST",
       body,
+      headers: {
+        cookie,
+      },
     })
     if (!response.success) {
       return response

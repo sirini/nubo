@@ -30,7 +30,7 @@ export const useJoinStore = defineStore("join", () => {
   const resetPassword2 = ref<string>("")
   const EMAIL_REGEX =
     /^(?!.*\.\.)(?!\.)(?!.*\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@(?:(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,}$/
-  const PW_REGET = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9\s])[^\s]{8,}$/
+  const PW_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9\s])[^\s]{8,}$/
 
   // 이미 등록된 이메일 주소인지 확인 (true: 이미 사용중)
   const isUsedEmail = async () => {
@@ -88,7 +88,7 @@ export const useJoinStore = defineStore("join", () => {
 
   // 입력한 비밀번호가 유효한지 확인
   const submit = async () => {
-    if (!PW_REGET.test(password.value) || !PW_REGET.test(password2.value)) {
+    if (!PW_REGEX.test(password.value) || !PW_REGEX.test(password2.value)) {
       toast(`⚠️ 비밀번호는 8글자 이상, 영문/숫자/특수기호 조합이 필요합니다`)
       password.value = ""
       password2.value = ""
@@ -200,7 +200,7 @@ export const useJoinStore = defineStore("join", () => {
 
   // 새 비밀번호로 업데이트하기
   const updatePassword = async () => {
-    if (!PW_REGET.test(resetPassword.value) || !PW_REGET.test(resetPassword2.value)) {
+    if (!PW_REGEX.test(resetPassword.value) || !PW_REGEX.test(resetPassword2.value)) {
       toast(`⚠️ 비밀번호는 8글자 이상, 영문/숫자/특수기호 조합이 필요합니다`)
       resetPassword.value = ""
       resetPassword2.value = ""

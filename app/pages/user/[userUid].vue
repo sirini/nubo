@@ -20,7 +20,7 @@ await Promise.all([
   auth.getInitOtherUserInfo(targetUserUid.value),
   auth.getInitUserLatestContent(targetUserUid.value, limit),
   chat.getChatHistory(targetUserUid.value),
-  report.loadReportStatus(),
+  report.loadReportStatus(targetUserUid.value),
 ])
 
 provide(nuboProfileKey, useProfileProvider())
