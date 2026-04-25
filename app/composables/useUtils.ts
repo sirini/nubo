@@ -53,34 +53,6 @@ export const resp = <T>(data: T | undefined) => {
   return data || { success: false, error: "failed operation", result: null }
 }
 
-// Composables에서 사용할 클라이언트용 GET
-export const reqGet = async <T>(url: string, query: Record<string, any>) => {
-  const { $api } = useNuxtApp()
-  return await $api<T>(url, { method: "GET", query })
-}
-
-// Composables에서 사용할 클라이언트용 POST
-export const reqPost = async <T>(url: string, body: Record<string, any> | BodyInit | FormData) => {
-  const { $api } = useNuxtApp()
-  return await $api<T>(url, { method: "POST", body })
-}
-
-// Composables에서 사용할 클라이언트용 PATCH
-export const reqPatch = async <T>(
-  url: string,
-  body: Record<string, any> | BodyInit | FormData,
-  query: Record<string, any> = {},
-) => {
-  const { $api } = useNuxtApp()
-  return await $api<T>(url, { method: "PATCH", body, query })
-}
-
-// Composables에서 사용할 클라이언트용 DELETE
-export const reqDelete = async <T>(url: string, query: Record<string, any>) => {
-  const { $api } = useNuxtApp()
-  return await $api<T>(url, { method: "DELETE", query })
-}
-
 // 게시글 본문의 길이를 바탕으로 예상 읽기 시간을 분 단위로 반환
 export const getReadingTime = (content: string, charPerMin: number = 500): number => {
   const plainText = stripTags(content)

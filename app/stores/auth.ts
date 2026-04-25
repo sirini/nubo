@@ -34,7 +34,6 @@ export const useAuthStore = defineStore("auth", () => {
       user.value.signature = recoverChars(user.value.signature)
     } catch (e) {
       toast(`❌ 사용자 정보를 가져오지 못했습니다: ${e}`)
-      await logout()
     }
   }
 

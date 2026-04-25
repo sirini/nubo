@@ -1,4 +1,3 @@
-import { reqDelete, reqGet, reqPatch, reqPost } from "~/composables/useUtils"
 import type { Resp } from "~/types/common"
 import type {
   EditorConfigResult,
@@ -10,6 +9,8 @@ import type {
 } from "~/types/editor"
 
 export const useEditor = () => {
+  const { reqPost, reqGet, reqPatch, reqDelete } = useApi()
+
   // 에디터에서 삽입할 이미지들 업로드
   const uploadEditorImages = async (boardUid: number, files: File[]) => {
     const fd = new FormData()

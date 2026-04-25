@@ -20,6 +20,8 @@ import {
 import type { Resp } from "~/types/common"
 
 export const useAdmin = () => {
+  const { reqGet, reqPost, reqDelete } = useApi()
+
   // 간단 통계 데이터 가져오기
   const loadGeneralStatistic = async (days: number) => {
     return await reqGet<Resp<AdminDashboardStatisticResult>>("/admin/dashboard/statistic", {

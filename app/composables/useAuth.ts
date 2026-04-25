@@ -1,4 +1,3 @@
-import { reqPost } from "~/composables/useUtils"
 import type { ResetPasswordParam, SignupParam, SignupResult, VerifyParam } from "~/types/auth"
 import type { Resp } from "~/types/common"
 import type {
@@ -10,15 +9,11 @@ import type {
 } from "~/types/user"
 
 export const useAuth = () => {
-  const config = useRuntimeConfig()
+  const { reqGet, reqPost, reqPatch } = useApi()
 
   // 사용자 정보를 기존 토큰 정보로 가져와서 반환
   const loadInitUserInfo = async () => {
-    return await $fetch<Resp<UserMyResult>>("/auth/load", {
-      baseURL: config.public.apiBase,
-      method: "GET",
-      headers: useRequestHeaders(["cookie"]) as unknown as Record<string, string>,
-    })
+    return await reqGet<Resp<UserMyResult>>("/auth/load", {})
   }
 
   // 다른 사용자의 공개된 정보를 가져와서 반환

@@ -246,6 +246,7 @@ export type BoardViewParam = {
   id: string
   postUid: number
   latestLimit: number
+  needUpdateHit: boolean
 }
 
 // 게시글 보기 반환 타입 정의

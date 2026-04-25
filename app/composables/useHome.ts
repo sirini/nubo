@@ -1,4 +1,3 @@
-import { reqGet } from "~/composables/useUtils"
 import { IS_VISITED, type Resp } from "~/types/common"
 import type {
   HomeLatestPostsParams,
@@ -9,12 +8,15 @@ import type {
 
 export const useHome = () => {
   const today = new Date().toISOString().slice(0, 10)
+  const config = useRuntimeConfig()
+  const { reqGet } = useApi()
 
   // 방문 기록 추가하기
   const addVisitHistory = async (userUid?: number) => {
     if (import.meta.server) return // 서버에서는 실행 금지
     try {
       if (localStorage.getItem(IS_VISITED) === today) return
+
       await reqGet<Resp<null>>("/home/visit", { userUid })
     } catch (e) {
       console.error("Failed to add a visiting count:", e)

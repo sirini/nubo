@@ -2,7 +2,8 @@ import type { ChatHistory, ChatItem } from "~/types/chat"
 import type { Resp } from "~/types/common"
 
 export const useChat = () => {
-  const config = useRuntimeConfig()
+  const { reqGet, reqPost } = useApi()
+
   // 내 채팅 목록 불러오기
   const loadChatList = async (limit: number) => {
     return await reqGet<Resp<ChatItem[]>>("/chat/list", { limit })

@@ -1,4 +1,3 @@
-import { reqPatch } from "~/composables/useUtils"
 import type {
   BoardListParam,
   BoardListResult,
@@ -11,7 +10,7 @@ import type {
 import type { Resp } from "~/types/common"
 
 export const useBoard = () => {
-  const config = useRuntimeConfig()
+  const { reqGet, reqPatch } = useApi()
 
   // 첨부파일 다운로드 하기
   const download = async (boardUid: number, fileUid: number) => {

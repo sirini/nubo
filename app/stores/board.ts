@@ -34,11 +34,12 @@ export const useBoardStore = defineStore("board", () => {
   const readingProgressController = ref<AbortController | null>(null)
 
   // 게시글 본문 내용 가져오기
-  const getInitView = async (id: string, postUid: number) => {
+  const getInitView = async (id: string, postUid: number, needUpdateHit: boolean) => {
     const response = await loadInitBoardView({
       id,
       postUid,
       latestLimit: latestLimit.value,
+      needUpdateHit,
     })
 
     if (!response.success || !response.result) {

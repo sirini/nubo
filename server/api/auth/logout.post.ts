@@ -3,11 +3,13 @@ import { AUTH_KEY, REFRESH_KEY } from "~/types/common"
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
+  const { reqPost } = useApi()
   const token = getCookie(event, AUTH_KEY)
 
   try {
     if (token) {
-      await $fetch(`${config.apiBaseInternal}/auth/logout`, {
+      await $fetch("/auth/logout", {
+        baseURL: config.apiBaseInternal,
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
