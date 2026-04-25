@@ -23,6 +23,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: "nubo | a new unified board" /* 본인 사이트에 맞춰 수정 필요 */,
+      htmlAttrs: {
+        class: "dark",
+      },
     },
   },
   srcDir: "app/",
@@ -113,6 +116,7 @@ export default defineNuxtConfig({
         "vee-validate",
         "zod",
         "@unovis/vue",
+        "vaul-vue",
       ],
     },
   },

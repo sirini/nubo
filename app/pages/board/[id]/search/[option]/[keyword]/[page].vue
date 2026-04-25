@@ -10,20 +10,21 @@ import { BOARD_PREFIX, SEARCH, type Search } from "~/types/board"
 const route = useRoute()
 const config = useRuntimeConfig()
 const board = useBoardStore()
-const boardId = route.params.id as string
-const page = parseInt(route.params.page as string)
-const options = ref<Record<string, number>>({
+
+const boardId = computed(() => route.params.id as string)
+const page = computed(() => parseInt(route.params.page as string, 10))
+const option = computed(() => route.params.option as string)
+const keyword = computed(() => route.params.keyword as string)
+
+const options: Record<string, number> = {
   title: SEARCH.TITLE,
   content: SEARCH.CONTENT,
   writer: SEARCH.WRITER,
   tag: SEARCH.TAG,
   imagedesc: SEARCH.IMAGEDESC,
-})
-board.page = page > 0 ? page : 1
+}
 
-board.option = (options.value[route.params.option as string] || SEARCH.TITLE) as Search
-board.keyword = decodeURIComponent(route.params.keyword as string)
-
+// 게시판 타입에 따른 목록 미지원 시 기본 목록 스킨 출력
 const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
   const boardType = BOARD_PREFIX[board.list.config.type]
@@ -34,15 +35,19 @@ const selectedSkin = computed(() => {
   )
 })
 
-await board.getInitList(boardId)
+// 하이드레이션 미스매치 방지 및 캐싱
+const { data: initData } = await useAsyncData(
+  `search-${boardId.value}-${option.value}-${keyword.value}-${page.value}`,
+  async () => {
+    board.page = page.value > 0 ? page.value : 1
+    board.option = (options[option.value] || SEARCH.TITLE) as Search
+    board.keyword = decodeURIComponent(keyword.value)
 
-watch(
-  () => route.params,
-  async (newParams) => {
-    board.option = (options.value[route.params.option as string] || SEARCH.TITLE) as Search
-    board.keyword = decodeURIComponent(route.params.keyword as string)
-    board.page = parseInt(newParams.page as string)
-    await board.getInitList(newParams.id as string)
+    await board.getInitList(boardId.value)
+    return { success: true, timestamp: Date.now() }
+  },
+  {
+    watch: [() => route.params],
   },
 )
 

@@ -3,9 +3,11 @@
     <div class="inline-flex gap-3 items-center">
       <Avatar class="border-2 shadow-lg w-12 h-12">
         <AvatarImage :src="view.post.writer.profile" alt="Profile image" />
-        <AvatarFallback>{{ view.post.writer.name.charAt(0) }}</AvatarFallback>
+        <AvatarFallback>{{ recoverChars(view.post.writer.name).charAt(0) }}</AvatarFallback>
       </Avatar>
-      <h3 class="text-lg font-semibold tracking-tight">{{ view.post.writer.name }}님</h3>
+      <h3 class="text-lg font-semibold tracking-tight">
+        {{ recoverChars(view.post.writer.name) }}님
+      </h3>
     </div>
 
     <Button variant="link" class="text-muted-foreground p-0 h-auto cursor-pointer" as-child>

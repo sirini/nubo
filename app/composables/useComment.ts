@@ -10,36 +10,60 @@ import type {
 import type { Resp } from "~/types/common"
 
 export const useComment = () => {
-  const { reqGet, reqPatch, reqPost, reqDelete } = useApi()
+  const config = useRuntimeConfig()
 
   // 댓글 목록 가져오기
-  const loadInitCommentList = async (params: CommentListParam) => {
-    return await reqGet<Resp<CommentListResult>>("/comment/list", params)
+  const loadInitCommentList = async (param: CommentListParam) => {
+    return await $fetch<Resp<CommentListResult>>("/comment/list", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: param,
+    })
   }
 
   // 댓글에 좋아요 남기기
   const like = async (param: CommentLikeParam) => {
-    return await reqPatch<Resp<null>>("/comment/like", param)
+    return await $fetch<Resp<null>>("/comment/like", {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+      body: param,
+    })
   }
 
   // 댓글 수정하기
   const modify = async (param: CommentModifyParam) => {
-    return await reqPatch<Resp<null>>("/comment/modify", param)
+    return await $fetch<Resp<null>>("/comment/modify", {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+      body: param,
+    })
   }
 
   // 댓글 삭제하기
   const remove = async (param: CommentRemoveParam) => {
-    return await reqDelete<Resp<null>>("/comment/remove", param)
+    return await $fetch<Resp<null>>("/comment/remove", {
+      baseURL: config.public.apiBase,
+      method: "DELETE",
+      query: param,
+    })
   }
 
   // 댓글에 답글 남기기
   const reply = async (param: CommentReplyParam) => {
-    return await reqPost<Resp<number>>("/comment/reply", param)
+    return await $fetch<Resp<number>>("/comment/reply", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body: param,
+    })
   }
 
   // 댓글 작성하기
   const write = async (param: CommentWriteParam) => {
-    return await reqPost<Resp<number>>("/comment/write", param)
+    return await $fetch<Resp<number>>("/comment/write", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body: param,
+    })
   }
 
   return {

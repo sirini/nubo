@@ -13,7 +13,12 @@ const config = useRuntimeConfig()
 const modules = import.meta.glob("~/skins/*/Layout.vue")
 const selectedSkin = getSkin(modules, config.public.skins.layout, "nubo-basic-layout")
 
-await home.getInitMenus()
+const { addVisitHistory } = useHome()
+const auth = useAuthStore()
+
+await Promise.all([home.getInitMenus(), auth.getInitUserInfo()])
+
+addVisitHistory(auth.user.uid)
 
 provide(nuboLayoutKey, useLayoutProvider())
 </script>

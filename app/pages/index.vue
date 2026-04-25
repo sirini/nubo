@@ -13,10 +13,14 @@ const home = useHomeStore()
 const modules = import.meta.glob("~/skins/*/Home.vue")
 const selectedSkin = getSkin(modules, config.public.skins.home, "nubo-basic-home")
 
-home.option = SEARCH.TITLE as Search
-home.keyword = ""
+// 하이드레이션 미스매치 방지 및 캐싱
+const { data: initData } = await useAsyncData(`home`, async () => {
+  home.option = SEARCH.TITLE as Search
+  home.keyword = ""
+  await home.getInitLatestPosts({ reset: true })
 
-await home.getInitLatestPosts({ reset: true })
+  return { success: true, timestamp: Date.now() }
+})
 
 provide(nuboHomeKey, useHomeProvider())
 </script>

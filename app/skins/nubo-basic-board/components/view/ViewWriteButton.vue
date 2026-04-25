@@ -4,6 +4,7 @@
       <Button
         variant="default"
         class="text-foreground"
+        size="sm"
         :class="{ 'opacity-50 pointer-events-none': !isLoggedIn }"
       >
         <PencilIcon class="w-4 h-4" />

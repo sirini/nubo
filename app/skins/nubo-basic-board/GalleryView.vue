@@ -8,26 +8,28 @@
       </section>
 
       <aside class="w-full lg:w-95 flex flex-col bg-card">
-        <ScrollArea class="p-4 space-y-4 lg:h-full">
-          <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
+        <ScrollArea class="p-4 lg:h-full">
+          <div class="space-y-4">
+            <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
 
-          <ViewWriterProfile />
-          <Card>
-            <ViewMainContent />
-          </Card>
+            <ViewWriterProfile />
+            <Card>
+              <ViewMainContent />
+            </Card>
 
-          <div class="rounded-lg border p-4">
-            <ViewCommentList />
-          </div>
+            <div class="rounded-lg border p-4" v-if="comments.length > 0">
+              <ViewCommentList />
+            </div>
 
-          <ViewWriteComment />
+            <ViewWriteComment />
 
-          <div class="flex items-center justify-between my-12">
-            <ViewListButton />
+            <div class="flex items-center justify-between my-12">
+              <ViewListButton />
 
-            <div class="inline-flex gap-3 items-center">
-              <ViewModifyButton />
-              <ViewWriteButton />
+              <div class="inline-flex gap-3 items-center">
+                <ViewModifyButton />
+                <ViewWriteButton />
+              </div>
             </div>
           </div>
         </ScrollArea>
@@ -48,5 +50,5 @@ import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 import ViewWriterProfile from "./components/view/ViewWriterProfile.vue"
 
-const { view, imgIdx } = useNuboViewContext()
+const { view, imgIdx, comments } = useNuboViewContext()
 </script>

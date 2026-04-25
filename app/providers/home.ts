@@ -8,9 +8,11 @@ export const useHomeProvider = (): NuboHomeContext => {
       get: () => home.isLanding,
       set: (val: boolean) => (home.isLanding = val),
     }),
-    isLoading: computed(() => home.isLoading),
     isLastPost: computed(() => home.isLastPost),
     posts: computed(() => home.posts),
+    option: computed(() => home.option),
+    optionLabels: computed(() => home.optionLabels),
+    keyword: computed(() => home.keyword),
     loadMorePosts: async () => {
       await home.loadMore()
     },

@@ -24,7 +24,6 @@ export const useHomeStore = defineStore("home", () => {
     }
     return labels
   })
-  const isLoading = ref<boolean>(false)
   const isLastPost = ref<boolean>(false)
   const isLanding = ref<boolean>(true)
   const posts = ref<HomePostItem[]>([])
@@ -49,49 +48,37 @@ export const useHomeStore = defineStore("home", () => {
 
   // (검색된 or 전체) 게시글들 가져오기
   const getInitLatestPosts = async (opts?: { reset?: boolean }) => {
-    if (isLoading.value) return
-    try {
-      isLoading.value = true
-      if (opts?.reset) {
-        sinceUid.value = 0
-        posts.value = []
-      }
-
-      const response = await loadInitPosts({
-        sinceUid: sinceUid.value,
-        bunch: bunch.value,
-        option: option.value,
-        keyword: keyword.value,
-      })
-
-      if (!response.success || !response.result) {
-        toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
-        return
-      }
-
-      mergePosts(response.result ?? [])
-      initialized.value = true
-    } finally {
-      isLoading.value = false
+    if (opts?.reset) {
+      sinceUid.value = 0
+      posts.value = []
     }
+
+    const response = await loadInitPosts({
+      sinceUid: sinceUid.value,
+      bunch: bunch.value,
+      option: option.value,
+      keyword: keyword.value,
+    })
+
+    if (!response.success || !response.result) {
+      toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
+      return
+    }
+
+    mergePosts(response.result ?? [])
+    initialized.value = true
   }
 
   // 지정된 게시판 ID로 게시글들 가져오기
   const getInitLatestPostsById = async (id: string, limit: number): Promise<HomePostResult> => {
     const result: HomePostResult = { items: [], config: BOARD_CONFIG }
-    if (isLoading.value) return result
-    try {
-      isLoading.value = true
-      const response = await loadInitPostsById(id, limit)
+    const response = await loadInitPostsById(id, limit)
 
-      if (!response.success || !response.result) {
-        toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
-        return result
-      }
-      return response.result
-    } finally {
-      isLoading.value = false
+    if (!response.success || !response.result) {
+      toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
+      return result
     }
+    return response.result
   }
 
   // 초기 페이지 로드 시 상단 메뉴들 가져오기
@@ -106,38 +93,31 @@ export const useHomeStore = defineStore("home", () => {
 
   // (검색된 or 전체) 이전 게시글 더 가져오기
   const loadMore = async () => {
-    if (isLoading.value) return
-    try {
-      isLoading.value = true
-      const last = posts.value.at(-1)?.uid ?? 0
-      if (last === sinceUid.value) {
-        isLastPost.value = true
-        return
-      }
-      sinceUid.value = last
-
-      const response = await loadMorePosts({
-        sinceUid: sinceUid.value,
-        bunch: bunch.value,
-        option: option.value,
-        keyword: keyword.value,
-      })
-      if (!response.success) {
-        toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
-        return
-      }
-      mergePosts(response.result)
-      toast(`✅ 이전 게시글들을 가져왔습니다`)
-    } finally {
-      isLoading.value = false
+    const last = posts.value.at(-1)?.uid ?? 0
+    if (last === sinceUid.value) {
+      isLastPost.value = true
+      return
     }
+    sinceUid.value = last
+
+    const response = await loadMorePosts({
+      sinceUid: sinceUid.value,
+      bunch: bunch.value,
+      option: option.value,
+      keyword: keyword.value,
+    })
+    if (!response.success) {
+      toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
+      return
+    }
+    mergePosts(response.result)
+    toast(`✅ 이전 게시글들을 가져왔습니다`)
   }
 
   // 각종 변수 초기화
   const reset = () => {
     sinceUid.value = 0
     posts.value = []
-    isLoading.value = false
     error.value = null
     initialized.value = false
   }
@@ -152,7 +132,6 @@ export const useHomeStore = defineStore("home", () => {
     options,
     optionLabels,
     isLanding,
-    isLoading,
     isLastPost,
     posts,
     sinceUid,

@@ -15,10 +15,10 @@
     <ViewLikeButton />
   </CardFooter>
 
-  <div v-if="view.post.writer.signature.length > 0">
-    <hr />
+  <div>
+    <Separator />
     <div class="text-muted-foreground text-xs pt-3 px-4">
-      {{ view.post.writer.signature }}
+      {{ recoverChars(view.post.writer.signature) || "서명이 없습니다" }}
     </div>
   </div>
 </template>

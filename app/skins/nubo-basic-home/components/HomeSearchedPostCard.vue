@@ -1,4 +1,20 @@
 <template>
+  <ClientOnly>
+    <Card class="overflow-hidden border-0 rounded-none">
+      <CardHeader class="p-0">
+        <CardTitle class="text-2xl flex items-center gap-2 pl-1">
+          <SearchIcon class="w-5 h-5" />
+          <span>{{ keyword }} 검색</span>
+        </CardTitle>
+        <CardDescription>
+          <Badge variant="outline" class="text-muted-foreground p-2">
+            {{ optionLabels[option] }} 에서 {{ keyword }} 키워드가 있는 모든 게시글을 검색합니다
+          </Badge>
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  </ClientOnly>
+
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <Card
       class="overflow-hidden rounded-lg shadow-lg pt-0"
@@ -33,7 +49,7 @@
               {{ recoverChars(post.title) }}
             </span>
           </CardTitle>
-          <CardDescription class="inline-flex items-center font-mono">
+          <CardDescription class="inline-flex items-center font-mono text-xs">
             <HeartIcon
               :class="post.liked ? 'text-red-200 fill-current' : ''"
               class="w-3 h-3 mr-2"
@@ -47,8 +63,8 @@
             <span class="hidden xl:inline">{{ date(post.submitted) }}</span>
           </CardDescription>
         </CardHeader>
-        <CardContent class="text-sm line-clamp-3 leading-6 px-3 mt-2"
-          >{{ recoverChars(stripTags(post.content)) }}
+        <CardContent class="text-sm line-clamp-3 leading-6 px-3 mt-2 text-muted-foreground"
+          >{{ recoverChars(stripTags(post.content.slice(0, 300))) }}
         </CardContent>
       </NuxtLink>
     </Card>
@@ -57,13 +73,11 @@
   <CommonVTooltip content="이전 게시글들을 더 불러옵니다" v-if="!isLastPost">
     <Button
       @click="loadMorePosts"
-      :disabled="isLoading"
       class="text-foreground w-full mt-4 cursor-pointer"
       variant="outline"
       size="lg"
     >
-      <Spinner v-if="isLoading" />
-      <ArrowDownFromLineIcon v-else />
+      <ArrowDownFromLineIcon />
       더 불러오기</Button
     ></CommonVTooltip
   >
@@ -78,11 +92,18 @@
 </template>
 
 <script setup lang="ts">
-import { EyeIcon, HeartIcon, MessageCircleIcon } from "lucide-vue-next"
+import {
+  ArrowDownFromLineIcon,
+  CheckCircle2Icon,
+  EyeIcon,
+  HeartIcon,
+  MessageCircleIcon,
+  SearchIcon,
+} from "lucide-vue-next"
 import { date, num, stripTags } from "~/composables/useUtils"
 import { useNuboHomeContext } from "~/providers/contexts/home"
 
-const { isLoading, isLastPost, posts, loadMorePosts } = useNuboHomeContext()
+const { isLastPost, posts, option, optionLabels, keyword, loadMorePosts } = useNuboHomeContext()
 const scrollObserverRef = ref<HTMLDivElement | null>(null)
 const { stop } = useIntersectionObserver(
   scrollObserverRef,
@@ -92,7 +113,7 @@ const { stop } = useIntersectionObserver(
       return
     }
 
-    if (isIntersecting && !isLoading.value) {
+    if (isIntersecting) {
       loadMorePosts()
     }
   },

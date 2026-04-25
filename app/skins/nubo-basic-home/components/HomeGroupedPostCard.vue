@@ -21,13 +21,13 @@
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-0"
         >
           <div v-for="(post, index) in latest.items" :key="index">
-            <div class="border rounded-xl overflow-hidden shadow-2xl">
+            <Card class="rounded-xl overflow-hidden shadow-2xl p-0">
               <NuxtLink :to="`/board/${post.id}/${post.uid}`">
                 <div v-if="post.cover" class="relative">
                   <img
                     :src="post.cover"
                     alt="cover image"
-                    class="w-full aspect-video object-cover transition-transform"
+                    class="w-full aspect-4/3 object-cover transition-transform"
                   />
                   <div
                     class="absolute bottom-0 w-full h-full bg-linear-to-t from-[#15151F]/50 to-transparent"
@@ -36,9 +36,9 @@
 
                 <div
                   v-else
-                  class="flex items-center justify-center w-full p-3 h-42 aspect-video transition-transform tracking-wider text-muted text-sm line-clamp-3"
+                  class="flex items-center justify-center w-full p-3 h-44 transition-transform tracking-wider text-muted text-sm line-clamp-3"
                 >
-                  {{ recoverChars(stripTags(post.content)) }}
+                  {{ recoverChars(stripTags(post.content.slice(0, 300))) }}
                 </div>
 
                 <CardHeader class="p-4">
@@ -48,7 +48,7 @@
                     </span>
                   </CardTitle>
                   <CardDescription class="flex items-center justify-between">
-                    <div class="font-mono flex items-center">
+                    <div class="font-mono flex items-center text-xs">
                       <HeartIcon
                         :class="post.liked ? 'text-red-200 fill-current' : ''"
                         class="w-3 h-3 mr-2"
@@ -60,15 +60,10 @@
                       {{ num(post.hit) }}
                       <span class="flex-1"></span>
                     </div>
-
-                    <div class="w-30 flex items-center">
-                      <UserIcon class="w-3 h-3 mr-2" />
-                      <span class="line-clamp-1">{{ recoverChars(post.writer.name) }}</span>
-                    </div>
                   </CardDescription>
                 </CardHeader>
               </NuxtLink>
-            </div>
+            </Card>
           </div>
         </CardContent>
       </Card>
@@ -77,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { EyeIcon, HeartIcon, MessageCircleIcon, MilestoneIcon, UserIcon } from "lucide-vue-next"
+import { EyeIcon, HeartIcon, MessageCircleIcon, MilestoneIcon } from "lucide-vue-next"
 import { useNuboHomeContext } from "~/providers/contexts/home"
 import type { HomePostResult } from "~/types/home"
 import { boards } from "../boards.json"

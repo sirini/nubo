@@ -6,7 +6,8 @@ export default defineEventHandler(async (event) => {
   const cookie = getHeader(event, "cookie") || ""
 
   try {
-    const response = await $fetch<Resp<string>>(`${config.apiBaseInternal}/auth/refresh`, {
+    const response = await $fetch<Resp<string>>("/auth/refresh", {
+      baseURL: config.apiBaseInternal,
       method: "POST",
       body,
       headers: {

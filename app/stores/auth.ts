@@ -12,10 +12,10 @@ import {
 export const useAuthStore = defineStore("auth", () => {
   const { loadInitUserInfo, loadInitOtherUserInfo, doLogin, doLogout, updateMyInfo } = useAuth()
   const { loadInitUserLatestContent } = useBoard()
-  const isAdmin = computed(() => user.value.uid === 1)
   const isLoading = ref<boolean>(false)
   const isLoggedIn = computed(() => user.value.uid > 0)
   const user = useState<UserMyResult>("user-state", () => MY_INFO_RESULT)
+  const isAdmin = computed(() => user.value.uid === 1)
   const otherUser = ref<UserInfoResult>(USER_INFO_RESULT)
   const userLatestPosts = ref<BoardWriterLatestPost[]>([])
   const userLatestComments = ref<BoardWriterLatestComment[]>([])
@@ -76,7 +76,7 @@ export const useAuthStore = defineStore("auth", () => {
     if (isLoggedIn.value) return
     try {
       const response = await doLogin(email, password)
-      if (!response || !response.success) {
+      if (!response.success) {
         toast(`❌ 로그인에 실패하였습니다: ${response?.error}`)
         return
       }

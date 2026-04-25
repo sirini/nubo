@@ -47,8 +47,6 @@ export const useBoardStore = defineStore("board", () => {
       return
     }
     view.value = response.result
-    view.value.post.writer.name = recoverChars(view.value.post.writer.name)
-    view.value.post.writer.signature = recoverChars(view.value.post.writer.signature)
   }
 
   // 게시글 목록 가져오기

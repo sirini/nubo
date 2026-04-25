@@ -3,7 +3,6 @@ import { AUTH_KEY, REFRESH_KEY } from "~/types/common"
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const { reqPost } = useApi()
   const token = getCookie(event, AUTH_KEY)
 
   try {
