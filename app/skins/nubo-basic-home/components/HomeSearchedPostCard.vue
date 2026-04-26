@@ -1,19 +1,17 @@
 <template>
-  <ClientOnly>
-    <Card class="overflow-hidden border-0 rounded-none">
-      <CardHeader class="p-0">
-        <CardTitle class="text-2xl flex items-center gap-2 pl-1">
-          <SearchIcon class="w-5 h-5" />
-          <span>{{ keyword }} 검색</span>
-        </CardTitle>
-        <CardDescription>
-          <Badge variant="outline" class="text-muted-foreground p-2">
-            {{ optionLabels[option] }} 에서 {{ keyword }} 키워드가 있는 모든 게시글을 검색합니다
-          </Badge>
-        </CardDescription>
-      </CardHeader>
-    </Card>
-  </ClientOnly>
+  <Card class="overflow-hidden border-0 rounded-none">
+    <CardHeader class="p-0">
+      <CardTitle class="text-2xl flex items-center gap-2 pl-1">
+        <SearchIcon class="w-5 h-5" />
+        <span>{{ keyword }} 검색</span>
+      </CardTitle>
+      <CardDescription>
+        <Badge variant="outline" class="text-muted-foreground p-2">
+          {{ optionLabels[option] }} 에서 {{ keyword }} 키워드가 있는 모든 게시글을 검색합니다
+        </Badge>
+      </CardDescription>
+    </CardHeader>
+  </Card>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <Card

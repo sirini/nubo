@@ -15,34 +15,32 @@
         </NuxtLink>
       </CommonVTooltip>
 
-      <ClientOnly>
-        <CommonVTooltip content="[관리자] 게시판 관리화면으로 이동합니다">
-          <NuxtLink :to="`/?todo=not_implemented_yet`" as-child class="gap-2">
-            <Button v-if="isAdmin" variant="outline" class="cursor-pointer">
-              <SettingsIcon class="w-4 h-4" />
-              관리
-            </Button>
-          </NuxtLink>
-        </CommonVTooltip>
+      <CommonVTooltip content="[관리자] 게시판 관리화면으로 이동합니다">
+        <NuxtLink :to="`/?todo=not_implemented_yet`" as-child class="gap-2">
+          <Button v-if="isAdmin" variant="outline" class="cursor-pointer">
+            <SettingsIcon class="w-4 h-4" />
+            관리
+          </Button>
+        </NuxtLink>
+      </CommonVTooltip>
 
-        <CommonVTooltip v-if="isLoggedIn" content="새로운 글을 남겨보세요!">
-          <NuxtLink :to="`/board/${config.id}/write`" class="gap-2" as-child>
-            <Button variant="default" class="cursor-pointer text-foreground">
-              <PencilIcon class="w-4 h-4" />
-              글작성
-            </Button>
-          </NuxtLink>
-        </CommonVTooltip>
+      <CommonVTooltip v-if="isLoggedIn" content="새로운 글을 남겨보세요!">
+        <NuxtLink :to="`/board/${config.id}/write`" class="gap-2" as-child>
+          <Button variant="default" class="cursor-pointer text-foreground">
+            <PencilIcon class="w-4 h-4" />
+            글작성
+          </Button>
+        </NuxtLink>
+      </CommonVTooltip>
 
-        <CommonVTooltip v-else content="로그인 하시면 게시글 작성 등을 하실 수 있습니다">
-          <NuxtLink :to="`/auth/login?redirect=/board/${config.id}/page/${page}`" class="gap-2">
-            <Button variant="outline" class="cursor-pointer">
-              <LogInIcon class="w-4 h-4" />
-              로그인
-            </Button>
-          </NuxtLink>
-        </CommonVTooltip>
-      </ClientOnly>
+      <CommonVTooltip v-else content="로그인 하시면 게시글 작성 등을 하실 수 있습니다">
+        <NuxtLink :to="`/auth/login?redirect=/board/${config.id}/page/${page}`" class="gap-2">
+          <Button variant="outline" class="cursor-pointer">
+            <LogInIcon class="w-4 h-4" />
+            로그인
+          </Button>
+        </NuxtLink>
+      </CommonVTooltip>
     </div>
   </header>
 </template>

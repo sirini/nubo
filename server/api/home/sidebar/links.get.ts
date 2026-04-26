@@ -1,4 +1,14 @@
+import { AUTH_KEY } from "~/types/common"
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  return proxyRequest(event, `${config.apiBaseInternal}/home/sidebar/links`)
+  const token = getCookie(event, AUTH_KEY)
+
+  return proxyRequest(event, `${config.apiBaseInternal}/home/sidebar/links`, {
+    fetchOptions: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  })
 })

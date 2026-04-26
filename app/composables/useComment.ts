@@ -11,10 +11,11 @@ import type { Resp } from "~/types/common"
 
 export const useComment = () => {
   const config = useRuntimeConfig()
+  const fetch = useRequestFetch()
 
   // 댓글 목록 가져오기
   const loadInitCommentList = async (param: CommentListParam) => {
-    return await $fetch<Resp<CommentListResult>>("/comment/list", {
+    return await fetch<Resp<CommentListResult>>("/comment/list", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: param,
@@ -23,7 +24,7 @@ export const useComment = () => {
 
   // 댓글에 좋아요 남기기
   const like = async (param: CommentLikeParam) => {
-    return await $fetch<Resp<null>>("/comment/like", {
+    return await fetch<Resp<null>>("/comment/like", {
       baseURL: config.public.apiBase,
       method: "PATCH",
       body: param,
@@ -32,7 +33,7 @@ export const useComment = () => {
 
   // 댓글 수정하기
   const modify = async (param: CommentModifyParam) => {
-    return await $fetch<Resp<null>>("/comment/modify", {
+    return await fetch<Resp<null>>("/comment/modify", {
       baseURL: config.public.apiBase,
       method: "PATCH",
       body: param,
@@ -41,7 +42,7 @@ export const useComment = () => {
 
   // 댓글 삭제하기
   const remove = async (param: CommentRemoveParam) => {
-    return await $fetch<Resp<null>>("/comment/remove", {
+    return await fetch<Resp<null>>("/comment/remove", {
       baseURL: config.public.apiBase,
       method: "DELETE",
       query: param,
@@ -50,7 +51,7 @@ export const useComment = () => {
 
   // 댓글에 답글 남기기
   const reply = async (param: CommentReplyParam) => {
-    return await $fetch<Resp<number>>("/comment/reply", {
+    return await fetch<Resp<number>>("/comment/reply", {
       baseURL: config.public.apiBase,
       method: "POST",
       body: param,
@@ -59,7 +60,7 @@ export const useComment = () => {
 
   // 댓글 작성하기
   const write = async (param: CommentWriteParam) => {
-    return await $fetch<Resp<number>>("/comment/write", {
+    return await fetch<Resp<number>>("/comment/write", {
       baseURL: config.public.apiBase,
       method: "POST",
       body: param,

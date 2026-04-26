@@ -13,7 +13,8 @@ export const useAuth = () => {
 
   // 사용자 정보를 기존 토큰 정보로 가져와서 반환
   const loadInitUserInfo = async () => {
-    return await $fetch<Resp<UserMyResult>>("/auth/load", {
+    const fetch = useRequestFetch()
+    return await fetch<Resp<UserMyResult>>("/auth/load", {
       baseURL: config.public.apiBase,
       method: "GET",
     })
