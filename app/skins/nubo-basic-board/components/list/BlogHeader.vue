@@ -29,7 +29,7 @@
         </CommonVTooltip>
 
         <CommonVTooltip v-if="isAdmin" content="[관리자] 게시판 관리화면으로 이동합니다">
-          <NuxtLink :to="`/?todo=not_implemented_yet`" as-child>
+          <NuxtLink :to="`/admin/board/${config.id}`" as-child>
             <Button variant="outline" size="icon" class="cursor-pointer">
               <SettingsIcon class="w-4 h-4" />
             </Button>

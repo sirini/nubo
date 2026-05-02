@@ -131,6 +131,7 @@ import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDia
 import BoardRemoveGroupConfirmDialog from "./components/dialogs/BoardRemoveGroupConfirmDialog.vue"
 
 type Panel = "list" | "new" | "edit"
+const route = useRoute()
 const selectedGroupId = ref<string>("")
 const selectedBoardId = ref<string>("")
 const panel = ref<Panel>("list")
@@ -144,15 +145,6 @@ const {
   openGroupRemoveConfirmDialog,
 } = useNuboAdminContext()
 
-// 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기
-onMounted(async () => {
-  await loadInitGroupList()
-  const defaultGroup = groups.value.at(0)
-  if (defaultGroup) {
-    changeGroup(defaultGroup.id)
-  }
-})
-
 // 게시판 목록 영역 내용 변경하기
 const changePanel = async (p: Panel, editBoardId: string = "") => {
   panel.value = p
@@ -160,6 +152,19 @@ const changePanel = async (p: Panel, editBoardId: string = "") => {
   await loadInitGroupList()
   await loadSelectedGroupInfo(selectedGroupId.value)
 }
+
+// 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기
+onMounted(async () => {
+  if (route.params?.id !== undefined) {
+    changePanel("edit", route.params.id as string)
+  } else {
+    await loadInitGroupList()
+    const defaultGroup = groups.value.at(0)
+    if (defaultGroup) {
+      changeGroup(defaultGroup.id)
+    }
+  }
+})
 
 // 그룹 변경하기
 const changeGroup = async (groupId: string) => {

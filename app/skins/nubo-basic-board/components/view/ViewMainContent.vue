@@ -1,12 +1,15 @@
 <template>
   <CardHeader class="px-3">
-    <CardTitle class="my-2 text-2xl font-title px-1 leading-10">{{
+    <CardTitle class="text-2xl font-title pt-3 px-1 leading-10">{{
       recoverChars(view.post.title)
     }}</CardTitle>
     <CardDescription class="inline-flex items-center px-1 font-mono">
       <ViewStatusLine />
     </CardDescription>
   </CardHeader>
+
+  <Separator />
+
   <CardContent class="nubo leading-7 px-4">
     <div v-html="sanitize(view.post.content)"></div>
   </CardContent>
@@ -15,7 +18,7 @@
     <ViewLikeButton />
   </CardFooter>
 
-  <div>
+  <div v-if="view.post.writer.signature.length > 0">
     <Separator />
     <div class="text-muted-foreground text-xs pt-3 px-4">
       {{ recoverChars(view.post.writer.signature) || "서명이 없습니다" }}

@@ -1,16 +1,11 @@
 <template>
-  <div class="min-h-screen bg-background mx-auto p-4" :style="`max-width: ${config.width}px`">
-    <BlogHeader />
-
-    <section class="container mx-auto py-16 md:py-24">
-      <div class="space-y-12 md:space-y-16">
-        <BlogPostRow />
-      </div>
-
-      <div class="py-8"></div>
-      <ListFooter />
-    </section>
-  </div>
+  <section class="container mx-auto p-4">
+    <div class="mx-auto" :style="`max-width: ${config.width}px`">
+      <BlogHeader class="my-6" />
+      <BlogPostRow />
+    </div>
+    <ListFooter />
+  </section>
 </template>
 
 <script setup lang="ts">

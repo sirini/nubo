@@ -8,7 +8,7 @@
         :style="`max-width: ${config.width}px`"
       >
         <ViewImageCarousel v-if="view.images.length > 0" />
-        <ViewAttachmentList />
+        <ViewAttachmentList v-if="view.files.length > 0" />
         <ViewMainContent />
       </Card>
 
