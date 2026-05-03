@@ -12,6 +12,8 @@ export const BOARD = {
   DEFAULT: 0,
   GALLERY: 1,
   BLOG: 2,
+  WEBZINE: 3,
+  TRADE: 4,
 }
 
 // 게시판 내 활동 기본값 정의
@@ -25,9 +27,11 @@ export const BOARD_ACTION = {
 
 // 객체 리터럴을 사용한 게시판 기본값 정의
 export const BOARD_PREFIX = {
-  [BOARD.DEFAULT]: "Default",
+  [BOARD.DEFAULT]: "Board", // Webzine과 동일하게
   [BOARD.GALLERY]: "Gallery",
   [BOARD.BLOG]: "Blog",
+  [BOARD.WEBZINE]: "Board",
+  [BOARD.TRADE]: "Trade",
 } as const
 
 // 게시글 작성자 기본값 정의
