@@ -60,6 +60,7 @@
                 size="sm"
                 class="text-muted-foreground hover:text-foreground cursor-pointer"
                 v-if="co.uid === co.replyUid"
+                :disabled="!isLoggedIn"
                 @click="setReplyComment(co.uid, co.content)"
               >
                 <MessageSquareIcon class="mr-1.5 h-3 w-3" />
@@ -76,6 +77,7 @@
                 variant="outline"
                 size="sm"
                 class="text-muted-foreground hover:text-foreground cursor-pointer"
+                :disabled="!isLoggedIn"
                 @click="likeComment(co.uid, !co.liked)"
               >
                 <HeartIcon
@@ -116,6 +118,7 @@ import { useNuboViewContext } from "~/providers/contexts/view"
 const {
   comments,
   isConfirmRemoveCommentDialog,
+  isLoggedIn,
   checkPermissionComment,
   likeComment,
   confirmRemoveComment,
