@@ -480,8 +480,8 @@ export const useAdminStore = defineStore("admin", () => {
     const result: UserPermissionManageParam = USER_PERMISSION_MANAGE_PARAM
     try {
       const response = await loadInitUserPermission(targetUserUid)
-      if (!response.success) {
-        toast(`❌ 사용자의 현재 권한 정보를 가져오지 못했습니다: ${response.error}`)
+      if (!response || !response.success) {
+        toast(`❌ 사용자의 현재 권한 정보를 가져오지 못했습니다: ${response?.error}`)
         return result
       }
       return response.result

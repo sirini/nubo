@@ -1,4 +1,4 @@
-import type { HomeSidebarGroupResult } from "~/types/home"
+import type { HomeSidebarGroupResult, NotificationItem } from "~/types/home"
 import type { UserMyResult } from "~/types/user"
 
 // [레이아웃] 화면에서 필요한 변수 & 함수들 정의
@@ -10,8 +10,10 @@ export interface NuboLayoutContext {
   searchOptions: ComputedRef<{ label: string; value: number }[]>
   searchOption: WritableComputedRef<number>
   searchKeyword: WritableComputedRef<string>
+  notifications: ComputedRef<NotificationItem[]>
   search: (event: Event) => void
   moveTop: () => void
+  loadNotifications: (limit: number) => Promise<void>
 }
 
 export const nuboLayoutKey: InjectionKey<NuboLayoutContext> = Symbol("nuboLayoutContext")

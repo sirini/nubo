@@ -43,8 +43,8 @@ export const useCommentStore = defineStore("comment", () => {
         page: page.value,
         limit: limit.value,
       })
-      if (!response.success || !response.result) {
-        toast(`❌ 댓글 목록을 가져오지 못했습니다: ${response.error}`)
+      if (!response || !response.success || !response.result) {
+        toast(`❌ 댓글 목록을 가져오지 못했습니다: ${response?.error}`)
         return
       }
       comments.value = response.result.comments

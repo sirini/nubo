@@ -24,6 +24,7 @@ export const useLayoutProvider = (): NuboLayoutContext => {
       get: () => home.keyword,
       set: (val: string) => (home.keyword = val),
     }),
+    notifications: computed(() => home.notifications),
     search: (event: Event) => {
       event.preventDefault()
       if (home.keyword.length < 2) {
@@ -36,6 +37,9 @@ export const useLayoutProvider = (): NuboLayoutContext => {
       if (import.meta.client) {
         window.scrollTo({ top: 0, behavior: "smooth" })
       }
+    },
+    loadNotifications: async (limit: number) => {
+      await home.loadNoti(limit)
     },
   }
 }

@@ -8,6 +8,7 @@ import {
   SEARCH,
   type Search,
 } from "~/types/board"
+import type { UserBasicInfo } from "./user"
 
 export type HomeLang = 0 | 1 | 2
 export type HomeNotice = 0 | 1 | 2 | 3 | 4
@@ -69,4 +70,24 @@ export const HomeSearchOptions = {
   writer: SEARCH.WRITER,
   tag: SEARCH.TAG,
   imagedesc: SEARCH.IMAGEDESC,
+}
+
+// 알림 타입 고유값들
+export type Noti = 0 | 1 | 2 | 3 | 4
+export const NOTI_LIKE_POST: Noti = 0
+export const NOTI_LIKE_COMMENT: Noti = 1
+export const NOTI_LEAVE_COMMENT: Noti = 2
+export const NOTI_REPLY_COMMENT: Noti = 3
+export const NOTI_CHAT_MESSAGE: Noti = 4
+
+// 알림내용 조회 항목 정의
+export type NotificationItem = {
+  uid: number
+  fromUser: UserBasicInfo
+  type: Noti
+  id: string
+  boardType: Board
+  postUid: number
+  checked: boolean
+  timestamp: number
 }

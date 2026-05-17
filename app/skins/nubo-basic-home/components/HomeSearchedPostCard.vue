@@ -20,30 +20,29 @@
       :key="index"
     >
       <NuxtLink :to="`/board/${post.id}/${post.uid}`">
-        <div v-if="post.cover" class="relative">
+        <div v-if="post.cover">
           <img
             :src="post.cover"
             alt="cover image"
             class="w-full aspect-video object-cover transition-transform"
           />
-          <div
-            class="absolute bottom-0 w-full h-full bg-linear-to-t from-[#15151F]/50 to-transparent"
-          ></div>
         </div>
 
         <div
           v-else
-          class="flex items-center justify-center w-full p-3 h-42 aspect-video transition-transform tracking-wider text-muted-foreground line-clamp-6"
+          class="flex items-center bg-accent-foreground/5 justify-center w-full h-auto aspect-video transition-transform text-muted font-mono"
         >
-          {{ recoverChars(stripTags(post.content)) }}
+          NO IMG
         </div>
+
+        <Separator />
 
         <CardHeader class="px-3">
           <CardTitle
             class="line-clamp-1 mb-2 mt-4"
             :class="post.cover ? '' : 'line-clamp-6 leading-6'"
           >
-            <span class="hover:text-primary transition-colors">
+            <span class="hover:text-primary transition-colors line-clamp-1">
               {{ recoverChars(post.title) }}
             </span>
           </CardTitle>

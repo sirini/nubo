@@ -12,9 +12,9 @@ import {
 export const useAuthStore = defineStore("auth", () => {
   const { loadInitUserInfo, loadInitOtherUserInfo, doLogin, doLogout, updateMyInfo } = useAuth()
   const { loadInitUserLatestContent } = useBoard()
-  const isLoading = ref<boolean>(false)
-  const isLoggedIn = computed(() => user.value.uid > 0)
   const user = useState<UserMyResult>("user-state", () => MY_INFO_RESULT)
+  const isLoggedIn = computed(() => user.value.uid > 0)
+  const isLoading = ref<boolean>(false)
   const isAdmin = computed(() => user.value.uid === 1)
   const otherUser = ref<UserInfoResult>(USER_INFO_RESULT)
   const userLatestPosts = ref<BoardWriterLatestPost[]>([])
@@ -25,7 +25,7 @@ export const useAuthStore = defineStore("auth", () => {
   const getInitUserInfo = async () => {
     try {
       const response = await loadInitUserInfo()
-      if (!response.success || !response.result) {
+      if (!response || !response.success || !response.result) {
         return await logout()
       }
 
@@ -41,8 +41,8 @@ export const useAuthStore = defineStore("auth", () => {
   const getInitOtherUserInfo = async (targetUserUid: number) => {
     try {
       const response = await loadInitOtherUserInfo(targetUserUid)
-      if (!response.success || !response.result) {
-        toast(`❌ 다른 사용자의 공개 정보를 가져오지 못했습니다: ${response.error}`)
+      if (!response || !response.success || !response.result) {
+        toast(`❌ 다른 사용자의 공개 정보를 가져오지 못했습니다: ${response?.error}`)
         return
       }
       otherUser.value = response.result
@@ -58,8 +58,8 @@ export const useAuthStore = defineStore("auth", () => {
   const getInitUserLatestContent = async (targetUserUid: number, limit: number) => {
     try {
       const response = await loadInitUserLatestContent(targetUserUid, limit)
-      if (!response.success || !response.result) {
-        toast(`❌ 다른 사용자의 최근 활동들을 가져오지 못했습니다: ${response.error}`)
+      if (!response || !response.success || !response.result) {
+        toast(`❌ 다른 사용자의 최근 활동들을 가져오지 못했습니다: ${response?.error}`)
         return
       }
       const { posts, comments } = response.result

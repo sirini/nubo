@@ -3,6 +3,7 @@ import type { HomePostItem, HomePostResult } from "~/types/home"
 
 // [홈] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboHomeContext {
+  isLoggedIn: ComputedRef<boolean>
   isLanding: WritableComputedRef<boolean>
   isLastPost: ComputedRef<boolean>
   posts: ComputedRef<HomePostItem[]>

@@ -2,8 +2,10 @@ import type { NuboHomeContext } from "./contexts/home"
 
 export const useHomeProvider = (): NuboHomeContext => {
   const home = useHomeStore()
+  const auth = useAuthStore()
 
   return {
+    isLoggedIn: computed(() => auth.isLoggedIn),
     isLanding: computed({
       get: () => home.isLanding,
       set: (val: boolean) => (home.isLanding = val),

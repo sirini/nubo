@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
     <div v-if="comments.length > 0" v-for="(co, index) in comments" :key="index" class="group">
-      <div class="flex gap-4" :class="co.uid !== co.replyUid ? 'mt-4 space-y-6' : ''">
+      <div class="flex gap-4 mt-4" :class="co.uid !== co.replyUid ? 'space-y-6' : ''">
         <CornerDownRightIcon
           class="w-4 h-4 mt-3 text-muted-foreground"
           v-if="co.uid !== co.replyUid"

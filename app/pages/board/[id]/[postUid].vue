@@ -47,20 +47,10 @@ const markedToRead = () => {
   localStorage.setItem(HIT_KEY, JSON.stringify(viewed))
 }
 
-// 하이드레이션 미스매치 방지 및 캐싱
-const { data: initData } = await useAsyncData(
-  `view-${boardId.value}-${postUid.value}`,
-  async () => {
-    await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit())
-    await comment.getInitComments(board.view)
-    return { success: true, timestamp: Date.now() }
-  },
-  {
-    watch: [() => route.params],
-  },
-)
-
-markedToRead()
+// 게시글 내용과 댓글들 가져오기
+;(await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit()),
+  await comment.getInitComments(board.view),
+  markedToRead())
 
 provide(nuboViewKey, useViewProvider())
 provide(nuboWriteKey, useWriteProvider())

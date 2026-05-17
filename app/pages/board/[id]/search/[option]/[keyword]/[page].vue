@@ -35,21 +35,11 @@ const selectedSkin = computed(() => {
   )
 })
 
-// 하이드레이션 미스매치 방지 및 캐싱
-const { data: initData } = await useAsyncData(
-  `search-${boardId.value}-${option.value}-${keyword.value}-${page.value}`,
-  async () => {
-    board.page = page.value > 0 ? page.value : 1
-    board.option = (options[option.value] || SEARCH.TITLE) as Search
-    board.keyword = decodeURIComponent(keyword.value)
+board.page = page.value > 0 ? page.value : 1
+board.option = (options[option.value] || SEARCH.TITLE) as Search
+board.keyword = decodeURIComponent(keyword.value)
 
-    await board.getInitList(boardId.value)
-    return { success: true, timestamp: Date.now() }
-  },
-  {
-    watch: [() => route.params],
-  },
-)
+await board.getInitList(boardId.value)
 
 provide(nuboListKey, useListProvider())
 </script>

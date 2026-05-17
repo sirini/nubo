@@ -3,13 +3,20 @@ import { toast } from "vue-sonner"
 import { BOARD_CONFIG, SEARCH, type Search } from "~/types/board"
 import {
   HomeSearchOptions,
+  type NotificationItem,
   type HomePostItem,
   type HomePostResult,
   type HomeSidebarGroupResult,
 } from "~/types/home"
 
 export const useHomeStore = defineStore("home", () => {
-  const { loadInitPosts, loadInitPostsById, loadMorePosts, loadInitHomeMenus } = useHome()
+  const {
+    loadInitPosts,
+    loadInitPostsById,
+    loadMorePosts,
+    loadInitHomeMenus,
+    loadMyNotifications,
+  } = useHome()
   const bunch = ref<number>(20)
   const error = ref<unknown>(null)
   const initialized = ref<boolean>(false)
@@ -28,6 +35,7 @@ export const useHomeStore = defineStore("home", () => {
   const isLanding = ref<boolean>(true)
   const posts = ref<HomePostItem[]>([])
   const sinceUid = ref<number>(0)
+  const notifications = ref<NotificationItem[]>([])
 
   // 내부 유틸: 결과 병합
   const mergePosts = (incoming: HomePostItem[] = []) => {
@@ -60,8 +68,8 @@ export const useHomeStore = defineStore("home", () => {
       keyword: keyword.value,
     })
 
-    if (!response.success || !response.result) {
-      toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
+    if (!response || !response.success || !response.result) {
+      toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response?.error}`)
       return
     }
 
@@ -74,8 +82,8 @@ export const useHomeStore = defineStore("home", () => {
     const result: HomePostResult = { items: [], config: BOARD_CONFIG }
     const response = await loadInitPostsById(id, limit)
 
-    if (!response.success || !response.result) {
-      toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response.error}`)
+    if (!response || !response.success || !response.result) {
+      toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response?.error}`)
       return result
     }
     return response.result
@@ -84,7 +92,7 @@ export const useHomeStore = defineStore("home", () => {
   // 초기 페이지 로드 시 상단 메뉴들 가져오기
   const getInitMenus = async () => {
     const response = await loadInitHomeMenus()
-    if (!response.success || !response.result) {
+    if (!response || !response.success || !response.result) {
       console.error(`❌ Failed to initialize the menu links`)
       return
     }
@@ -106,12 +114,22 @@ export const useHomeStore = defineStore("home", () => {
       option: option.value,
       keyword: keyword.value,
     })
-    if (!response.success) {
-      toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response.error}`)
+    if (!response || !response.success) {
+      toast(`❌ 이전 게시글을 가져오지 못했습니다: ${response?.error}`)
       return
     }
     mergePosts(response.result)
     toast(`✅ 이전 게시글들을 가져왔습니다`)
+  }
+
+  // 나에게 온 알림 목록 가져오기
+  const loadNoti = async (limit: number) => {
+    const response = await loadMyNotifications(limit)
+    if (!response || !response.success) {
+      toast(`❌ 알림 목록을 불러오지 못했습니다: ${response?.error}`)
+      return
+    }
+    notifications.value = response.result
   }
 
   // 각종 변수 초기화
@@ -135,11 +153,13 @@ export const useHomeStore = defineStore("home", () => {
     isLastPost,
     posts,
     sinceUid,
+    notifications,
 
     getInitLatestPosts,
     getInitLatestPostsById,
     getInitMenus,
     loadMore,
+    loadNoti,
     reset,
   }
 })

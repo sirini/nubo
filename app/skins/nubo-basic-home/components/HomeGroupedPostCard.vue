@@ -33,9 +33,9 @@
 
                 <div
                   v-else
-                  class="flex items-center justify-center w-full p-3 h-56 transition-transform tracking-wider text-muted text-sm"
+                  class="flex items-center justify-center w-full p-3 aspect-4/3 transition-transform tracking-wider text-muted text-sm overflow-hidden"
                 >
-                  {{ recoverChars(stripTags(post.content.slice(0, 320))) }}
+                  {{ recoverChars(stripTags(post.content.slice(0, 250))) }}
                 </div>
 
                 <Separator />

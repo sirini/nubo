@@ -56,8 +56,8 @@ export const useChatStore = defineStore("chat", () => {
     try {
       isLoading.value = true
       const response = await sendChatMessage(targetUserUid.value, message.value)
-      if (!response.success || !response.result) {
-        toast(`❌ 상대방에게 메세지를 보내지 못했습니다: ${response.error}`)
+      if (!response || !response.success || !response.result) {
+        toast(`❌ 상대방에게 메세지를 보내지 못했습니다: ${response?.error}`)
         return
       }
       history.value.push({

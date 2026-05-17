@@ -42,8 +42,8 @@ export const useBoardStore = defineStore("board", () => {
       needUpdateHit,
     })
 
-    if (!response.success || !response.result) {
-      toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response.error}`)
+    if (!response || !response.success || !response.result) {
+      toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response?.error}`)
       return
     }
     view.value = response.result
@@ -58,8 +58,8 @@ export const useBoardStore = defineStore("board", () => {
       page: page.value,
     })
 
-    if (!response.success || !response.result) {
-      toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response.error}`)
+    if (!response || !response.success || !response.result) {
+      toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response?.error}`)
       return
     }
     response.result.notices.map((notice) => {
@@ -77,8 +77,8 @@ export const useBoardStore = defineStore("board", () => {
   const downloadFile = async (fileUid: number) => {
     try {
       const response = await download(view.value.config.uid, fileUid)
-      if (!response.success || !response.result) {
-        toast(`❌ 파일을 내려받지 못했습니다: ${response.error}`)
+      if (!response || !response.success || !response.result) {
+        toast(`❌ 파일을 내려받지 못했습니다: ${response?.error}`)
         return
       }
       const link = document.createElement("a")
@@ -106,8 +106,8 @@ export const useBoardStore = defineStore("board", () => {
         liked: isLiked,
       })
 
-      if (!response.success) {
-        toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${response.error}`)
+      if (!response || !response.success) {
+        toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${response?.error}`)
         return
       }
       if (isLiked) {
