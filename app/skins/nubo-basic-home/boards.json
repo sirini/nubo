@@ -1,6 +1,6 @@
 {
   "boards": [
-    { "id": "free", "limit": 8 },
+    { "id": "free", "limit": 16 },
     { "id": "photo", "limit": 4 },
     { "id": "sirini", "limit": 4 }
   ]

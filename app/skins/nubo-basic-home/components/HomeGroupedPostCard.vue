@@ -18,28 +18,27 @@
           >
         </CardHeader>
         <CardContent
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-0"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-0 py-3"
         >
           <div v-for="(post, index) in latest.items" :key="index">
-            <Card class="rounded-xl overflow-hidden shadow-2xl p-0">
+            <Card class="rounded-xl overflow-hidden shadow-xl p-0">
               <NuxtLink :to="`/board/${post.id}/${post.uid}`">
-                <div v-if="post.cover" class="relative">
+                <div v-if="post.cover">
                   <img
                     :src="post.cover"
                     alt="cover image"
                     class="w-full aspect-4/3 object-cover transition-transform"
                   />
-                  <div
-                    class="absolute bottom-0 w-full h-full bg-linear-to-t from-[#15151F]/50 to-transparent"
-                  ></div>
                 </div>
 
                 <div
                   v-else
-                  class="flex items-center justify-center w-full p-3 h-44 transition-transform tracking-wider text-muted text-sm line-clamp-3"
+                  class="flex items-center justify-center w-full p-3 h-56 transition-transform tracking-wider text-muted text-sm"
                 >
-                  {{ recoverChars(stripTags(post.content.slice(0, 300))) }}
+                  {{ recoverChars(stripTags(post.content.slice(0, 320))) }}
                 </div>
+
+                <Separator />
 
                 <CardHeader class="p-4">
                   <CardTitle class="line-clamp-1 mb-2">
