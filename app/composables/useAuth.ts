@@ -134,11 +134,12 @@ export const useAuth = () => {
 
   // 사용자의 현재 작업별 권한 정보 가져오기
   const loadInitUserPermission = async (targetUserUid: number) => {
-    const { data } = useFetch<Resp<UserPermissionManageParam>>("/auth/user/permission", {
+    const { data } = await useFetch<Resp<UserPermissionManageParam>>("/auth/user/permission", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: { targetUserUid },
     })
+
     return data.value
   }
 

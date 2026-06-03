@@ -111,6 +111,7 @@ const onEditSubmit = handleSubmit(
       userUid: data.userUid || 0,
       response: "",
     }
+
     await changeUserPermission(permParam)
 
     if (isDone) {
