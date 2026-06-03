@@ -6,6 +6,7 @@ import type {
   BoardViewParam,
   BoardViewResult,
   BoardWriterLatestContent,
+  RemovePostParam,
 } from "~/types/board"
 import type { Resp } from "~/types/common"
 
@@ -67,11 +68,21 @@ export const useBoard = () => {
     })
   }
 
+  // 게시글 삭제하기
+  const removePost = async (param: RemovePostParam) => {
+    return await $fetch<Resp<null>>("/board/remove/post", {
+      baseURL: config.public.apiBase,
+      method: "DELETE",
+      body: param,
+    })
+  }
+
   return {
     download,
     loadInitBoardView,
     loadInitBoardList,
     loadInitUserLatestContent,
     like,
+    removePost,
   }
 }

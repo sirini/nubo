@@ -34,15 +34,19 @@
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   @click="setModifyComment(co.uid, co.content)"
-                  class="cursor-pointer"
+                  class="cursor-pointer flex items-center gap-3"
                   :disabled="!checkPermissionComment(co.writer.uid)"
-                  >수정</DropdownMenuItem
+                >
+                  <EraserIcon class="w-4 h-4" />
+                  수정</DropdownMenuItem
                 >
                 <DropdownMenuItem
-                  class="text-destructive focus:text-destructive cursor-pointer"
+                  class="text-destructive focus:text-destructive cursor-pointer flex items-center gap-3"
                   @click="confirmRemoveComment(co.uid)"
                   :disabled="co.content === '(deleted)' || !checkPermissionComment(co.writer.uid)"
-                  >삭제</DropdownMenuItem
+                >
+                  <ShredderIcon class="w-4 h-4" />
+                  삭제</DropdownMenuItem
                 >
               </DropdownMenuContent>
             </DropdownMenu>
@@ -110,8 +114,10 @@
 import {
   CornerDownRightIcon,
   EllipsisVerticalIcon,
+  EraserIcon,
   HeartIcon,
   MessageSquareIcon,
+  ShredderIcon,
 } from "lucide-vue-next"
 import { useNuboViewContext } from "~/providers/contexts/view"
 

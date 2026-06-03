@@ -3,7 +3,7 @@
     <NuxtLink :to="`/board/${config.id}/write`" :aria-disabled="!isLoggedIn" as-child class="gap-2">
       <Button
         variant="default"
-        class="text-foreground"
+        class="text-foreground cursor-pointer"
         size="sm"
         :class="{ 'opacity-50 pointer-events-none': !isLoggedIn }"
       >

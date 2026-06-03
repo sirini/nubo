@@ -477,7 +477,7 @@ export const useEditorStore = defineStore("editor", () => {
       isSecret.value = post.status === STATUS.SECRET
       categoryUid.value = post.category.uid
       content.value = post.content
-      title.value = post.title
+      title.value = recoverChars(post.title)
       files.value = response.result.files
       files.value.forEach(async (file) => {
         const thumbnail = await getThumb(file.uid)

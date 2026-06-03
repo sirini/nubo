@@ -14,10 +14,9 @@ definePageMeta({ middleware: "auth" as never })
 const config = useRuntimeConfig()
 const route = useRoute()
 const edit = useEditorStore()
+const auth = useAuthStore()
 const boardId = route.params.id as string
 edit.postUid = parseInt(route.params.editTargetUid as string)
-
-await edit.loadBoardConfig(boardId)
 
 const selectedSkin = computed(() => {
   const skinName = config.public.skins.board
@@ -29,12 +28,15 @@ const selectedSkin = computed(() => {
   )
 })
 
+await edit.loadBoardConfig(boardId)
+
+if (auth.isLoggedIn) {
+  await edit.loadPost()
+  await edit.loadInsertedImages()
+}
+
 watch(() => edit.tag, edit.searchTags)
 watch(() => edit.title, edit.searchTitles)
-
-onMounted(() => {
-  edit.loadPost()
-})
 
 provide(nuboWriteKey, useWriteProvider())
 provide(nuboEditorKey, useEditorProvider())

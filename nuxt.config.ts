@@ -39,7 +39,7 @@ export default defineNuxtConfig({
       apiBase: "/api",
       goapi: GOAPI_URL,
       goapiBase: GOAPI_PATH,
-      version: env.NUXT_PUBLIC_VERSION || "v1.1.0",
+      version: env.NUXT_PUBLIC_VERSION || "v1.1.2",
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
       title: env.NUXT_PUBLIC_TITLE || "The NUBO | Nuxt4 based Board",
       adminId: env.NUXT_PUBLIC_ADMIN_ID || "example-admin@nubohub.org",

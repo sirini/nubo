@@ -361,3 +361,9 @@ export type TableOfContent = {
   text: string
   level: number
 }
+
+// 게시글 삭제하기 파라미터
+export type RemovePostParam = {
+  boardUid: number
+  postUid: number
+}

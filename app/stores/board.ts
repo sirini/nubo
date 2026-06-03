@@ -12,11 +12,12 @@ import {
 import { HomeSearchOptions } from "~/types/home"
 
 export const useBoardStore = defineStore("board", () => {
-  const { loadInitBoardView, loadInitBoardList, like, download } = useBoard()
+  const { loadInitBoardView, loadInitBoardList, like, download, removePost } = useBoard()
   const config = useRuntimeConfig()
   const error = ref<unknown>(null)
   const latestLimit = ref<number>(5)
   const isLoading = ref<boolean>(false)
+  const isConfirmDialog = ref<boolean>(false)
   const view = ref<BoardViewResult>(BOARD_VIEW_RESULT)
   const list = ref<BoardListResult>(BOARD_LIST_RESULT)
   const imgIdx = ref<number>(0)
@@ -32,6 +33,7 @@ export const useBoardStore = defineStore("board", () => {
   })
   const keyword = ref<string>("")
   const readingProgressController = ref<AbortController | null>(null)
+  const removeTargetUid = ref<number>(0)
 
   // 게시글 본문 내용 가져오기
   const getInitView = async (id: string, postUid: number, needUpdateHit: boolean) => {
@@ -202,10 +204,25 @@ export const useBoardStore = defineStore("board", () => {
     }
   }
 
+  // 게시글 삭제하기
+  const remove = async (boardUid: number, postUid: number) => {
+    try {
+      const response = await removePost({ boardUid, postUid })
+      if (!response || !response.success) {
+        toast(`❌ 게시글을 삭제하지 못했습니다: ${response?.error}`)
+        return
+      }
+      navigateTo(`/board/${view.value.config.id}`)
+    } catch (e) {
+      toast(`❌ 게시글을 삭제하지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     error,
     latestLimit,
     isLoading,
+    isConfirmDialog,
     view,
     list,
     imgIdx,
@@ -214,6 +231,7 @@ export const useBoardStore = defineStore("board", () => {
     options,
     optionLabels,
     keyword,
+    removeTargetUid,
 
     getInitView,
     getInitList,
@@ -224,5 +242,6 @@ export const useBoardStore = defineStore("board", () => {
     makeTableOfContents,
     updateReadingProgress,
     clearReadingProgress,
+    remove,
   }
 })

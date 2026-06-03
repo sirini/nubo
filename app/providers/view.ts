@@ -17,6 +17,11 @@ export const useViewProvider = (): NuboViewContext => {
       get: () => comment.isConfirmDialog,
       set: (val) => (comment.isConfirmDialog = val),
     }),
+    isConfirmRemovePostDialog: computed({
+      get: () => board.isConfirmDialog,
+      set: (val) => (board.isConfirmDialog = val),
+    }),
+    isAdmin: computed(() => auth.user.admin),
     isLoggedIn: computed(() => auth.isLoggedIn),
     isWriter: computed(() => auth.user.uid === board.view.post.writer.uid),
     imgIdx: computed({
@@ -45,6 +50,10 @@ export const useViewProvider = (): NuboViewContext => {
     confirmRemoveComment: (commentUid: number) => {
       comment.target.remove = commentUid
       comment.isConfirmDialog = true
+    },
+    confirmRemovePost: (postUid: number) => {
+      board.removeTargetUid = postUid
+      board.isConfirmDialog = true
     },
     removeComment: async () => {
       await comment.removeComment({
@@ -107,5 +116,6 @@ export const useViewProvider = (): NuboViewContext => {
     makeTableOfContents: () => board.makeTableOfContents(),
     updateReadingProgress: (element: string) => board.updateReadingProgress(element),
     clearReadingProgress: () => board.clearReadingProgress(),
+    remove: (boardUid: number, postUid: number) => board.remove(boardUid, postUid),
   }
 }

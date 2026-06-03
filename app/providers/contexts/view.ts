@@ -6,7 +6,9 @@ export interface NuboViewContext {
   view: ComputedRef<BoardViewResult>
   config: ComputedRef<BoardConfig>
   comments: ComputedRef<CommentResult[]>
+  isAdmin: ComputedRef<boolean>
   isConfirmRemoveCommentDialog: WritableComputedRef<boolean>
+  isConfirmRemovePostDialog: WritableComputedRef<boolean>
   isLoggedIn: ComputedRef<boolean>
   isWriter: ComputedRef<boolean>
   imgIdx: WritableComputedRef<number>
@@ -15,6 +17,7 @@ export interface NuboViewContext {
   checkPermissionComment: (writerUid: number) => boolean
   likeComment: (commentUid: number, liked: boolean) => Promise<void>
   confirmRemoveComment: (commentUid: number) => void
+  confirmRemovePost: (postUid: number) => void
   removeComment: () => Promise<void>
   setModifyComment: (commentUid: number, content: string) => void
   setReplyComment: (commentUid: number, content: string) => void
@@ -26,6 +29,7 @@ export interface NuboViewContext {
   makeTableOfContents: () => TableOfContent[]
   updateReadingProgress: (element: string) => void
   clearReadingProgress: () => void
+  remove: (boardUid: number, postUid: number) => void
 }
 
 export const nuboViewKey: InjectionKey<NuboViewContext> = Symbol("nuboViewContext")
