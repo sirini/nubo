@@ -416,12 +416,13 @@ export const useEditorStore = defineStore("editor", () => {
         return
       }
       if (response.result > 0) {
+        clear()
         navigateTo(`/board/${config.value.id}/${response.result}`)
       }
     } catch (e) {
       toast(`❌ 게시글을 작성하지 못했습니다: ${e}`)
     } finally {
-      clear()
+      isWriting.value = false
     }
   }
 

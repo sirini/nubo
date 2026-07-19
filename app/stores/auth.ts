@@ -26,7 +26,7 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       const response = await loadInitUserInfo()
       if (!response || !response.success || !response.result) {
-        return await logout()
+        return
       }
 
       user.value = response.result

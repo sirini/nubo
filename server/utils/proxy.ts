@@ -1,52 +1,77 @@
-import { AUTH_KEY } from "~/types/common"
+// server/utils/proxy.ts
+import { AUTH_KEY, CODE } from "~/types/common"
 
 export const safeProxyRequest = async (event: any, targetUrl: string) => {
   const config = useRuntimeConfig()
-  let token = getCookie(event, AUTH_KEY)
+  const token = getCookie(event, AUTH_KEY)
+  const method = event.node.req.method
+  const query = getQuery(event)
+  const contentType = getHeader(event, "content-type")
 
-  // 기존 방식대로 첫 번째 프록시 요청 시도
-  let response = await proxyRequest(event, targetUrl, {
-    fetchOptions: {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  // 요청 데이터를 스트림이 아닌 '원시 바이너리 Buffer' 형태로 메모리에 통째로 복사 (POST FormData용)
+  const rawBody =
+    method !== "GET" && method !== "HEAD"
+      ? await readRawBody(event, false).catch(() => undefined)
+      : undefined
+
+  const fetchUrl = targetUrl as any
+
+  // 메모리에 박제해 둔 rawBody 버퍼를 실어서 백엔드에 1차 요청
+  let response = await $fetch.raw(fetchUrl, {
+    method,
+    body: rawBody,
+    query,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(contentType ? { "content-type": contentType } : {}), // 원본 멀티파트 헤더 토스
     },
+    ignoreResponseError: true,
   })
 
-  // 만약 GoFiber 백엔드가 401 Unauthorized를 반환했다면 가로채기
-  if (event.node.res.statusCode === 401) {
-    event.node.res.statusCode = 200 // 임시로 설정
-
+  // 만약 백엔드가 401 Unauthorized를 반환했다면 가로채서 토큰 갱신 진행
+  if (response.status === 401) {
     try {
-      // 브라우저가 보낸 쿠키 헤더를 그대로 복사하여 백엔드 refresh 엔드포인트 호출
-      const reqHeaders = useRequestHeaders(['cookie'])
-      const refreshResult = await $fetch<{ success: boolean, error: string, code: number, result: any }>(
-        `${config.apiBaseInternal}/auth/refresh`,
-        {
-          method: "POST",
-          headers: { ...reqHeaders }
-        }
-      )
+      const reqHeaders = useRequestHeaders(["cookie"])
+      const refreshUrl = `${config.apiBaseInternal}/auth/refresh` as any
 
-      // Goapi가 새로운 토큰 발급에 성공하여 데이터를 내려주었다면
+      const refreshResult = await $fetch<{
+        success: boolean
+        error: string
+        code: number
+        result: any
+      }>(refreshUrl, {
+        method: "POST",
+        headers: { ...reqHeaders },
+      })
+
       if (refreshResult && refreshResult.success) {
         const newToken = refreshResult.result as string
 
-        // 새 토큰으로 백엔드에 원본 요청을 "다시 한번" 투명하게 재시도
-        return proxyRequest(event, targetUrl, {
-          fetchOptions: {
-            headers: {
-              Authorization: `Bearer ${newToken}`,
-            },
+        // 만료되었을 때, 소멸한 스트림 대신 메모리의 rawBody 버퍼 사용
+        response = await $fetch.raw(fetchUrl, {
+          method,
+          body: rawBody,
+          query,
+          headers: {
+            Authorization: `Bearer ${newToken}`,
+            ...(contentType ? { "content-type": contentType } : {}),
           },
+          ignoreResponseError: true,
         })
       }
     } catch (refreshError) {
-      // 리프레시 토큰마저 완전히 만료된 최후의 상황에는 401을 그대로 뱉음
       event.node.res.statusCode = 401
-      return { success: false, message: "Session Expired" }
+      return { success: false, error: "Session Expired", code: CODE.EXPIRED, result: null }
     }
   }
 
-  return response
+  // 최종 결과 세팅
+  event.node.res.statusCode = response.status
+
+  const setCookieHeader = response.headers.get("set-cookie")
+  if (setCookieHeader) {
+    appendHeader(event, "set-cookie", setCookieHeader)
+  }
+
+  return response._data
 }
