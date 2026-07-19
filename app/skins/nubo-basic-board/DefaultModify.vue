@@ -28,18 +28,21 @@
           </CommonVTooltip>
         </CardFooter>
       </Card>
-
-      <CommonVLoadingDialog v-model="isWriting" message="게시글을 수정하고 있습니다" />
-      <CommonVConfirmDialog
-        v-model="isConfirmDialog"
-        title="첨부파일 삭제"
-        desc="정말로 선택하신 첨부파일을 삭제하시겠습니까?"
-        cancel-text="그대로 두기"
-        confirm-text="삭제하기"
-        variant="destructive"
-        @confirm="removeAttachedFile"
-      />
     </div>
+    <CommonVConfirmDialog
+      v-model="isConfirmDialog"
+      title="첨부파일 삭제"
+      desc="정말로 선택하신 첨부파일을 삭제하시겠습니까?"
+      cancel-text="그대로 두기"
+      confirm-text="삭제하기"
+      variant="destructive"
+      @confirm="removeAttachedFile()"
+    />
+    <CommonVLoadingDialog
+      v-if="!isConfirmDialog"
+      v-model="isWriting"
+      message="게시글을 수정하고 있습니다"
+    />
   </section>
 </template>
 

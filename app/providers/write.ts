@@ -1,4 +1,4 @@
-import type { NuboWriteContext } from "~/types/nubo-skin-keys"
+import type { NuboWriteContext } from "./contexts/write"
 
 export const useWriteProvider = (): NuboWriteContext => {
   const edit = useEditorStore()

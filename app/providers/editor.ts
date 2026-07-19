@@ -7,26 +7,27 @@ export const useEditorProvider = (): NuboEditorContext => {
   return {
     config: computed(() => edit.config),
     content: computed({ get: () => edit.content, set: (val: string) => (edit.content = val) }),
+    imageSizeLimit: computed(() => config.public.imageSize),
+    imageUrl: computed(() => edit.imageUrl),
+    insertedImageResult: computed(() => edit.insertedImageResult),
+    insertedImages: computed(() => edit.insertedImages),
     isAddLinkDialog: computed({
       get: () => edit.isAddLinkDialog,
       set: (val: boolean) => (edit.isAddLinkDialog = val),
     }),
-    isUploading: computed(() => edit.isUploading),
-    imageSizeLimit: computed(() => config.public.imageSize),
+    isBlockquote: computed(() => edit.editor?.isActive("blockquote")),
+    isBold: computed(() => edit.editor?.isActive("bold")),
+    isCode: computed(() => edit.editor?.isActive("code")),
+    isCodeBlock: computed(() => edit.editor?.isActive("codeBlock")),
     isImageUploadDialog: computed({
       get: () => edit.isImageUploadDialog,
       set: (val: boolean) => (edit.isImageUploadDialog = val),
     }),
-    previewInsertImages: computed(() => edit.previewInsertImages),
-    insertedImages: computed(() => edit.insertedImages),
-    insertedImageResult: computed(() => edit.insertedImageResult),
-    imageUrl: computed(() => edit.imageUrl),
-    isBold: computed(() => edit.editor?.isActive("bold")),
     isItalic: computed(() => edit.editor?.isActive("italic")),
+    isLoadDraft: computed(() => edit.isLoadDraft),
     isStrike: computed(() => edit.editor?.isActive("strike")),
-    isBlockquote: computed(() => edit.editor?.isActive("blockquote")),
-    isCode: computed(() => edit.editor?.isActive("code")),
-    isCodeBlock: computed(() => edit.editor?.isActive("codeBlock")),
+    isUploading: computed(() => edit.isUploading),
+    previewInsertImages: computed(() => edit.previewInsertImages),
 
     setLink: (url: string) => {
       edit.setLink(url)
@@ -34,6 +35,7 @@ export const useEditorProvider = (): NuboEditorContext => {
     loadInsertedImages: (opt?: { reset: boolean } | undefined) => {
       edit.loadInsertedImages(opt)
     },
+    loadDraft: () => edit.loadDraft(),
     uploadingImages: async () => {
       await edit.uploadingImages()
     },

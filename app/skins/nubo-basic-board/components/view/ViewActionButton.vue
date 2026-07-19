@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { EllipsisVerticalIcon, EraserIcon, ShredderIcon } from "lucide-vue-next"
-import CommonVConfirmDialog from "~/components/common/CommonVConfirmDialog.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 
 const {

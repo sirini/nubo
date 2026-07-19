@@ -4,7 +4,14 @@ import type { AcceptableValue } from "reka-ui"
 import { ref } from "vue"
 import { toast } from "vue-sonner"
 import { useEditor } from "~/composables/useEditor.client"
-import { BOARD_CONFIG, STATUS, type BoardAttachment, type BoardConfig } from "~/types/board"
+import {
+  BOARD_CONFIG,
+  STATUS,
+  WRITE_DRAFT_PARAM,
+  type BoardAttachment,
+  type BoardConfig,
+  type WriteDraftParam,
+} from "~/types/board"
 import type { Pair } from "~/types/common"
 import type {
   EditorHeadings,
@@ -16,6 +23,7 @@ import type {
   EditorTagItem,
   EditorWriteParam,
 } from "~/types/editor"
+import { useLocalStorage, useDebounceFn } from "#imports"
 
 export const useEditorStore = defineStore("editor", () => {
   const nuxtConfig = useRuntimeConfig()
@@ -47,6 +55,7 @@ export const useEditorStore = defineStore("editor", () => {
   const isAddLinkDialog = ref<boolean>(false)
   const isConfirmDialog = ref<boolean>(false)
   const isDragging = ref<boolean>(false)
+  const isLoadDraft = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isNotice = ref<boolean>(false)
   const isPopOver = ref<Record<string, boolean>>({})
@@ -66,6 +75,7 @@ export const useEditorStore = defineStore("editor", () => {
   const thumbnails = ref<EditorPreviewAttachedImage[]>([])
   const title = ref<string>("")
   const titleSuggestions = ref<string[]>([])
+  const draftPost = useLocalStorage<WriteDraftParam | null>("nubo-draft-post", WRITE_DRAFT_PARAM)
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -381,6 +391,7 @@ export const useEditorStore = defineStore("editor", () => {
     tags.value = []
     title.value = ""
     thumbnails.value = []
+    draftPost.value = null
   }
 
   // 공통 파라미터들 반환
@@ -449,11 +460,12 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
+      clear()
       navigateTo(`/board/${config.value.id}/${postUid.value}`)
     } catch (e) {
       toast(`❌ 게시글을 수정하지 못했습니다: ${e}`)
     } finally {
-      clear()
+      isWriting.value = false
     }
   }
 
@@ -507,22 +519,50 @@ export const useEditorStore = defineStore("editor", () => {
     return ""
   }
 
+  // 입력 발생 시 호출할 디바운스 함수
+  const saveDraft = useDebounceFn(() => {
+    draftPost.value = {
+      title: title.value,
+      content: content.value,
+      tags: [...tags.value],
+      isSecret: isSecret.value,
+      isNotice: isNotice.value,
+      categoryUid: categoryUid.value,
+    }
+  }, 3000)
+
+  // 임시 보관중이던 글 불러오기
+  const loadDraft = () => {
+    if (!draftPost.value) {
+      return
+    }
+    title.value = draftPost.value.title
+    content.value = draftPost.value.content
+    tags.value = [...draftPost.value.tags]
+    isSecret.value = draftPost.value.isSecret
+    isNotice.value = draftPost.value.isNotice
+    categoryUid.value = draftPost.value.categoryUid
+  }
+
   return {
     attaches,
     categories,
     categoryUid,
     config,
     content,
+    draftPost,
     editor,
     editorHeadings,
     editorRemoveAttachedInfo,
     files,
     images,
+    imageUrl,
     insertedImageResult,
     insertedImages,
     isAddLinkDialog,
     isConfirmDialog,
     isDragging,
+    isLoadDraft,
     isImageUploadDialog,
     isNotice,
     isPopOver,
@@ -531,7 +571,6 @@ export const useEditorStore = defineStore("editor", () => {
     isSecret,
     isUploading,
     isWriting,
-    imageUrl,
     postUid,
     previewEditorSelectedImages,
     previewInsertImages,
@@ -543,24 +582,27 @@ export const useEditorStore = defineStore("editor", () => {
     titleSuggestions,
 
     addTag,
+    changeFileList,
+    changeSelectedImages,
     confirmRemoveFile,
+    clear,
+    deleteInsertedImage,
     dropAttaches,
     getThumb,
-    changeFileList,
     insertImageToEditor,
     isHeadingActive,
     loadBoardConfig,
+    loadDraft,
     loadInsertedImages,
     loadPost,
     modify,
-    removeFromList,
-    deleteInsertedImage,
     removeAttachedFile,
+    removeFromList,
     removeTag,
+    saveDraft,
     searchTags,
     searchTitles,
     selectColor,
-    changeSelectedImages,
     selectSuggestedTitle,
     setLink,
     submit,

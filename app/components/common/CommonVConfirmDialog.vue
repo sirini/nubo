@@ -11,16 +11,13 @@
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel class="cursor-pointer">{{ cancelText || "취소" }}</AlertDialogCancel>
-
-        <CommonVTooltip content="주의 : 삭제 작업은 되돌릴 수 없습니다">
-          <AlertDialogAction
-            @click="emit('confirm')"
-            :class="variant === 'destructive' ? 'bg-red-500 hover:bg-red-700' : ''"
-            class="text-foreground cursor-pointer"
-          >
-            {{ confirmText || "확인" }}
-          </AlertDialogAction>
-        </CommonVTooltip>
+        <AlertDialogAction
+          @click="emit('confirm')"
+          :class="variant === 'destructive' ? 'bg-red-500 hover:bg-red-700' : ''"
+          class="text-foreground cursor-pointer"
+        >
+          {{ confirmText || "확인" }}
+        </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

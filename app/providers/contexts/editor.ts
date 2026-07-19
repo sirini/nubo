@@ -6,35 +6,37 @@ import type { EditorInsertImageResult } from "~/types/editor"
 export interface NuboEditorContext {
   config: ComputedRef<BoardConfig>
   content: ComputedRef<string>
-  isAddLinkDialog: WritableComputedRef<boolean>
-  isImageUploadDialog: WritableComputedRef<boolean>
-  isUploading: ComputedRef<boolean>
   imageSizeLimit: ComputedRef<{ profile: string; contentInsert: string; thumbnail: string }>
-  previewInsertImages: ComputedRef<string[]>
-  insertedImages: ComputedRef<Pair[]>
-  insertedImageResult: ComputedRef<EditorInsertImageResult | null>
   imageUrl: ComputedRef<string>
-  isBold: ComputedRef<boolean | undefined>
-  isItalic: ComputedRef<boolean | undefined>
-  isStrike: ComputedRef<boolean | undefined>
+  insertedImageResult: ComputedRef<EditorInsertImageResult | null>
+  insertedImages: ComputedRef<Pair[]>
+  isAddLinkDialog: WritableComputedRef<boolean>
   isBlockquote: ComputedRef<boolean | undefined>
+  isBold: ComputedRef<boolean | undefined>
   isCode: ComputedRef<boolean | undefined>
   isCodeBlock: ComputedRef<boolean | undefined>
-  setLink: (url: string) => void
-  loadInsertedImages: (opt?: { reset: boolean } | undefined) => void
-  uploadingImages: () => Promise<void>
-  insertImageToEditor: (src: string) => void
+  isImageUploadDialog: WritableComputedRef<boolean>
+  isItalic: ComputedRef<boolean | undefined>
+  isLoadDraft: ComputedRef<boolean>
+  isStrike: ComputedRef<boolean | undefined>
+  isUploading: ComputedRef<boolean>
+  previewInsertImages: ComputedRef<string[]>
   deleteInsertedImage: (imageUid: number) => Promise<void>
-  toggleBold: () => boolean
-  toggleItalic: () => boolean
-  toggleStrike: () => boolean
+  getAttr: (name: string) => Record<string, any>
+  insertImageToEditor: (src: string) => void
+  loadDraft: () => void
+  loadInsertedImages: (opt?: { reset: boolean } | undefined) => void
+  redo: () => boolean
+  selectTextColor: (event: Event) => void
+  setLink: (url: string) => void
   toggleBlockquote: () => boolean
+  toggleBold: () => boolean
   toggleCode: () => boolean
   toggleCodeBlock: () => boolean
+  toggleItalic: () => boolean
+  toggleStrike: () => boolean
   undo: () => boolean
-  redo: () => boolean
-  getAttr: (name: string) => Record<string, any>
-  selectTextColor: (event: Event) => void
+  uploadingImages: () => Promise<void>
 }
 
 export const nuboEditorKey: InjectionKey<NuboEditorContext> = Symbol("nuboEditorContext")

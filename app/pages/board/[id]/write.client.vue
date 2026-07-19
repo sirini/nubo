@@ -35,6 +35,19 @@ if (auth.isLoggedIn) {
 
 watch(() => edit.tag, edit.searchTags)
 watch(() => edit.title, edit.searchTitles)
+watch(
+  () => edit.content,
+  () => edit.saveDraft(),
+  { deep: true },
+)
+
+onMounted(() => {
+  if (edit.draftPost && edit.draftPost.content.length > 2) {
+    edit.isLoadDraft = true
+  } else {
+    edit.isLoadDraft = false
+  }
+})
 
 provide(nuboWriteKey, useWriteProvider())
 provide(nuboEditorKey, useEditorProvider())

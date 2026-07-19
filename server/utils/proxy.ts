@@ -48,7 +48,7 @@ export const safeProxyRequest = async (event: any, targetUrl: string) => {
         const newToken = refreshResult.result as string
 
         // 만료되었을 때, 소멸한 스트림 대신 메모리의 rawBody 버퍼 사용
-        response = await $fetch.raw(fetchUrl, {
+        response = (await $fetch.raw(fetchUrl, {
           method,
           body: rawBody,
           query,
@@ -57,7 +57,7 @@ export const safeProxyRequest = async (event: any, targetUrl: string) => {
             ...(contentType ? { "content-type": contentType } : {}),
           },
           ignoreResponseError: true,
-        })
+        })) as any
       }
     } catch (refreshError) {
       event.node.res.statusCode = 401
