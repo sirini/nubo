@@ -1,9 +1,10 @@
 <template>
-  <WriteTiptapEditor v-model="edit.content" :config="view.config" />
+  <div class="overflow-hidden rounded-xl border border-border/70 bg-background/45">
+    <WriteTiptapEditor v-model="edit.content" :config="view.config" />
+  </div>
   <Button
     variant="outline"
-    class="w-full mt-3 cursor-pointer"
-    size="lg"
+    class="mt-3 w-full cursor-pointer"
     @click="writeReplyComment"
     v-if="commentTarget.reply"
     >기존 댓글에 답글을 남깁니다</Button
@@ -11,8 +12,7 @@
 
   <Button
     variant="outline"
-    class="w-full mt-3 cursor-pointer"
-    size="lg"
+    class="mt-3 w-full cursor-pointer"
     @click="modifyExistComment"
     v-else-if="commentTarget.modify"
     >기존 댓글을 수정합니다</Button
@@ -20,8 +20,7 @@
 
   <Button
     variant="outline"
-    class="w-full mt-3 cursor-pointer"
-    size="lg"
+    class="mt-3 w-full cursor-pointer"
     :disabled="!isLoggedIn"
     @click="writeNewComment"
     v-else

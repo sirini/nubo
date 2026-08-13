@@ -15,7 +15,7 @@ export const useBoard = () => {
 
   // 첨부파일 다운로드 하기
   const download = async (boardUid: number, fileUid: number) => {
-    const { data } = await useFetch<Resp<BoardViewDownloadResult>>("/board/download", {
+    return await $fetch<Resp<BoardViewDownloadResult>>("/board/download", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: {
@@ -23,7 +23,6 @@ export const useBoard = () => {
         fileUid,
       },
     })
-    return data.value
   }
 
   // 게시글 본문 내용 가져오기

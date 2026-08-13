@@ -1,38 +1,38 @@
 <template>
-  <div
-    class="relative min-h-screen bg-background mx-auto p-4"
-    :style="`max-width: ${config.width}px`"
-  >
+  <div class="relative mx-auto min-h-screen px-4 py-8 sm:px-6 sm:py-12" :style="`max-width: ${config.width}px`">
     <div
-      class="fixed top-0 left-0 w-full h-0.5 bg-primary z-50 origin-left"
+      class="fixed left-0 top-0 z-50 h-0.5 w-full origin-left bg-primary"
       id="reading-progress"
     ></div>
 
     <ViewBreadcrumb />
-    <Card class="rounded-lg shadow-lg pt-0">
+    <article class="rounded-2xl border border-border/70 bg-card/65">
       <BlogHeader />
 
-      <main class="container mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main class="mx-auto grid max-w-5xl grid-cols-1 gap-10 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-12">
         <BlogTableOfContent />
 
-        <CardContent class="lg:col-span-9 px-0">
-          <div class="nubo leading-7">
-            <div v-html="sanitize(view.post.content)"></div>
+        <div class="lg:col-span-9">
+          <div class="nubo text-[1rem] leading-8 sm:text-[1.04rem]">
+            <ViewPostContent :content="view.post.content" />
           </div>
-        </CardContent>
+        </div>
       </main>
 
-      <CardFooter class="px-4 justify-between">
+      <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-border/70 px-5 py-6 sm:px-8">
         <ViewTagBadges />
         <ViewLikeButton />
-      </CardFooter>
-    </Card>
+      </footer>
+    </article>
 
     <ViewRelatedContent />
-    <ViewWriteComment />
-    <ViewCommentList />
+    <section class="mt-8 rounded-2xl border border-border/70 bg-card/55 p-4 sm:p-6">
+      <h2 class="mb-5 text-lg font-semibold">댓글 {{ num(view.post.comment) }}</h2>
+      <ViewWriteComment />
+      <ViewCommentList class="mt-8" />
+    </section>
 
-    <div class="flex items-center justify-between my-12">
+    <div class="my-10 flex items-center justify-between gap-3">
       <ViewListButton />
 
       <div class="inline-flex gap-3 items-center">
@@ -52,13 +52,13 @@ import ViewCommentList from "./components/view/ViewCommentList.vue"
 import ViewLikeButton from "./components/view/ViewLikeButton.vue"
 import ViewListButton from "./components/view/ViewListButton.vue"
 import ViewModifyButton from "./components/view/ViewModifyButton.vue"
+import ViewPostContent from "./components/view/ViewPostContent.vue"
 import ViewRelatedContent from "./components/view/ViewRelatedContent.vue"
 import ViewTagBadges from "./components/view/ViewTagBadges.vue"
 import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 
 const { view, config, updateReadingProgress, clearReadingProgress } = useNuboViewContext()
-const { sanitize } = useSanitize()
 
 onMounted(() => updateReadingProgress("reading-progress"))
 onBeforeUnmount(() => clearReadingProgress())

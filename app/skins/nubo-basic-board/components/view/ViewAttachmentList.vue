@@ -1,8 +1,8 @@
 <template>
-  <Collapsible v-model:open="isFileListOpen" class="border-t">
-    <div class="flex items-center justify-between w-full p-3">
+  <Collapsible v-model:open="isFileListOpen" class="border-t border-border/70 bg-surface-subtle/35">
+    <div class="flex w-full items-center justify-between px-5 py-3 sm:px-8">
       <h4
-        class="text-sm cursor-pointer pl-1 flex items-center gap-2"
+        class="flex cursor-pointer items-center gap-2 text-sm font-medium"
         @click="isFileListOpen = !isFileListOpen"
       >
         <FilesIcon class="w-4 h-4" />
@@ -16,17 +16,39 @@
       </CollapsibleTrigger>
     </div>
     <CollapsibleContent>
-      <div
+      <Tooltip
         v-for="(file, index) in view.files"
         :key="index"
-        @click="downloadFile(file.uid)"
-        class="border-b px-4 py-3 font-mono text-sm inline-flex items-center cursor-pointer w-full hover:bg-muted hover:text-blue-500 transition-colors"
+        :delay-duration="250"
       >
-        <DownloadIcon class="w-4 h-4 mr-3" />
-        <span class="text-xs">{{ file.name }}</span>
-        <span class="flex-1"></span>
-        <span class="text-xs">{{ num(file.size) }}B</span>
-      </div>
+        <TooltipTrigger as-child>
+          <button
+            type="button"
+            @click="downloadFile(file.uid)"
+            class="inline-flex w-full cursor-pointer items-center border-t border-border/55 px-5 py-3 font-mono text-sm transition-colors hover:bg-accent/45 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-8"
+          >
+            <DownloadIcon class="w-4 h-4 mr-3" />
+            <span class="truncate text-xs">{{ file.name }}</span>
+            <span class="flex-1"></span>
+            <span class="text-xs">{{ num(file.size) }}B</span>
+          </button>
+        </TooltipTrigger>
+
+        <TooltipContent
+          v-if="getImagePreview(file.uid)"
+          side="top"
+          class="max-w-80 overflow-hidden border border-border bg-popover p-2 text-popover-foreground shadow-xl"
+        >
+          <img
+            :src="getImagePreview(file.uid)?.thumbnail.small"
+            :alt="`${file.name} 미리보기`"
+            class="max-h-56 w-auto rounded-md object-contain"
+          />
+          <p class="mt-2 max-w-72 truncate px-1 text-center text-[0.7rem] text-muted-foreground">
+            {{ file.name }}
+          </p>
+        </TooltipContent>
+      </Tooltip>
     </CollapsibleContent>
   </Collapsible>
 </template>
@@ -38,4 +60,8 @@ import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view, downloadFile } = useNuboViewContext()
 const isFileListOpen = ref<boolean>(false)
+const imagePreviews = computed(
+  () => new Map(view.value.images.map((image) => [image.file.uid, image])),
+)
+const getImagePreview = (fileUid: number) => imagePreviews.value.get(fileUid)
 </script>

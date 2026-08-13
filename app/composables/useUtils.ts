@@ -61,6 +61,11 @@ export const getReadingTime = (content: string, charPerMin: number = 500): numbe
   return readingTime > 0 ? readingTime : 1
 }
 
+// 목록용 t*.webp 썸네일 경로를 본문용 f*.webp 미리보기 경로로 변환
+export const getPreviewImage = (path: string): string => {
+  return path.replace(/(\/upload\/thumbnails\/(?:[^/]+\/)*)t([^/?]+)(?=$|[?#])/, "$1f$2")
+}
+
 // 주어진 스킨 경로에서 스킨 폴더명들을 맵 형태로 반환
 export const getSkin = (
   modules: Record<string, () => Promise<unknown>>,

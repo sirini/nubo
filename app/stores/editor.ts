@@ -207,7 +207,7 @@ export const useEditorStore = defineStore("editor", () => {
       if (opt?.reset) {
         insertedImages.value = []
       }
-      let lastUid = insertedImages.value?.at(-1)?.uid || 0
+      const lastUid = insertedImages.value?.at(-1)?.uid || 0
       const response = await getInsertedImages(config.value.uid, lastUid, 6)
       if (!response.success) {
         toast(`❌ 기존에 삽입했던 이미지들을 가져오지 못했습니다: ${response.error}`)
@@ -248,15 +248,18 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 유사한 글제목들 가져오기
   const searchTitles = useDebounceFn(async () => {
-    if (title.value.length < 2) return
+    if (title.value.length < 2) {
+      titleSuggestions.value = []
+      return
+    }
     try {
       isSearchingTitles.value = true
-      const response = await getSuggestionTitles(title.value)
+      const response = await getSuggestionTitles(title.value, 5)
       if (!response.success) {
         toast(`❌ 유사한 글제목들을 조회하지 못했습니다: ${response.error}`)
         return
       }
-      titleSuggestions.value = response.result
+      titleSuggestions.value = response.result.slice(0, 5)
     } catch (e) {
       toast(`❌ 유사한 글제목들을 조회하지 못했습니다: ${e}`)
     } finally {
@@ -306,7 +309,7 @@ export const useEditorStore = defineStore("editor", () => {
   // 첨부파일들을 추가하고, 이미지는 따로 미리보기용 URL 만들어서 보관
   const manageAttachments = (fileList: FileList) => {
     let totalSize = 0
-    let totalLimit = parseInt(nuxtConfig.public.fileSize)
+    const totalLimit = parseInt(nuxtConfig.public.fileSize)
     previewEditorSelectedImages.value.forEach((img) => URL.revokeObjectURL(img.url))
     previewEditorSelectedImages.value = []
     attaches.value = []
@@ -513,7 +516,7 @@ export const useEditorStore = defineStore("editor", () => {
         return ""
       }
       return response.result
-    } catch (e) {
+    } catch {
       console.error(`❌ 미리보기 이미지가 없습니다: ${fileUid}`)
     }
     return ""

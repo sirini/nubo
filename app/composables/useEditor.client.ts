@@ -32,7 +32,7 @@ export const useEditor = () => {
   }
 
   // 유사 게시글 제목들 가져오기
-  const getSuggestionTitles = async (title: string, limit: number = 10) => {
+  const getSuggestionTitles = async (title: string, limit: number = 5) => {
     return await reqGet<Resp<string[]>>("/editor/suggestion/title", { title, limit })
   }
 

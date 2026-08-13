@@ -1,16 +1,16 @@
 <template>
-  <Card class="md:col-span-2 md:row-span-1">
-    <CardHeader class="border-b">
-      <CardTitle class="font-medium flex items-center gap-2">
+  <Card class="gap-0 py-0 shadow-none">
+    <CardHeader class="border-b border-border/60 px-5 py-4">
+      <CardTitle class="flex items-center gap-2 text-sm font-semibold">
         <MessageCircleIcon class="w-4 h-4" />
         최근 댓글들</CardTitle
       >
     </CardHeader>
-    <CardContent class="grid px-2">
+    <CardContent class="grid px-3 py-2">
       <div
         v-for="(co, index) in view.writerComments"
         :key="index"
-        class="text-sm p-2 rounded-md hover:bg-muted transition-colors"
+        class="rounded-lg p-2 text-sm transition-colors hover:bg-accent/45"
       >
         <div class="flex items-center justify-between gap-2">
           <div class="flex-1">
@@ -25,7 +25,7 @@
         </div>
       </div>
 
-      <div v-if="view.writerComments.length < 1" class="text-muted text-center">
+      <div v-if="view.writerComments.length < 1" class="p-4 text-center text-sm text-muted-foreground">
         아직 작성한 댓글이 없습니다
       </div>
     </CardContent>
