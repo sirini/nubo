@@ -2,18 +2,18 @@
   <Carousel
     v-if="view.images.length > 0"
     @init-api="setApi"
-    class="relative w-full h-full flex flex-col justify-center"
+    class="relative flex h-full w-full flex-col justify-center"
   >
     <CarouselContent class="h-full">
       <CarouselItem
         v-for="(img, index) in view.images"
         :key="index"
-        class="h-full flex items-center justify-center"
+        class="flex h-full items-center justify-center"
       >
         <img
           :src="img.thumbnail.large"
-          alt="Attached image"
-          class="max-w-full max-h-full object-contain selection:bg-none"
+          :alt="`${recoverChars(view.post.title)} 이미지 ${index + 1}`"
+          class="max-h-[calc(100dvh-8rem)] max-w-full select-none object-contain"
         />
       </CarouselItem>
     </CarouselContent>
@@ -26,20 +26,32 @@
       <CarouselNext class="hidden sm:flex right-3 cursor-pointer"
     /></CommonVTooltip>
 
-    <div class="flex justify-center" v-if="count > 1">
+    <div
+      v-if="count > 1"
+      class="absolute bottom-5 left-1/2 flex -translate-x-1/2 rounded-full bg-black/45 px-2 backdrop-blur-md"
+    >
       <CommonVTooltip
         v-for="(i, idx) in count"
         :key="idx"
         :content="`${idx + 1}번째 이미지를 봅니다 (총 ${count}장)`"
       >
         <DotIcon
-          class="w-6 h-6 transition-colors duration-300 cursor-pointer"
-          :class="idx + 1 === imgIdx ? 'text-accent-foreground' : 'text-accent'"
+          class="size-6 cursor-pointer text-white/40 transition-colors duration-300"
+          :class="idx === imgIdx ? 'text-white' : ''"
           @click="api?.scrollTo(idx)"
-          aria-label="Go to slide"
+          :aria-label="`${idx + 1}번째 이미지`"
       /></CommonVTooltip>
     </div>
   </Carousel>
+
+  <img
+    v-else-if="view.post.cover"
+    :src="view.post.cover"
+    :alt="recoverChars(view.post.title)"
+    class="max-h-[calc(100dvh-8rem)] max-w-full select-none object-contain"
+  />
+
+  <div v-else class="text-media-foreground/55">이미지가 없습니다</div>
 </template>
 
 <script setup lang="ts">
@@ -60,11 +72,11 @@ const setApi = (val: CarouselApi) => {
 // 이미지 카드 컴포넌트 변경 감지
 watch(api, (api) => {
   if (!api) return
-  imgIdx.value = api.selectedScrollSnap() + 1
+  imgIdx.value = api.selectedScrollSnap()
   count.value = api.scrollSnapList().length
 
   api.on("select", () => {
-    imgIdx.value = api.selectedScrollSnap() + 1
+    imgIdx.value = api.selectedScrollSnap()
   })
 })
 </script>

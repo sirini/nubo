@@ -1,14 +1,14 @@
 <template>
-  <aside class="hidden lg:block lg:col-span-3 sticky top-24 h-fit">
-    <h4 class="text-sm font-bold uppercase tracking-widset text-muted-foreground mb-4">목차</h4>
-    <nav class="space-y-2">
+  <aside v-if="headers.length" class="sticky top-24 hidden h-fit lg:col-span-3 lg:block">
+    <h2 class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">목차</h2>
+    <nav class="space-y-1 border-l border-border/70 pl-4">
       <div
         v-for="header of headers"
         :key="header.id"
         :class="[
-          'transition-colors hover:text-primary',
+          'border-l-2 border-transparent py-1 transition-colors hover:text-primary',
           activeHeaderId === header.id
-            ? 'border-primary text-primary font-bold'
+            ? '-ml-[17px] border-primary pl-[15px] font-semibold text-primary'
             : header.level === 3
               ? 'pl-4 text-xs'
               : header.level === 2
@@ -29,12 +29,13 @@ import type { TableOfContent } from "~/types/board"
 const { makeTableOfContents } = useNuboViewContext()
 const headers = ref<TableOfContent[]>([])
 const activeHeaderId = ref<string>("")
+let observer: IntersectionObserver | undefined
 
 onMounted(() => {
   headers.value = makeTableOfContents()
 
   // 현재 보고 있는 목차 강조하기
-  const observer = new IntersectionObserver(
+  observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -51,7 +52,9 @@ onMounted(() => {
   // 각 헤더 요소들 감시 시작
   headers.value.forEach((header) => {
     const el = document.getElementById(header.id)
-    if (el) observer.observe(el)
+    if (el) observer?.observe(el)
   })
 })
+
+onBeforeUnmount(() => observer?.disconnect())
 </script>

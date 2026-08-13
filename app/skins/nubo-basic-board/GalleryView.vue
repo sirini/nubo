@@ -1,29 +1,27 @@
 <template>
-  <div class="mx-auto">
-    <div class="flex flex-col lg:flex-row gap-0 overflow-hidden h-auto lg:h-[calc(100dvh-70px)]">
-      <section class="flex-1 flex items-center justify-center bg-black/20">
+  <div class="mx-auto bg-background">
+    <div class="grid min-h-[calc(100dvh-65px)] grid-cols-1 lg:grid-cols-[minmax(0,1fr)_25rem]">
+      <section class="relative flex min-h-[55vh] items-center justify-center bg-media lg:min-h-[calc(100dvh-65px)]">
         <GalleryImageCarousel />
-
-        <div v-if="!view.images.length" class="text-zinc-500">No images</div>
       </section>
 
-      <aside class="w-full lg:w-95 flex flex-col bg-card">
-        <ScrollArea class="p-4 lg:h-full">
-          <div class="space-y-4">
-            <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
-
-            <ViewWriterProfile />
-            <Card>
+      <aside class="border-l border-border/70 bg-background lg:max-h-[calc(100dvh-65px)]">
+        <ScrollArea class="h-full">
+          <div class="space-y-5 p-4 sm:p-6">
+            <ViewBreadcrumb />
+            <div class="overflow-hidden rounded-2xl border border-border/70 bg-card/65">
               <ViewMainContent />
-            </Card>
-
-            <div class="rounded-lg border p-4" v-if="comments.length > 0">
-              <ViewCommentList />
             </div>
+            <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
+            <ViewWriterProfile class="rounded-2xl border border-border/70 bg-card/55 p-4" />
 
-            <ViewWriteComment />
+            <section class="rounded-2xl border border-border/70 bg-card/55 p-4">
+              <h2 class="mb-4 text-sm font-semibold">댓글 {{ num(view.post.comment) }}</h2>
+              <ViewWriteComment />
+              <ViewCommentList />
+            </section>
 
-            <div class="flex items-center justify-between my-12">
+            <div class="flex items-center justify-between gap-3 py-5">
               <ViewListButton />
 
               <div class="inline-flex gap-3 items-center">
@@ -50,5 +48,5 @@ import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 import ViewWriterProfile from "./components/view/ViewWriterProfile.vue"
 
-const { view, imgIdx, comments } = useNuboViewContext()
+const { view, imgIdx } = useNuboViewContext()
 </script>
