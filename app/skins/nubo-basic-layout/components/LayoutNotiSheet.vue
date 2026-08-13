@@ -40,12 +40,12 @@
           v-for="noti in notifications"
           :key="noti.uid"
           class="flex items-center gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
-          :class="{ 'bg-blue-50/50 dark:bg-blue-950/20': !noti.checked }"
+          :class="{ 'bg-accent/55': !noti.checked }"
           v-else
         >
           <div
             class="mt-2 w-2 h-2 rounded-full shrink-0"
-            :class="noti.checked ? 'bg-transparent' : 'bg-blue-500'"
+            :class="noti.checked ? 'bg-transparent' : 'bg-primary'"
           ></div>
 
           <Avatar class="w-10 h-10 border">

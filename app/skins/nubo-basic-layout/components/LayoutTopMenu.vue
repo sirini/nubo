@@ -1,11 +1,11 @@
 <template>
-  <div class="flex items-center">
+  <div class="flex min-w-0 items-center">
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <MenuIcon class="w-6 h-6 cursor-pointer" />
       </DropdownMenuTrigger>
       <DropdownMenuContent class="w-48" align="start">
-        <DropdownMenuLabel class="text-gray-500 text-xs">내 계정</DropdownMenuLabel>
+        <DropdownMenuLabel class="text-xs text-muted-foreground">내 계정</DropdownMenuLabel>
         <DropdownMenuGroup v-if="isLoggedIn">
           <DropdownMenuItem as-child class="w-full cursor-pointer">
             <NuxtLink :to="`/user/${user.uid}`" class="inline-flex gap-3 items-center">
@@ -32,7 +32,7 @@
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel class="text-gray-500 text-xs">메뉴</DropdownMenuLabel>
+        <DropdownMenuLabel class="text-xs text-muted-foreground">메뉴</DropdownMenuLabel>
         <DropdownMenuGroup v-if="menus.length > 0">
           <DropdownMenuSub v-for="(menu, index) in menus" :key="index">
             <DropdownMenuSubTrigger class="cursor-pointer"
@@ -61,7 +61,7 @@
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel class="text-gray-500 text-xs">기타</DropdownMenuLabel>
+        <DropdownMenuLabel class="text-xs text-muted-foreground">기타</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem as-child class="w-full cursor-pointer">
             <NuxtLink to="/" class="inline-flex gap-3 items-center">
@@ -85,8 +85,10 @@
     </DropdownMenu>
 
     <CommonVTooltip content="첫 화면으로 이동합니다">
-      <NuxtLink to="/" class="font-bold text-lg ml-3">
-        <span>{{ config.public.title }}</span>
+      <NuxtLink to="/" class="ml-3 min-w-0">
+        <span class="block truncate text-base font-semibold tracking-[-0.02em] sm:text-lg">
+          {{ config.public.title }}
+        </span>
       </NuxtLink>
     </CommonVTooltip>
   </div>

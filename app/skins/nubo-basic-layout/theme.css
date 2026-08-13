@@ -4,83 +4,97 @@
  * 이 파일에서 사이트의 전반적인 색상과 스타일을 커스터마이징할 수 있습니다.
  * 색상 값은 oklch(밝기 채도 색상) 형식을 기본으로 사용합니다.
  * (팁 1: HEX 코드인 #3b82f6 형식으로 입력해도 작동합니다.)
- * (팁 2: 전부 고칠 필요 없이 --primary 하나만 바꿔도 나머지 값들이 따라 변합니다)
- * (팁 3: https://www.shadcn-vue.com/colors 사이트를 참조하세요)
+ * 모든 컴포넌트는 아래 의미 기반 토큰을 사용해야 합니다.
+ * 스킨 고유 색상은 하드코딩하지 말고 이 파일에서 재정의합니다.
  */
 
 :root {
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.28 0.15 282.8);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.28 0.15 282.8);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.28 0.15 282.8);
-  --primary: oklch(0.6 0.23 275.5);
-  --primary-foreground: oklch(0.98 0.01 260);
-  --secondary: oklch(0.96 0.001 250);
-  --secondary-foreground: oklch(0.2 0.02 282);
-  --muted: oklch(0.96 0.01 250);
-  --muted-foreground: oklch(0.55 0.05 250);
-  --accent: oklch(0.967 0.01 250);
-  --accent-foreground: oklch(0.2 0.02 282);
-  --destructive: oklch(0.58 0.23 30);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.93 0.02 250);
-  --input: oklch(0.93 0.02 250);
-  --ring: oklch(0.6 0.23 275.5);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.623 0.214 259.815);
-  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
-  --font-nubo: "Inter", "Pretendard Variable", sans-serif;
+  color-scheme: light;
+  --radius: 0.75rem;
+  --background: oklch(0.965 0.012 80);
+  --foreground: oklch(0.255 0.018 52);
+  --card: oklch(0.988 0.007 82);
+  --card-foreground: oklch(0.255 0.018 52);
+  --popover: oklch(0.992 0.006 82);
+  --popover-foreground: oklch(0.255 0.018 52);
+  --primary: oklch(0.565 0.125 39);
+  --primary-foreground: oklch(0.985 0.006 80);
+  --secondary: oklch(0.925 0.018 76);
+  --secondary-foreground: oklch(0.3 0.022 54);
+  --muted: oklch(0.935 0.012 76);
+  --muted-foreground: oklch(0.515 0.024 58);
+  --accent: oklch(0.91 0.03 67);
+  --accent-foreground: oklch(0.29 0.026 52);
+  --destructive: oklch(0.56 0.19 28);
+  --destructive-foreground: oklch(0.985 0.006 80);
+  --border: oklch(0.865 0.018 72);
+  --input: oklch(0.875 0.018 72);
+  --ring: oklch(0.61 0.105 41);
+  --surface: oklch(0.978 0.009 80);
+  --surface-subtle: oklch(0.945 0.014 76);
+  --media: oklch(0.19 0.005 265);
+  --media-foreground: oklch(0.96 0.003 80);
+  --success: oklch(0.57 0.11 150);
+  --warning: oklch(0.68 0.13 75);
+  --chart-1: oklch(0.61 0.13 39);
+  --chart-2: oklch(0.63 0.09 150);
+  --chart-3: oklch(0.57 0.08 225);
+  --chart-4: oklch(0.72 0.12 82);
+  --chart-5: oklch(0.62 0.1 320);
+  --sidebar: oklch(0.95 0.014 78);
+  --sidebar-foreground: oklch(0.275 0.02 52);
+  --sidebar-primary: oklch(0.565 0.125 39);
+  --sidebar-primary-foreground: oklch(0.985 0.006 80);
+  --sidebar-accent: oklch(0.91 0.03 67);
+  --sidebar-accent-foreground: oklch(0.29 0.026 52);
+  --sidebar-border: oklch(0.865 0.018 72);
+  --sidebar-ring: oklch(0.61 0.105 41);
+  --font-nubo: "Inter", "Pretendard GOV Variable", system-ui, sans-serif;
 }
 
 /* [다크 모드 설정]
    사용자가 브라우저나 OS 설정을 다크모드로 했을 때 적용되는 색상입니다.
 */
 .dark {
-  --background: oklch(0.2 0.02 282.8);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.2 0.02 282.8);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.002 282.8);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.58 0.25 272);
-  --primary-foreground: oklch(0.4 0.12 282);
-  --secondary: oklch(0.3 0.002 260);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.3 0.02 260);
-  --muted-foreground: oklch(0.7 0.05 260);
-  --accent: oklch(0.3 0.002 260);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.5 0.2 30);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.3 0.02 260 / 0.3);
-  --input: oklch(0.3 0.02 260 / 0.3);
-  --ring: oklch(0.58 0.25 272);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.546 0.245 262.881);
-  --sidebar-primary-foreground: oklch(0.379 0.146 265.522);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.488 0.243 264.376);
+  color-scheme: dark;
+  --background: oklch(0.205 0.012 52);
+  --foreground: oklch(0.925 0.012 76);
+  --card: oklch(0.245 0.014 52);
+  --card-foreground: oklch(0.925 0.012 76);
+  --popover: oklch(0.255 0.014 52);
+  --popover-foreground: oklch(0.925 0.012 76);
+  --primary: oklch(0.72 0.105 45);
+  --primary-foreground: oklch(0.205 0.025 42);
+  --secondary: oklch(0.29 0.016 53);
+  --secondary-foreground: oklch(0.9 0.012 76);
+  --muted: oklch(0.285 0.014 52);
+  --muted-foreground: oklch(0.685 0.018 68);
+  --accent: oklch(0.325 0.03 57);
+  --accent-foreground: oklch(0.925 0.012 76);
+  --destructive: oklch(0.64 0.17 28);
+  --destructive-foreground: oklch(0.96 0.006 76);
+  --border: oklch(0.36 0.018 54 / 70%);
+  --input: oklch(0.36 0.018 54 / 80%);
+  --ring: oklch(0.69 0.09 45);
+  --surface: oklch(0.23 0.013 52);
+  --surface-subtle: oklch(0.27 0.016 53);
+  --media: oklch(0.15 0.005 265);
+  --media-foreground: oklch(0.96 0.003 80);
+  --success: oklch(0.68 0.11 150);
+  --warning: oklch(0.76 0.12 78);
+  --chart-1: oklch(0.72 0.11 45);
+  --chart-2: oklch(0.7 0.1 154);
+  --chart-3: oklch(0.68 0.09 225);
+  --chart-4: oklch(0.77 0.12 82);
+  --chart-5: oklch(0.7 0.11 325);
+  --sidebar: oklch(0.225 0.013 52);
+  --sidebar-foreground: oklch(0.925 0.012 76);
+  --sidebar-primary: oklch(0.72 0.105 45);
+  --sidebar-primary-foreground: oklch(0.205 0.025 42);
+  --sidebar-accent: oklch(0.325 0.03 57);
+  --sidebar-accent-foreground: oklch(0.925 0.012 76);
+  --sidebar-border: oklch(0.36 0.018 54 / 70%);
+  --sidebar-ring: oklch(0.69 0.09 45);
 }
 
 body {

@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen bg-background">
     <LayoutTopNavMenus />
     <main>
-      <slot />
+      <slot></slot>
     </main>
     <LayoutFooter />
     <Toaster />
@@ -16,6 +16,8 @@ import "./theme.css"
 import { useNuboLayoutContext } from "~/providers/contexts/layout"
 
 const { isLoggedIn, loadNotifications } = useNuboLayoutContext()
+
+defineOptions({ name: "NuboBasicLayout" })
 
 if (isLoggedIn.value) {
   await loadNotifications(10)
