@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-8 flex flex-col items-center gap-8">
+  <footer class="mt-10 flex flex-col items-center gap-8">
     <Pagination
       :items-per-page="config.rowCount"
       :total="totalPostCount"
@@ -7,39 +7,54 @@
       show-edges
       :page="page"
       :default-page="page"
-      v-slot="{ page, pageCount }"
+      v-slot="{ page: currentPage, pageCount }"
     >
-      <PaginationContent v-slot="{ items }">
-        <NuxtLink :to="setPagingUrl(1)" as-child v-show="page > 1">
+      <PaginationContent v-slot="{ items }" class="flex-wrap justify-center gap-1">
+        <NuxtLink
+          v-show="currentPage > 1"
+          :to="setPagingUrl(1)"
+          as-child
+          class="hidden sm:inline-flex"
+        >
           <CommonVTooltip content="첫 페이지로 이동합니다">
             <PaginationFirst class="cursor-pointer">
-              <ChevronFirstIcon class="w-10 h-10" />
+              <ChevronFirstIcon class="size-4" />
             </PaginationFirst>
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" size="icon" v-show="page <= 1">
-          <ChevronFirstIcon class="w-10 h-10 text-muted" />
+        <Button
+          v-show="currentPage <= 1"
+          variant="ghost"
+          size="icon"
+          class="hidden sm:inline-flex"
+        >
+          <ChevronFirstIcon class="size-4 text-muted-foreground/40" />
         </Button>
 
-        <NuxtLink :to="setPagingUrl(page - 1)" as-child v-show="page > 1" class="mr-2">
+        <NuxtLink
+          v-show="currentPage > 1"
+          :to="setPagingUrl(currentPage - 1)"
+          as-child
+          class="mr-2"
+        >
           <CommonVTooltip content="이전 페이지로 이동합니다">
             <PaginationPrevious class="cursor-pointer">
-              <ChevronLeftIcon class="w-10 h-10" />
+              <ChevronLeftIcon class="size-4" />
             </PaginationPrevious>
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" size="icon" v-show="page <= 1" class="mr-2">
-          <ChevronLeftIcon class="w-10 h-10 text-muted" />
+        <Button v-show="currentPage <= 1" variant="ghost" size="icon" class="mr-2">
+          <ChevronLeftIcon class="size-4 text-muted-foreground/40" />
         </Button>
 
         <template v-for="(item, index) in items">
           <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
             <NuxtLink :to="setPagingUrl(item.value)" as-child>
               <Button
-                class="w-10 h-10 text-foreground cursor-pointer"
-                :variant="item.value === page ? 'default' : 'outline'"
+                class="size-9 cursor-pointer text-foreground sm:size-10"
+                :variant="item.value === currentPage ? 'default' : 'outline'"
               >
                 {{ item.value }}
               </Button>
@@ -49,35 +64,55 @@
           <PaginationEllipsis v-else :key="item.type" :index="index" />
         </template>
 
-        <NuxtLink :to="setPagingUrl(page + 1)" as-child v-show="page < pageCount" class="ml-2">
+        <NuxtLink
+          v-show="currentPage < pageCount"
+          :to="setPagingUrl(currentPage + 1)"
+          as-child
+          class="ml-2"
+        >
           <CommonVTooltip content="다음 페이지로 이동합니다">
             <PaginationNext class="cursor-pointer">
-              <ChevronRightIcon class="w-10 h-10" />
+              <ChevronRightIcon class="size-4" />
             </PaginationNext>
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" size="icon" v-show="page >= pageCount" class="ml-2">
-          <ChevronRightIcon class="w-10 h-10 text-muted" />
+        <Button
+          v-show="currentPage >= pageCount"
+          variant="ghost"
+          size="icon"
+          class="ml-2"
+        >
+          <ChevronRightIcon class="size-4 text-muted-foreground/40" />
         </Button>
 
-        <NuxtLink :to="setPagingUrl(pageCount)" as-child v-show="page < pageCount">
+        <NuxtLink
+          v-show="currentPage < pageCount"
+          :to="setPagingUrl(pageCount)"
+          as-child
+          class="hidden sm:inline-flex"
+        >
           <CommonVTooltip content="마지막 페이지로 이동합니다">
             <PaginationLast class="cursor-pointer">
-              <ChevronLastIcon class="w-10 h-10" />
+              <ChevronLastIcon class="size-4" />
             </PaginationLast>
           </CommonVTooltip>
         </NuxtLink>
 
-        <Button variant="ghost" size="icon" v-show="page >= pageCount">
-          <ChevronLastIcon class="w-10 h-10 text-muted" />
+        <Button
+          v-show="currentPage >= pageCount"
+          variant="ghost"
+          size="icon"
+          class="hidden sm:inline-flex"
+        >
+          <ChevronLastIcon class="size-4 text-muted-foreground/40" />
         </Button>
       </PaginationContent>
     </Pagination>
 
-    <div class="flex w-full max-w-sm items-center space-x-2">
+    <div class="flex w-full max-w-md items-center gap-2">
       <Select v-model="option">
-        <SelectTrigger class="w-25">
+        <SelectTrigger class="w-28 shrink-0 bg-card/60">
           <SelectValue placeholder="제목" />
         </SelectTrigger>
         <SelectContent>
@@ -88,7 +123,12 @@
           <SelectItem :value="SEARCH.IMAGEDESC">이미지</SelectItem>
         </SelectContent>
       </Select>
-      <Input type="text" placeholder="게시판 내 검색" v-model="keyword" @keyup.enter="searchPost" />
+      <Input
+        v-model="keyword"
+        type="search"
+        placeholder="게시판 내 검색"
+        @keyup.enter="searchPost"
+      />
       <Button
         variant="outline"
         class="cursor-pointer"
