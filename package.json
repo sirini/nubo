@@ -6,14 +6,16 @@
     "build": "nuxt build",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
+    "lint": "eslint .",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.5.2",
     "@nuxt/fonts": "^0.11.4",
     "@nuxt/icon": "^1.15.0",
-    "@nuxt/image": "^1.10.0",
+    "@nuxt/image": "^2.1.0",
     "@nuxt/scripts": "^0.11.9",
     "@pinia/nuxt": "^0.11.2",
     "@tailwindcss/vite": "^4.2.2",
@@ -63,7 +65,7 @@
     "isomorphic-dompurify": "^3.10.0",
     "lowlight": "^3.3.0",
     "lucide-vue-next": "^0.525.0",
-    "nuxt": "^4.4.8",
+    "nuxt": "^4.5.2",
     "pinia": "^3.0.3",
     "reka-ui": "^2.9.6",
     "shadcn-nuxt": "^2.6.2",
@@ -74,7 +76,7 @@
     "vee-validate": "^4.15.1",
     "vue": "^3.5.33",
     "vue-input-otp": "^0.3.2",
-    "vue-router": "^4.6.4",
+    "vue-router": "^5.2.0",
     "vue-sonner": "^2.0.9",
     "zod": "^3.25.76"
   },
@@ -85,7 +87,9 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.3.1",
-    "sass-embedded": "^1.90.0"
+    "sass-embedded": "^1.90.0",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.9"
   },
   "overrides": {
     "esbuild": "^0.28.1",

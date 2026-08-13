@@ -3,7 +3,7 @@ import type { EmblaCarouselVueType } from "embla-carousel-vue"
 import type { HTMLAttributes, UnwrapRef } from "vue"
 
 type CarouselApi = EmblaCarouselVueType[1]
-type UseCarouselParams = Params<typeof useEmblaCarousel>
+type UseCarouselParams = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParams[0]
 type CarouselPlugin = UseCarouselParams[1]
 

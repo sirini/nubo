@@ -19,7 +19,7 @@ const { id, config } = useChart()
 const payload = computed(() => Object.entries(config.value).map(([key, value]) => {
   return {
     key: props.nameKey || key,
-    itemConfig: config.value[key],
+    itemConfig: value,
   }
 }))
 
@@ -52,7 +52,7 @@ onMounted(() => {
         :style="{
           backgroundColor: itemConfig.color,
         }"
-      />
+      ></div>
 
       {{ itemConfig?.label }}
     </div>
