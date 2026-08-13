@@ -1,5 +1,5 @@
 <template>
-  <Card class="overflow-hidden border-0 rounded-none">
+  <Card class="mb-8 overflow-hidden border-0 bg-transparent p-0 shadow-none">
     <CardHeader class="p-0">
       <CardTitle class="text-2xl flex items-center gap-2 pl-1">
         <SearchIcon class="w-5 h-5" />
@@ -15,7 +15,7 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <Card
-      class="overflow-hidden rounded-lg shadow-lg pt-0"
+      class="overflow-hidden rounded-2xl pt-0 shadow-none"
       v-for="(post, index) in posts"
       :key="index"
     >
@@ -80,7 +80,7 @@
   >
 
   <div
-    class="border rounded-lg shadow-lg text-muted-foreground flex items-center justify-center gap-2 p-3 mt-8"
+    class="mt-8 flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-card/60 p-3 text-muted-foreground"
     v-if="isLastPost"
   >
     <CheckCircle2Icon class="w-4 h-4" />
