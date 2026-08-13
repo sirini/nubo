@@ -49,7 +49,7 @@
   --sidebar-accent-foreground: oklch(0.29 0.026 52);
   --sidebar-border: oklch(0.865 0.018 72);
   --sidebar-ring: oklch(0.61 0.105 41);
-  --font-nubo: "Inter", "Pretendard GOV Variable", system-ui, sans-serif;
+  --font-nubo: "Inter", "Pretendard Variable", system-ui, sans-serif;
 }
 
 /* [다크 모드 설정]
