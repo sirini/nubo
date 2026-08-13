@@ -23,7 +23,8 @@ const props = withDefaults(defineProps<Props>(), {
     :as="as"
     :as-child="asChild"
     :class="cn(buttonVariants({ variant, size }), props.class)"
+    :style="variant === undefined || variant === 'default' ? { color: 'var(--primary-foreground)' } : undefined"
   >
-    <slot />
+    <slot></slot>
   </Primitive>
 </template>
