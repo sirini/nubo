@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   const cookie = getHeader(event, "cookie") || ""
 
   try {
-    const response = await $fetch<Resp<string>>("/auth/refresh", {
+    const backendResponse = await $fetch.raw<Resp<string>>("/auth/refresh", {
       baseURL: config.apiBaseInternal,
       method: "POST",
       body,
@@ -14,6 +14,15 @@ export default defineEventHandler(async (event) => {
         cookie,
       },
     })
+    const setCookies = backendResponse.headers.getSetCookie()
+    for (const setCookie of setCookies) {
+      appendHeader(event, "set-cookie", setCookie)
+    }
+
+    const response = backendResponse._data
+    if (!response) {
+      throw createError({ statusCode: 502, statusMessage: "Empty refresh response" })
+    }
     if (!response.success) {
       return response
     }
@@ -23,16 +32,22 @@ export default defineEventHandler(async (event) => {
       setCookie(event, AUTH_KEY, accessToken, {
         httpOnly: true,
         path: "/",
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
         maxAge: 60 * 60 * parseInt(config.public.auth.accessTokenHours),
       })
     }
 
     return response
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const fetchError = error as {
+      response?: { status?: number; statusText?: string }
+      data?: unknown
+    }
     throw createError({
-      status: error.response?.status || 401,
-      statusText: error.response?.statusText || "Refreshing access token failed",
-      data: error.data,
+      status: fetchError.response?.status || 401,
+      statusText: fetchError.response?.statusText || "Refreshing access token failed",
+      data: fetchError.data,
     })
   }
 })

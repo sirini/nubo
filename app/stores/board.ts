@@ -13,7 +13,6 @@ import { HomeSearchOptions } from "~/types/home"
 
 export const useBoardStore = defineStore("board", () => {
   const { loadInitBoardView, loadInitBoardList, like, download, removePost } = useBoard()
-  const config = useRuntimeConfig()
   const error = ref<unknown>(null)
   const latestLimit = ref<number>(5)
   const isLoading = ref<boolean>(false)
@@ -84,7 +83,7 @@ export const useBoardStore = defineStore("board", () => {
         return
       }
       const link = document.createElement("a")
-      link.href = `${config.public.goapi}${response.result.path}`
+      link.href = `/api${response.result.path}`
       link.download = response.result.name
       link.target = "_blank"
       link.style.display = "none"

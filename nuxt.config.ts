@@ -37,7 +37,6 @@ export default defineNuxtConfig({
     apiBaseInternal: GOAPI_URL, // SSR에서 사용할 서버 측 주소
     public: {
       apiBase: "/api",
-      goapi: GOAPI_URL,
       goapiBase: GOAPI_PATH,
       version: env.NUXT_PUBLIC_VERSION || "v1.1.2",
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",

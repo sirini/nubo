@@ -111,10 +111,6 @@ export const useAuthStore = defineStore("auth", () => {
         toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${response.error}`)
         return
       }
-      toast(`✅ 내 프로필 정보를 성공적으로 수정하였습니다`)
-    } catch (e) {
-      toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${e}`)
-    } finally {
       if (user.value.uid === otherUser.value.uid) {
         otherUser.value.name = editProfile.value.nickname
         otherUser.value.signature = editProfile.value.signature
@@ -122,6 +118,10 @@ export const useAuthStore = defineStore("auth", () => {
         user.value.name = editProfile.value.nickname
         user.value.signature = editProfile.value.signature
       }
+      toast(`✅ 내 프로필 정보를 성공적으로 수정하였습니다`)
+    } catch (e) {
+      toast(`❌ 내 프로필 정보를 업데이트하지 못했습니다: ${e}`)
+    } finally {
       isLoading.value = false
     }
   }

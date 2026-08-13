@@ -1,7 +1,15 @@
 // server/utils/proxy.ts
+import type { H3Event } from "h3"
+import { $fetch as ofetch } from "ofetch"
 import { AUTH_KEY, CODE } from "~/types/common"
 
-export const safeProxyRequest = async (event: any, targetUrl: string) => {
+const forwardSetCookies = (event: H3Event, headers: Headers) => {
+  for (const cookie of headers.getSetCookie()) {
+    appendHeader(event, "set-cookie", cookie)
+  }
+}
+
+export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
   const config = useRuntimeConfig()
   const token = getCookie(event, AUTH_KEY)
   const method = event.node.req.method
@@ -14,10 +22,8 @@ export const safeProxyRequest = async (event: any, targetUrl: string) => {
       ? await readRawBody(event, false).catch(() => undefined)
       : undefined
 
-  const fetchUrl = targetUrl as any
-
   // 메모리에 박제해 둔 rawBody 버퍼를 실어서 백엔드에 1차 요청
-  let response = await $fetch.raw(fetchUrl, {
+  let response = await ofetch.raw(targetUrl, {
     method,
     body: rawBody,
     query,
@@ -32,23 +38,25 @@ export const safeProxyRequest = async (event: any, targetUrl: string) => {
   if (response.status === 401) {
     try {
       const reqHeaders = useRequestHeaders(["cookie"])
-      const refreshUrl = `${config.apiBaseInternal}/auth/refresh` as any
+      const refreshUrl = `${config.apiBaseInternal}/auth/refresh`
 
-      const refreshResult = await $fetch<{
+      const refreshResponse = await ofetch.raw<{
         success: boolean
         error: string
         code: number
-        result: any
+        result: unknown
       }>(refreshUrl, {
         method: "POST",
         headers: { ...reqHeaders },
       })
+      forwardSetCookies(event, refreshResponse.headers)
+      const refreshResult = refreshResponse._data
 
       if (refreshResult && refreshResult.success) {
         const newToken = refreshResult.result as string
 
         // 만료되었을 때, 소멸한 스트림 대신 메모리의 rawBody 버퍼 사용
-        response = (await $fetch.raw(fetchUrl, {
+        response = await ofetch.raw(targetUrl, {
           method,
           body: rawBody,
           query,
@@ -57,9 +65,9 @@ export const safeProxyRequest = async (event: any, targetUrl: string) => {
             ...(contentType ? { "content-type": contentType } : {}),
           },
           ignoreResponseError: true,
-        })) as any
+        })
       }
-    } catch (refreshError) {
+    } catch {
       event.node.res.statusCode = 401
       return { success: false, error: "Session Expired", code: CODE.EXPIRED, result: null }
     }
@@ -68,10 +76,7 @@ export const safeProxyRequest = async (event: any, targetUrl: string) => {
   // 최종 결과 세팅
   event.node.res.statusCode = response.status
 
-  const setCookieHeader = response.headers.get("set-cookie")
-  if (setCookieHeader) {
-    appendHeader(event, "set-cookie", setCookieHeader)
-  }
+  forwardSetCookies(event, response.headers)
 
   return response._data
 }
