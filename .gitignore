@@ -23,6 +23,7 @@ logs
 .fleet
 .idea
 .codex
+/PROJECT_STATUS.md
 
 # Local env files
 .env
