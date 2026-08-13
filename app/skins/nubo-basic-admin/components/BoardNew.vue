@@ -1,5 +1,5 @@
 <template>
-  <form id="createNewBoard" @submit="onSubmit" class="p-6">
+  <form id="createNewBoard" class="p-4 sm:p-6" @submit="onSubmit">
     <FieldSet>
       <FieldLegend class="text-xl">새 게시판 만들기</FieldLegend>
       <FieldDescription>아래의 설정값으로 새로운 게시판을 생성합니다</FieldDescription>
@@ -12,6 +12,7 @@
           <Button
             variant="ghost"
             class="items-center gap-2 cursor-pointer"
+            type="button"
             @click="changePanel('list')"
           >
             <ArrowLeftIcon class="w-4 h-4" />
@@ -34,7 +35,7 @@
 
       <div>
         <CommonVTooltip content="위에 입력한 내용대로 게시판을 새로 추가합니다">
-          <Button class="items-center gap-2 cursor-pointer text-foreground" @click="onSubmit">
+          <Button type="submit" class="items-center gap-2 cursor-pointer text-foreground">
             <SquareCheckBigIcon class="w-4 h-4" />
             <span>제출</span>
           </Button>
@@ -65,6 +66,7 @@ const { handleSubmit, resetForm } = useForm({
     adminUid: 1,
     groupUid: groupInfo.value.config.uid,
     type: BOARD.DEFAULT,
+    skinKey: "nubo-basic-board",
     categories: "일반,유머,정보",
     rowCount: 20,
     width: 1000,

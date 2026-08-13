@@ -22,13 +22,13 @@
           <Button
             v-for="group in groups"
             :key="group.uid"
-            @click="changeGroup(group.id)"
             class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
             :class="
               selectedGroupId === group.id
                 ? 'bg-muted text-foreground font-medium'
                 : 'hover:bg-muted bg-transparent text-muted-foreground opacity-70'
             "
+            @click="changeGroup(group.id)"
           >
             <span class="truncate">{{ group.id }}</span>
             <span class="text-xs opacity-60">{{ group.count }}</span>
@@ -41,7 +41,11 @@
       <header class="p-4 border-b flex items-center justify-between bg-card h-16">
         <div class="flex items-center gap-3">
           <ComponentIcon class="w-5 h-5" />
-          <h2 class="text-xl font-bold">{{ groupInfo.config.id }}</h2>
+          <h2 class="hidden text-xl font-bold sm:block">{{ groupInfo.config.id }}</h2>
+          <Select :model-value="selectedGroupId" @update:model-value="(value) => changeGroup(String(value))">
+            <SelectTrigger class="w-32 md:hidden"><SelectValue placeholder="그룹 선택" /></SelectTrigger>
+            <SelectContent><SelectItem v-for="group in groups" :key="group.uid" :value="group.id">{{ group.id }}</SelectItem></SelectContent>
+          </Select>
         </div>
         <div class="flex gap-2">
           <CommonVTooltip
@@ -70,8 +74,8 @@
           </CommonVTooltip>
 
           <CommonVTooltip
-            :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`"
             v-if="panel !== 'new'"
+            :content="`${groupInfo.config.id} 그룹에 새 게시판을 추가합니다`"
           >
             <Button size="icon" class="cursor-pointer text-foreground" @click="changePanel('new')">
               <PlusIcon class="w-4 h-4" />
@@ -79,8 +83,8 @@
           </CommonVTooltip>
 
           <CommonVTooltip
-            :content="`${groupInfo.config.id} 그룹 소속 게시판 목록 보기로 돌아갑니다`"
             v-else
+            :content="`${groupInfo.config.id} 그룹 소속 게시판 목록 보기로 돌아갑니다`"
           >
             <Button
               variant="outline"
@@ -94,15 +98,15 @@
         </div>
       </header>
 
-      <ScrollArea class="h-[calc(100dvh-215px)]">
-        <BoardNew :change-panel="changePanel" v-if="panel === 'new'" />
+      <div>
+        <BoardNew v-if="panel === 'new'" :change-panel="changePanel" />
         <BoardEdit
+          v-else-if="panel === 'edit'"
           :selected-board-id="selectedBoardId"
           :change-panel="changePanel"
-          v-else-if="panel === 'edit'"
         />
-        <BoardList :change-panel="changePanel" v-else />
-      </ScrollArea>
+        <BoardList v-else :change-panel="changePanel" />
+      </div>
 
       <BoardAddGroupDialog :change-group="changeGroup" />
       <BoardChangeGroupNameDialog />

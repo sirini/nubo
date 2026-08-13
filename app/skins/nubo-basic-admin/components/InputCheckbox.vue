@@ -1,6 +1,6 @@
 <template>
   <Field v-slot="{ field, handleChange, errors }" :name="name" orientation="horizontal">
-    <div class="flex items-center justify-center gap-4">
+    <div class="flex flex-wrap items-center gap-3 sm:gap-4">
       <FieldLabel :for="name" :class="[labelWidth, 'justify-end text-muted-foreground']">
         {{ label }}
       </FieldLabel>

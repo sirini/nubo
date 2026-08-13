@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig()
+const { settings, loadSettings } = useSkins()
+await loadSettings()
 const modules = import.meta.glob("~/skins/*/Error.vue")
-const selectedSkin = getSkin(modules, config.public.skins.error, "nubo-basic-error")
+const selectedSkin = getSkin(modules, () => settings.value.error, "nubo-basic-error")
 </script>

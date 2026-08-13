@@ -1,5 +1,5 @@
 <template>
-  <form id="createNewAccount" @submit="onSubmit" class="p-6">
+  <form id="createNewAccount" class="p-4 sm:p-6" @submit="onSubmit">
     <FieldSet>
       <FieldLegend class="text-xl">새 사용자 계정 만들기</FieldLegend>
       <FieldDescription>아래의 설정값으로 새로운 사용자 계정을 생성합니다</FieldDescription>

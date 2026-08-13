@@ -7,14 +7,14 @@
           <h2 class="text-xl font-bold">사용자 관리</h2>
         </div>
         <div class="flex gap-2">
-          <CommonVTooltip content="새로운 사용자를 추가합니다" v-if="panel === 'list'">
+          <CommonVTooltip v-if="panel === 'list'" content="새로운 사용자를 추가합니다">
             <Button class="cursor-pointer text-foreground" @click="changePanel('new')">
               <PlusIcon class="w-4 h-4" />
               <span>새 사용자 추가</span>
             </Button>
           </CommonVTooltip>
 
-          <CommonVTooltip content="사용자 목록 보기" v-else>
+          <CommonVTooltip v-else content="사용자 목록 보기">
             <Button variant="outline" class="cursor-pointer" @click="changePanel('list')">
               <ListIcon class="w-4 h-4" />
               <span>목록</span>
@@ -23,15 +23,15 @@
         </div>
       </header>
 
-      <ScrollArea class="h-[calc(100dvh-215px)]">
-        <UserNew :change-panel="changePanel" v-if="panel === 'new'" />
+      <div>
+        <UserNew v-if="panel === 'new'" :change-panel="changePanel" />
         <UserEdit
+          v-else-if="panel === 'edit'"
           :selected-user-uid="selectedUserUid"
           :change-panel="changePanel"
-          v-else-if="panel === 'edit'"
         />
-        <UserList :change-panel="changePanel" v-else />
-      </ScrollArea>
+        <UserList v-else :change-panel="changePanel" />
+      </div>
 
       <UserRemoveConfirmDialog :change-panel="changePanel" />
     </main>

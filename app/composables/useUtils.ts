@@ -64,7 +64,7 @@ export const getReadingTime = (content: string, charPerMin: number = 500): numbe
 // 주어진 스킨 경로에서 스킨 폴더명들을 맵 형태로 반환
 export const getSkin = (
   modules: Record<string, () => Promise<unknown>>,
-  selSkinName: string,
+  selSkinName: MaybeRefOrGetter<string>,
   defSkinName: string,
 ) => {
   const skinMap = Object.fromEntries(
@@ -75,7 +75,7 @@ export const getSkin = (
   )
 
   return computed(() => {
-    const loader = skinMap[selSkinName] ?? skinMap[defSkinName]
+    const loader = skinMap[toValue(selSkinName)] ?? skinMap[defSkinName]
     return loader ? defineAsyncComponent(loader) : null
   })
 }

@@ -1,6 +1,6 @@
 <template>
   <component :is="selectedSkin">
-    <slot />
+    <slot ></slot>
   </component>
 </template>
 
@@ -9,10 +9,11 @@ import { nuboLayoutKey } from "~/providers/contexts/layout"
 import { useLayoutProvider } from "~/providers/layout"
 
 const home = useHomeStore()
-const config = useRuntimeConfig()
+const { settings, loadSettings } = useSkins()
+await loadSettings()
 
 const modules = import.meta.glob("~/skins/*/Layout.vue")
-const selectedSkin = getSkin(modules, config.public.skins.layout, "nubo-basic-layout")
+const selectedSkin = getSkin(modules, () => settings.value.layout, "nubo-basic-layout")
 
 const { addVisitHistory } = useHome()
 const auth = useAuthStore()

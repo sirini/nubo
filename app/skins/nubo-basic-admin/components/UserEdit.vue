@@ -1,5 +1,5 @@
 <template>
-  <form id="modifyUserAccount" @submit="onEditSubmit" class="p-6">
+  <form id="modifyUserAccount" class="p-4 sm:p-6" @submit="onEditSubmit">
     <FieldSet>
       <FieldLegend class="text-xl">사용자 계정 수정하기</FieldLegend>
       <FieldDescription>사용자 계정 정보를 수정하거나 삭제할 수 있습니다</FieldDescription>

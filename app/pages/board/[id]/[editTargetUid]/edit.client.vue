@@ -11,7 +11,6 @@ import { BOARD_PREFIX } from "~/types/board"
 
 definePageMeta({ middleware: "auth" as never })
 
-const config = useRuntimeConfig()
 const route = useRoute()
 const edit = useEditorStore()
 const auth = useAuthStore()
@@ -19,13 +18,9 @@ const boardId = route.params.id as string
 edit.postUid = parseInt(route.params.editTargetUid as string)
 
 const selectedSkin = computed(() => {
-  const skinName = config.public.skins.board
+  const skinName = edit.config.skinKey || "nubo-basic-board"
   const boardType = BOARD_PREFIX[edit.config.type]
-  return defineAsyncComponent(() =>
-    import(`~/skins/${skinName}/${boardType}Modify.vue`).catch(
-      () => import(`~/skins/${skinName}/DefaultModify.vue`),
-    ),
-  )
+  return resolveSkinComponent(skinName, `${boardType}Modify`, "DefaultModify")
 })
 
 await edit.loadBoardConfig(boardId)

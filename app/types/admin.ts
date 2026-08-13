@@ -205,6 +205,7 @@ export type AdminBoardCreateParam = {
   type: Board
   useCategory: boolean
   width: number
+  skinKey: string
 }
 
 // 게시판 수정하기에 필요한 파라미터 정의

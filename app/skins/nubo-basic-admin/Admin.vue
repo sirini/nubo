@@ -1,6 +1,6 @@
 <template>
-  <div class="flex container mx-auto min-h-[calc(100dvh-70px)] py-10 px-4">
-    <div class="flex flex-1 border rounded-lg bg-background overflow-hidden shadow-xl">
+  <div class="container mx-auto min-h-[calc(100dvh-70px)] px-0 py-0 sm:px-4 sm:py-6 lg:py-10">
+    <div class="flex min-h-[calc(100dvh-70px)] border-y bg-background sm:min-h-[calc(100dvh-118px)] sm:rounded-lg sm:border sm:shadow-xl">
       <aside class="hidden w-48 border-r bg-muted/30 md:block">
         <div class="flex h-full flex-col gap-2">
           <div class="flex h-16 items-center border-b px-6">
@@ -37,7 +37,7 @@
                   class="flex items-center justify-between group px-2 py-1.5 rounded-md hover:bg-primary/5 transition-colors"
                 >
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <div class="w-2 h-2 rounded-full bg-primary animate-pulse" ></div>
                     <span
                       class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors"
                     >
@@ -55,8 +55,22 @@
         </div>
       </aside>
 
-      <main class="flex flex-1 flex-col overflow-hidden">
-        <section class="flex-1 overflow-y-auto">
+      <main class="min-w-0 flex-1">
+        <header class="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur md:hidden">
+          <Sheet>
+            <SheetTrigger as-child><Button variant="ghost" size="icon"><MenuIcon class="size-5" /><span class="sr-only">관리 메뉴 열기</span></Button></SheetTrigger>
+            <SheetContent side="left" class="w-72 p-4">
+              <SheetHeader><SheetTitle>관리자 설정</SheetTitle><SheetDescription>관리할 영역을 선택하세요.</SheetDescription></SheetHeader>
+              <nav class="mt-6 space-y-2">
+                <SheetClose v-for="item in menuItems" :key="item.value" as-child>
+                  <Button variant="ghost" class="w-full justify-start gap-3" :class="menu === item.value && 'bg-muted'" @click="openMenu(item.value)"><component :is="item.icon" class="size-4" />{{ item.label }}</Button>
+                </SheetClose>
+              </nav>
+            </SheetContent>
+          </Sheet>
+          <span class="font-semibold">{{ menuItems.find((item) => item.value === menu)?.label }}</span>
+        </header>
+        <section>
           <component :is="panel" :key="menu" />
         </section>
       </main>
@@ -70,6 +84,7 @@ import {
   ExternalLinkIcon,
   FileTextIcon,
   LayoutDashboardIcon,
+  MenuIcon,
   MessageCircleWarningIcon,
   PaletteIcon,
   UsersIcon,

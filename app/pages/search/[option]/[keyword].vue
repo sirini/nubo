@@ -10,11 +10,11 @@ import type { Search } from "~/types/board"
 import { SEARCH } from "~/types/board"
 
 const route = useRoute()
-const config = useRuntimeConfig()
+const { settings } = useSkins()
 const home = useHomeStore()
 
 const modules = import.meta.glob("~/skins/*/Home.vue")
-const selectedSkin = getSkin(modules, config.public.skins.home, "nubo-basic-home")
+const selectedSkin = getSkin(modules, () => settings.value.home, "nubo-basic-home")
 
 const option = computed(() => route.params.option as string)
 const keyword = computed(() => route.params.keyword as string)

@@ -1,6 +1,6 @@
 <template>
   <VeeField v-slot="{ field, errors }" :name="name">
-    <div class="flex items-center justify-center gap-4">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
       <FieldLabel :for="name" :class="[labelWidth, 'justify-end text-muted-foreground']">
         {{ label }}
       </FieldLabel>
@@ -10,13 +10,13 @@
           <Input
             :id="name"
             :model-value="field.value"
-            @update:model-value="field.onChange"
-            @blur="field.onBlur"
             :type="type"
             :placeholder="placeholder"
             :aria-invalid="!!errors.length"
             autocomplete="off"
             :disabled="disabled"
+            @update:model-value="field.onChange"
+            @blur="field.onBlur"
           />
         </slot>
       </div>

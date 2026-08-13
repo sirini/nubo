@@ -7,11 +7,11 @@ import { toast } from "vue-sonner"
 import { useAdminProvider } from "~/providers/admin"
 import { nuboAdminKey } from "~/providers/contexts/admin"
 
-const config = useRuntimeConfig()
+const { settings } = useSkins()
 const auth = useAuthStore()
 const admin = useAdminStore()
 const modules = import.meta.glob("~/skins/*/Admin.vue")
-const selectedSkin = getSkin(modules, config.public.skins.admin, "nubo-basic-admin")
+const selectedSkin = getSkin(modules, () => settings.value.admin, "nubo-basic-admin")
 
 onMounted(() => {
   if (!auth.isAdmin) {

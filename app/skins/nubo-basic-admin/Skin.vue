@@ -5,7 +5,7 @@
       <h2 class="text-xl font-bold">스킨 관리</h2>
     </div>
 
-    <div class="flex gap-2">
+    <div class="hidden gap-2 sm:flex">
       <InfoIcon class="w-4 h-4 text-muted-foreground" />
       <span class="text-xs text-muted-foreground"
         >스킨 관리 기능은 v1.2.0 이후 버전부터 제공됩니다</span
@@ -29,22 +29,14 @@
           </CardHeader>
 
           <CardContent>
-            <div
-              class="mt-2 p-2 bg-muted rounded-md border border-dashed text-xs font-mono truncate"
-            >
-              {{ currentSkins[item.id as keyof typeof config.public.skins] }}
-            </div>
+            <Select v-model="selected[item.id]">
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="skin in skinsFor(item.id)" :key="skin.key" :value="skin.key">{{ skin.name }}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button class="mt-3 w-full" variant="outline" :disabled="selected[item.id] === settings[item.id]" @click="applySkin(item.id)">적용하기</Button>
           </CardContent>
-
-          <CardFooter
-            class="absolute h-full bottom-0 w-full p-4 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <SkinChangeDialog :type="item.id">
-              <Button variant="link" size="sm" class="w-full cursor-pointer">
-                스킨 변경하기
-              </Button>
-            </SkinChangeDialog>
-          </CardFooter>
         </Card>
       </div>
     </div>
@@ -178,12 +170,22 @@ import {
   ShieldAlert,
   User,
 } from "lucide-vue-next"
+import { toast } from "vue-sonner"
 import CommonVCode from "~/components/common/CommonVCode.vue"
-import type { AdminSkinCategory } from "~/types/admin"
-import SkinChangeDialog from "./components/dialogs/SkinChangeDialog.vue"
-
+import type { AdminSkinCategory, AdminSkinType } from "~/types/admin"
 const config = useRuntimeConfig()
-const currentSkins = ref(config.public.skins)
+const { installed, settings } = useSkins()
+const selected = reactive({ ...settings.value })
+const skinsFor = (type: AdminSkinType) => installed.value.filter((skin) => skin.type === type)
+const applySkin = async (type: AdminSkinType) => {
+  const response = await $fetch<{ success: boolean; error: string }>("/admin/skin/setting", {
+    baseURL: config.public.apiBase, method: "PUT", body: { type, skinKey: selected[type] },
+  })
+  if (response.success) {
+    settings.value[type] = selected[type]
+    toast("✅ 스킨 설정을 저장했습니다")
+  } else toast(`❌ 스킨 설정을 저장하지 못했습니다: ${response.error}`)
+}
 
 // Bento 배치를 위한 카테고리 정의
 const skinCategories = ref<AdminSkinCategory[]>([

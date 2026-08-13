@@ -1,5 +1,11 @@
 <template>
-  <Table>
+  <div class="space-y-3 p-4 md:hidden">
+    <Card v-for="report in latestReports" :key="report.uid" class="p-4">
+      <div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="font-semibold">{{ report.from.name }} → {{ report.to.name }}</p><p class="mt-2 line-clamp-3 text-sm text-muted-foreground">{{ report.request }}</p></div><Button size="sm" variant="outline" @click="changeStatus('edit', report)">처리</Button></div>
+      <p class="mt-3 text-xs text-muted-foreground">{{ date(report.date) }}</p>
+    </Card>
+  </div>
+  <Table class="hidden md:table">
     <TableHeader>
       <TableRow>
         <TableHead class="text-center">신고자</TableHead>

@@ -13,7 +13,6 @@ import { useWriteProvider } from "~/providers/write"
 import { BOARD_PREFIX } from "~/types/board"
 import { HIT_KEY } from "~/types/common"
 
-const config = useRuntimeConfig()
 const route = useRoute()
 const board = useBoardStore()
 const comment = useCommentStore()
@@ -23,13 +22,9 @@ const postUid = computed(() => parseInt(route.params.postUid as string, 10))
 
 // 게시판 타입에 따른 글보기 미지원 시 기본 글보기 스킨 출력
 const selectedSkin = computed(() => {
-  const skinName = config.public.skins.board
+  const skinName = board.view.config.skinKey || "nubo-basic-board"
   const boardType = BOARD_PREFIX[board.view.config.type]
-  return defineAsyncComponent(() =>
-    import(`~/skins/${skinName}/${boardType}View.vue`).catch(
-      () => import(`~/skins/${skinName}/DefaultView.vue`),
-    ),
-  )
+  return resolveSkinComponent(skinName, `${boardType}View`, "DefaultView")
 })
 
 // 조회수 업데이트가 필요한지 확인

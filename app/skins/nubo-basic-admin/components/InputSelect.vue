@@ -1,6 +1,6 @@
 <template>
   <VeeField v-slot="{ field, errors }" :name="name">
-    <div class="flex items-center justify-center gap-4">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
       <FieldLabel :for="name" :class="[labelWidth, 'justify-end text-muted-foreground']">
         {{ label }}
       </FieldLabel>
@@ -41,7 +41,7 @@ withDefaults(
   defineProps<{
     name: string
     label: string
-    items: { name: string; value: number }[]
+    items: { name: string; value: string | number }[]
     description?: string
     placeholder?: string
     labelWidth?: string

@@ -6,8 +6,8 @@
 import { nuboLoginKey } from "~/providers/contexts/login"
 import { useLoginProvider } from "~/providers/login"
 
-const config = useRuntimeConfig()
+const { settings } = useSkins()
 const modules = import.meta.glob("~/skins/*/ResetPassword.vue")
-const selectedSkin = getSkin(modules, config.public.skins.login, "nubo-basic-login")
+const selectedSkin = getSkin(modules, () => settings.value.login, "nubo-basic-login")
 provide(nuboLoginKey, useLoginProvider())
 </script>

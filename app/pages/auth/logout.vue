@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig()
+const { settings } = useSkins()
 const auth = useAuthStore()
 const modules = import.meta.glob("~/skins/*/Logout.vue")
-const selectedSkin = getSkin(modules, config.public.skins.login, "nubo-basic-login")
+const selectedSkin = getSkin(modules, () => settings.value.login, "nubo-basic-login")
 
 await callOnce(async () => {
   await auth.logout()

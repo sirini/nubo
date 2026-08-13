@@ -132,6 +132,7 @@ export type BoardConfig = {
   category: Pair[]
   level: BoardActionLevel
   point: BoardActionPoint
+  skinKey: string
 }
 
 // 게시판 일반 설정 불러오기 기본값 정의
@@ -149,6 +150,7 @@ export const BOARD_CONFIG: BoardConfig = {
   category: [] as Pair[],
   level: BOARD_ACTION_LEVEL,
   point: BOARD_ACTION_POINT,
+  skinKey: "nubo-basic-board",
 }
 
 // 홈화면 게시글 공통 리턴 타입 정의

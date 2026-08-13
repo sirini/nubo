@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea class="max-h-60">
+  <div>
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)] p-6">
       <Card
         class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent"
@@ -82,8 +82,8 @@
       </Card>
 
       <div class="md:col-span-8 md:row-span-2 flex flex-col">
-        <Skeleton class="w-full h-full rounded-xl" v-if="isLoading" />
-        <DashboardGraph v-else :statPost="statPost" :statReply="statReply" :statVisit="statVisit" />
+        <Skeleton v-if="isLoading" class="w-full h-full rounded-xl" />
+        <DashboardGraph v-else :stat-post="statPost" :stat-reply="statReply" :stat-visit="statVisit" />
       </div>
 
       <Card class="md:col-span-4 p-6">
@@ -192,7 +192,7 @@
         </div>
       </Card>
     </div>
-  </ScrollArea>
+  </div>
 </template>
 
 <script setup lang="ts">

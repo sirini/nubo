@@ -6,7 +6,7 @@
 import { nuboProfileKey } from "~/providers/contexts/profile"
 import { useProfileProvider } from "~/providers/profile"
 
-const config = useRuntimeConfig()
+const { settings } = useSkins()
 const route = useRoute()
 const auth = useAuthStore()
 const chat = useChatStore()
@@ -16,7 +16,7 @@ const targetUserUid = computed(() => parseInt(route.params.userUid as string))
 
 const limit = 5
 const modules = import.meta.glob("~/skins/*/Profile.vue")
-const selectedSkin = getSkin(modules, config.public.skins.profile, "nubo-basic-profile")
+const selectedSkin = getSkin(modules, () => settings.value.profile, "nubo-basic-profile")
 
 await Promise.all([
   auth.getInitOtherUserInfo(targetUserUid.value),

@@ -8,10 +8,10 @@ import { nuboHomeKey } from "~/providers/contexts/home"
 import { useHomeProvider } from "~/providers/home"
 import { SEARCH, type Search } from "~/types/board"
 
-const config = useRuntimeConfig()
+const { settings } = useSkins()
 const home = useHomeStore()
 const modules = import.meta.glob("~/skins/*/Home.vue")
-const selectedSkin = getSkin(modules, config.public.skins.home, "nubo-basic-home")
+const selectedSkin = getSkin(modules, () => settings.value.home, "nubo-basic-home")
 
 home.option = SEARCH.TITLE as Search
 home.keyword = ""

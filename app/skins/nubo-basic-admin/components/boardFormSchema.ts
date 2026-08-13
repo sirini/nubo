@@ -24,6 +24,7 @@ export const useBoardFormSchema = () => {
         .min(2, "게시판 이름은 2글자 이상이어야 합니다")
         .max(20, "게시판 이름은 20글자 이하여야 합니다"),
       type: z.coerce.number({ invalid_type_error: "숫자만 선택 가능합니다" }),
+      skinKey: z.string().min(3).max(80).regex(/^[a-z0-9_-]+$/),
       rowCount: z.coerce
         .number({
           invalid_type_error: "숫자만 입력 가능합니다",

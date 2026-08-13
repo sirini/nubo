@@ -1,5 +1,5 @@
 <template>
-  <form id="solveReport" @submit="onSubmit" class="p-6">
+  <form id="solveReport" class="p-4 sm:p-6" @submit="onSubmit">
     <FieldSet>
       <FieldLegend class="text-xl">신고 대응</FieldLegend>
       <FieldDescription
@@ -30,6 +30,7 @@
         <Button
           variant="ghost"
           class="items-center gap-2 cursor-pointer"
+          type="button"
           @click="changeStatus('wait')"
         >
           <ArrowLeftIcon class="w-4 h-4" />
@@ -38,7 +39,7 @@
       </CommonVTooltip>
 
       <CommonVTooltip content="조치 사항을 업데이트 합니다">
-        <Button class="items-center gap-2 cursor-pointer text-foreground" @click="onSubmit">
+        <Button type="submit" class="items-center gap-2 cursor-pointer text-foreground">
           <SquareCheckBigIcon class="w-4 h-4" />
           <span>제출</span>
         </Button>
@@ -63,6 +64,7 @@ const props = defineProps<{
 }>()
 const schema = useReportFormSchema()
 const { changeUserPermission, getUserPermission } = useNuboAdminContext()
+const config = useRuntimeConfig()
 const permission = await getUserPermission(props.selectedReport.to.uid)
 
 // 스키마 지정 및 기존 값들 가져오기
@@ -76,6 +78,7 @@ const onSubmit = handleSubmit(
   async (data) => {
     const param = data as UserPermissionManageParam
     await changeUserPermission(param)
+    await $fetch("/admin/report/resolve", { baseURL: config.public.apiBase, method: "PUT", body: { reportUid: props.selectedReport.uid, response: data.response } })
     props.changeStatus("solved")
   },
   ({ errors, values, results }) => {

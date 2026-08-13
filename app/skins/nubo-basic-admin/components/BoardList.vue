@@ -1,5 +1,11 @@
 <template>
-  <Table>
+  <div class="space-y-3 p-4 md:hidden">
+    <Card v-for="board in groupInfo.boards" :key="board.uid" class="p-4">
+      <div class="flex items-start justify-between gap-3"><div><NuxtLink :to="`/board/${board.id}`" class="font-semibold">{{ board.name }}</NuxtLink><p class="text-sm text-muted-foreground">{{ board.id }} · {{ showTypeName(board.type) }}</p></div><Button size="sm" variant="outline" @click="changePanel('edit', board.id)">설정</Button></div>
+      <div class="mt-4 grid grid-cols-3 gap-2 text-xs text-muted-foreground"><span>관리자 {{ board.manager.name }}</span><span>글 {{ num(board.total.post) }}</span><span>댓글 {{ num(board.total.comment) }}</span></div>
+    </Card>
+  </div>
+  <Table class="hidden md:table">
     <TableHeader>
       <TableRow>
         <TableHead class="text-center">이름</TableHead>

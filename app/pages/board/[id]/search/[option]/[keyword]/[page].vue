@@ -8,7 +8,6 @@ import { useListProvider } from "~/providers/list"
 import { BOARD_PREFIX, SEARCH, type Search } from "~/types/board"
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const board = useBoardStore()
 
 const boardId = computed(() => route.params.id as string)
@@ -26,13 +25,9 @@ const options: Record<string, number> = {
 
 // 게시판 타입에 따른 목록 미지원 시 기본 목록 스킨 출력
 const selectedSkin = computed(() => {
-  const skinName = config.public.skins.board
+  const skinName = board.list.config.skinKey || "nubo-basic-board"
   const boardType = BOARD_PREFIX[board.list.config.type]
-  return defineAsyncComponent(() =>
-    import(`~/skins/${skinName}/${boardType}List.vue`).catch(
-      () => import(`~/skins/${skinName}/DefaultList.vue`),
-    ),
-  )
+  return resolveSkinComponent(skinName, `${boardType}List`, "DefaultList")
 })
 
 board.page = page.value > 0 ? page.value : 1

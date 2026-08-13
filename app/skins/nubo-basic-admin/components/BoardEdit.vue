@@ -1,5 +1,5 @@
 <template>
-  <form id="modifyExistBoard" @submit="onSubmit" class="p-6">
+  <form id="modifyExistBoard" class="p-4 sm:p-6" @submit="onSubmit">
     <FieldSet>
       <FieldLegend class="text-xl">{{ selectedBoardId }} 게시판 수정하기</FieldLegend>
       <FieldDescription
@@ -14,6 +14,7 @@
           <Button
             variant="ghost"
             class="items-center gap-2 cursor-pointer"
+            type="button"
             @click="changePanel('list')"
           >
             <ArrowLeftIcon class="w-4 h-4" />
@@ -36,7 +37,7 @@
 
       <div>
         <CommonVTooltip :content="`${selectedBoardId} 게시판을 수정합니다`">
-          <Button class="items-center gap-2 cursor-pointer text-foreground" @click="onSubmit">
+          <Button type="submit" class="items-center gap-2 cursor-pointer text-foreground">
             <SquareCheckBigIcon class="w-4 h-4" />
             <span>수정</span>
           </Button>
@@ -80,6 +81,7 @@ const { handleSubmit } = useForm({
     name: setting.config.name,
     info: setting.config.info,
     type: setting.config.type,
+    skinKey: setting.config.skinKey,
     categories: cats,
     rowCount: setting.config.rowCount,
     width: setting.config.width,

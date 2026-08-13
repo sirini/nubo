@@ -40,25 +40,29 @@
 
     <main class="flex-1 flex flex-col min-w-0">
       <header class="p-4 border-b flex items-center justify-between bg-card h-16">
-        <h2 class="text-xl font-bold flex items-center gap-3" v-if="status === 'wait'">
+        <h2 v-if="status === 'wait'" class="text-xl font-bold flex items-center gap-3">
           <HourglassIcon class="w-5 h-5" />
           미해결된 신고들
         </h2>
 
-        <h2 class="text-xl font-bold flex items-center gap-3" v-else>
+        <h2 v-else class="text-xl font-bold flex items-center gap-3">
           <CircleCheckBigIcon class="w-5 h-5" />
           해결됨
         </h2>
+        <div v-if="status !== 'edit'" class="flex gap-1 md:hidden">
+          <Button size="sm" :variant="status === 'wait' ? 'default' : 'ghost'" @click="changeStatus('wait')">대기중</Button>
+          <Button size="sm" :variant="status === 'solved' ? 'default' : 'ghost'" @click="changeStatus('solved')">해결됨</Button>
+        </div>
       </header>
 
-      <ScrollArea class="h-[calc(100dvh-215px)]">
+      <div>
         <ReportEdit
+          v-if="status === 'edit'"
           :change-status="changeStatus"
           :selected-report="selectedReport"
-          v-if="status === 'edit'"
         />
-        <ReportList :change-status="changeStatus" v-else />
-      </ScrollArea>
+        <ReportList v-else :change-status="changeStatus" />
+      </div>
     </main>
   </div>
 </template>
