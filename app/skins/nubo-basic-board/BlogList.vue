@@ -1,10 +1,12 @@
 <template>
-  <section class="container mx-auto p-4">
+  <section class="mx-auto px-4 py-8 sm:px-6 sm:py-12">
     <div class="mx-auto" :style="`max-width: ${config.width}px`">
-      <BlogHeader class="my-6" />
+      <BlogHeader class="mb-8 sm:mb-10" />
       <BlogPostRow />
     </div>
-    <ListFooter />
+    <div class="mx-auto mt-10" :style="`max-width: ${config.width}px`">
+      <ListFooter />
+    </div>
   </section>
 </template>
 

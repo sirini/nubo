@@ -1,9 +1,10 @@
 <template>
-  <Card
-    v-for="post in posts"
-    :key="post.uid"
-    class="group grid grid-cols-1 md:grid-cols-12 gap-8 items-center border-none shadow-none"
-  >
+  <div class="space-y-6 sm:space-y-8">
+    <Card
+      v-for="post in posts"
+      :key="post.uid"
+      class="group grid grid-cols-1 items-center gap-6 overflow-hidden p-5 shadow-none sm:p-6 md:grid-cols-12 md:gap-8 lg:p-8"
+    >
     <NuxtLink
       :to="`/board/${config.id}/${post.uid}`"
       class="block md:col-span-4 overflow-hidden rounded-lg bg-muted aspect-square shadow-sm relative"
@@ -78,7 +79,8 @@
         </NuxtLink>
       </CardFooter>
     </div>
-  </Card>
+    </Card>
+  </div>
 </template>
 
 <script setup lang="ts">
