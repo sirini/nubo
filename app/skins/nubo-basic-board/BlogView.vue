@@ -14,7 +14,7 @@
 
         <div class="lg:col-span-9">
           <div class="nubo text-[1rem] leading-8 sm:text-[1.04rem]">
-            <div v-html="sanitize(view.post.content)"></div>
+            <ViewPostContent :content="view.post.content" />
           </div>
         </div>
       </main>
@@ -52,13 +52,13 @@ import ViewCommentList from "./components/view/ViewCommentList.vue"
 import ViewLikeButton from "./components/view/ViewLikeButton.vue"
 import ViewListButton from "./components/view/ViewListButton.vue"
 import ViewModifyButton from "./components/view/ViewModifyButton.vue"
+import ViewPostContent from "./components/view/ViewPostContent.vue"
 import ViewRelatedContent from "./components/view/ViewRelatedContent.vue"
 import ViewTagBadges from "./components/view/ViewTagBadges.vue"
 import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 
 const { view, config, updateReadingProgress, clearReadingProgress } = useNuboViewContext()
-const { sanitize } = useSanitize()
 
 onMounted(() => updateReadingProgress("reading-progress"))
 onBeforeUnmount(() => clearReadingProgress())

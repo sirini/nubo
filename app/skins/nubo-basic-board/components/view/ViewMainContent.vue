@@ -17,7 +17,7 @@
   <Separator class="opacity-70" />
 
   <CardContent class="nubo min-h-56 px-5 py-8 text-[0.98rem] leading-8 sm:px-8 sm:py-10">
-    <div v-html="sanitize(view.post.content)"></div>
+    <ViewPostContent :content="view.post.content" />
   </CardContent>
   <CardFooter class="flex-wrap justify-between gap-4 px-5 pb-7 sm:px-8">
     <ViewTagBadges />
@@ -39,9 +39,9 @@
 import { useNuboViewContext } from "~/providers/contexts/view"
 import ViewActionButton from "./ViewActionButton.vue"
 import ViewLikeButton from "./ViewLikeButton.vue"
+import ViewPostContent from "./ViewPostContent.vue"
 import ViewStatusLine from "./ViewStatusLine.vue"
 import ViewTagBadges from "./ViewTagBadges.vue"
 
 const { view, config } = useNuboViewContext()
-const { sanitize } = useSanitize()
 </script>

@@ -5,7 +5,7 @@ import Blockquote from "@tiptap/extension-blockquote"
 import Bold from "@tiptap/extension-bold"
 import BulletList from "@tiptap/extension-bullet-list"
 import Code from "@tiptap/extension-code"
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight"
+import CodeBlock from "@tiptap/extension-code-block"
 import { Color } from "@tiptap/extension-color"
 import Document from "@tiptap/extension-document"
 import Dropcursor from "@tiptap/extension-dropcursor"
@@ -31,33 +31,8 @@ import { TextStyle } from "@tiptap/extension-text-style"
 import Typography from "@tiptap/extension-typography"
 import Youtube from "@tiptap/extension-youtube"
 
-// Highlight.js
-import cpp from "highlight.js/lib/languages/cpp"
-import css from "highlight.js/lib/languages/css"
-import go from "highlight.js/lib/languages/go"
-import java from "highlight.js/lib/languages/java"
-import js from "highlight.js/lib/languages/javascript"
-import kt from "highlight.js/lib/languages/kotlin"
-import php from "highlight.js/lib/languages/php"
-import py from "highlight.js/lib/languages/python"
-import rs from "highlight.js/lib/languages/rust"
-import ts from "highlight.js/lib/languages/typescript"
-import { all, createLowlight } from "lowlight"
-
 // Tiptap 에디터 객체 반환
 export const useTiptapEditor = (content: Ref<string>, onUpdate: (html: string) => void) => {
-  const lowlight = createLowlight(all)
-  lowlight.register("css", css)
-  lowlight.register("js", js)
-  lowlight.register("ts", ts)
-  lowlight.register("py", py)
-  lowlight.register("kt", kt)
-  lowlight.register("java", java)
-  lowlight.register("cpp", cpp)
-  lowlight.register("php", php)
-  lowlight.register("rs", rs)
-  lowlight.register("go", go)
-
   const extensions = [
     Bold,
     Blockquote,
@@ -85,7 +60,7 @@ export const useTiptapEditor = (content: Ref<string>, onUpdate: (html: string) =
     TableCell,
     TableHeader,
     TableRow,
-    CodeBlockLowlight.configure({ lowlight, defaultLanguage: "typescript" }),
+    CodeBlock.configure({ defaultLanguage: "typescript" }),
     TiptapLink.configure({ openOnClick: false }),
     Typography,
   ]

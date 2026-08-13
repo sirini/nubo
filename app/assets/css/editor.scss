@@ -74,23 +74,25 @@
   }
 
   code {
-    background-color: oklch(25% 0.02934 284.342);
-    color: #ffffff;
+    background-color: color-mix(in oklab, var(--surface-subtle) 88%, transparent);
+    color: var(--primary);
+    border: 1px solid var(--border);
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     margin-left: 0.2rem;
     margin-right: 0.2rem;
-    border-radius: 1rem;
-    letter-spacing: 0.1rem;
+    border-radius: 0.45rem;
+    letter-spacing: 0.02rem;
     font-family: "JetBrains Mono", sans-serif;
   }
 
   pre {
-    background: oklch(15% 0.01861 284.284);
-    color: #ffffff;
+    background: var(--media);
+    color: var(--media-foreground);
     font-family: "JetBrains Mono", sans-serif;
     padding: 1rem;
-    border-radius: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
     margin: 1rem 0;
     overflow: auto;
 
@@ -100,56 +102,31 @@
       background: none;
     }
 
-    .hljs-comment,
-    .hljs-quote {
-      color: oklch(50% 0.12106 161.647);
-    }
+  }
 
-    .hljs-variable,
-    .hljs-template-variable,
-    .hljs-attribute,
-    .hljs-tag,
-    .hljs-name,
-    .hljs-regexp,
-    .hljs-link,
-    .hljs-name,
-    .hljs-selector-id,
-    .hljs-selector-class {
-      color: #f98181;
-    }
+  .shiki,
+  .shiki span {
+    color: var(--shiki-light) !important;
+    background-color: var(--shiki-light-bg) !important;
+    font-style: var(--shiki-light-font-style) !important;
+    font-weight: var(--shiki-light-font-weight) !important;
+    text-decoration: var(--shiki-light-text-decoration) !important;
+  }
 
-    .hljs-number,
-    .hljs-meta,
-    .hljs-built_in,
-    .hljs-builtin-name,
-    .hljs-literal,
-    .hljs-type,
-    .hljs-params {
-      color: #fbbc88;
-    }
+  .shiki {
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+  }
 
-    .hljs-string,
-    .hljs-symbol,
-    .hljs-bullet {
-      color: #b9f18d;
-    }
-
-    .hljs-title,
-    .hljs-section {
-      color: #faf594;
-    }
-
-    .hljs-keyword,
-    .hljs-selector-tag {
-      color: #70cff8;
-    }
-
-    .hljs-emphasis {
-      font-style: italic;
-    }
-
-    .hljs-strong {
-      font-weight: 700;
+  .dark & {
+    .shiki,
+    .shiki span {
+      color: var(--shiki-dark) !important;
+      background-color: var(--shiki-dark-bg) !important;
+      font-style: var(--shiki-dark-font-style) !important;
+      font-weight: var(--shiki-dark-font-weight) !important;
+      text-decoration: var(--shiki-dark-text-decoration) !important;
     }
   }
 
