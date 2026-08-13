@@ -1,5 +1,5 @@
 <template>
-  <header class="relative min-h-[28rem] w-full overflow-hidden bg-media sm:min-h-[34rem]">
+  <header class="relative min-h-[28rem] w-full overflow-hidden rounded-t-2xl bg-media sm:min-h-[34rem]">
     <img
       v-if="coverImage"
       :src="coverImage"
@@ -52,5 +52,7 @@ import { CalendarIcon, ClockIcon, MessageCircleIcon } from "lucide-vue-next"
 import { useNuboViewContext } from "~/providers/contexts/view"
 
 const { view, config } = useNuboViewContext()
-const coverImage = computed(() => view.value.images[0]?.thumbnail.large || view.value.post.cover)
+const coverImage = computed(() =>
+  getPreviewImage(view.value.images[0]?.thumbnail.large || view.value.post.cover),
+)
 </script>

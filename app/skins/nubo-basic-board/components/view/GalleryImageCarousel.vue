@@ -11,7 +11,7 @@
         class="flex h-full items-center justify-center"
       >
         <img
-          :src="img.thumbnail.large"
+          :src="getPreviewImage(img.thumbnail.large)"
           :alt="`${recoverChars(view.post.title)} 이미지 ${index + 1}`"
           class="max-h-[calc(100dvh-8rem)] max-w-full select-none object-contain"
         />
@@ -46,7 +46,7 @@
 
   <img
     v-else-if="view.post.cover"
-    :src="view.post.cover"
+    :src="getPreviewImage(view.post.cover)"
     :alt="recoverChars(view.post.title)"
     class="max-h-[calc(100dvh-8rem)] max-w-full select-none object-contain"
   />

@@ -6,7 +6,7 @@
     ></div>
 
     <ViewBreadcrumb />
-    <article class="overflow-hidden rounded-2xl border border-border/70 bg-card/65">
+    <article class="rounded-2xl border border-border/70 bg-card/65">
       <BlogHeader />
 
       <main class="mx-auto grid max-w-5xl grid-cols-1 gap-10 px-5 py-10 sm:px-8 sm:py-14 lg:grid-cols-12">

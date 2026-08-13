@@ -1,7 +1,10 @@
 <template>
-  <aside v-if="headers.length" class="sticky top-24 hidden h-fit lg:col-span-3 lg:block">
+  <aside
+    v-if="headers.length"
+    class="sticky top-24 hidden h-fit max-h-[calc(100dvh-7rem)] self-start overflow-y-auto pr-2 lg:col-span-3 lg:block"
+  >
     <h2 class="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">목차</h2>
-    <nav class="space-y-1 border-l border-border/70 pl-4">
+    <nav aria-label="게시글 목차" class="space-y-1 border-l border-border/70 pl-4">
       <div
         v-for="header of headers"
         :key="header.id"
@@ -16,7 +19,12 @@
                 : 'text-sm',
         ]"
       >
-        <a :href="`#${header.id}`" class="block transition-colors">{{ header.text }}</a>
+        <a
+          :href="`#${header.id}`"
+          :aria-current="activeHeaderId === header.id ? 'location' : undefined"
+          class="block transition-colors"
+          >{{ header.text }}</a
+        >
       </div>
     </nav>
   </aside>
@@ -29,32 +37,51 @@ import type { TableOfContent } from "~/types/board"
 const { makeTableOfContents } = useNuboViewContext()
 const headers = ref<TableOfContent[]>([])
 const activeHeaderId = ref<string>("")
-let observer: IntersectionObserver | undefined
+let headingElements: HTMLElement[] = []
+let scrollController: AbortController | undefined
+let animationFrame = 0
+
+const updateActiveHeader = () => {
+  animationFrame = 0
+  if (!headingElements.length) return
+
+  const activationLine = 144
+  let active = headingElements[0]
+  if (!active) return
+
+  for (const heading of headingElements) {
+    if (heading.getBoundingClientRect().top > activationLine) break
+    active = heading
+  }
+
+  activeHeaderId.value = active.id
+}
+
+const scheduleActiveHeaderUpdate = () => {
+  if (animationFrame) return
+  animationFrame = window.requestAnimationFrame(updateActiveHeader)
+}
 
 onMounted(() => {
   headers.value = makeTableOfContents()
+  headingElements = headers.value
+    .map((header) => document.getElementById(header.id))
+    .filter((element): element is HTMLElement => element instanceof HTMLElement)
 
-  // 현재 보고 있는 목차 강조하기
-  observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          activeHeaderId.value = entry.target.id
-        }
-      })
-    },
-    {
-      rootMargin: "-10% 0px -80% 0px",
-      threshold: 1.0,
-    },
-  )
-
-  // 각 헤더 요소들 감시 시작
-  headers.value.forEach((header) => {
-    const el = document.getElementById(header.id)
-    if (el) observer?.observe(el)
+  scrollController = new AbortController()
+  window.addEventListener("scroll", scheduleActiveHeaderUpdate, {
+    passive: true,
+    signal: scrollController.signal,
   })
+  window.addEventListener("resize", scheduleActiveHeaderUpdate, {
+    passive: true,
+    signal: scrollController.signal,
+  })
+  updateActiveHeader()
 })
 
-onBeforeUnmount(() => observer?.disconnect())
+onBeforeUnmount(() => {
+  scrollController?.abort()
+  if (animationFrame) window.cancelAnimationFrame(animationFrame)
+})
 </script>
