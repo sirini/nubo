@@ -100,6 +100,10 @@
       color: inherit;
       padding: 0;
       background: none;
+      border: 0;
+      border-radius: 0;
+      margin: 0;
+      letter-spacing: normal;
     }
 
   }
@@ -117,6 +121,89 @@
     padding: 1rem;
     border: 1px solid var(--border);
     border-radius: 0.75rem;
+  }
+
+  .nubo-code-block {
+    margin: 1rem 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--media);
+  }
+
+  .nubo-code-toolbar {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0.75rem 0.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in oklab, var(--media) 86%, var(--card));
+  }
+
+  .nubo-code-language {
+    color: var(--muted-foreground);
+    font-family: "JetBrains Mono", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .nubo-code-copy {
+    min-height: 1.875rem;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    border-radius: 0.45rem;
+    padding: 0.25rem 0.65rem;
+    background: color-mix(in oklab, var(--surface-subtle) 45%, transparent);
+    color: var(--media-foreground);
+    font-size: 0.75rem;
+    transition: background-color 150ms ease, color 150ms ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--accent);
+      color: var(--accent-foreground);
+      outline: none;
+    }
+  }
+
+  .nubo-code-block .shiki {
+    margin: 0;
+    overflow-x: auto;
+    border: 0;
+    border-radius: 0;
+    padding: 1rem 0;
+  }
+
+  .nubo-code-block .shiki code {
+    display: grid;
+    min-width: max-content;
+    counter-reset: code-line;
+  }
+
+  .nubo-code-block .shiki .line {
+    position: relative;
+    display: block;
+    min-height: 1.5em;
+    padding: 0 1rem 0 4rem;
+    counter-increment: code-line;
+  }
+
+  .nubo-code-block .shiki .line::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3rem;
+    padding-right: 0.75rem;
+    border-right: 1px solid color-mix(in oklab, var(--border) 72%, transparent);
+    color: color-mix(in oklab, var(--media-foreground) 45%, transparent);
+    content: counter(code-line);
+    font-size: 0.75rem;
+    line-height: 2em;
+    text-align: right;
+    user-select: none;
   }
 
   .dark & {

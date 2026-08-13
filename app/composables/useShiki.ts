@@ -74,16 +74,36 @@ const getHighlighter = () => {
   return highlighterPromise
 }
 
-const normalizeLanguage = (language: string): SupportedLanguage => {
+export const normalizeCodeLanguage = (language: string): SupportedLanguage => {
   const normalized = language.toLowerCase().replace(/^language-/, "")
   return LANGUAGE_ALIASES[normalized] || "text"
 }
+
+const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
+  cpp: "C++",
+  css: "CSS",
+  go: "Go",
+  html: "HTML",
+  java: "Java",
+  javascript: "JavaScript",
+  json: "JSON",
+  kotlin: "Kotlin",
+  php: "PHP",
+  python: "Python",
+  rust: "Rust",
+  shellscript: "Shell",
+  text: "Text",
+  typescript: "TypeScript",
+  vue: "Vue",
+}
+
+export const getCodeLanguageLabel = (language: string) => LANGUAGE_LABELS[normalizeCodeLanguage(language)]
 
 export const highlightCode = async (code: string, language: string): Promise<string> => {
   const highlighter = await getHighlighter()
 
   return highlighter.codeToHtml(code, {
-    lang: normalizeLanguage(language),
+    lang: normalizeCodeLanguage(language),
     themes: {
       light: "github-light",
       dark: "github-dark",
