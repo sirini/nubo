@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "author": "sirini",
   "website": "https://nubohub.org",
-  "description": "기본적인 게시판/회원 관리 기능을 포함하는 태블릿/PC 화면 전용 관리 화면입니다",
+  "description": "게시판과 회원 관리 기능을 데스크톱 및 모바일에서 제공하는 반응형 관리 화면입니다",
   "preview": "preview.png",
   "features": ["다크모드"],
-  "min_nubo_version": "1.2.0"
+  "min_nubo_version": "1.1.1"
 }

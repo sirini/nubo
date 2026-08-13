@@ -10,6 +10,7 @@
       <div class="space-x-2">
         <CommonVTooltip content="사용자 목록 보기 화면으로 이동합니다">
           <Button
+            type="button"
             variant="ghost"
             class="items-center gap-2 cursor-pointer"
             @click="changePanel('list')"
@@ -34,7 +35,7 @@
 
       <div>
         <CommonVTooltip content="위에 입력한 내용대로 새 사용자 계정을 추가합니다">
-          <Button class="items-center gap-2 cursor-pointer text-foreground" @click="onSubmit">
+          <Button type="submit" class="items-center gap-2 cursor-pointer text-foreground">
             <SquareCheckBigIcon class="w-4 h-4" />
             <span>제출</span>
           </Button>
@@ -54,7 +55,7 @@ import { useUserFormSchema } from "./userFormSchema"
 
 const schema = useUserFormSchema()
 const { createUser } = useNuboAdminContext()
-const props = defineProps<{ changePanel: Function }>()
+const props = defineProps<{ changePanel: (panel: "list") => void }>()
 
 // 스키마 지정 및 초기값 설정
 const { handleSubmit, resetForm } = useForm({
@@ -81,8 +82,6 @@ const onSubmit = handleSubmit(
       props.changePanel("list")
     }
   },
-  ({ errors, values, results }) => {
-    // toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
-  },
+  () => undefined,
 )
 </script>

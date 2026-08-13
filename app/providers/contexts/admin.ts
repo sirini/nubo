@@ -15,9 +15,10 @@ import type {
   AdminUserListResult,
   AdminUserModifyParam,
 } from "~/types/admin"
-import type { Search } from "~/types/board"
+import type { BoardWriter, Search } from "~/types/board"
 import type { Pair } from "~/types/common"
 import type { UserMyResult, UserPermissionManageParam } from "~/types/user"
+import type { Component } from "vue"
 
 // [관리자] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboAdminContext {
@@ -33,11 +34,13 @@ export interface NuboAdminContext {
   latestComments: ComputedRef<AdminLatestComment[]>
   latestPosts: ComputedRef<AdminLatestPost[]>
   latestReports: ComputedRef<AdminReportItem[]>
+  reportTotal: ComputedRef<number>
+  isBlocked: WritableComputedRef<boolean>
   limit: WritableComputedRef<number>
   menu: ComputedRef<AdminMenu>
   option: WritableComputedRef<Search>
   page: WritableComputedRef<number>
-  panel: ComputedRef<any>
+  panel: ComputedRef<Component>
   statFile: ComputedRef<AdminDashboardStatistic>
   statImage: ComputedRef<AdminDashboardStatistic>
   statPost: ComputedRef<AdminDashboardStatistic>
@@ -51,6 +54,7 @@ export interface NuboAdminContext {
   user: ComputedRef<UserMyResult>
   userList: ComputedRef<AdminUserListResult>
   changeGroupId: (newGroupId: string) => Promise<boolean>
+  changeGroupAdmin: (groupUid: number, targetUserUid: number) => Promise<boolean>
   changeUserPermission: (param: UserPermissionManageParam) => Promise<void>
   closeAddGroupDialog: () => void
   closeBoardRemoveConfirmDialog: () => void
@@ -67,7 +71,7 @@ export interface NuboAdminContext {
   loadInitDashboard: (daysForStat: number, limitForItem: number) => Promise<void>
   loadInitGroupList: () => Promise<void>
   loadInitPostList: (limit: number) => Promise<void>
-  loadInitReportList: (isSolved: boolean) => Promise<void>
+  loadInitReportList: (isSolved: boolean, limit?: number) => Promise<void>
   loadInitUserList: () => Promise<void>
   loadSelectedGroupInfo: (id: string) => Promise<void>
   modifyBoard: (param: AdminBoardModifyParam) => Promise<boolean>
@@ -81,6 +85,7 @@ export interface NuboAdminContext {
   removeBoard: () => Promise<void>
   removeGroup: () => Promise<void>
   removeUser: () => Promise<void>
+  searchAdminCandidates: (scope: "board" | "group", name: string) => Promise<BoardWriter[]>
 }
 
 export const nuboAdminKey: InjectionKey<NuboAdminContext> = Symbol("nuboAdminContext")

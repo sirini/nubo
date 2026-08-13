@@ -1,5 +1,9 @@
 <template>
   <footer class="mt-8 flex flex-col items-center gap-8">
+    <div class="flex rounded-lg border p-1">
+      <Button size="sm" :variant="isBlocked ? 'ghost' : 'secondary'" @click="changeBlocked(false)">활성 사용자</Button>
+      <Button size="sm" :variant="isBlocked ? 'secondary' : 'ghost'" @click="changeBlocked(true)">차단 사용자</Button>
+    </div>
     <Pagination
       :items-per-page="limit"
       :total="userList.total"
@@ -77,13 +81,13 @@
         type="text"
         placeholder="사용자 검색"
         v-model="keyword"
-        @keyup.enter="loadInitUserList"
+        @keyup.enter="search"
       />
       <Button
         variant="outline"
         class="cursor-pointer"
         :disabled="keyword.length < 2"
-        @click="loadInitUserList"
+        @click="search"
         >검색</Button
       >
     </div>
@@ -103,7 +107,18 @@ import { PaginationListItem } from "reka-ui"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import { SEARCH } from "~/types/board"
 
-const { userList, limit, page, option, keyword, loadInitUserList } = useNuboAdminContext()
+const { userList, limit, page, option, keyword, isBlocked, loadInitUserList } = useNuboAdminContext()
+
+const search = async () => {
+  page.value = 1
+  await loadInitUserList()
+}
+
+const changeBlocked = async (blocked: boolean) => {
+  isBlocked.value = blocked
+  page.value = 1
+  await loadInitUserList()
+}
 
 // 페이징 처리
 const paging = async (p: number) => {

@@ -21,6 +21,16 @@
 
     <InputField name="name" label="이름" description="이 게시판의 이름" placeholder="자유게시판" />
 
+    <VeeField v-slot="{ field, errors }" name="adminUid">
+      <AdminCandidateSelect
+        scope="board"
+        label="관리자"
+        :model-value="Number(field.value)"
+        :error="errors[0]"
+        @update:model-value="field.onChange"
+      />
+    </VeeField>
+
     <InputSelect name="type" label="타입" :items="types" description="게시판의 형태 지정" />
 
     <InputSelect name="skinKey" label="스킨" :items="boardSkins" description="이 게시판에 적용할 스킨" input-class="w-full sm:max-w-52" />
@@ -143,12 +153,13 @@
 </template>
 
 <script setup lang="ts">
-import { useFormValues } from "vee-validate"
+import { Field as VeeField, useFormValues } from "vee-validate"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import { BOARD } from "~/types/board"
 import InputCheckbox from "./InputCheckbox.vue"
 import InputField from "./InputField.vue"
 import InputSelect from "./InputSelect.vue"
+import AdminCandidateSelect from "./AdminCandidateSelect.vue"
 
 const values = useFormValues()
 const { groups } = useNuboAdminContext()

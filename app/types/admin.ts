@@ -121,6 +121,11 @@ export type AdminReportItem = {
   solved: boolean
 }
 
+export type AdminReportListResult = {
+  item: AdminReportItem[]
+  total: number
+}
+
 // 최근 (댓)글 출력에 필요한 공통 반환값 정의
 export type AdminLatestCommon = {
   uid: number
@@ -174,6 +179,7 @@ export type AdminGroupBoardItem = AdminGroupConfig & {
   type: Board
   name: string
   info: string
+  skinKey: string
   total: AdminGroupBoardStatus
 }
 
@@ -267,7 +273,7 @@ export type AdminSkinCategory = {
   id: AdminSkinType
   name: string
   desc: string
-  icon: FunctionalComponent<LucideProps, {}, any, {}>
+  icon: FunctionalComponent<LucideProps>
   span: string
 }
 

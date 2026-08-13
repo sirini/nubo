@@ -7,11 +7,12 @@ import type {
 } from "~/types/admin"
 import type { UserPermissionManageParam } from "~/types/user"
 import type { NuboAdminContext } from "./contexts/admin"
+import type { Component } from "vue"
 
 export const useAdminProvider = (): NuboAdminContext => {
   const admin = useAdminStore()
   const auth = useAuthStore()
-  const adminViews: Record<AdminMenu, any> = {
+  const adminViews: Record<AdminMenu, Component> = {
     Dashboard: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Dashboard.vue`)),
     Board: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Board.vue`)),
     User: defineAsyncComponent(() => import(`~/skins/${admin.skin}/User.vue`)),
@@ -48,6 +49,8 @@ export const useAdminProvider = (): NuboAdminContext => {
     latestComments: computed(() => admin.latestComments),
     latestPosts: computed(() => admin.latestPosts),
     latestReports: computed(() => admin.latestReports),
+    reportTotal: computed(() => admin.reportTotal),
+    isBlocked: computed({ get: () => admin.isBlocked, set: (val) => (admin.isBlocked = val) }),
     limit: computed({ get: () => admin.limit, set: (val) => (admin.limit = val) }),
     menu: computed(() => admin.menu),
     option: computed({ get: () => admin.option, set: (val) => (admin.option = val) }),
@@ -66,6 +69,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     user: computed(() => auth.user),
     userList: computed(() => admin.userList),
     changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
+    changeGroupAdmin: (groupUid: number, targetUserUid: number) => admin.changeGroupAdmin(groupUid, targetUserUid),
     changeUserPermission: (param: UserPermissionManageParam) => admin.changeUserPermission(param),
     closeAddGroupDialog: () => admin.closeAddGroupDialog,
     closeBoardRemoveConfirmDialog: () => admin.closeBoardRemoveConfirmDialog(),
@@ -83,7 +87,7 @@ export const useAdminProvider = (): NuboAdminContext => {
       admin.loadInitDashboard(daysForStat, limitForItem),
     loadInitGroupList: () => admin.loadInitGroupList(),
     loadInitPostList: (limit: number) => admin.loadInitPostList(limit),
-    loadInitReportList: (isSolved: boolean) => admin.loadInitReportList(isSolved),
+    loadInitReportList: (isSolved: boolean, limit?: number) => admin.loadInitReportList(isSolved, limit),
     loadInitUserList: () => admin.loadInitUserList(),
     loadSelectedGroupInfo: (id: string) => admin.loadSelectedGroupInfo(id),
     modifyBoard: (param: AdminBoardModifyParam) => admin.modifyBoard(param),
@@ -101,5 +105,6 @@ export const useAdminProvider = (): NuboAdminContext => {
     removeBoard: () => admin.removeBoard(),
     removeGroup: () => admin.removeGroup(),
     removeUser: () => admin.removeUser(),
+    searchAdminCandidates: (scope: "board" | "group", name: string) => admin.searchAdminCandidates(scope, name),
   }
 }

@@ -7,5 +7,5 @@
   "description": "소셜 로그인 버튼들을 포함한 기본적인 로그인 및 회원가입 스킨입니다",
   "preview": "preview.png",
   "features": ["다크모드", "반응형 그리드"],
-  "min_nubo_version": "1.2.0"
+  "min_nubo_version": "1.1.1"
 }

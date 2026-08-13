@@ -14,6 +14,10 @@
   </header>
   <div>
     <div class="space-y-4 p-4 sm:p-6">
+      <div v-if="manifestIssues.length" class="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm">
+        <p class="font-semibold">사용할 수 없는 스킨 manifest가 있습니다</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-muted-foreground"><li v-for="issue in manifestIssues" :key="issue">{{ issue }}</li></ul>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card
           v-for="item in skinCategories"
@@ -49,7 +53,7 @@
       <CommonVCollapsible title="스킨은 어디서 받을 수 있나요?">
         NUBO의 모든 스킨들은
         <a href="https://nubohub.org" target="_blank"><CommonVCode>nubohub.org</CommonVCode></a>
-        사이트에서 내려 받으실 수 있습니다. NUBO v1.2.0 버전 공개 시점부터 제공됩니다.
+        사이트에서 내려 받으실 수 있습니다. 설치 후 manifest 검증을 통과한 스킨만 선택 목록에 표시됩니다.
       </CommonVCollapsible>
       <Separator />
       <CommonVCollapsible title="마음에 드는 스킨을 찾았습니다. 어떻게 적용하나요?">
@@ -155,10 +159,6 @@
 </template>
 
 <script setup lang="ts">
-/**
- * 스킨 변경은 NUBO v1.1.0 버전 공개 후에 후속 업데이트에서 제공됩니다.
- * ./goapi-linux update 와 같은 방식으로 DB 스키마 업데이트 등을 제공할 예정입니다.
- */
 import {
   AlertTriangle,
   Home,
@@ -174,7 +174,7 @@ import { toast } from "vue-sonner"
 import CommonVCode from "~/components/common/CommonVCode.vue"
 import type { AdminSkinCategory, AdminSkinType } from "~/types/admin"
 const config = useRuntimeConfig()
-const { installed, settings } = useSkins()
+const { installed, manifestIssues, settings } = useSkins()
 const selected = reactive({ ...settings.value })
 const skinsFor = (type: AdminSkinType) => installed.value.filter((skin) => skin.type === type)
 const applySkin = async (type: AdminSkinType) => {

@@ -1,23 +1,24 @@
-import {
-  type AdminBoardCreateParam,
-  type AdminBoardModifyParam,
-  type AdminBoardResult,
-  type AdminDashboardItem,
-  type AdminDashboardStatisticResult,
-  type AdminGroupConfig,
-  type AdminGroupListResult,
-  type AdminLatestComment,
-  type AdminLatestParam,
-  type AdminLatestPost,
-  type AdminReportItem,
-  type AdminReportSearchParam,
-  type AdminUserCreateParam,
-  type AdminUserInfo,
-  type AdminUserListResult,
-  type AdminUserModifyParam,
-  type AdminUserParam,
+import type {
+  AdminBoardCreateParam,
+  AdminBoardModifyParam,
+  AdminBoardResult,
+  AdminDashboardItem,
+  AdminDashboardStatisticResult,
+  AdminGroupConfig,
+  AdminGroupListResult,
+  AdminLatestComment,
+  AdminLatestParam,
+  AdminLatestPost,
+  AdminReportListResult,
+  AdminReportSearchParam,
+  AdminUserCreateParam,
+  AdminUserInfo,
+  AdminUserListResult,
+  AdminUserModifyParam,
+  AdminUserParam,
 } from "~/types/admin"
 import type { Resp } from "~/types/common"
+import type { BoardWriter } from "~/types/board"
 
 export const useAdmin = () => {
   const config = useRuntimeConfig()
@@ -52,7 +53,7 @@ export const useAdmin = () => {
 
   // 최근 신고 목록 가져오기
   const loadReportList = async (param: AdminReportSearchParam) => {
-    return await $fetch<Resp<AdminReportItem[]>>("/admin/report/reports", {
+    return await $fetch<Resp<AdminReportListResult>>("/admin/report/reports", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: param,
@@ -100,6 +101,25 @@ export const useAdmin = () => {
       baseURL: config.public.apiBase,
       method: "GET",
       query: { id },
+    })
+  }
+
+  const loadAdminCandidates = async (scope: "board" | "group", name: string, limit = 10) => {
+    return await $fetch<Resp<BoardWriter[]>>(`/admin/${scope}/candidates`, {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: { name, limit },
+    })
+  }
+
+  const modifyGroupAdmin = async (groupUid: number, targetUserUid: number) => {
+    const body = new FormData()
+    body.append("groupUid", String(groupUid))
+    body.append("targetUserUid", String(targetUserUid))
+    return await $fetch<Resp<null>>("/admin/group/admin", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body,
     })
   }
 
@@ -233,6 +253,7 @@ export const useAdmin = () => {
     createNewGroup,
     createUserAccount,
     loadBoardConfig,
+    loadAdminCandidates,
     loadCommentList,
     loadGeneralItem,
     loadGeneralStatistic,
@@ -244,6 +265,7 @@ export const useAdmin = () => {
     loadUserInfo,
     loadUserList,
     modifyExistBoard,
+    modifyGroupAdmin,
     modifyUserInfo,
     removeExistBoard,
     removeExistGroup,

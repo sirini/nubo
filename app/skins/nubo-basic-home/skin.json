@@ -7,5 +7,5 @@
   "description": "상단에 히어로 섹션, 하단에는 최신글들이 그리드 형식으로 출력되는 기본적인 메인 페이지입니다",
   "preview": "preview.png",
   "features": ["다크모드", "반응형 그리드"],
-  "min_nubo_version": "1.2.0"
+  "min_nubo_version": "1.1.1"
 }

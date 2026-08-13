@@ -26,6 +26,7 @@ export const useAdminStore = defineStore("admin", () => {
     createNewGroup,
     createUserAccount,
     loadBoardConfig,
+    loadAdminCandidates,
     loadCommentList,
     loadGeneralItem,
     loadGeneralStatistic,
@@ -37,6 +38,7 @@ export const useAdminStore = defineStore("admin", () => {
     loadUserList,
     loadUserInfo,
     modifyExistBoard,
+    modifyGroupAdmin,
     modifyUserInfo,
     removeExistBoard,
     removeExistGroup,
@@ -65,6 +67,7 @@ export const useAdminStore = defineStore("admin", () => {
   })
   const uploadUsage = ref<number>(0)
   const latestReports = ref<AdminReportItem[]>([])
+  const reportTotal = ref<number>(0)
   const latestComments = ref<AdminLatestComment[]>([])
   const latestPosts = ref<AdminLatestPost[]>([])
   const groups = ref<AdminGroupConfig[]>([])
@@ -76,6 +79,7 @@ export const useAdminStore = defineStore("admin", () => {
   const limit = ref<number>(15)
   const option = ref<Search>(SEARCH.USER.NAME as Search)
   const keyword = ref<string>("")
+  const isBlocked = ref<boolean>(false)
   const userList = ref<AdminUserListResult>({ item: [], total: 0 })
 
   // 관리화면에서 메뉴 열기
@@ -104,11 +108,11 @@ export const useAdminStore = defineStore("admin", () => {
   }
 
   // 최근 신고글 가져오기
-  const loadInitReportList = async (isSolved: boolean = false, limit: number = 3) => {
+  const loadInitReportList = async (isSolved: boolean = false, bunch: number = limit.value) => {
     try {
       const response = await loadReportList({
         page: page.value,
-        limit,
+        limit: bunch,
         option: option.value,
         keyword: keyword.value,
         isSolved,
@@ -117,7 +121,8 @@ export const useAdminStore = defineStore("admin", () => {
         toast(`❌ 최근 신고 목록을 가져오지 못했습니다: ${response.error}`)
         return
       }
-      latestReports.value = response.result
+      latestReports.value = response.result.item
+      reportTotal.value = response.result.total
     } catch (e) {
       toast(`❌ 최근 신고 목록을 가져오지 못했습니다: ${e}`)
     }
@@ -186,6 +191,33 @@ export const useAdminStore = defineStore("admin", () => {
       groupInfo.value = response.result
     } catch (e) {
       toast(`❌ 게시판 그룹 설정 및 소속 게시판들을 가져오지 못했습니다: ${e}`)
+    }
+  }
+
+  const searchAdminCandidates = async (scope: "board" | "group", name: string) => {
+    if (name.trim().length < 2) return []
+    try {
+      const response = await loadAdminCandidates(scope, name.trim())
+      if (response.success) return response.result
+      toast(`❌ 관리자 후보를 검색하지 못했습니다: ${response.error}`)
+    } catch (e) {
+      toast(`❌ 관리자 후보를 검색하지 못했습니다: ${e}`)
+    }
+    return []
+  }
+
+  const changeGroupAdmin = async (groupUid: number, targetUserUid: number) => {
+    try {
+      const response = await modifyGroupAdmin(groupUid, targetUserUid)
+      if (!response.success) {
+        toast(`❌ 그룹 관리자를 변경하지 못했습니다: ${response.error}`)
+        return false
+      }
+      toast(`✅ 그룹 관리자를 변경하였습니다`)
+      return true
+    } catch (e) {
+      toast(`❌ 그룹 관리자를 변경하지 못했습니다: ${e}`)
+      return false
     }
   }
 
@@ -308,7 +340,7 @@ export const useAdminStore = defineStore("admin", () => {
 
   // 새 그룹 생성하기
   const createGroup = async (newGroupId: string) => {
-    let result: AdminGroupConfig = { uid: 0, id: newGroupId, count: 0, manager: BOARD_WRITER }
+    const result: AdminGroupConfig = { uid: 0, id: newGroupId, count: 0, manager: BOARD_WRITER }
     try {
       const response = await createNewGroup(newGroupId)
       if (!response.success) {
@@ -362,7 +394,7 @@ export const useAdminStore = defineStore("admin", () => {
         limit: limit.value,
         option: option.value,
         keyword: keyword.value,
-        isBlocked: false,
+        isBlocked: isBlocked.value,
       })
       if (!response.success) {
         toast(`❌ 사용자 목록을 가져오지 못했습니다: ${response.error}`)
@@ -503,6 +535,7 @@ export const useAdminStore = defineStore("admin", () => {
     latestComments,
     latestPosts,
     latestReports,
+    reportTotal,
     menu,
     skin,
     targetBoard,
@@ -513,9 +546,11 @@ export const useAdminStore = defineStore("admin", () => {
     limit,
     option,
     keyword,
+    isBlocked,
     userList,
 
     changeGroupId,
+    changeGroupAdmin,
     changeUserPermission,
     closeAddGroupDialog,
     closeBoardRemoveConfirmDialog,
@@ -546,5 +581,6 @@ export const useAdminStore = defineStore("admin", () => {
     removeBoard,
     removeGroup,
     removeUser,
+    searchAdminCandidates,
   }
 })

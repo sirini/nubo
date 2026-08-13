@@ -61,7 +61,10 @@
           :change-status="changeStatus"
           :selected-report="selectedReport"
         />
-        <ReportList v-else :change-status="changeStatus" />
+        <template v-else>
+          <ReportList :change-status="changeStatus" />
+          <ReportListFooter :is-solved="status === 'solved'" />
+        </template>
       </div>
     </main>
   </div>
@@ -74,6 +77,7 @@ import type { AdminReportItem } from "~/types/admin"
 import { BOARD_WRITER, SEARCH, type Search } from "~/types/board"
 import ReportEdit from "./components/ReportEdit.vue"
 import ReportList from "./components/ReportList.vue"
+import ReportListFooter from "./components/ReportListFooter.vue"
 
 type Status = "solved" | "wait" | "edit"
 const selectedReport = ref<AdminReportItem>({
@@ -103,6 +107,7 @@ const changeStatus = async (s: Status, editReport: AdminReportItem | null = null
   if (editReport) {
     selectedReport.value = editReport
   }
+  if (s !== "edit") page.value = 1
   await loadInitReportList(s === "solved")
 }
 </script>

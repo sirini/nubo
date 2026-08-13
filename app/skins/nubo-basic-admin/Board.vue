@@ -48,6 +48,7 @@
           </Select>
         </div>
         <div class="flex gap-2">
+          <BoardChangeGroupAdminDialog />
           <CommonVTooltip
             :content="`${groupInfo.config.id} 그룹을 삭제합니다 (기본 그룹은 삭제 불가)`"
           >
@@ -131,6 +132,7 @@ import BoardList from "./components/BoardList.vue"
 import BoardNew from "./components/BoardNew.vue"
 import BoardAddGroupDialog from "./components/dialogs/BoardAddGroupDialog.vue"
 import BoardChangeGroupNameDialog from "./components/dialogs/BoardChangeGroupNameDialog.vue"
+import BoardChangeGroupAdminDialog from "./components/dialogs/BoardChangeGroupAdminDialog.vue"
 import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDialog.vue"
 import BoardRemoveGroupConfirmDialog from "./components/dialogs/BoardRemoveGroupConfirmDialog.vue"
 

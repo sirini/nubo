@@ -12,9 +12,7 @@
         <TableHead class="text-center">타입</TableHead>
         <TableHead class="flex items-center gap-2 justify-center cursor-help"
           >스킨
-          <CommonVTooltip
-            content="다음 번 업데이트에서 스킨을 쉽게 변경하실 수 있도록 지원하겠습니다"
-          >
+          <CommonVTooltip content="게시판 설정에서 선택한 스킨입니다">
             <InfoIcon class="w-3 h-3" />
           </CommonVTooltip>
         </TableHead>
@@ -36,7 +34,7 @@
         </TableCell>
         <TableCell class="text-center">{{ showTypeName(board.type) }}</TableCell>
         <TableCell class="text-center">
-          <Badge variant="secondary">{{ config.public.skins.board }}</Badge>
+          <Badge variant="secondary">{{ board.skinKey }}</Badge>
         </TableCell>
         <TableCell class="text-center">{{ num(board.total.post) }}</TableCell>
         <TableCell class="text-center">{{ num(board.total.comment) }}</TableCell>
@@ -62,10 +60,9 @@ import { ExternalLinkIcon, InfoIcon, Settings2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import { BOARD, type Board } from "~/types/board"
 
-const config = useRuntimeConfig()
 const { groupInfo } = useNuboAdminContext()
 
-defineProps<{ changePanel: Function }>()
+defineProps<{ changePanel: (panel: "edit", boardId: string) => void }>()
 
 // 게시판의 형태 반환
 const showTypeName = (type: Board) => {

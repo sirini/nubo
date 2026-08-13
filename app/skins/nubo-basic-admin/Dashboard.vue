@@ -224,7 +224,7 @@ const maxVisit = computed(() => {
 
 onMounted(async () => {
   try {
-    Promise.all([loadInitReportList(false), loadInitCommentList(5), loadInitPostList(5)])
+    Promise.all([loadInitReportList(false, 3), loadInitCommentList(5), loadInitPostList(5)])
     if (statVisit.value.history.length < 1) {
       isLoading.value = true
       await loadInitDashboard(90, 5)
