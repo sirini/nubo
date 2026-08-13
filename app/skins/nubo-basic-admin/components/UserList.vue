@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-3 p-4 md:hidden">
     <Card v-for="user in userList.item" :key="user.uid" class="p-4">
-      <div class="flex items-start justify-between gap-3"><div><p class="font-semibold">{{ recoverChars(user.name) }}</p><p class="text-sm text-muted-foreground">{{ user.id }}</p></div><Button size="sm" variant="outline" @click="changePanel('edit', user.uid)">설정</Button></div>
+      <div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="truncate font-semibold">{{ recoverChars(user.name) }}</p><p class="truncate text-sm text-muted-foreground">{{ user.id }}</p></div><Button class="shrink-0" size="sm" variant="outline" @click="changePanel('edit', user.uid)">설정</Button></div>
       <div class="mt-4 flex gap-4 text-xs text-muted-foreground"><span>Lv. {{ user.level }}</span><span>{{ num(user.point) }} P</span><span>{{ date(user.signup) }}</span></div>
     </Card>
   </div>

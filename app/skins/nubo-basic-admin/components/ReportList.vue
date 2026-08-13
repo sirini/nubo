@@ -4,6 +4,11 @@
       <div class="flex items-start justify-between gap-3"><div class="min-w-0"><p class="font-semibold">{{ report.from.name }} → {{ report.to.name }}</p><p class="mt-2 line-clamp-3 text-sm text-muted-foreground">{{ report.request }}</p></div><Button size="sm" variant="outline" @click="changeStatus('edit', report)">처리</Button></div>
       <p class="mt-3 text-xs text-muted-foreground">{{ date(report.date) }}</p>
     </Card>
+    <div v-if="latestReports.length === 0" class="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed px-6 text-center">
+      <CircleCheckBigIcon class="mb-3 size-8 text-muted-foreground" />
+      <p class="font-medium">표시할 신고가 없습니다</p>
+      <p class="mt-1 text-sm text-muted-foreground">현재 상태에 해당하는 신고가 들어오면 여기에 표시됩니다.</p>
+    </div>
   </div>
   <Table class="hidden md:table">
     <TableHeader>
@@ -15,6 +20,7 @@
       </TableRow>
     </TableHeader>
     <TableBody>
+      <TableRow v-if="latestReports.length === 0"><TableCell colspan="4" class="h-48 text-center text-muted-foreground">표시할 신고가 없습니다.</TableCell></TableRow>
       <TableRow v-for="report in latestReports" :key="report.uid">
         <TableCell class="flex items-center gap-2 truncate max-w-40">
           <Avatar class="ml-2">
@@ -51,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { Settings2Icon } from "lucide-vue-next"
+import { CircleCheckBigIcon, Settings2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 
 const { latestReports } = useNuboAdminContext()

@@ -1,14 +1,14 @@
 <template>
   <div class="flex w-full bg-background h-full">
     <main class="flex-1 flex flex-col min-w-0">
-      <header class="p-4 border-b flex items-center justify-between bg-card h-16">
-        <div class="flex items-center gap-3">
+      <header class="flex h-16 items-center justify-end border-b bg-card p-4 md:justify-between">
+        <div class="hidden items-center gap-3 md:flex">
           <ComponentIcon class="w-5 h-5" />
           <h2 class="text-xl font-bold">사용자 관리</h2>
         </div>
         <div class="flex gap-2">
           <CommonVTooltip v-if="panel === 'list'" content="새로운 사용자를 추가합니다">
-            <Button class="cursor-pointer text-foreground" @click="changePanel('new')">
+            <Button size="sm" class="cursor-pointer text-foreground sm:size-default" @click="changePanel('new')">
               <PlusIcon class="w-4 h-4" />
               <span>새 사용자 추가</span>
             </Button>

@@ -1,5 +1,5 @@
 <template>
-  <header class="p-4 border-b flex items-center justify-between bg-card h-16">
+  <header class="hidden h-16 items-center justify-between border-b bg-card p-4 md:flex">
     <div class="flex items-center gap-3">
       <PaintbrushIcon class="w-5 h-5" />
       <h2 class="text-xl font-bold">스킨 관리</h2>
@@ -8,18 +8,18 @@
     <div class="hidden gap-2 sm:flex">
       <InfoIcon class="w-4 h-4 text-muted-foreground" />
       <span class="text-xs text-muted-foreground"
-        >스킨 관리 기능은 v1.2.0 이후 버전부터 제공됩니다</span
+        >설치된 스킨을 영역별로 선택하고 적용할 수 있습니다</span
       >
     </div>
   </header>
-  <ScrollArea class="max-h-[calc(100dvh-215px)]">
-    <div class="p-6 space-y-4">
+  <div>
+    <div class="space-y-4 p-4 sm:p-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card
           v-for="item in skinCategories"
           :key="item.id"
           :class="[
-            'relative overflow-hidden group transition-all hover:ring-2 hover:ring-primary',
+            'relative overflow-hidden group transition-all md:hover:ring-2 md:hover:ring-primary',
             item.span,
           ]"
         >
@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="border rounded-xl m-6">
+    <div class="m-4 rounded-xl border sm:m-6">
       <h2 class="text-xl flex items-center gap-3 font-bold border-b p-3">
         <InfoIcon class="w-5 h-5" /> 알아두기
       </h2>
@@ -151,7 +151,7 @@
         </ul>
       </CommonVCollapsible>
     </div>
-  </ScrollArea>
+  </div>
 </template>
 
 <script setup lang="ts">

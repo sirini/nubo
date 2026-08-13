@@ -1,7 +1,7 @@
 <template>
   <Field v-slot="{ field, handleChange, errors }" :name="name" orientation="horizontal">
     <div class="flex flex-wrap items-center gap-3 sm:gap-4">
-      <FieldLabel :for="name" :class="[labelWidth, 'justify-end text-muted-foreground']">
+      <FieldLabel :for="name" :class="[labelWidth, 'justify-start text-muted-foreground sm:justify-end']">
         {{ label }}
       </FieldLabel>
       <Checkbox
@@ -12,7 +12,7 @@
       />
       <FieldContent>
         <FieldDescription class="flex-1">
-          <label class="text-muted cursor-pointer" :for="name">
+          <label class="cursor-pointer text-muted-foreground" :for="name">
             {{ description }}
           </label>
         </FieldDescription>
@@ -33,7 +33,7 @@ withDefaults(
   }>(),
   {
     description: "",
-    labelWidth: "w-16",
+    labelWidth: "w-full sm:w-16",
   },
 )
 </script>

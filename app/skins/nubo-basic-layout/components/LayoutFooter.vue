@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="!isAdminRoute"
     class="fixed left-1/2 z-50 mb-4 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border/70 bg-card/85 p-2 shadow-[0_10px_35px_oklch(0.2_0.02_50/0.12)] backdrop-blur-xl transition-all duration-300 ease-in-out"
     :class="isVisible ? 'bottom-0 opacity-100' : '-bottom-20 opacity-0'"
   >
@@ -55,4 +56,6 @@ watch(y, (currentY) => {
 })
 
 const { moveTop } = useNuboLayoutContext()
+const route = useRoute()
+const isAdminRoute = computed(() => route.path.startsWith("/admin"))
 </script>

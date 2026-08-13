@@ -1,7 +1,7 @@
 <template>
   <VeeField v-slot="{ field, errors }" :name="name">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-      <FieldLabel :for="name" :class="[labelWidth, 'justify-end text-muted-foreground']">
+      <FieldLabel :for="name" :class="[labelWidth, 'justify-start text-muted-foreground sm:justify-end']">
         {{ label }}
       </FieldLabel>
 
@@ -22,7 +22,7 @@
       </div>
 
       <FieldDescription class="flex-1">
-        <span v-if="!errors.length" class="text-muted">
+        <span v-if="!errors.length" class="text-muted-foreground">
           {{ description }}
         </span>
         <span v-else class="text-red-400 font-medium">{{ errors[0] }}</span>
@@ -46,8 +46,8 @@ withDefaults(
     disabled?: boolean
   }>(),
   {
-    labelWidth: "w-16",
-    inputClass: "max-w-28",
+    labelWidth: "w-full sm:w-16",
+    inputClass: "w-full sm:max-w-28",
     type: "text",
     disabled: false,
   },

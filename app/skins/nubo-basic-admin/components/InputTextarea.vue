@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
       <FieldLabel
         :for="name"
-        :class="[labelWidth, 'justify-end text-muted-foreground mt-2 shrink-0']"
+        :class="[labelWidth, 'mt-0 shrink-0 justify-start text-muted-foreground sm:mt-2 sm:justify-end']"
       >
         {{ label }}
       </FieldLabel>
@@ -54,7 +54,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  labelWidth: "w-16",
+  labelWidth: "w-full sm:w-16",
   inputClass: "w-full",
   disabled: false,
   rows: 5,
