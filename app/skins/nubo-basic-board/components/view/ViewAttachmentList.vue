@@ -1,8 +1,8 @@
 <template>
-  <Collapsible v-model:open="isFileListOpen" class="border-t">
-    <div class="flex items-center justify-between w-full p-3">
+  <Collapsible v-model:open="isFileListOpen" class="border-t border-border/70 bg-surface-subtle/35">
+    <div class="flex w-full items-center justify-between px-5 py-3 sm:px-8">
       <h4
-        class="text-sm cursor-pointer pl-1 flex items-center gap-2"
+        class="flex cursor-pointer items-center gap-2 text-sm font-medium"
         @click="isFileListOpen = !isFileListOpen"
       >
         <FilesIcon class="w-4 h-4" />
@@ -20,10 +20,10 @@
         v-for="(file, index) in view.files"
         :key="index"
         @click="downloadFile(file.uid)"
-        class="border-b px-4 py-3 font-mono text-sm inline-flex items-center cursor-pointer w-full hover:bg-muted hover:text-blue-500 transition-colors"
+        class="inline-flex w-full cursor-pointer items-center border-t border-border/55 px-5 py-3 font-mono text-sm transition-colors hover:bg-accent/45 hover:text-primary sm:px-8"
       >
         <DownloadIcon class="w-4 h-4 mr-3" />
-        <span class="text-xs">{{ file.name }}</span>
+        <span class="truncate text-xs">{{ file.name }}</span>
         <span class="flex-1"></span>
         <span class="text-xs">{{ num(file.size) }}B</span>
       </div>

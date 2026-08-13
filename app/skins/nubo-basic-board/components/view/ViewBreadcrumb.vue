@@ -1,30 +1,38 @@
 <template>
-  <Breadcrumb class="font-title mb-2 mx-auto px-3">
+  <Breadcrumb class="mx-auto mb-5 px-1 text-xs text-muted-foreground">
     <BreadcrumbList>
       <BreadcrumbItem>
-        <BreadcrumbLink href="/">Home</BreadcrumbLink>
+        <BreadcrumbLink href="/">홈</BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <Breadcrumb>{{ BOARD_PREFIX[config.type] }}</Breadcrumb>
+        <Breadcrumb>{{ BOARD_LABEL[config.type] }}</Breadcrumb>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem
         ><BreadcrumbLink :href="`/board/${config.id}/page/1`">
-          {{ config.id }}
+          {{ recoverChars(config.name) }}
         </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        {{ config.info }}
+      <BreadcrumbItem class="min-w-0">
+        <span class="block max-w-64 truncate">{{ recoverChars(view.post.title) }}</span>
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>
 </template>
 
 <script setup lang="ts">
-import { BOARD_PREFIX } from "~/types/board"
+import { BOARD } from "~/types/board"
 import { useNuboViewContext } from "~/providers/contexts/view"
 
-const { config } = useNuboViewContext()
+const { config, view } = useNuboViewContext()
+
+const BOARD_LABEL: Record<number, string> = {
+  [BOARD.DEFAULT]: "게시판",
+  [BOARD.GALLERY]: "갤러리",
+  [BOARD.BLOG]: "블로그",
+  [BOARD.WEBZINE]: "게시판",
+  [BOARD.TRADE]: "장터",
+}
 </script>

@@ -1,12 +1,19 @@
 <template>
-  <HeartIcon :class="view.post.liked ? 'text-red-300 fill-current' : ''" class="w-3 h-3 mr-2" />
-  {{ view.post.like }}
-  <MessageCircleIcon class="w-3 h-3 ml-4 mr-2" />
-  {{ num(view.post.comment) }}
-  <EyeIcon class="w-3 h-3 ml-4 mr-2" />
-  {{ num(view.post.hit) }}
-  <span class="flex-1"></span>
-  <span>{{ date(view.post.submitted) }}</span>
+  <span class="font-medium text-foreground">{{ recoverChars(view.post.writer.name) }}</span>
+  <span aria-hidden="true" class="mx-2">·</span>
+  <time>{{ date(view.post.submitted) }}</time>
+  <span class="ml-auto inline-flex items-center gap-4 pl-4">
+    <span class="inline-flex items-center gap-1.5">
+      <HeartIcon :class="view.post.liked ? 'fill-current text-primary' : ''" class="size-3.5" />
+      {{ num(view.post.like) }}
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+      <MessageCircleIcon class="size-3.5" /> {{ num(view.post.comment) }}
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+      <EyeIcon class="size-3.5" /> {{ num(view.post.hit) }}
+    </span>
+  </span>
 </template>
 
 <script setup lang="ts">

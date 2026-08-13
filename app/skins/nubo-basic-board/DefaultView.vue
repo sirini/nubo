@@ -1,26 +1,26 @@
 <template>
-  <section class="container mx-auto p-4">
+  <section class="mx-auto px-4 py-8 sm:px-6 sm:py-12">
     <div class="mx-auto" :style="`max-width: ${config.width}px`">
       <ViewBreadcrumb />
 
-      <Card
-        class="rounded-lg overflow-hidden shadow-lg pt-0 mb-4"
-        :style="`max-width: ${config.width}px`"
-      >
+      <article class="overflow-hidden rounded-2xl border border-border/70 bg-card/70">
         <ViewImageCarousel v-if="view.images.length > 0" />
-        <ViewAttachmentList v-if="view.files.length > 0" />
         <ViewMainContent />
-      </Card>
+        <ViewAttachmentList v-if="view.files.length > 0" />
+      </article>
 
-      <ViewWriterProfile class="py-4" />
+      <ViewWriterProfile class="mt-5 rounded-2xl border border-border/70 bg-card/55 p-5" />
       <ViewRelatedContent />
-      <ViewWriteComment />
-      <ViewCommentList class="mt-8" />
+      <section class="mt-8 rounded-2xl border border-border/70 bg-card/55 p-4 sm:p-6">
+        <h2 class="mb-5 text-lg font-semibold">댓글 {{ num(view.post.comment) }}</h2>
+        <ViewWriteComment />
+        <ViewCommentList class="mt-8" />
+      </section>
 
-      <div class="flex items-center justify-between my-12">
+      <div class="my-10 flex items-center justify-between gap-3">
         <ViewListButton />
 
-        <div class="inline-flex gap-3 items-center">
+        <div class="inline-flex items-center gap-3">
           <ViewModifyButton />
           <ViewWriteButton />
         </div>
