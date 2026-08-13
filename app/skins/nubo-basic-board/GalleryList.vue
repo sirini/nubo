@@ -1,9 +1,9 @@
 <template>
-  <section class="container mx-auto p-4">
+  <section class="mx-auto px-4 py-8 sm:px-6 sm:py-12">
     <div class="mx-auto" :style="`max-width: ${config.width}px`">
       <GalleryHeader />
 
-      <div class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+      <div class="columns-1 gap-5 space-y-5 sm:columns-2 lg:columns-3">
         <GalleryPostCol />
       </div>
 

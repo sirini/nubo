@@ -1,11 +1,16 @@
 <template>
-  <header class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-6">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight">{{ config.name }}</h1>
-      <div class="text-muted-foreground mt-2 text-sm">{{ config.info }}</div>
+  <header class="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+    <div class="min-w-0">
+      <div class="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">Gallery</div>
+      <h1 class="truncate text-3xl font-semibold tracking-[-0.035em]">
+        {{ recoverChars(config.name) }}
+      </h1>
+      <p class="mt-2 text-sm leading-6 text-muted-foreground">
+        {{ recoverChars(config.info) }}
+      </p>
     </div>
 
-    <div class="flex items-center gap-2">
+    <div class="flex flex-wrap items-center gap-2">
       <CommonVTooltip content="게시글 목록을 초기화합니다">
         <NuxtLink :to="`/board/${config.id}/page/1`" as-child class="gap-2">
           <Button variant="outline" size="icon" class="cursor-pointer">
@@ -24,16 +29,18 @@
 
       <CommonVTooltip v-if="isLoggedIn" content="새로운 사진을 올려보세요!">
         <NuxtLink :to="`/board/${config.id}/write`" as-child>
-          <Button variant="default" size="icon" class="cursor-pointer text-foreground">
+          <Button variant="default" class="cursor-pointer gap-2">
             <ImageUpIcon class="w-4 h-4" />
+            사진 올리기
           </Button>
         </NuxtLink>
       </CommonVTooltip>
 
       <CommonVTooltip v-else content="로그인 하시면 게시글 작성 등을 하실 수 있습니다">
         <NuxtLink :to="`/auth/login?redirect=/board/${config.id}/page/${page}`">
-          <Button variant="outline" size="icon" class="cursor-pointer">
+          <Button variant="outline" class="cursor-pointer gap-2">
             <LogInIcon class="w-4 h-4" />
+            로그인
           </Button>
         </NuxtLink>
       </CommonVTooltip>
