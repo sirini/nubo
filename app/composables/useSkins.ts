@@ -40,6 +40,10 @@ export const useSkins = () => {
         baseURL: config.public.apiBase,
       })
       if (response.success) settings.value = { ...settings.value, ...response.result }
+    } catch (error) {
+      // Older GOAPI binaries do not expose the skin settings endpoint yet.
+      // Keep the built-in defaults so a backend upgrade never blocks the whole site.
+      console.warn("Skin settings could not be loaded; using built-in defaults.", error)
     } finally {
       loaded.value = true
     }
