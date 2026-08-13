@@ -5,8 +5,8 @@
         <Button
           size="sm"
           :variant="isBold ? 'secondary' : 'ghost'"
-          @click="toggleBold"
           class="cursor-pointer"
+          @click="toggleBold"
         >
           <BoldIcon class="w-4 h-4" />
         </Button>
@@ -14,8 +14,8 @@
         <Button
           size="sm"
           :variant="isItalic ? 'secondary' : 'ghost'"
-          @click="toggleItalic"
           class="cursor-pointer"
+          @click="toggleItalic"
         >
           <Italic class="w-4 h-4" />
         </Button>
@@ -23,8 +23,8 @@
         <Button
           size="sm"
           :variant="isStrike ? 'secondary' : 'ghost'"
-          @click="toggleStrike()"
           class="cursor-pointer"
+          @click="toggleStrike()"
         >
           <Strikethrough class="w-4 h-4" />
         </Button>
@@ -35,16 +35,16 @@
             <input
               type="color"
               class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-              @input="selectTextColor"
               :value="getAttr('textStyle').color || '#000000'"
+              @input="selectTextColor"
             />
           </Button>
         </div>
 
         <Select
-          class="p-2 text-sm bg-transparent rounded-md hover:bg-white/10"
-          @update:model-value="edit.toggleHeading"
+          class="rounded-md bg-transparent p-2 text-sm hover:bg-accent"
           :model-value="edit.editorHeadings"
+          @update:model-value="edit.toggleHeading"
         >
           <SelectTrigger class="w-24 cursor-pointer">
             <SelectValue placeholder="스타일" />
@@ -65,15 +65,15 @@
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
-        <Button size="sm" variant="ghost" @click="isAddLinkDialog = true" class="cursor-pointer">
+        <Button size="sm" variant="ghost" class="cursor-pointer" @click="isAddLinkDialog = true">
           <Link class="w-4 h-4" />
         </Button>
 
         <Button
           size="sm"
           variant="ghost"
-          @click="isImageUploadDialog = true"
           class="cursor-pointer"
+          @click="isImageUploadDialog = true"
         >
           <Image class="w-4 h-4" />
         </Button>
@@ -81,8 +81,8 @@
         <Button
           size="sm"
           :variant="isBlockquote ? 'secondary' : 'ghost'"
-          @click="toggleBlockquote"
           class="cursor-pointer"
+          @click="toggleBlockquote"
         >
           <Quote class="w-4 h-4" />
         </Button>
@@ -90,8 +90,8 @@
         <Button
           size="sm"
           :variant="isCode ? 'secondary' : 'ghost'"
-          @click="toggleCode"
           class="cursor-pointer"
+          @click="toggleCode"
         >
           <CodeIcon class="w-4 h-4" />
         </Button>
@@ -99,19 +99,19 @@
         <Button
           size="sm"
           :variant="isCodeBlock ? 'secondary' : 'ghost'"
-          @click="toggleCodeBlock"
           class="cursor-pointer"
+          @click="toggleCodeBlock"
         >
           <SquareCode class="w-4 h-4" />
         </Button>
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
-        <Button size="sm" variant="ghost" @click="undo" class="cursor-pointer">
+        <Button size="sm" variant="ghost" class="cursor-pointer" @click="undo">
           <Undo class="w-4 h-4" />
         </Button>
 
-        <Button size="sm" variant="ghost" @click="redo" class="cursor-pointer">
+        <Button size="sm" variant="ghost" class="cursor-pointer" @click="redo">
           <Redo class="w-4 h-4" />
         </Button>
       </div>
@@ -126,7 +126,8 @@
 
 <script setup lang="ts">
 import "@/assets/css/editor.scss"
-import { Editor, EditorContent, type Editor as EditorClass } from "@tiptap/vue-3"
+import { EditorContent } from "@tiptap/vue-3"
+import type { Editor } from "@tiptap/vue-3"
 import {
   Bold as BoldIcon,
   CodeIcon,
@@ -148,7 +149,7 @@ import WriteImageUpload from "./WriteImageUpload.vue"
 const edit = useEditorStore()
 const props = defineProps<{ modelValue: string; config: BoardConfig }>()
 const emit = defineEmits<{ (e: "update:modelValue", value: string): void }>()
-const ed = ref<EditorClass | null>(null)
+const ed = ref<Editor | null>(null)
 
 // 화면이 준비되면 Tiptap 에디터 꺼내와서 준비
 onMounted(() => {

@@ -10,11 +10,11 @@
         >
           <ToggleGroupItem
             v-for="(reason, index) in reportReasons"
-            :content="reason.description"
             :key="index"
+            :content="reason.description"
             :value="reason.description"
+            class="cursor-pointer px-2 py-2 transition-colors data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
             @click="reportDescription = reason.description"
-            class="px-2 py-2 data-[state=on]:bg-primary data-[state=on]:text-foreground transition-colors cursor-pointer"
           >
             {{ reason.label }}
           </ToggleGroupItem>
@@ -42,13 +42,13 @@
       <div class="text-sm font-medium text-muted-foreground">내 블랙리스트에 추가</div>
       <Label
         for="checkBlackList"
-        class="hover:bg-accent/30 flex items-start gap-3 rounded-lg border p-4 has-aria-checked:border-blue-900 has-aria-checked:bg-blue-950 cursor-pointer"
+        class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 hover:bg-accent/30 has-aria-checked:border-primary has-aria-checked:bg-primary/5 dark:has-aria-checked:bg-primary/10"
       >
         <Checkbox
           id="checkBlackList"
           v-model="isCheckedBlackList"
           :disabled="isReportedUser"
-          class="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+          class="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
         />
         <div class="grid gap-1.5 font-normal">
           <div class="text-sm leading-none font-medium">내 블랙리스트에 추가</div>
@@ -61,16 +61,16 @@
 
     <CommonVTooltip content="허위 신고 시 제재될 수 있습니다">
       <Button
-        @click="reportBadUser"
+        v-if="!isReportedUser"
         :disabled="!reportDescription"
         class="text-foreground cursor-pointer"
-        v-if="!isReportedUser"
+        @click="reportBadUser"
       >
         신고 제출하기
       </Button>
     </CommonVTooltip>
 
-    <Button @click="closeReportForm" variant="outline" class="cursor-pointer">닫기</Button>
+    <Button variant="outline" class="cursor-pointer" @click="closeReportForm">닫기</Button>
   </div>
 </template>
 

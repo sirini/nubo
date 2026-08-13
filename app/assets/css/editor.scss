@@ -1,9 +1,11 @@
 .tiptap,
 .nubo {
   a {
-    text-decoration: none;
-    color: oklch(80% 0.12209 279.447);
+    color: var(--primary);
     font-family: "JetBrains Mono", sans-serif;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--primary) 45%, transparent);
+    text-underline-offset: 0.2em;
   }
 
   p:empty::before {
@@ -65,7 +67,8 @@
   }
 
   mark {
-    background-color: oklch(90% 0.14002 89.161);
+    background-color: color-mix(in oklab, var(--warning) 38%, transparent);
+    color: var(--foreground);
     border-radius: 1rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
@@ -111,7 +114,7 @@
   .shiki,
   .shiki span {
     color: var(--shiki-light) !important;
-    background-color: var(--shiki-light-bg) !important;
+    background-color: var(--code-background) !important;
     font-style: var(--shiki-light-font-style) !important;
     font-weight: var(--shiki-light-font-weight) !important;
     text-decoration: var(--shiki-light-text-decoration) !important;
@@ -126,9 +129,9 @@
   .nubo-code-block {
     margin: 1rem 0;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 1px solid var(--code-border);
     border-radius: 0.75rem;
-    background: var(--media);
+    background: var(--code-background);
   }
 
   .nubo-code-toolbar {
@@ -138,12 +141,12 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 0.5rem 0.75rem 0.5rem 1rem;
-    border-bottom: 1px solid var(--border);
-    background: color-mix(in oklab, var(--media) 86%, var(--card));
+    border-bottom: 1px solid var(--code-border);
+    background: var(--code-toolbar);
   }
 
   .nubo-code-language {
-    color: var(--muted-foreground);
+    color: var(--code-muted);
     font-family: "JetBrains Mono", sans-serif;
     font-size: 0.75rem;
     font-weight: 600;
@@ -153,18 +156,18 @@
   .nubo-code-copy {
     min-height: 1.875rem;
     cursor: pointer;
-    border: 1px solid var(--border);
+    border: 1px solid var(--code-border);
     border-radius: 0.45rem;
     padding: 0.25rem 0.65rem;
-    background: color-mix(in oklab, var(--surface-subtle) 45%, transparent);
-    color: var(--media-foreground);
+    background: var(--code-button);
+    color: var(--code-foreground);
     font-size: 0.75rem;
     transition: background-color 150ms ease, color 150ms ease;
 
     &:hover,
     &:focus-visible {
-      background: var(--accent);
-      color: var(--accent-foreground);
+      background: color-mix(in oklab, var(--primary) 12%, var(--code-button));
+      color: var(--code-foreground);
       outline: none;
     }
   }
@@ -197,8 +200,8 @@
     left: 0;
     width: 3rem;
     padding-right: 0.75rem;
-    border-right: 1px solid color-mix(in oklab, var(--border) 72%, transparent);
-    color: color-mix(in oklab, var(--media-foreground) 45%, transparent);
+    border-right: 1px solid var(--code-border);
+    color: var(--code-muted);
     content: counter(code-line);
     font-size: 0.75rem;
     line-height: 2em;
@@ -210,7 +213,7 @@
     .shiki,
     .shiki span {
       color: var(--shiki-dark) !important;
-      background-color: var(--shiki-dark-bg) !important;
+      background-color: var(--code-background) !important;
       font-style: var(--shiki-dark-font-style) !important;
       font-weight: var(--shiki-dark-font-weight) !important;
       text-decoration: var(--shiki-dark-text-decoration) !important;
@@ -233,7 +236,7 @@
 
   hr {
     border: none;
-    border-top: 1px solid oklch(25% 0.02805 284.268);
+    border-top: 1px solid var(--border);
     margin-top: 1rem;
     margin-bottom: 1rem;
   }
@@ -248,7 +251,7 @@
     td,
     th {
       min-width: 1em;
-      border: 1px solid oklch(25% 0.02805 284.268);
+      border: 1px solid var(--border);
       padding: 3px 5px;
       vertical-align: top;
       box-sizing: border-box;
@@ -262,7 +265,7 @@
     th {
       font-weight: bold;
       text-align: left;
-      background-color: oklch(30% 0.02934 284.342);
+      background-color: var(--surface-subtle);
     }
 
     .selectedCell:after {
@@ -273,7 +276,7 @@
       right: 0;
       top: 0;
       bottom: 0;
-      background: oklch(30% 0.02934 284.342);
+      background: color-mix(in oklab, var(--accent) 62%, transparent);
       pointer-events: none;
     }
 
@@ -283,7 +286,7 @@
       top: 0;
       bottom: -2px;
       width: 4px;
-      background-color: #adf;
+      background-color: var(--primary);
       pointer-events: none;
     }
 
