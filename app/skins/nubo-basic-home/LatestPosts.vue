@@ -1,10 +1,12 @@
 <template>
   <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
     <div v-if="!isSearching" class="mb-10 border-b border-border/70 pb-7 sm:mb-14">
-      <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Community</div>
-      <h1 class="mt-3 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">새로운 이야기</h1>
+      <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+        Community Builder
+      </div>
+      <h1 class="mt-3 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">메이커들의 이야기</h1>
       <p class="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-        지금 커뮤니티에서 나누고 있는 이야기들을 만나보세요.
+        지금 자신만의 커뮤니티를 만들어가는 메이커들의 이야기를 확인해 보세요
       </p>
 
       <div class="mt-6 flex items-center gap-2">
@@ -40,7 +42,7 @@
             @click="move('https://sensta.me')"
           >
             <CameraIcon class="w-4 h-4" />
-            <span>GOAPI</span>
+            <span>SENSTA</span>
           </Button>
         </CommonVTooltip>
       </div>
@@ -54,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { BinaryIcon, GitBranchIcon } from "lucide-vue-next"
+import { BinaryIcon, CameraIcon, GitBranchIcon } from "lucide-vue-next"
 import HomeGroupedPostCard from "./components/HomeGroupedPostCard.vue"
 import HomeSearchedPostCard from "./components/HomeSearchedPostCard.vue"
 
