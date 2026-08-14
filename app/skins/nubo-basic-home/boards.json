@@ -2,6 +2,6 @@
   "boards": [
     { "id": "free", "limit": 8 },
     { "id": "photo", "limit": 4 },
-    { "id": "sirini", "limit": 4 }
+    { "id": "sirini", "limit": 6 }
   ]
 }

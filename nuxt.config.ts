@@ -35,9 +35,9 @@ export default defineNuxtConfig({
     public: {
       apiBase: "/api",
       goapiBase: GOAPI_PATH,
-      version: env.NUXT_PUBLIC_VERSION || "v1.1.2",
+      version: env.NUXT_PUBLIC_VERSION || "v1.2.0",
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
-      title: env.NUXT_PUBLIC_TITLE || "The NUBO | Nuxt4 based Board",
+      title: env.NUXT_PUBLIC_TITLE || "NUBO | A New Unified Board",
       adminId: env.NUXT_PUBLIC_ADMIN_ID || "example-admin@nubohub.org",
       imageSize: {
         profile: env.NUXT_PUBLIC_PROFILE_SIZE || "256",
