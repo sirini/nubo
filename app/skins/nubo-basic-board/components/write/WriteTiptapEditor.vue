@@ -108,6 +108,8 @@
           <SquareCode class="w-4 h-4" />
         </Button>
 
+        <WriteTableMenu v-if="profile === 'post'" :editor="ed" />
+
         <div class="w-px h-6 bg-border mx-1"></div>
 
         <Button size="sm" variant="ghost" class="cursor-pointer" @click="undo">
@@ -149,6 +151,7 @@ import type { EditorProfile } from "~/types/editor"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import WriteAddLink from "./WriteAddLink.vue"
 import WriteImageUpload from "./WriteImageUpload.vue"
+import WriteTableMenu from "./WriteTableMenu.vue"
 
 const edit = useEditorStore()
 const props = withDefaults(
