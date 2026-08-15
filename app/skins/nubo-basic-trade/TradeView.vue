@@ -7,7 +7,12 @@
         <div class="mb-3 flex flex-wrap items-center gap-2"><Badge>{{ statuses[trade.current.status] }}</Badge><Badge variant="outline">{{ conditions[trade.current.productCondition] }}</Badge><span v-if="trade.current.brand" class="text-sm text-muted-foreground">{{ trade.current.brand }}</span></div>
         <p class="text-2xl font-semibold">{{ price }}</p>
         <p class="mt-2 text-sm text-muted-foreground">{{ shipping }}<span v-if="trade.current.location"> · {{ trade.current.location }}</span></p>
-        <div v-if="isWriter || isAdmin" class="mt-4 flex flex-wrap gap-2"><Button v-for="(label, value) in statuses" :key="value" size="sm" variant="outline" @click="trade.changeStatus(config.uid, view.post.uid, Number(value) as TradeStatus)">{{ label }}</Button></div>
+        <div v-if="isWriter || isAdmin" class="mt-4 flex flex-wrap items-center gap-2">
+          <span class="mr-1 text-xs font-medium text-muted-foreground">거래 상태 변경</span>
+          <CommonVTooltip v-for="(label, value) in statuses" :key="value" :content="statusDescriptions[value] || label">
+            <Button size="sm" :variant="trade.current.status === Number(value) ? 'default' : 'outline'" @click="trade.changeStatus(config.uid, view.post.uid, Number(value) as TradeStatus)">{{ label }}</Button>
+          </CommonVTooltip>
+        </div>
       </div>
       <ViewMainContent /><ViewAttachmentList v-if="view.files.length" />
     </article>
@@ -22,6 +27,7 @@ import { TRADE_PRICE, type TradeStatus } from "~/types/trade"
 import ViewAttachmentList from "../nubo-basic-board/components/view/ViewAttachmentList.vue"; import ViewBreadcrumb from "../nubo-basic-board/components/view/ViewBreadcrumb.vue"; import ViewCommentList from "../nubo-basic-board/components/view/ViewCommentList.vue"; import ViewImageCarousel from "../nubo-basic-board/components/view/ViewImageCarousel.vue"; import ViewListButton from "../nubo-basic-board/components/view/ViewListButton.vue"; import ViewMainContent from "../nubo-basic-board/components/view/ViewMainContent.vue"; import ViewModifyButton from "../nubo-basic-board/components/view/ViewModifyButton.vue"; import ViewWriteButton from "../nubo-basic-board/components/view/ViewWriteButton.vue"; import ViewWriteComment from "../nubo-basic-board/components/view/ViewWriteComment.vue"; import ViewWriterProfile from "../nubo-basic-board/components/view/ViewWriterProfile.vue"
 const { view, config, isWriter, isAdmin } = useNuboViewContext(); const trade = useTradeStore()
 const statuses = ["판매중", "예약중", "판매완료", "판매중단"]; const conditions = ["미개봉", "새것에 가까움", "사용감 적음", "사용감 있음", "수리·하자 있음"]
+const statusDescriptions = ["다른 회원이 구매할 수 있는 판매중 상태로 변경합니다", "구매자와 거래를 진행 중인 예약 상태로 변경합니다", "거래가 끝난 판매완료 상태로 변경합니다", "판매 글을 유지하면서 거래만 중단합니다"]
 const price = computed(() => trade.current.priceType === TRADE_PRICE.FREE ? "무료나눔" : `${trade.current.price.toLocaleString()}원${trade.current.priceType === TRADE_PRICE.NEGOTIABLE ? " · 가격제안 가능" : ""}`)
 const shipping = computed(() => ["택배", "직거래", "택배 또는 직거래"][trade.current.shippingType])
 </script>

@@ -1,11 +1,11 @@
 <template>
-  <CommonVTooltip content="본인이 작성하신 게시글을 수정합니다" v-if="isWriter">
-    <NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`" as-child class="gap-2">
-      <Button variant="outline" class="cursor-pointer">
+  <CommonVTooltip v-if="isWriter" content="본인이 작성하신 게시글을 수정합니다">
+    <Button variant="outline" class="cursor-pointer" as-child>
+      <NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`" class="gap-2">
         <FilePenLineIcon class="w-4 h-4" />
         수정하기
-      </Button>
-    </NuxtLink>
+      </NuxtLink>
+    </Button>
   </CommonVTooltip>
 </template>
 

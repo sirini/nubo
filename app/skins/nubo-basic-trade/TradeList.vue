@@ -7,7 +7,13 @@
           v-for="post in board.list.posts" :key="post.uid" :to="`/board/${board.list.config.id}/${post.uid}`"
           class="group overflow-hidden rounded-2xl border border-border/70 bg-card/70 transition hover:-translate-y-0.5 hover:shadow-lg">
           <div class="aspect-[4/3] overflow-hidden bg-surface-subtle">
-            <NuxtImg v-if="cover(post)" :src="cover(post)" :alt="post.title" class="h-full w-full object-cover transition group-hover:scale-[1.02]" />
+            <img
+              v-if="cover(post)"
+              :src="cover(post)"
+              :alt="post.title"
+              class="h-full w-full object-cover transition group-hover:scale-[1.02]"
+              loading="lazy"
+            />
             <div v-else class="flex h-full items-center justify-center text-sm text-muted-foreground">상품 이미지 없음</div>
           </div>
           <div class="space-y-2 p-4">
@@ -35,5 +41,5 @@ const board = useBoardStore()
 const trade = useTradeStore()
 const statusLabel = (status?: TradeStatus) => ["판매중", "예약중", "판매완료", "판매중단"][status ?? 0]
 const priceLabel = (item?: TradeInfo) => !item ? "-" : item.priceType === TRADE_PRICE.FREE ? "무료나눔" : `${item.price.toLocaleString()}원${item.priceType === TRADE_PRICE.NEGOTIABLE ? " · 가격제안" : ""}`
-const cover = (post: BoardListItem) => post.cover ? `/api${post.cover}` : post.content.match(/<img[^>]+src=["']([^"']+)/i)?.[1] || ""
+const cover = (post: BoardListItem) => post.cover || post.content.match(/<img[^>]+src=["']([^"']+)/i)?.[1] || ""
 </script>
