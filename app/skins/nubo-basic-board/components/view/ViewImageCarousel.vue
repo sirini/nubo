@@ -1,5 +1,5 @@
 <template>
-  <Carousel @init-api="setApi" class="group relative w-full border-b border-border/70 bg-media">
+  <Carousel class="group relative w-full border-b border-border/70 bg-media" @init-api="setApi">
     <CarouselContent>
       <CarouselItem v-for="(img, index) in view.images" :key="index">
         <div>
@@ -33,19 +33,28 @@
       <CarouselNext class="hidden sm:flex right-3 cursor-pointer"
     /></CommonVTooltip>
 
-    <div v-if="count > 1" class="absolute bottom-4 left-1/2 flex -translate-x-1/2 rounded-full bg-media/65 px-2 backdrop-blur-md">
+    <nav
+      v-if="count > 1"
+      class="flex items-center justify-center gap-0.5 border-t border-border/60 bg-surface-subtle/70 px-3 py-1.5"
+      aria-label="첨부 이미지 페이지"
+    >
       <CommonVTooltip
         v-for="(i, idx) in count"
         :key="idx"
         :content="`${idx + 1}번째 이미지를 봅니다 (총 ${count}장)`"
       >
-        <DotIcon
-          class="size-6 cursor-pointer text-media-foreground/40 transition-colors duration-300"
-          :class="idx + 1 === current ? 'text-media-foreground' : ''"
-          @click="api?.scrollTo(idx)"
+        <button
+          type="button"
+          class="flex size-7 cursor-pointer items-center justify-center rounded-full text-muted-foreground/45 transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          :class="idx + 1 === current ? 'text-primary' : ''"
+          :aria-current="idx + 1 === current ? 'page' : undefined"
           :aria-label="`${idx + 1}번째 이미지`"
-      /></CommonVTooltip>
-    </div>
+          @click="api?.scrollTo(idx)"
+        >
+          <DotIcon class="size-6" />
+        </button>
+      </CommonVTooltip>
+    </nav>
   </Carousel>
 </template>
 
