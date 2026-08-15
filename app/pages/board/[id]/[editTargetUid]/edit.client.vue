@@ -32,6 +32,7 @@ if (auth.isLoggedIn) {
 
 watch(() => edit.tag, edit.searchTags)
 watch(() => edit.title, edit.searchTitles)
+onBeforeUnmount(() => edit.resetForm())
 
 provide(nuboWriteKey, useWriteProvider())
 provide(nuboEditorKey, useEditorProvider())

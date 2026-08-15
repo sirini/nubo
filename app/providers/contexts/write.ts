@@ -21,6 +21,8 @@ export interface NuboWriteContext {
   isWriting: WritableComputedRef<boolean>
   isConfirmDialog: ComputedRef<boolean>
   writeNewPost: () => Promise<void>
+  cancelNewPost: () => void
+  cancelEditPost: () => void
   dropAttaches: (event: DragEvent) => void
   changeFileList: (event: Event) => void
   getPreviewThumbnail: (filename: string) => string

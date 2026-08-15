@@ -372,20 +372,24 @@ export type RemovePostParam = {
 
 // 게시글 임시보관용 타입 정의
 export type WriteDraftParam = {
+  boardId?: string
   title: string
   content: string
   tags: string[]
   isSecret: boolean
   isNotice: boolean
   categoryUid: number
+  updatedAt?: number
 }
 
 // 게시글 임시보관용 기본값
 export const WRITE_DRAFT_PARAM: WriteDraftParam = {
+  boardId: "",
   title: "",
   content: "",
   tags: [] as string[],
   isSecret: false,
   isNotice: false,
   categoryUid: 0,
+  updatedAt: 0,
 }

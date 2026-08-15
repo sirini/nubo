@@ -3,6 +3,7 @@ import type { NuboWriteContext } from "./contexts/write"
 export const useWriteProvider = (): NuboWriteContext => {
   const edit = useEditorStore()
   const auth = useAuthStore()
+  const router = useRouter()
 
   return {
     tag: computed({ get: () => edit.tag, set: (val: string) => (edit.tag = val) }),
@@ -37,6 +38,14 @@ export const useWriteProvider = (): NuboWriteContext => {
 
     writeNewPost: async () => {
       await edit.submit()
+    },
+    cancelNewPost: () => {
+      edit.preserveDraftAndReset()
+      router.back()
+    },
+    cancelEditPost: () => {
+      edit.resetForm()
+      router.back()
     },
     dropAttaches: (event: DragEvent) => {
       edit.dropAttaches(event)

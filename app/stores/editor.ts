@@ -7,7 +7,6 @@ import { useEditor } from "~/composables/useEditor.client"
 import {
   BOARD_CONFIG,
   STATUS,
-  WRITE_DRAFT_PARAM,
   type BoardAttachment,
   type BoardConfig,
   type WriteDraftParam,
@@ -55,7 +54,6 @@ export const useEditorStore = defineStore("editor", () => {
   const isAddLinkDialog = ref<boolean>(false)
   const isConfirmDialog = ref<boolean>(false)
   const isDragging = ref<boolean>(false)
-  const isLoadDraft = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isNotice = ref<boolean>(false)
   const isPopOver = ref<Record<string, boolean>>({})
@@ -75,7 +73,29 @@ export const useEditorStore = defineStore("editor", () => {
   const thumbnails = ref<EditorPreviewAttachedImage[]>([])
   const title = ref<string>("")
   const titleSuggestions = ref<string[]>([])
-  const draftPost = useLocalStorage<WriteDraftParam | null>("nubo-draft-post", WRITE_DRAFT_PARAM)
+  const draftPost = useLocalStorage<WriteDraftParam | null>("nubo-draft-post", null)
+  let draftSaveTimer: ReturnType<typeof setTimeout> | undefined
+
+  const hasMeaningfulContent = (html: string) => {
+    const hasContentNode = /<(img|table|pre|blockquote|ul|ol)\b/i.test(html)
+    const textContent = html
+      .replace(/<[^>]*>/g, "")
+      .replaceAll("&nbsp;", " ")
+      .trim()
+    return hasContentNode || textContent.length > 0
+  }
+
+  const hasDraftContent = computed(() => {
+    const draft = draftPost.value
+    if (!draft || (draft.boardId && draft.boardId !== config.value.id)) return false
+
+    return (
+      draft.title.trim().length > 0 ||
+      hasMeaningfulContent(draft.content) ||
+      draft.tags.length > 0
+    )
+  })
+  const isLoadDraft = computed(() => hasDraftContent.value)
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -415,8 +435,10 @@ export const useEditorStore = defineStore("editor", () => {
     }
   }
 
-  // 변수들 초기화
-  const clear = () => {
+  // 현재 입력 폼만 초기화 (새 글 임시 보관본은 유지)
+  const resetForm = () => {
+    previewEditorSelectedImages.value.forEach((img) => URL.revokeObjectURL(img.url))
+    previewEditorSelectedImages.value = []
     attaches.value = []
     content.value = ""
     files.value = []
@@ -426,6 +448,12 @@ export const useEditorStore = defineStore("editor", () => {
     tags.value = []
     title.value = ""
     thumbnails.value = []
+  }
+
+  // 작성 완료 후 입력 폼과 임시 보관본 초기화
+  const clear = () => {
+    cancelDraftSave()
+    resetForm()
     draftPost.value = null
   }
 
@@ -495,7 +523,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
-      clear()
+      resetForm()
       navigateTo(`/board/${config.value.id}/${postUid.value}`)
     } catch (e) {
       toast(`❌ 게시글을 수정하지 못했습니다: ${e}`)
@@ -513,7 +541,7 @@ export const useEditorStore = defineStore("editor", () => {
         return
       }
 
-      clear()
+      resetForm()
       const post = response.result.post
 
       if (post.status === STATUS.REMOVED) {
@@ -554,21 +582,50 @@ export const useEditorStore = defineStore("editor", () => {
     return ""
   }
 
-  // 입력 발생 시 호출할 디바운스 함수
-  const saveDraft = useDebounceFn(() => {
+  const persistDraft = () => {
     draftPost.value = {
+      boardId: config.value.id,
       title: title.value,
       content: content.value,
       tags: [...tags.value],
       isSecret: isSecret.value,
       isNotice: isNotice.value,
       categoryUid: categoryUid.value,
+      updatedAt: Date.now(),
     }
-  }, 3000)
+  }
+
+  const hasCurrentContent = () => {
+    return (
+      title.value.trim().length > 0 || hasMeaningfulContent(content.value) || tags.value.length > 0
+    )
+  }
+
+  const cancelDraftSave = () => {
+    if (draftSaveTimer) clearTimeout(draftSaveTimer)
+    draftSaveTimer = undefined
+  }
+
+  // 입력 발생 시 호출할 디바운스 함수
+  const saveDraft = () => {
+    cancelDraftSave()
+    draftSaveTimer = setTimeout(persistDraft, 3000)
+  }
+
+  const flushDraft = () => {
+    cancelDraftSave()
+    if (hasCurrentContent()) persistDraft()
+  }
+
+  // 화면을 떠날 때 최신 내용을 보관하고 공유 중인 입력 상태는 비우기
+  const preserveDraftAndReset = () => {
+    flushDraft()
+    resetForm()
+  }
 
   // 임시 보관중이던 글 불러오기
   const loadDraft = () => {
-    if (!draftPost.value) {
+    if (!draftPost.value || !hasDraftContent.value) {
       return
     }
     title.value = draftPost.value.title
@@ -621,8 +678,10 @@ export const useEditorStore = defineStore("editor", () => {
     changeSelectedImages,
     confirmRemoveFile,
     clear,
+    cancelDraftSave,
     deleteInsertedImage,
     dropAttaches,
+    flushDraft,
     getThumb,
     insertImageToEditor,
     isHeadingActive,
@@ -634,6 +693,8 @@ export const useEditorStore = defineStore("editor", () => {
     removeAttachedFile,
     removeFromList,
     removeTag,
+    resetForm,
+    preserveDraftAndReset,
     saveDraft,
     searchTags,
     searchTitles,

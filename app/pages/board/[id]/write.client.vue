@@ -16,6 +16,9 @@ const edit = useEditorStore()
 const auth = useAuthStore()
 const boardId = route.params.id as string
 
+edit.cancelDraftSave()
+edit.resetForm()
+
 const selectedSkin = computed(() => {
   const skinName = edit.config.skinKey || "nubo-basic-board"
   const boardType = BOARD_PREFIX[edit.config.type]
@@ -31,18 +34,21 @@ if (auth.isLoggedIn) {
 watch(() => edit.tag, edit.searchTags)
 watch(() => edit.title, edit.searchTitles)
 watch(
-  () => edit.content,
+  [
+    () => edit.title,
+    () => edit.content,
+    () => edit.tags,
+    () => edit.isSecret,
+    () => edit.isNotice,
+    () => edit.categoryUid,
+  ],
   () => edit.saveDraft(),
   { deep: true },
 )
 
-onMounted(() => {
-  if (edit.draftPost && edit.draftPost.content.length > 2) {
-    edit.isLoadDraft = true
-  } else {
-    edit.isLoadDraft = false
-  }
-})
+onMounted(() => window.addEventListener("pagehide", edit.flushDraft))
+onBeforeUnmount(() => edit.preserveDraftAndReset())
+onUnmounted(() => window.removeEventListener("pagehide", edit.flushDraft))
 
 provide(nuboWriteKey, useWriteProvider())
 provide(nuboEditorKey, useEditorProvider())

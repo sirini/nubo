@@ -18,11 +18,11 @@
 
         <CardFooter class="flex justify-between items-center border-t">
           <CommonVTooltip content="클릭하시면 수정 작업을 취소합니다 (원본글 보존)">
-            <Button variant="outline" @click="$router.back()" class="cursor-pointer">취소</Button>
+            <Button variant="outline" class="cursor-pointer" @click="cancelEditPost">취소</Button>
           </CommonVTooltip>
 
           <CommonVTooltip content="제출하시기 전에 수정된 글내용을 다시 한 번 살펴봐주세요">
-            <Button @click="modifyExistPost" class="text-foreground cursor-pointer"
+            <Button class="text-foreground cursor-pointer" @click="modifyExistPost"
               >제출하기</Button
             >
           </CommonVTooltip>
@@ -57,5 +57,6 @@ import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
 const { config, content } = useNuboEditorContext()
-const { isConfirmDialog, isWriting, modifyExistPost, removeAttachedFile } = useNuboWriteContext()
+const { cancelEditPost, isConfirmDialog, isWriting, modifyExistPost, removeAttachedFile } =
+  useNuboWriteContext()
 </script>
