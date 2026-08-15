@@ -185,22 +185,48 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 선택된 이미지 파일들 업로드하고 작성란에 추가하기
-  const uploadingImages = async () => {
+  const uploadContentImages = async (files: File[]) => {
+    if (isUploading.value) {
+      toast(`⚠️ 다른 이미지를 업로드하고 있습니다`)
+      return []
+    }
+
+    const targets = files.filter((file) => file.type.startsWith("image/"))
+    if (targets.length < 1) {
+      toast(`⚠️ 업로드할 이미지 파일이 없습니다`)
+      return []
+    }
+
+    const totalSize = targets.reduce((sum, file) => sum + file.size, 0)
+    const sizeLimit = parseInt(runtimeConfig.public.fileSize)
+    if (totalSize > sizeLimit) {
+      toast(`⚠️ 파일 크기 제한을 초과하였습니다: ${totalSize} > ${sizeLimit}`)
+      return []
+    }
+
     try {
       isUploading.value = true
-      const response = await uploadEditorImages(config.value.uid, images.value)
+      const response = await uploadEditorImages(config.value.uid, targets)
       if (!response.success) {
         toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${response.error}`)
+        return []
       }
-
-      for (const src of response.result) {
-        insertImageToEditor(src)
-      }
-      toast(`✅ 본문에 이미지를 삽입하였습니다`)
+      return response.result
     } catch (e) {
       toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${e}`)
+      return []
     } finally {
       isUploading.value = false
+    }
+  }
+
+  // 이미지 추가창에서 선택한 파일들을 업로드하고 작성란에 추가하기
+  const uploadingImages = async () => {
+    try {
+      const sources = await uploadContentImages(images.value)
+      for (const src of sources) insertImageToEditor(src)
+      if (sources.length > 0) toast(`✅ 본문에 이미지를 삽입하였습니다`)
+    } finally {
       images.value = []
       isImageUploadDialog.value = false
     }
@@ -615,6 +641,7 @@ export const useEditorStore = defineStore("editor", () => {
     setLink,
     submit,
     toggleHeading,
+    uploadContentImages,
     uploadingImages,
   }
 })

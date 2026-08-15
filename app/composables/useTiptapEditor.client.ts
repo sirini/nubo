@@ -33,6 +33,23 @@ import Youtube from "@tiptap/extension-youtube"
 import { Markdown } from "@tiptap/markdown"
 import type { EditorProfile } from "~/types/editor"
 
+type TiptapEditorOptions = {
+  profile: EditorProfile
+  onUpdate: (html: string) => void
+  onUploadImages?: (files: File[]) => Promise<string[]>
+}
+
+const getClipboardImages = (data: DataTransfer | null) => {
+  if (!data) return []
+  const files = Array.from(data.files).filter((file) => file.type.startsWith("image/"))
+  if (files.length > 0) return files
+
+  return Array.from(data.items)
+    .filter((item) => item.kind === "file" && item.type.startsWith("image/"))
+    .map((item) => item.getAsFile())
+    .filter((file): file is File => file !== null)
+}
+
 export const looksLikeMarkdown = (text: string) => {
   const value = text.trim()
   if (!value) return false
@@ -59,8 +76,7 @@ export const looksLikeMarkdown = (text: string) => {
 // Tiptap 에디터 객체 반환
 export const useTiptapEditor = (
   content: Ref<string>,
-  profile: EditorProfile,
-  onUpdate: (html: string) => void,
+  { profile, onUpdate, onUploadImages }: TiptapEditorOptions,
 ) => {
   const commonExtensions = [
     Bold,
@@ -101,12 +117,31 @@ export const useTiptapEditor = (
   const extensions =
     profile === "post" ? [...commonExtensions, ...postExtensions] : commonExtensions
 
+  const uploadAndInsertImages = async (files: File[], position: number) => {
+    if (!onUploadImages) return
+    const urls = await onUploadImages(files)
+    if (urls.length < 1 || editor.isDestroyed) return
+
+    const safePosition = Math.min(position, editor.state.doc.content.size)
+    editor.commands.insertContentAt(
+      safePosition,
+      urls.map((src) => ({ type: "image", attrs: { src } })),
+    )
+  }
+
   const editor = new Editor({
     content: content.value,
     extensions,
     editorProps: {
       attributes: { class: "prose max-w-none" },
-      handlePaste: (_view, event) => {
+      handlePaste: (view, event) => {
+        const images = getClipboardImages(event.clipboardData)
+        if (images.length > 0 && onUploadImages) {
+          event.preventDefault()
+          void uploadAndInsertImages(images, view.state.selection.from)
+          return true
+        }
+
         const text = event.clipboardData?.getData("text/plain")
         if (!text || !looksLikeMarkdown(text)) return false
         const content = editor.markdown?.parse(text)
@@ -114,6 +149,16 @@ export const useTiptapEditor = (
 
         event.preventDefault()
         editor.commands.insertContent(content)
+        return true
+      },
+      handleDrop: (view, event, _slice, moved) => {
+        if (moved || !onUploadImages) return false
+        const images = getClipboardImages(event.dataTransfer)
+        if (images.length < 1) return false
+
+        event.preventDefault()
+        const position = view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos
+        void uploadAndInsertImages(images, position ?? view.state.selection.from)
         return true
       },
     },

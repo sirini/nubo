@@ -1,6 +1,13 @@
 <template>
   <ClientOnly>
-    <div v-if="ed" class="border rounded-lg">
+    <div v-if="ed" class="relative border rounded-lg">
+      <div
+        v-if="isUploading && profile === 'post'"
+        class="absolute right-3 top-3 z-20 flex items-center gap-2 rounded-md border bg-background/95 px-3 py-2 text-xs shadow-sm"
+      >
+        <Spinner />
+        이미지 업로드 중
+      </div>
       <div class="p-2 border-b flex items-center flex-wrap gap-2">
         <Button
           size="sm"
@@ -133,6 +140,7 @@
 import "@/assets/css/editor.scss"
 import { EditorContent } from "@tiptap/vue-3"
 import type { Editor } from "@tiptap/vue-3"
+import { toast } from "vue-sonner"
 import {
   Bold as BoldIcon,
   CodeIcon,
@@ -163,8 +171,10 @@ const ed = shallowRef<Editor | null>(null)
 
 // 화면이 준비되면 Tiptap 에디터 꺼내와서 준비
 onMounted(() => {
-  const editor = useTiptapEditor(toRef(props, "modelValue"), props.profile, (html) => {
-    emit("update:modelValue", html)
+  const editor = useTiptapEditor(toRef(props, "modelValue"), {
+    profile: props.profile,
+    onUpdate: (html) => emit("update:modelValue", html),
+    onUploadImages: props.profile === "post" ? uploadEditorImages : undefined,
   })
   ed.value = editor
 
@@ -174,6 +184,12 @@ onMounted(() => {
   editor.on("selectionUpdate", syncBlockStyle)
   editor.on("transaction", syncBlockStyle)
 })
+
+const uploadEditorImages = async (files: File[]) => {
+  const sources = await edit.uploadContentImages(files)
+  if (sources.length > 0) toast(`✅ 본문에 이미지를 삽입하였습니다`)
+  return sources
+}
 
 const syncBlockStyle = () => {
   if (!ed.value || props.profile !== "post") return
@@ -205,6 +221,7 @@ const {
   isBlockquote,
   isCode,
   isCodeBlock,
+  isUploading,
   isAddLinkDialog,
   isImageUploadDialog,
   toggleBold,
