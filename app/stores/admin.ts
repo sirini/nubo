@@ -340,19 +340,18 @@ export const useAdminStore = defineStore("admin", () => {
 
   // 새 그룹 생성하기
   const createGroup = async (newGroupId: string) => {
-    const result: AdminGroupConfig = { uid: 0, id: newGroupId, count: 0, manager: BOARD_WRITER }
     try {
       const response = await createNewGroup(newGroupId)
       if (!response.success) {
         toast(`❌ 게시판 그룹을 생성하지 못했습니다: ${response.error}`)
-        return result
+        return null
       }
       toast(`✅ ${newGroupId} 그룹을 생성하였습니다`)
-      return result
+      return response.result
     } catch (e) {
       toast(`❌ 게시판 그룹을 생성하지 못했습니다: ${e}`)
     }
-    return result
+    return null
   }
 
   // 그룹 삭제하기 다이얼로그 창 띄우기

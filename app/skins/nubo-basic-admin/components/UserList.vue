@@ -8,7 +8,7 @@
   <Table class="hidden md:table">
     <TableHeader>
       <TableRow>
-        <TableHead class="text-center">이름 <span class="text-muted">(ID)</span> </TableHead>
+        <TableHead class="text-center">이름 <span class="text-muted-foreground">(ID)</span> </TableHead>
         <TableHead class="text-center">레벨</TableHead>
         <TableHead class="text-center">포인트</TableHead>
         <TableHead class="text-center">가입일</TableHead>
@@ -26,7 +26,7 @@
             <AvatarFallback class="text-xs">{{ user.name.substring(0, 2) }}</AvatarFallback>
           </Avatar>
           {{ recoverChars(user.name) }}
-          <Badge variant="outline" class="text-muted">{{ user.id }}</Badge>
+          <Badge variant="outline" class="text-muted-foreground">{{ user.id }}</Badge>
         </TableCell>
         <TableCell class="text-center">
           <Badge variant="outline" class="text-muted-foreground"
@@ -50,7 +50,7 @@
                 variant="outline"
                 size="icon"
                 class="w-8 h-8 cursor-pointer text-red-300"
-                @click="openUserRemoveConfirmDialog(user.uid, user.name)"
+                @click.stop="openUserRemoveConfirmDialog(user.uid, user.name)"
               >
                 <Trash2Icon class="w-4 h-4" />
               </Button>
@@ -61,7 +61,7 @@
                 variant="outline"
                 size="icon"
                 class="w-8 h-8 cursor-pointer"
-                @click="changePanel('edit', user.uid)"
+                @click.stop="changePanel('edit', user.uid)"
               >
                 <Settings2Icon class="w-4 h-4" />
               </Button>
@@ -82,5 +82,5 @@ import UserListFooter from "./UserListFooter.vue"
 
 const { userList, openUserRemoveConfirmDialog } = useNuboAdminContext()
 
-defineProps<{ changePanel: Function }>()
+defineProps<{ changePanel: (panel: "edit", userUid: number) => void | Promise<void> }>()
 </script>

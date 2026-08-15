@@ -62,7 +62,7 @@ export interface NuboAdminContext {
   closeGroupRemoveConfirmDialog: () => void
   closeUserRemoveConfirmDialog: () => void
   createBoard: (param: AdminBoardCreateParam) => Promise<number>
-  createGroup: (newGroupId: string) => Promise<AdminGroupConfig>
+  createGroup: (newGroupId: string) => Promise<AdminGroupConfig | null>
   createUser: (param: AdminUserCreateParam) => Promise<number>
   getBoardConfig: (id: string) => Promise<AdminBoardResult>
   getUserInfo: (userUid: number) => Promise<AdminUserInfo>

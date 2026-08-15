@@ -7,19 +7,31 @@ import type {
 } from "~/types/admin"
 import type { UserPermissionManageParam } from "~/types/user"
 import type { NuboAdminContext } from "./contexts/admin"
-import type { Component } from "vue"
+import type { AsyncComponentLoader, Component } from "vue"
+
+const adminViewModules = import.meta.glob("~/skins/*/*.vue")
+const defaultAdminSkin = "nubo-basic-admin"
+const fallbackAdminView = defineAsyncComponent(
+  () => import("~/skins/nubo-basic-admin/Dashboard.vue"),
+)
+
+const resolveAdminView = (skinKey: string, menu: AdminMenu): Component => {
+  const findLoader = (key: string, entry: AdminMenu) =>
+    Object.entries(adminViewModules).find(([path]) =>
+      path.endsWith(`/skins/${key}/${entry}.vue`),
+    )?.[1]
+  const loader =
+    findLoader(skinKey, menu) ||
+    findLoader(defaultAdminSkin, menu) ||
+    findLoader(defaultAdminSkin, "Dashboard")
+
+  return loader ? defineAsyncComponent(loader as AsyncComponentLoader) : fallbackAdminView
+}
 
 export const useAdminProvider = (): NuboAdminContext => {
   const admin = useAdminStore()
   const auth = useAuthStore()
-  const adminViews: Record<AdminMenu, Component> = {
-    Dashboard: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Dashboard.vue`)),
-    Board: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Board.vue`)),
-    User: defineAsyncComponent(() => import(`~/skins/${admin.skin}/User.vue`)),
-    Report: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Report.vue`)),
-    Skin: defineAsyncComponent(() => import(`~/skins/${admin.skin}/Skin.vue`)),
-    System: defineAsyncComponent(() => import(`~/skins/${admin.skin}/System.vue`)),
-  }
+  const { settings } = useSkins()
 
   return {
     dashboard: computed(() => admin.dashboard),
@@ -55,7 +67,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     menu: computed(() => admin.menu),
     option: computed({ get: () => admin.option, set: (val) => (admin.option = val) }),
     page: computed({ get: () => admin.page, set: (val) => (admin.page = val) }),
-    panel: computed(() => adminViews[admin.menu] || adminViews.Dashboard),
+    panel: computed(() => resolveAdminView(settings.value.admin, admin.menu)),
     statFile: computed(() => admin.dashboard.statistic.file),
     statImage: computed(() => admin.dashboard.statistic.image),
     statPost: computed(() => admin.dashboard.statistic.post),

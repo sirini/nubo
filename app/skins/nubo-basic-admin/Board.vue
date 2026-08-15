@@ -136,6 +136,8 @@ import BoardChangeGroupAdminDialog from "./components/dialogs/BoardChangeGroupAd
 import BoardRemoveConfirmDialog from "./components/dialogs/BoardRemoveConfirmDialog.vue"
 import BoardRemoveGroupConfirmDialog from "./components/dialogs/BoardRemoveGroupConfirmDialog.vue"
 
+defineOptions({ name: "NuboAdminBoard" })
+
 type Panel = "list" | "new" | "edit"
 const route = useRoute()
 const selectedGroupId = ref<string>("")
@@ -156,26 +158,27 @@ const changePanel = async (p: Panel, editBoardId: string = "") => {
   panel.value = p
   selectedBoardId.value = editBoardId
   await loadInitGroupList()
-  await loadSelectedGroupInfo(selectedGroupId.value)
+  if (!groups.value.some((group) => group.id === selectedGroupId.value)) {
+    selectedGroupId.value = groups.value.at(0)?.id ?? ""
+  }
+  if (selectedGroupId.value) {
+    await loadSelectedGroupInfo(selectedGroupId.value)
+  }
 }
 
 // 마운트 시점에서 그룹 목록과 첫 그룹의 소속 게시판들 가져오기
 onMounted(async () => {
   if (route.params?.id !== undefined) {
-    changePanel("edit", route.params.id as string)
+    await changePanel("edit", route.params.id as string)
   } else {
-    await loadInitGroupList()
-    const defaultGroup = groups.value.at(0)
-    if (defaultGroup) {
-      changeGroup(defaultGroup.id)
-    }
+    await changePanel("list")
   }
 })
 
 // 그룹 변경하기
 const changeGroup = async (groupId: string) => {
   selectedGroupId.value = groupId
+  panel.value = "list"
   await loadSelectedGroupInfo(groupId)
-  changePanel("list")
 }
 </script>

@@ -51,108 +51,97 @@
       </h2>
 
       <CommonVCollapsible title="스킨은 어디서 받을 수 있나요?">
-        NUBO의 모든 스킨들은
+        NUBO용 스킨은
         <a href="https://nubohub.org" target="_blank"><CommonVCode>nubohub.org</CommonVCode></a>
-        사이트에서 내려 받으실 수 있습니다. 설치 후 manifest 검증을 통과한 스킨만 선택 목록에 표시됩니다.
+        에서 내려받을 수 있습니다. 설치한 스킨 가운데 <CommonVCode>skin.json</CommonVCode>의 형식,
+        폴더 이름, 지원 NUBO 버전 검사를 통과한 스킨만 위 선택 목록에 표시됩니다.
       </CommonVCollapsible>
       <Separator />
-      <CommonVCollapsible title="마음에 드는 스킨을 찾았습니다. 어떻게 적용하나요?">
-        받으신 스킨 이름을 게시판/갤러리 스킨인
-        <CommonVCode>nubo-awesome-board</CommonVCode> 이름으로 가정하겠습니다.
+      <CommonVCollapsible title="다운로드한 스킨은 어떻게 설치하고 적용하나요?">
+        아래에서는 게시판 스킨 <CommonVCode>nubo-awesome-board</CommonVCode>를 설치한다고
+        가정합니다.
 
         <ul class="list-decimal py-4 pl-8 space-y-1.5 text-sm">
           <li>
-            SFTP 프로그램인 <CommonVCode>FileZilla</CommonVCode> 와 같은 도구를 사용하여 운영중이신
-            서버에 <CommonVCode>(NUBO 설치경로)/app/skins/</CommonVCode> 아래 경로에
-            <CommonVCode>nubo-awesome-board</CommonVCode> 를 업로드 합니다.
+            압축을 푼 스킨 폴더를 서버의
+            <CommonVCode>(NUBO 설치 경로)/app/skins/</CommonVCode> 아래에 업로드합니다. 최종 경로는
+            <CommonVCode>app/skins/nubo-awesome-board/skin.json</CommonVCode> 형태여야 합니다.
           </li>
           <li>
-            새로 업로드한 스킨을 반영하기 위해 <CommonVCode>npm run build</CommonVCode> 명령을 nubo
-            프로젝트 루트에서 실행합니다.
+            스킨 폴더 이름과 <CommonVCode>skin.json</CommonVCode>의 <CommonVCode>key</CommonVCode>가
+            같은지, 안내된 최소 NUBO 버전을 충족하는지 확인합니다.
           </li>
           <li>
-            기존에 띄워두신 프론트엔드(<CommonVCode>node .output/server/index.mjs</CommonVCode> 혹은
-            <CommonVCode>pm2 start .output/server/index.mjs</CommonVCode> 로 실행하신 프로세스)를
-            재시작하여 새로 빌드한 내용을 반영합니다.
+            NUBO 프로젝트 루트에서 <CommonVCode>npm run build</CommonVCode>를 실행합니다. 새 스킨
+            파일은 빌드할 때 등록되므로 이 단계는 생략할 수 없습니다.
           </li>
           <li>
-            게시판 설정 화면에서 기존 게시판의 스킨을
-            <CommonVCode>nubo-awesome-board</CommonVCode> 으로 변경하거나, 새 게시판 생성 시에
-            스킨을 선택합니다. 게시판 스킨 이외에는 현재 페이지에서 수정하시면 됩니다.
+            실행 중인 프론트엔드 프로세스를 재시작해 새 빌드를 반영합니다. 직접 실행 중이면
+            <CommonVCode>node .output/server/index.mjs</CommonVCode>를, PM2를 사용 중이면 기존 PM2
+            프로세스의 재시작 명령을 사용합니다.
           </li>
           <li>
-            처음 해보시는 경우 빌드 과정을 생략하거나, 프론트엔드 서버를 재시작하지 않아 스킨이
-            제대로 적용되지 않거나 오류가 날 수 있습니다. 위의 순서들을 잘 따라해 보시고, 잘
-            안되시면 <CommonVCode>nubohub.org</CommonVCode> 사이트에서 다른 사용자에게 도움을
-            구해보세요!
+            게시판 스킨은 게시판 관리에서 게시판별로 선택합니다. 레이아웃·홈·관리자·로그인·프로필
+            등의 스킨은 이 화면에서 선택한 뒤 <strong>적용하기</strong>를 누릅니다.
+          </li>
+        </ul>
+        목록에 스킨이 나타나지 않으면 이 화면 상단의 manifest 오류 안내를 먼저 확인하세요.
+      </CommonVCollapsible>
+      <Separator />
+      <CommonVCollapsible title="기존 스킨을 복사해서 수정하려면 어떻게 하나요?">
+        기본 스킨을 직접 덮어쓰면 NUBO 업데이트 때 변경 내용이 사라질 수 있으므로, 별도 스킨으로
+        복사해 작업하는 것을 권장합니다.
+
+        <ul class="list-decimal py-4 pl-8 space-y-1.5 text-sm">
+          <li>
+            수정할 기본 스킨 폴더를 복사합니다. 예를 들어
+            <CommonVCode>nubo-basic-board</CommonVCode>를
+            <CommonVCode>my-awesome-board</CommonVCode>라는 새 폴더로 복사합니다.
+          </li>
+          <li>
+            복사한 폴더의 <CommonVCode>skin.json</CommonVCode>에서 <CommonVCode>key</CommonVCode>를
+            폴더 이름과 같은 <CommonVCode>my-awesome-board</CommonVCode>로 바꾸고, 이름·버전·제작자
+            정보도 새 스킨에 맞게 수정합니다.
+          </li>
+          <li>
+            로컬 개발 환경에서 Vue 컴포넌트와 스타일을 수정하고 필요한 화면을 확인합니다. 작업 전
+            원본과 서버 설정을 백업해 두면 문제 발생 시 되돌리기 쉽습니다.
+          </li>
+          <li>
+            완성한 폴더를 서버의 <CommonVCode>app/skins/</CommonVCode> 아래에 배치한 후
+            <CommonVCode>npm run build</CommonVCode>를 실행하고 프론트엔드 프로세스를 재시작합니다.
+          </li>
+          <li>
+            manifest 검증 오류가 없는지 확인하고, 게시판 관리 또는 이 화면에서 새 스킨을 선택해
+            적용합니다.
           </li>
         </ul>
       </CommonVCollapsible>
       <Separator />
-      <CommonVCollapsible title="기존 스킨을 수정하고 싶어요!">
-        기존 스킨을 수정해서 적용하는 것도 새 스킨을 받아서 적용하는 것과 거의 동일합니다.
-
-        <ul class="list-decimal py-4 pl-8 space-y-1.5 text-sm">
-          <li>
-            먼저 기본으로 제공되는 스킨 중 수정하고자 하는 스킨을 다른 이름으로 저장합니다. 여기서는
-            <CommonVCode>nubo-basic-board</CommonVCode> 게시판 스킨을 수정한다고 가정하겠습니다.
-          </li>
-          <li>
-            복사해둔 게시판 스킨을 다른 이름으로 변경합니다(예:
-            <CommonVCode>my-awesome-board</CommonVCode>). 그 후 필요한 내용들을 수정합니다. (스킨
-            작업을 하기 위해서는 NUBO 프로젝트를 로컬에서 <CommonVCode>git clone</CommonVCode> 으로
-            받으신 후 작업 하시는 걸 추천합니다)
-          </li>
-          <li>
-            작업이 완료되면 (로컬에서 작업하신 경우) SFTP 프로그램으로 다시 서버에
-            <CommonVCode>(NUBO 설치경로)/app/skins/</CommonVCode> 아래 경로에
-            <CommonVCode>my-awesome-board</CommonVCode> 를 업로드 합니다.
-          </li>
-          <li>
-            새로운 파일들이 서버에 업로드 되었으므로, 역시 NUBO 프로젝트 폴더에서
-            <CommonVCode>npm run build</CommonVCode> 명령어를 실행하여 빌드 작업을 해줍니다. (혹은,
-            서버 사양이 낮아 빌드가 어려우면 로컬에서 빌드를 실행한 후
-            <CommonVCode>.output</CommonVCode> 폴더만 서버에 올리셔도 무방합니다)
-          </li>
-          <li>
-            새로 빌드를 했으므로, 역시
-            <CommonVCode>node .output/server/index.mjs</CommonVCode> (혹은
-            <CommonVCode>pm2</CommonVCode> 권장) 으로 프론트엔드 서버를 재시작합니다. 이후에는
-            게시판 설정에서 새로 추가한 <CommonVCode>my-awesome-board</CommonVCode> 스킨을 선택하여
-            반영 하실 수 있습니다.
-          </li>
-        </ul>
-      </CommonVCollapsible>
-      <Separator />
-      <CommonVCollapsible title="스킨을 새로 만들고 싶은데 참고할만한 문서가 있나요?">
-        아쉽게도 NUBO 프로젝트를 진행하면서 문서화에 큰 노력을 기울이지 못했습니다. 그나마 다행인
-        점은 요즘은 <CommonVCode>Claude code</CommonVCode> 혹은 <CommonVCode>Codex</CommonVCode> 와
-        같이 내PC에서 직접 동작하는 AI 도구들이 많이 있다는 점이네요. 필요할 경우 NUBO 프로젝트에
-        대하여 분석을 지시하시거나 기본으로 제공되는 스킨들에 대해서 분석을 지시하시면 크게 무리없이
-        수정도 가능하고, 필요 시 프롬프트 만으로도 새로운 스킨 개발이 가능할 것 같습니다.<br />
+      <CommonVCollapsible title="새 스킨을 만들 때 무엇을 참고하면 되나요?">
+        NUBO 프론트엔드는 <CommonVCode>Nuxt 4</CommonVCode>와 <CommonVCode>Vue 3</CommonVCode>를
+        사용하며, UI 구성에는 <CommonVCode>shadcn-vue</CommonVCode>와
+        <CommonVCode>Tailwind CSS</CommonVCode>를 활용합니다. 먼저 만들려는 영역과 같은 기본 스킨
+        폴더(<CommonVCode>app/skins/nubo-basic-*</CommonVCode>)를 복사해 구조와 컴포넌트 진입점을
+        확인하는 방법이 가장 빠릅니다.<br />
         <br />
-        스킨을 새로 만들고 싶으신 분들이라면 대부분 프론트엔드 개발을 어느 정도 하시는 분들로
-        가정해도 크게 무리가 없을 것 같습니다. NUBO의 프론트엔드는
-        <CommonVCode>Nuxt4</CommonVCode> 기반으로 구성되어 있으며, 디자인은
-        <CommonVCode>shadcn-vue</CommonVCode> 에 의존하고 있습니다. 즉 수정을 위해서는
-        <CommonVCode>Vue3</CommonVCode> 에 대한 기본적인 이해가 필요합니다. shadcn-vue 가
-        <CommonVCode>tailwindcss</CommonVCode> 활용을 전제로 하므로 역시 이해가 필요합니다.<br />
-        <br />
-        참고할만한 문서는 아니지만, 기본으로 제공되는
-        스킨들(<CommonVCode>nubo-basic-*</CommonVCode>)를 살펴보시면 어떤 식으로 스킨을 개발할 수
-        있을지 파악이 쉽게 가능하실 것 같습니다. 혹시 분석해 보시다가 AI로도 이해가 안되는 부분들이
-        있으시다면? <CommonVCode>nubohub.org</CommonVCode> 에서 다른 사용자분들에게 질문을
-        남겨보세요!
+        특히 <CommonVCode>skin.json</CommonVCode>의 필수 항목과 폴더 이름 규칙을 지키고, 기존
+        컴포넌트가 사용하는 provider 및 타입 계약을 유지하세요. 개발 중에는
+        <CommonVCode>npm run typecheck</CommonVCode>와 <CommonVCode>npm run build</CommonVCode>로
+        호환성을 확인할 수 있습니다. 추가 질문은 <CommonVCode>nubohub.org</CommonVCode> 커뮤니티에서
+        도움을 받을 수 있습니다.
       </CommonVCollapsible>
       <Separator />
       <CommonVCollapsible title="제가 만든 스킨을 팔아도 되나요?">
-        물론입니다! 단, 아래의 사항을 반드시 지켜주세요.
+        직접 만든 스킨은 배포하거나 판매할 수 있습니다. 다만 포함한 코드와 자산의 라이선스는 제작자가
+        직접 확인해야 합니다.
 
         <ul class="list-decimal py-4 pl-8 space-y-1.5 text-sm">
-          <li>다른 스킨 개발자가 공개/판매한 스킨을 재수정하여 판매하는 건 금지합니다.</li>
-          <li>스킨 개발자는 자신이 만든 스킨에 대한 별도의 라이선스를 부여할 수 있습니다.</li>
-          <li>NUBO에 기본으로 포함되는 스킨들은 NUBO 프로젝트의 라이선스를 따릅니다. (MIT)</li>
+          <li>다른 제작자의 스킨·이미지·아이콘·폰트를 사용했다면 각각의 수정 및 재배포 조건을 확인하세요.</li>
+          <li>직접 만든 부분에는 별도의 이용 조건과 지원 범위를 정할 수 있습니다.</li>
+          <li>NUBO 기본 스킨을 바탕으로 만들었다면 NUBO의 MIT 라이선스 고지 의무를 유지하세요.</li>
         </ul>
+        이 안내는 일반적인 설명이며, 구체적인 라이선스 판단이 필요하면 전문가의 검토를 받으세요.
       </CommonVCollapsible>
     </div>
   </div>
@@ -173,18 +162,25 @@ import {
 import { toast } from "vue-sonner"
 import CommonVCode from "~/components/common/CommonVCode.vue"
 import type { AdminSkinCategory, AdminSkinType } from "~/types/admin"
+
+defineOptions({ name: "NuboAdminSkin" })
+
 const config = useRuntimeConfig()
 const { installed, manifestIssues, settings } = useSkins()
 const selected = reactive({ ...settings.value })
 const skinsFor = (type: AdminSkinType) => installed.value.filter((skin) => skin.type === type)
 const applySkin = async (type: AdminSkinType) => {
-  const response = await $fetch<{ success: boolean; error: string }>("/admin/skin/setting", {
-    baseURL: config.public.apiBase, method: "PUT", body: { type, skinKey: selected[type] },
-  })
-  if (response.success) {
-    settings.value[type] = selected[type]
-    toast("✅ 스킨 설정을 저장했습니다")
-  } else toast(`❌ 스킨 설정을 저장하지 못했습니다: ${response.error}`)
+  try {
+    const response = await $fetch<{ success: boolean; error: string }>("/admin/skin/setting", {
+      baseURL: config.public.apiBase, method: "PUT", body: { type, skinKey: selected[type] },
+    })
+    if (response.success) {
+      settings.value[type] = selected[type]
+      toast("✅ 스킨 설정을 저장했습니다")
+    } else toast(`❌ 스킨 설정을 저장하지 못했습니다: ${response.error}`)
+  } catch (error) {
+    toast(`❌ 스킨 설정을 저장하지 못했습니다: ${error}`)
+  }
 }
 
 // Bento 배치를 위한 카테고리 정의

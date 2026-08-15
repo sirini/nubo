@@ -19,7 +19,7 @@
         </div>
       </div>
       <DialogFooter>
-        <Button variant="outline" type="button" @click="closeAddGroupDialog" class="cursor-pointer"
+        <Button variant="outline" type="button" class="cursor-pointer" @click="closeAddGroupDialog"
           >취소</Button
         >
         <Button
@@ -40,13 +40,17 @@ import { useNuboAdminContext } from "~/providers/contexts/admin"
 const newGroupId = ref<string>("")
 const isValid = computed(() => newGroupId.value.length > 1)
 const { isAddGroupDialog, closeAddGroupDialog, createGroup } = useNuboAdminContext()
-const props = defineProps<{ changeGroup: Function }>()
+const props = defineProps<{
+  changeGroup: (groupId: string) => void | Promise<void>
+}>()
 
 // 새그룹 추가하기
 const createNewGroup = async () => {
   if (isValid.value) {
-    await createGroup(newGroupId.value)
-    props.changeGroup()
+    const group = await createGroup(newGroupId.value)
+    if (group) {
+      await props.changeGroup(group.id)
+    }
   }
   closeAddGroupDialog()
 }

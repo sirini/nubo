@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto min-h-[calc(100dvh-70px)] px-0 py-0 sm:px-4 sm:py-6 lg:py-10">
-    <div class="flex min-h-[calc(100dvh-70px)] border-y bg-background sm:min-h-[calc(100dvh-118px)] sm:rounded-lg sm:border sm:shadow-xl">
+    <div class="flex min-h-[calc(100dvh-70px)] border-y bg-background sm:min-h-[calc(100dvh-118px)] sm:overflow-hidden sm:rounded-lg sm:border sm:shadow-xl">
       <aside class="hidden w-48 border-r bg-muted/30 md:block">
         <div class="flex h-full flex-col gap-2">
           <div class="flex h-16 items-center border-b px-6">
@@ -91,6 +91,8 @@ import {
 } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import { ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_REPORT, ADMIN_SKIN, ADMIN_USER } from "~/types/admin"
+
+defineOptions({ name: "NuboAdmin" })
 
 const config = useRuntimeConfig()
 const { panel, menu, openMenu } = useNuboAdminContext()

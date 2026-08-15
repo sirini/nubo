@@ -200,6 +200,8 @@ import { Calendar1Icon, HeartIcon, MessageCircleIcon, User2Icon } from "lucide-v
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
+defineOptions({ name: "NuboAdminDashboard" })
+
 const {
   user,
   statPost,
@@ -224,7 +226,7 @@ const maxVisit = computed(() => {
 
 onMounted(async () => {
   try {
-    Promise.all([loadInitReportList(false, 3), loadInitCommentList(5), loadInitPostList(5)])
+    await Promise.all([loadInitReportList(false, 3), loadInitCommentList(5), loadInitPostList(5)])
     if (statVisit.value.history.length < 1) {
       isLoading.value = true
       await loadInitDashboard(90, 5)
