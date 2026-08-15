@@ -9,175 +9,149 @@
         이미지 업로드 중
       </div>
       <div class="p-2 border-b flex items-center flex-wrap gap-2">
-        <CommonVTooltip content="선택한 글자를 굵게 표시합니다">
-          <Button
-            size="sm"
-            :variant="isBold ? 'secondary' : 'ghost'"
-            class="cursor-pointer"
-            aria-label="굵게"
-            @click="toggleBold"
-          >
-            <BoldIcon class="w-4 h-4" />
+        <Button
+          size="sm"
+          :variant="isBold ? 'secondary' : 'ghost'"
+          class="cursor-pointer"
+          aria-label="굵게"
+          @click="toggleBold"
+        >
+          <BoldIcon class="w-4 h-4" />
+        </Button>
+
+        <Button
+          size="sm"
+          :variant="isItalic ? 'secondary' : 'ghost'"
+          class="cursor-pointer"
+          aria-label="기울임"
+          @click="toggleItalic"
+        >
+          <Italic class="w-4 h-4" />
+        </Button>
+
+        <Button
+          size="sm"
+          :variant="isStrike ? 'secondary' : 'ghost'"
+          class="cursor-pointer"
+          aria-label="취소선"
+          @click="toggleStrike()"
+        >
+          <Strikethrough class="w-4 h-4" />
+        </Button>
+
+        <div v-if="profile === 'post'" class="relative">
+          <Button size="sm" variant="ghost" class="cursor-pointer" aria-label="글자 색상">
+            <Palette class="w-4 h-4" />
+            <input
+              type="color"
+              class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+              :value="getAttr('textStyle').color || '#000000'"
+              aria-label="글자 색상 선택"
+              @input="selectTextColor"
+            />
           </Button>
-        </CommonVTooltip>
+        </div>
 
-        <CommonVTooltip content="선택한 글자를 기울여 표시합니다">
-          <Button
-            size="sm"
-            :variant="isItalic ? 'secondary' : 'ghost'"
-            class="cursor-pointer"
-            aria-label="기울임"
-            @click="toggleItalic"
-          >
-            <Italic class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
-
-        <CommonVTooltip content="선택한 글자에 취소선을 표시합니다">
-          <Button
-            size="sm"
-            :variant="isStrike ? 'secondary' : 'ghost'"
-            class="cursor-pointer"
-            aria-label="취소선"
-            @click="toggleStrike()"
-          >
-            <Strikethrough class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
-
-        <CommonVTooltip v-if="profile === 'post'" content="선택한 글자의 색상을 변경합니다">
-          <div class="relative">
-            <Button size="sm" variant="ghost" class="cursor-pointer" aria-label="글자 색상">
-              <Palette class="w-4 h-4" />
-              <input
-                type="color"
-                class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                :value="getAttr('textStyle').color || '#000000'"
-                aria-label="글자 색상 선택"
-                @input="selectTextColor"
-              />
-            </Button>
-          </div>
-        </CommonVTooltip>
-
-        <CommonVTooltip v-if="profile === 'post'" content="본문 또는 제목 단계를 선택합니다">
-          <div>
-            <Select
-              class="rounded-md bg-transparent p-2 text-sm hover:bg-accent"
-              :model-value="edit.editorHeadings"
-              @update:model-value="edit.toggleHeading"
-            >
-              <SelectTrigger class="w-24 cursor-pointer" aria-label="문단 스타일">
-                <SelectValue placeholder="스타일" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="0" :selected="!edit.isHeadingActive()">본문</SelectItem>
-                  <SelectItem
-                    v-for="(_, index) in 4"
-                    :key="index"
-                    :value="index + 1"
-                    :selected="ed.isActive('heading', { level: index + 1 })"
-                    >H{{ index + 1 }}</SelectItem
-                  >
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        </CommonVTooltip>
+        <Select
+          v-if="profile === 'post'"
+          class="rounded-md bg-transparent p-2 text-sm hover:bg-accent"
+          :model-value="edit.editorHeadings"
+          @update:model-value="edit.toggleHeading"
+        >
+          <SelectTrigger class="w-24 cursor-pointer" aria-label="문단 스타일">
+            <SelectValue placeholder="스타일" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="0" :selected="!edit.isHeadingActive()">본문</SelectItem>
+              <SelectItem
+                v-for="(_, index) in 4"
+                :key="index"
+                :value="index + 1"
+                :selected="ed.isActive('heading', { level: index + 1 })"
+                >H{{ index + 1 }}</SelectItem
+              >
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
-        <CommonVTooltip content="선택한 글자에 링크를 연결합니다">
-          <Button
-            size="sm"
-            variant="ghost"
-            class="cursor-pointer"
-            aria-label="링크 추가"
-            @click="isAddLinkDialog = true"
-          >
-            <Link class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
-
-        <CommonVTooltip
-          v-if="profile === 'post'"
-          content="이미지를 업로드하거나 이전 이미지를 본문에 삽입합니다"
+        <Button
+          size="sm"
+          variant="ghost"
+          class="cursor-pointer"
+          aria-label="링크 추가"
+          @click="isAddLinkDialog = true"
         >
-          <Button
-            size="sm"
-            variant="ghost"
-            class="cursor-pointer"
-            aria-label="이미지 삽입"
-            @click="isImageUploadDialog = true"
-          >
-            <Image class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
+          <Link class="w-4 h-4" />
+        </Button>
 
-        <CommonVTooltip content="현재 문단을 인용구로 전환합니다">
-          <Button
-            size="sm"
-            :variant="isBlockquote ? 'secondary' : 'ghost'"
-            class="cursor-pointer"
-            aria-label="인용구"
-            @click="toggleBlockquote"
-          >
-            <Quote class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
+        <Button
+          v-if="profile === 'post'"
+          size="sm"
+          variant="ghost"
+          class="cursor-pointer"
+          aria-label="이미지 삽입"
+          @click="isImageUploadDialog = true"
+        >
+          <Image class="w-4 h-4" />
+        </Button>
 
-        <CommonVTooltip content="선택한 글자를 인라인 코드로 표시합니다">
-          <Button
-            size="sm"
-            :variant="isCode ? 'secondary' : 'ghost'"
-            class="cursor-pointer"
-            aria-label="인라인 코드"
-            @click="toggleCode"
-          >
-            <CodeIcon class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
+        <Button
+          size="sm"
+          :variant="isBlockquote ? 'secondary' : 'ghost'"
+          class="cursor-pointer"
+          aria-label="인용구"
+          @click="toggleBlockquote"
+        >
+          <Quote class="w-4 h-4" />
+        </Button>
 
-        <CommonVTooltip v-if="profile === 'post'" content="현재 문단을 코드 블록으로 전환합니다">
-          <Button
-            size="sm"
-            :variant="isCodeBlock ? 'secondary' : 'ghost'"
-            class="cursor-pointer"
-            aria-label="코드 블록"
-            @click="toggleCodeBlock"
-          >
-            <SquareCode class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
+        <Button
+          size="sm"
+          :variant="isCode ? 'secondary' : 'ghost'"
+          class="cursor-pointer"
+          aria-label="인라인 코드"
+          @click="toggleCode"
+        >
+          <CodeIcon class="w-4 h-4" />
+        </Button>
+
+        <Button
+          v-if="profile === 'post'"
+          size="sm"
+          :variant="isCodeBlock ? 'secondary' : 'ghost'"
+          class="cursor-pointer"
+          aria-label="코드 블록"
+          @click="toggleCodeBlock"
+        >
+          <SquareCode class="w-4 h-4" />
+        </Button>
 
         <WriteTableMenu v-if="profile === 'post'" :editor="ed" />
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
-        <CommonVTooltip content="마지막 편집을 실행 취소합니다">
-          <Button
-            size="sm"
-            variant="ghost"
-            class="cursor-pointer"
-            aria-label="실행 취소"
-            @click="undo"
-          >
-            <Undo class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
+        <Button
+          size="sm"
+          variant="ghost"
+          class="cursor-pointer"
+          aria-label="실행 취소"
+          @click="undo"
+        >
+          <Undo class="w-4 h-4" />
+        </Button>
 
-        <CommonVTooltip content="취소한 편집을 다시 실행합니다">
-          <Button
-            size="sm"
-            variant="ghost"
-            class="cursor-pointer"
-            aria-label="다시 실행"
-            @click="redo"
-          >
-            <Redo class="w-4 h-4" />
-          </Button>
-        </CommonVTooltip>
+        <Button
+          size="sm"
+          variant="ghost"
+          class="cursor-pointer"
+          aria-label="다시 실행"
+          @click="redo"
+        >
+          <Redo class="w-4 h-4" />
+        </Button>
       </div>
 
       <EditorContent :editor="ed as unknown as Editor" class="tiptap p-4 focus:outline-none" />

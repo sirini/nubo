@@ -1,17 +1,15 @@
 <template>
   <DropdownMenu>
-    <CommonVTooltip content="표를 삽입하거나 현재 표를 편집합니다">
-      <DropdownMenuTrigger as-child>
-        <Button
-          size="sm"
-          :variant="isTableActive() ? 'secondary' : 'ghost'"
-          class="cursor-pointer"
-          aria-label="표 삽입 및 편집"
-        >
-          <Table2Icon class="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-    </CommonVTooltip>
+    <DropdownMenuTrigger as-child>
+      <Button
+        size="sm"
+        :variant="isTableActive() ? 'secondary' : 'ghost'"
+        class="cursor-pointer"
+        aria-label="표 삽입 및 편집"
+      >
+        <Table2Icon class="size-4" />
+      </Button>
+    </DropdownMenuTrigger>
     <DropdownMenuContent align="start" class="w-52">
       <DropdownMenuLabel>표</DropdownMenuLabel>
       <DropdownMenuItem

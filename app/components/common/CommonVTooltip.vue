@@ -2,9 +2,9 @@
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger as-child>
-        <slot />
+        <slot></slot>
       </TooltipTrigger>
-      <TooltipContent class="text-foreground">
+      <TooltipContent class="text-white">
         {{ content }}
       </TooltipContent>
     </Tooltip>
