@@ -73,8 +73,35 @@ export const useEditorStore = defineStore("editor", () => {
   const thumbnails = ref<EditorPreviewAttachedImage[]>([])
   const title = ref<string>("")
   const titleSuggestions = ref<string[]>([])
-  const draftPost = useLocalStorage<WriteDraftParam | null>("nubo-draft-post", null)
+  // localStorage 값은 이전 버전 또는 수동 변경으로 타입이 깨질 수 있으므로 외부 입력으로 취급
+  const draftPost = useLocalStorage<unknown>("nubo-draft-post", null)
   let draftSaveTimer: ReturnType<typeof setTimeout> | undefined
+
+  const normalizeDraft = (value: unknown): WriteDraftParam | null => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null
+
+    const draft = value as Record<string, unknown>
+    return {
+      boardId: typeof draft.boardId === "string" ? draft.boardId : undefined,
+      title: typeof draft.title === "string" ? draft.title : "",
+      content: typeof draft.content === "string" ? draft.content : "",
+      tags: Array.isArray(draft.tags)
+        ? draft.tags.filter((tag): tag is string => typeof tag === "string")
+        : [],
+      isSecret: draft.isSecret === true,
+      isNotice: draft.isNotice === true,
+      categoryUid:
+        typeof draft.categoryUid === "number" && Number.isFinite(draft.categoryUid)
+          ? draft.categoryUid
+          : 0,
+      updatedAt:
+        typeof draft.updatedAt === "number" && Number.isFinite(draft.updatedAt)
+          ? draft.updatedAt
+          : undefined,
+    }
+  }
+
+  const normalizedDraft = computed(() => normalizeDraft(draftPost.value))
 
   const hasMeaningfulContent = (html: string) => {
     const hasContentNode = /<(img|table|pre|blockquote|ul|ol)\b/i.test(html)
@@ -86,7 +113,7 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   const hasDraftContent = computed(() => {
-    const draft = draftPost.value
+    const draft = normalizedDraft.value
     if (!draft || (draft.boardId && draft.boardId !== config.value.id)) return false
 
     return (
@@ -625,15 +652,15 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 임시 보관중이던 글 불러오기
   const loadDraft = () => {
-    if (!draftPost.value || !hasDraftContent.value) {
-      return
-    }
-    title.value = draftPost.value.title
-    content.value = draftPost.value.content
-    tags.value = [...draftPost.value.tags]
-    isSecret.value = draftPost.value.isSecret
-    isNotice.value = draftPost.value.isNotice
-    categoryUid.value = draftPost.value.categoryUid
+    const draft = normalizedDraft.value
+    if (!draft || !hasDraftContent.value) return
+
+    title.value = draft.title
+    content.value = draft.content
+    tags.value = [...draft.tags]
+    isSecret.value = draft.isSecret
+    isNotice.value = draft.isNotice
+    categoryUid.value = draft.categoryUid
   }
 
   return {
