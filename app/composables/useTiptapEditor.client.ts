@@ -30,7 +30,31 @@ import Text from "@tiptap/extension-text"
 import { TextStyle } from "@tiptap/extension-text-style"
 import Typography from "@tiptap/extension-typography"
 import Youtube from "@tiptap/extension-youtube"
+import { Markdown } from "@tiptap/markdown"
 import type { EditorProfile } from "~/types/editor"
+
+export const looksLikeMarkdown = (text: string) => {
+  const value = text.trim()
+  if (!value) return false
+
+  const blockSyntax = [
+    /^#{1,6}\s+\S/m,
+    /^>\s+\S/m,
+    /^\s*[-+*]\s+\S/m,
+    /^\s*\d+[.)]\s+\S/m,
+    /^```[\w-]*\s*$/m,
+    /^ {0,3}([-*_])(?:\s*\1){2,}\s*$/m,
+    /^\|?.+\|.+\|?\s*\n\|?\s*:?-{3,}:?\s*\|/m,
+  ]
+  const inlineSyntax = [
+    /(?:\*\*|__)(?=\S)[\s\S]*?\S(?:\*\*|__)/,
+    /~~(?=\S)[\s\S]*?\S~~/,
+    /!?\[[^\]\n]+\]\([^\s)]+(?:\s+["'][^"']*["'])?\)/,
+    /(^|[^`])`[^`\n]+`([^`]|$)/,
+  ]
+
+  return blockSyntax.some((pattern) => pattern.test(value)) || inlineSyntax.some((pattern) => pattern.test(value))
+}
 
 // Tiptap 에디터 객체 반환
 export const useTiptapEditor = (
@@ -56,6 +80,7 @@ export const useTiptapEditor = (
     History,
     TiptapLink.configure({ openOnClick: false }),
     Typography,
+    Markdown.configure({ markedOptions: { gfm: true } }),
   ]
 
   const postExtensions = [
@@ -81,6 +106,16 @@ export const useTiptapEditor = (
     extensions,
     editorProps: {
       attributes: { class: "prose max-w-none" },
+      handlePaste: (_view, event) => {
+        const text = event.clipboardData?.getData("text/plain")
+        if (!text || !looksLikeMarkdown(text)) return false
+        const content = editor.markdown?.parse(text)
+        if (!content) return false
+
+        event.preventDefault()
+        editor.commands.insertContent(content)
+        return true
+      },
     },
     onUpdate: ({ editor }) => {
       onUpdate(editor.getHTML())
