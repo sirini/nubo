@@ -211,6 +211,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${response.error}`)
         return []
       }
+      await loadInsertedImages({ reset: true })
       return response.result
     } catch (e) {
       toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${e}`)
