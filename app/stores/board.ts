@@ -8,11 +8,14 @@ import {
   type BoardViewResult,
   type Search,
   type TableOfContent,
+  BOARD,
 } from "~/types/board"
+import type { TradeListResult, TradeViewResult } from "~/types/trade"
 import { HomeSearchOptions } from "~/types/home"
 
 export const useBoardStore = defineStore("board", () => {
   const { loadInitBoardView, loadInitBoardList, like, download, removePost } = useBoard()
+  const trade = useTradeStore()
   const error = ref<unknown>(null)
   const latestLimit = ref<number>(5)
   const isLoading = ref<boolean>(false)
@@ -47,6 +50,10 @@ export const useBoardStore = defineStore("board", () => {
       toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response?.error}`)
       return
     }
+    if (response.result.config.type === BOARD.TRADE) {
+      const result = response.result as TradeViewResult
+      trade.current = result.trade
+    }
     view.value = response.result
   }
 
@@ -63,15 +70,27 @@ export const useBoardStore = defineStore("board", () => {
       toast(`❌ 게시글 목록을 가져오지 못했습니다: ${response?.error}`)
       return
     }
-    response.result.notices.map((notice) => {
+    let normalized: BoardListResult
+    if (response.result.config.type === BOARD.TRADE) {
+      const result = response.result as TradeListResult
+      trade.setList([...result.notices, ...result.posts])
+      normalized = {
+        ...result,
+        notices: result.notices.map((item) => item.post),
+        posts: result.posts.map((item) => item.post),
+      }
+    } else {
+      normalized = response.result as BoardListResult
+    }
+    normalized.notices.map((notice) => {
       notice.title = recoverChars(notice.title)
       notice.writer.name = recoverChars(notice.writer.name)
     })
-    response.result.posts.map((post) => {
+    normalized.posts.map((post) => {
       post.title = recoverChars(post.title)
       post.writer.name = recoverChars(post.writer.name)
     })
-    list.value = response.result
+    list.value = normalized
   }
 
   // 첨부파일 다운로드하기

@@ -9,6 +9,7 @@ import type {
   RemovePostParam,
 } from "~/types/board"
 import type { Resp } from "~/types/common"
+import type { TradeListResult, TradeViewResult } from "~/types/trade"
 
 export const useBoard = () => {
   const config = useRuntimeConfig()
@@ -27,7 +28,7 @@ export const useBoard = () => {
 
   // 게시글 본문 내용 가져오기
   const loadInitBoardView = async (param: BoardViewParam) => {
-    const { data } = await useFetch<Resp<BoardViewResult>>("/board/view", {
+    const { data } = await useFetch<Resp<BoardViewResult | TradeViewResult>>("/board/view", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: param,
@@ -37,7 +38,7 @@ export const useBoard = () => {
 
   // 게시글 목록 가져오기
   const loadInitBoardList = async (param: BoardListParam) => {
-    const { data } = await useFetch<Resp<BoardListResult>>("/board/list", {
+    const { data } = await useFetch<Resp<BoardListResult | TradeListResult>>("/board/list", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: param,

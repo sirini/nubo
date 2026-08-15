@@ -1,16 +1,17 @@
 <template>
   <CommonVTooltip content="새로운 글을 작성합니다">
-    <NuxtLink :to="`/board/${config.id}/write`" :aria-disabled="!isLoggedIn" as-child class="gap-2">
-      <Button
-        variant="default"
-        class="text-foreground cursor-pointer"
-        size="sm"
-        :class="{ 'opacity-50 pointer-events-none': !isLoggedIn }"
-      >
+    <Button
+      variant="default"
+      class="text-foreground cursor-pointer"
+      size="sm"
+      :class="{ 'opacity-50 pointer-events-none': !isLoggedIn }"
+      as-child
+    >
+      <NuxtLink :to="`/board/${config.id}/write`" :aria-disabled="!isLoggedIn" class="gap-2">
         <PencilIcon class="w-4 h-4" />
         새글작성
-      </Button>
-    </NuxtLink>
+      </NuxtLink>
+    </Button>
   </CommonVTooltip>
 </template>
 

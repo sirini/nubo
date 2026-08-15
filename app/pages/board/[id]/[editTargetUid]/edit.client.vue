@@ -7,12 +7,13 @@ import { nuboEditorKey } from "~/providers/contexts/editor"
 import { nuboWriteKey } from "~/providers/contexts/write"
 import { useEditorProvider } from "~/providers/editor"
 import { useWriteProvider } from "~/providers/write"
-import { BOARD_PREFIX } from "~/types/board"
+import { BOARD, BOARD_PREFIX } from "~/types/board"
 
 definePageMeta({ middleware: "auth" as never })
 
 const route = useRoute()
 const edit = useEditorStore()
+const trade = useTradeStore()
 const auth = useAuthStore()
 const boardId = route.params.id as string
 edit.postUid = parseInt(route.params.editTargetUid as string)
@@ -27,6 +28,10 @@ await edit.loadBoardConfig(boardId)
 
 if (auth.isLoggedIn) {
   await edit.loadPost()
+  if (edit.config.type === BOARD.TRADE) {
+    const response = await trade.loadPost(edit.config.uid, edit.postUid)
+    if (response.success && response.result) Object.assign(trade.form, response.result.trade)
+  }
   await edit.loadInsertedImages()
 }
 

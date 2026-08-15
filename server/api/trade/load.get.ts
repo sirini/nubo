@@ -2,5 +2,5 @@ import { safeProxyRequest } from "~~/server/utils/proxy"
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  return safeProxyRequest(event, `${config.apiBaseInternal}/trade/update/status`)
+  return safeProxyRequest(event, `${config.apiBaseInternal}/trade/load${getRequestURL(event).search}`)
 })

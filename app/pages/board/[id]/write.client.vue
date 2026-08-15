@@ -7,17 +7,19 @@ import { nuboEditorKey } from "~/providers/contexts/editor"
 import { nuboWriteKey } from "~/providers/contexts/write"
 import { useEditorProvider } from "~/providers/editor"
 import { useWriteProvider } from "~/providers/write"
-import { BOARD_PREFIX } from "~/types/board"
+import { BOARD, BOARD_PREFIX } from "~/types/board"
 
 definePageMeta({ middleware: "auth" as never })
 
 const route = useRoute()
 const edit = useEditorStore()
+const trade = useTradeStore()
 const auth = useAuthStore()
 const boardId = route.params.id as string
 
 edit.cancelDraftSave()
 edit.resetForm()
+trade.resetForm()
 
 const selectedSkin = computed(() => {
   const skinName = edit.config.skinKey || "nubo-basic-board"
@@ -41,6 +43,7 @@ watch(
     () => edit.isSecret,
     () => edit.isNotice,
     () => edit.categoryUid,
+    () => edit.config.type === BOARD.TRADE ? { ...trade.form } : null,
   ],
   () => edit.saveDraft(),
   { deep: true },

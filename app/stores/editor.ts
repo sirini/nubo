@@ -5,6 +5,7 @@ import { ref } from "vue"
 import { toast } from "vue-sonner"
 import { useEditor } from "~/composables/useEditor.client"
 import {
+  BOARD,
   BOARD_CONFIG,
   STATUS,
   type BoardAttachment,
@@ -25,6 +26,7 @@ import type {
 import { useLocalStorage, useDebounceFn } from "#imports"
 
 export const useEditorStore = defineStore("editor", () => {
+  const trade = useTradeStore()
   const nuxtConfig = useRuntimeConfig()
   const {
     getBoardConfig,
@@ -94,6 +96,9 @@ export const useEditorStore = defineStore("editor", () => {
         typeof draft.categoryUid === "number" && Number.isFinite(draft.categoryUid)
           ? draft.categoryUid
           : 0,
+      trade: draft.trade && typeof draft.trade === "object"
+        ? draft.trade as WriteDraftParam["trade"]
+        : undefined,
       updatedAt:
         typeof draft.updatedAt === "number" && Number.isFinite(draft.updatedAt)
           ? draft.updatedAt
@@ -489,6 +494,7 @@ export const useEditorStore = defineStore("editor", () => {
     return {
       boardUid: config.value.uid,
       categoryUid: categoryUid.value,
+      trade: config.value.type === BOARD.TRADE ? { ...trade.form } : undefined,
       content: content.value.trim().replaceAll("<p></p>", "<p>&nbsp;</p>"),
       files: attaches.value,
       isNotice: isNotice.value,
@@ -511,14 +517,18 @@ export const useEditorStore = defineStore("editor", () => {
     const param: EditorWriteParam = getParams()
     try {
       isWriting.value = true
-      const response = await writeNewPost(param)
+      const response = config.value.type === BOARD.TRADE
+        ? await trade.writePost({ ...param, ...trade.form })
+        : await writeNewPost(param)
       if (!response.success) {
         toast(`❌ 게시글을 작성하지 못했습니다: ${response.error}`)
         return
       }
-      if (response.result > 0) {
+      const writtenPostUid = typeof response.result === "number" ? response.result : response.result?.postUid
+      if (writtenPostUid > 0) {
         clear()
-        navigateTo(`/board/${config.value.id}/${response.result}`)
+        trade.resetForm()
+        navigateTo(`/board/${config.value.id}/${writtenPostUid}`)
       }
     } catch (e) {
       toast(`❌ 게시글을 작성하지 못했습니다: ${e}`)
@@ -545,7 +555,9 @@ export const useEditorStore = defineStore("editor", () => {
 
     try {
       isWriting.value = true
-      const response = await modifyPrevPost(param)
+      const response = config.value.type === BOARD.TRADE
+        ? await trade.modifyPost({ ...param, ...trade.form })
+        : await modifyPrevPost(param)
       if (!response.success) {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
@@ -661,6 +673,7 @@ export const useEditorStore = defineStore("editor", () => {
     isSecret.value = draft.isSecret
     isNotice.value = draft.isNotice
     categoryUid.value = draft.categoryUid
+    if (draft.trade) Object.assign(trade.form, draft.trade)
   }
 
   return {

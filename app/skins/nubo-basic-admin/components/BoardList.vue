@@ -71,6 +71,8 @@ const showTypeName = (type: Board) => {
       return "Gallery"
     case BOARD.BLOG:
       return "Blog"
+    case BOARD.TRADE:
+      return "Trade"
     default:
       return "Board"
   }

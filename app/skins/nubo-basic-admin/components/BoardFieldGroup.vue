@@ -173,6 +173,7 @@ const types = [
   { name: "게시판", value: BOARD.DEFAULT },
   { name: "갤러리", value: BOARD.GALLERY },
   { name: "블로그", value: BOARD.BLOG },
+  { name: "중고거래", value: BOARD.TRADE },
 ]
 
 const { installed } = useSkins()
