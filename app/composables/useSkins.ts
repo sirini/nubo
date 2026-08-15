@@ -37,7 +37,7 @@ export const resolveSkinComponent = (skinKey: string, entry: string, fallbackEnt
 const entryByType: Record<AdminSkinType, string[]> = {
   layout: ["Layout.vue"], home: ["Home.vue"], admin: ["Admin.vue"],
   login: ["Login.vue"], profile: ["Profile.vue"], privacy: ["Privacy.vue"],
-  error: ["Error.vue"], board: ["DefaultList.vue", "BoardList.vue", "GalleryList.vue", "BlogList.vue"],
+  error: ["Error.vue"], board: ["DefaultList.vue", "BoardList.vue", "GalleryList.vue", "BlogList.vue", "TradeList.vue"],
 }
 
 export const useSkins = () => {

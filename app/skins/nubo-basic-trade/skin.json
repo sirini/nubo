@@ -1,0 +1,12 @@
+{
+  "type": "board",
+  "key": "nubo-basic-trade",
+  "name": "기본 중고거래 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "회원 간 중고물품 거래를 위한 반응형 기본 스킨입니다",
+  "preview": "preview.png",
+  "features": ["다크모드", "반응형 상품 카드", "거래 상태 관리"],
+  "min_nubo_version": "1.1.1"
+}

@@ -5,7 +5,7 @@ import type { Pair } from "./common"
 export const WRITE_RESULT_FAIL = -1
 
 // 게시판 타입 재정의
-export type Board = 1 | 2 | 3 | 4 | 9
+export type Board = 0 | 1 | 2 | 3 | 4 | 9
 
 // 게시판 타입 기본값
 export const BOARD = {
@@ -379,6 +379,15 @@ export type WriteDraftParam = {
   isSecret: boolean
   isNotice: boolean
   categoryUid: number
+  trade?: {
+    brand: string
+    price: number
+    priceType: 0 | 1 | 2
+    currency: string
+    productCondition: 0 | 1 | 2 | 3 | 4
+    location: string
+    shippingType: 0 | 1 | 2
+  }
   updatedAt?: number
 }
 
@@ -391,5 +400,6 @@ export const WRITE_DRAFT_PARAM: WriteDraftParam = {
   isSecret: false,
   isNotice: false,
   categoryUid: 0,
+  trade: undefined,
   updatedAt: 0,
 }
