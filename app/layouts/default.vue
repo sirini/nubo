@@ -18,7 +18,7 @@ const selectedSkin = getSkin(modules, () => settings.value.layout, "nubo-basic-l
 const { addVisitHistory } = useHome()
 const auth = useAuthStore()
 
-await Promise.all([auth.getInitUserInfo(), home.getInitMenus()])
+await Promise.all([auth.isLoggedIn ? Promise.resolve() : auth.getInitUserInfo(), home.getInitMenus()])
 addVisitHistory(auth.user.uid)
 
 provide(nuboLayoutKey, useLayoutProvider())

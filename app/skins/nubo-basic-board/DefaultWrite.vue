@@ -18,10 +18,10 @@
 
         <CardFooter class="flex justify-between items-center border-t">
           <div class="flex items-center gap-2">
-            <CommonVTooltip content="클릭하시면 작성하시던 내용은 모두 삭제됩니다">
-              <Button variant="outline" @click="$router.back()" class="cursor-pointer">취소</Button>
+            <CommonVTooltip content="작성 중인 내용은 임시 보관하고 입력 화면을 닫습니다">
+              <Button variant="outline" class="cursor-pointer" @click="cancelNewPost">취소</Button>
             </CommonVTooltip>
-            <CommonVTooltip content="아직 작성중인 글을 다시 불러올 수 있습니다" v-if="isLoadDraft">
+            <CommonVTooltip v-if="isLoadDraft" content="아직 작성중인 글을 다시 불러올 수 있습니다">
               <Button variant="outline" class="cursor-pointer text-green-500" @click="loadDraft"
                 >임시 보관</Button
               >
@@ -29,7 +29,7 @@
           </div>
 
           <CommonVTooltip content="제출하시기 전에 글내용을 다시 한 번 살펴봐주세요">
-            <Button @click="writeNewPost" class="text-foreground cursor-pointer">제출하기</Button>
+            <Button class="text-foreground cursor-pointer" @click="writeNewPost">제출하기</Button>
           </CommonVTooltip>
         </CardFooter>
       </Card>
@@ -53,6 +53,6 @@ import WritePostOptions from "./components/write/WritePostOptions.vue"
 import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
-const { isWriting, writeNewPost } = useNuboWriteContext()
+const { cancelNewPost, isWriting, writeNewPost } = useNuboWriteContext()
 const { content, config, isLoadDraft, loadDraft } = useNuboEditorContext()
 </script>

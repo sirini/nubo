@@ -16,6 +16,9 @@ import { HIT_KEY } from "~/types/common"
 const route = useRoute()
 const board = useBoardStore()
 const comment = useCommentStore()
+const editor = useEditorStore()
+
+editor.resetForm()
 
 const boardId = computed(() => route.params.id as string)
 const postUid = computed(() => parseInt(route.params.postUid as string, 10))
@@ -43,9 +46,9 @@ const markedToRead = () => {
 }
 
 // 게시글 내용과 댓글들 가져오기
-;(await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit()),
-  await comment.getInitComments(board.view),
-  markedToRead())
+await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit())
+await comment.getInitComments(board.view)
+markedToRead()
 
 provide(nuboViewKey, useViewProvider())
 provide(nuboWriteKey, useWriteProvider())

@@ -7,7 +7,6 @@ import { useEditor } from "~/composables/useEditor.client"
 import {
   BOARD_CONFIG,
   STATUS,
-  WRITE_DRAFT_PARAM,
   type BoardAttachment,
   type BoardConfig,
   type WriteDraftParam,
@@ -45,7 +44,7 @@ export const useEditorStore = defineStore("editor", () => {
   const categoryUid = ref<number>(1)
   const config = ref<BoardConfig>(BOARD_CONFIG)
   const content = ref<string>("")
-  const editor = ref<Editor | null>(null)
+  const editor = shallowRef<Editor | null>(null)
   const editorHeadings = ref<string>("")
   const editorRemoveAttachedInfo = ref<EditorRemoveAttached>({ fileUid: 0, index: 0 })
   const files = ref<BoardAttachment[]>([])
@@ -55,7 +54,6 @@ export const useEditorStore = defineStore("editor", () => {
   const isAddLinkDialog = ref<boolean>(false)
   const isConfirmDialog = ref<boolean>(false)
   const isDragging = ref<boolean>(false)
-  const isLoadDraft = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
   const isNotice = ref<boolean>(false)
   const isPopOver = ref<Record<string, boolean>>({})
@@ -75,7 +73,56 @@ export const useEditorStore = defineStore("editor", () => {
   const thumbnails = ref<EditorPreviewAttachedImage[]>([])
   const title = ref<string>("")
   const titleSuggestions = ref<string[]>([])
-  const draftPost = useLocalStorage<WriteDraftParam | null>("nubo-draft-post", WRITE_DRAFT_PARAM)
+  // localStorage 값은 이전 버전 또는 수동 변경으로 타입이 깨질 수 있으므로 외부 입력으로 취급
+  const draftPost = useLocalStorage<unknown>("nubo-draft-post", null)
+  let draftSaveTimer: ReturnType<typeof setTimeout> | undefined
+
+  const normalizeDraft = (value: unknown): WriteDraftParam | null => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null
+
+    const draft = value as Record<string, unknown>
+    return {
+      boardId: typeof draft.boardId === "string" ? draft.boardId : undefined,
+      title: typeof draft.title === "string" ? draft.title : "",
+      content: typeof draft.content === "string" ? draft.content : "",
+      tags: Array.isArray(draft.tags)
+        ? draft.tags.filter((tag): tag is string => typeof tag === "string")
+        : [],
+      isSecret: draft.isSecret === true,
+      isNotice: draft.isNotice === true,
+      categoryUid:
+        typeof draft.categoryUid === "number" && Number.isFinite(draft.categoryUid)
+          ? draft.categoryUid
+          : 0,
+      updatedAt:
+        typeof draft.updatedAt === "number" && Number.isFinite(draft.updatedAt)
+          ? draft.updatedAt
+          : undefined,
+    }
+  }
+
+  const normalizedDraft = computed(() => normalizeDraft(draftPost.value))
+
+  const hasMeaningfulContent = (html: string) => {
+    const hasContentNode = /<(img|table|pre|blockquote|ul|ol)\b/i.test(html)
+    const textContent = html
+      .replace(/<[^>]*>/g, "")
+      .replaceAll("&nbsp;", " ")
+      .trim()
+    return hasContentNode || textContent.length > 0
+  }
+
+  const hasDraftContent = computed(() => {
+    const draft = normalizedDraft.value
+    if (!draft || (draft.boardId && draft.boardId !== config.value.id)) return false
+
+    return (
+      draft.title.trim().length > 0 ||
+      hasMeaningfulContent(draft.content) ||
+      draft.tags.length > 0
+    )
+  })
+  const isLoadDraft = computed(() => hasDraftContent.value)
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -116,18 +163,25 @@ export const useEditorStore = defineStore("editor", () => {
 
     if (typeof value === "string") {
       const parsed = parseInt(value, 10)
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 6) {
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 4) {
         level = parsed as EditorHeadings
       }
     } else if (typeof value === "number") {
-      if (value >= 1 && value <= 6) {
+      if (value >= 1 && value <= 4) {
         level = value as EditorHeadings
       }
     }
 
-    if (!editor.value || level === undefined) {
+    if (!editor.value) {
       return
     }
+
+    if (String(value) === "0") {
+      editor.value.chain().focus().setParagraph().run()
+      return
+    }
+
+    if (level === undefined) return
 
     editor.value.chain().focus().toggleHeading({ level }).run()
   }
@@ -140,9 +194,7 @@ export const useEditorStore = defineStore("editor", () => {
       editor.value.isActive("heading", { level: 1 }) ||
       editor.value.isActive("heading", { level: 2 }) ||
       editor.value.isActive("heading", { level: 3 }) ||
-      editor.value.isActive("heading", { level: 4 }) ||
-      editor.value.isActive("heading", { level: 5 }) ||
-      editor.value.isActive("heading", { level: 6 })
+      editor.value.isActive("heading", { level: 4 })
     )
   }
 
@@ -180,22 +232,49 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   // 선택된 이미지 파일들 업로드하고 작성란에 추가하기
-  const uploadingImages = async () => {
+  const uploadContentImages = async (files: File[]) => {
+    if (isUploading.value) {
+      toast(`⚠️ 다른 이미지를 업로드하고 있습니다`)
+      return []
+    }
+
+    const targets = files.filter((file) => file.type.startsWith("image/"))
+    if (targets.length < 1) {
+      toast(`⚠️ 업로드할 이미지 파일이 없습니다`)
+      return []
+    }
+
+    const totalSize = targets.reduce((sum, file) => sum + file.size, 0)
+    const sizeLimit = parseInt(runtimeConfig.public.fileSize)
+    if (totalSize > sizeLimit) {
+      toast(`⚠️ 파일 크기 제한을 초과하였습니다: ${totalSize} > ${sizeLimit}`)
+      return []
+    }
+
     try {
       isUploading.value = true
-      const response = await uploadEditorImages(config.value.uid, images.value)
+      const response = await uploadEditorImages(config.value.uid, targets)
       if (!response.success) {
         toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${response.error}`)
+        return []
       }
-
-      for (const src of response.result) {
-        insertImageToEditor(src)
-      }
-      toast(`✅ 본문에 이미지를 삽입하였습니다`)
+      await loadInsertedImages({ reset: true })
+      return response.result
     } catch (e) {
       toast(`❌ 이미지 파일 업로드에 실패하였습니다: ${e}`)
+      return []
     } finally {
       isUploading.value = false
+    }
+  }
+
+  // 이미지 추가창에서 선택한 파일들을 업로드하고 작성란에 추가하기
+  const uploadingImages = async () => {
+    try {
+      const sources = await uploadContentImages(images.value)
+      for (const src of sources) insertImageToEditor(src)
+      if (sources.length > 0) toast(`✅ 본문에 이미지를 삽입하였습니다`)
+    } finally {
       images.value = []
       isImageUploadDialog.value = false
     }
@@ -383,8 +462,10 @@ export const useEditorStore = defineStore("editor", () => {
     }
   }
 
-  // 변수들 초기화
-  const clear = () => {
+  // 현재 입력 폼만 초기화 (새 글 임시 보관본은 유지)
+  const resetForm = () => {
+    previewEditorSelectedImages.value.forEach((img) => URL.revokeObjectURL(img.url))
+    previewEditorSelectedImages.value = []
     attaches.value = []
     content.value = ""
     files.value = []
@@ -394,6 +475,12 @@ export const useEditorStore = defineStore("editor", () => {
     tags.value = []
     title.value = ""
     thumbnails.value = []
+  }
+
+  // 작성 완료 후 입력 폼과 임시 보관본 초기화
+  const clear = () => {
+    cancelDraftSave()
+    resetForm()
     draftPost.value = null
   }
 
@@ -463,7 +550,7 @@ export const useEditorStore = defineStore("editor", () => {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
       }
-      clear()
+      resetForm()
       navigateTo(`/board/${config.value.id}/${postUid.value}`)
     } catch (e) {
       toast(`❌ 게시글을 수정하지 못했습니다: ${e}`)
@@ -481,7 +568,7 @@ export const useEditorStore = defineStore("editor", () => {
         return
       }
 
-      clear()
+      resetForm()
       const post = response.result.post
 
       if (post.status === STATUS.REMOVED) {
@@ -522,29 +609,58 @@ export const useEditorStore = defineStore("editor", () => {
     return ""
   }
 
-  // 입력 발생 시 호출할 디바운스 함수
-  const saveDraft = useDebounceFn(() => {
+  const persistDraft = () => {
     draftPost.value = {
+      boardId: config.value.id,
       title: title.value,
       content: content.value,
       tags: [...tags.value],
       isSecret: isSecret.value,
       isNotice: isNotice.value,
       categoryUid: categoryUid.value,
+      updatedAt: Date.now(),
     }
-  }, 3000)
+  }
+
+  const hasCurrentContent = () => {
+    return (
+      title.value.trim().length > 0 || hasMeaningfulContent(content.value) || tags.value.length > 0
+    )
+  }
+
+  const cancelDraftSave = () => {
+    if (draftSaveTimer) clearTimeout(draftSaveTimer)
+    draftSaveTimer = undefined
+  }
+
+  // 입력 발생 시 호출할 디바운스 함수
+  const saveDraft = () => {
+    cancelDraftSave()
+    draftSaveTimer = setTimeout(persistDraft, 3000)
+  }
+
+  const flushDraft = () => {
+    cancelDraftSave()
+    if (hasCurrentContent()) persistDraft()
+  }
+
+  // 화면을 떠날 때 최신 내용을 보관하고 공유 중인 입력 상태는 비우기
+  const preserveDraftAndReset = () => {
+    flushDraft()
+    resetForm()
+  }
 
   // 임시 보관중이던 글 불러오기
   const loadDraft = () => {
-    if (!draftPost.value) {
-      return
-    }
-    title.value = draftPost.value.title
-    content.value = draftPost.value.content
-    tags.value = [...draftPost.value.tags]
-    isSecret.value = draftPost.value.isSecret
-    isNotice.value = draftPost.value.isNotice
-    categoryUid.value = draftPost.value.categoryUid
+    const draft = normalizedDraft.value
+    if (!draft || !hasDraftContent.value) return
+
+    title.value = draft.title
+    content.value = draft.content
+    tags.value = [...draft.tags]
+    isSecret.value = draft.isSecret
+    isNotice.value = draft.isNotice
+    categoryUid.value = draft.categoryUid
   }
 
   return {
@@ -589,8 +705,10 @@ export const useEditorStore = defineStore("editor", () => {
     changeSelectedImages,
     confirmRemoveFile,
     clear,
+    cancelDraftSave,
     deleteInsertedImage,
     dropAttaches,
+    flushDraft,
     getThumb,
     insertImageToEditor,
     isHeadingActive,
@@ -602,6 +720,8 @@ export const useEditorStore = defineStore("editor", () => {
     removeAttachedFile,
     removeFromList,
     removeTag,
+    resetForm,
+    preserveDraftAndReset,
     saveDraft,
     searchTags,
     searchTitles,
@@ -610,6 +730,7 @@ export const useEditorStore = defineStore("editor", () => {
     setLink,
     submit,
     toggleHeading,
+    uploadContentImages,
     uploadingImages,
   }
 })
