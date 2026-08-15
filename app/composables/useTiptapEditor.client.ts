@@ -30,17 +30,20 @@ import Text from "@tiptap/extension-text"
 import { TextStyle } from "@tiptap/extension-text-style"
 import Typography from "@tiptap/extension-typography"
 import Youtube from "@tiptap/extension-youtube"
+import type { EditorProfile } from "~/types/editor"
 
 // Tiptap 에디터 객체 반환
-export const useTiptapEditor = (content: Ref<string>, onUpdate: (html: string) => void) => {
-  const extensions = [
+export const useTiptapEditor = (
+  content: Ref<string>,
+  profile: EditorProfile,
+  onUpdate: (html: string) => void,
+) => {
+  const commonExtensions = [
     Bold,
     Blockquote,
     BulletList,
     Document,
     HardBreak,
-    Heading.configure({ levels: [1, 2, 3, 4] }),
-    HorizontalRule,
     ListItem,
     OrderedList,
     Paragraph,
@@ -51,6 +54,13 @@ export const useTiptapEditor = (content: Ref<string>, onUpdate: (html: string) =
     Dropcursor,
     Gapcursor,
     History,
+    TiptapLink.configure({ openOnClick: false }),
+    Typography,
+  ]
+
+  const postExtensions = [
+    Heading.configure({ levels: [1, 2, 3, 4] }),
+    HorizontalRule,
     Highlight,
     TiptapImage.configure({ inline: true }),
     Youtube,
@@ -61,9 +71,10 @@ export const useTiptapEditor = (content: Ref<string>, onUpdate: (html: string) =
     TableHeader,
     TableRow,
     CodeBlock.configure({ defaultLanguage: "typescript" }),
-    TiptapLink.configure({ openOnClick: false }),
-    Typography,
   ]
+
+  const extensions =
+    profile === "post" ? [...commonExtensions, ...postExtensions] : commonExtensions
 
   const editor = new Editor({
     content: content.value,

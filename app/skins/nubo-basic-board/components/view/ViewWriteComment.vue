@@ -1,6 +1,6 @@
 <template>
   <div class="overflow-hidden rounded-xl border border-border/70 bg-background/45">
-    <WriteTiptapEditor v-model="edit.content" :config="view.config" />
+    <WriteTiptapEditor v-model="edit.content" :config="view.config" profile="comment" />
   </div>
   <Button
     variant="outline"

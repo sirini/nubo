@@ -1,6 +1,8 @@
 import type { BoardAttachment, BoardConfig, BoardListItem } from "./board"
 import type { Pair } from "./common"
 
+export type EditorProfile = "post" | "comment"
+
 // 새글작성에 필요한 파라미터들 정의
 export type EditorWriteParam = {
   boardUid: number

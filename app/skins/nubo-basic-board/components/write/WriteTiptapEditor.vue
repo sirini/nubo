@@ -29,7 +29,7 @@
           <Strikethrough class="w-4 h-4" />
         </Button>
 
-        <div class="relative">
+        <div v-if="profile === 'post'" class="relative">
           <Button size="sm" variant="ghost" class="cursor-pointer">
             <Palette class="w-4 h-4" />
             <input
@@ -42,6 +42,7 @@
         </div>
 
         <Select
+          v-if="profile === 'post'"
           class="rounded-md bg-transparent p-2 text-sm hover:bg-accent"
           :model-value="edit.editorHeadings"
           @update:model-value="edit.toggleHeading"
@@ -70,6 +71,7 @@
         </Button>
 
         <Button
+          v-if="profile === 'post'"
           size="sm"
           variant="ghost"
           class="cursor-pointer"
@@ -97,6 +99,7 @@
         </Button>
 
         <Button
+          v-if="profile === 'post'"
           size="sm"
           :variant="isCodeBlock ? 'secondary' : 'ghost'"
           class="cursor-pointer"
@@ -118,7 +121,7 @@
 
       <EditorContent :editor="ed as unknown as Editor" class="tiptap p-4 focus:outline-none" />
       <WriteAddLink />
-      <WriteImageUpload />
+      <WriteImageUpload v-if="profile === 'post'" />
     </div>
     <Toaster />
   </ClientOnly>
@@ -142,18 +145,22 @@ import {
   Undo,
 } from "lucide-vue-next"
 import type { BoardConfig } from "~/types/board"
+import type { EditorProfile } from "~/types/editor"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import WriteAddLink from "./WriteAddLink.vue"
 import WriteImageUpload from "./WriteImageUpload.vue"
 
 const edit = useEditorStore()
-const props = defineProps<{ modelValue: string; config: BoardConfig }>()
+const props = withDefaults(
+  defineProps<{ modelValue: string; config: BoardConfig; profile?: EditorProfile }>(),
+  { profile: "post" },
+)
 const emit = defineEmits<{ (e: "update:modelValue", value: string): void }>()
 const ed = ref<Editor | null>(null)
 
 // 화면이 준비되면 Tiptap 에디터 꺼내와서 준비
 onMounted(() => {
-  ed.value = useTiptapEditor(toRef(props, "modelValue"), (html) => {
+  ed.value = useTiptapEditor(toRef(props, "modelValue"), props.profile, (html) => {
     emit("update:modelValue", html)
   })
 
