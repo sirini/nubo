@@ -21,7 +21,7 @@ export type EditorModifyParam = EditorWriteParam & {
 }
 
 // 에디터에서 헤딩 타입 정의
-export type EditorHeadings = 1 | 2 | 3 | 4 | 5 | 6
+export type EditorHeadings = 1 | 2 | 3 | 4
 
 // 글수정 시 미리 업로드한 이미지의 미리보기 타입
 export type EditorPreviewAttachedImage = {

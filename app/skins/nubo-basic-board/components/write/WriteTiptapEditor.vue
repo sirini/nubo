@@ -54,7 +54,7 @@
             <SelectGroup>
               <SelectItem value="0" :selected="!edit.isHeadingActive()">본문</SelectItem>
               <SelectItem
-                v-for="(_, index) in 6"
+                v-for="(_, index) in 4"
                 :key="index"
                 :value="index + 1"
                 :selected="ed.isActive('heading', { level: index + 1 })"
@@ -156,17 +156,29 @@ const props = withDefaults(
   { profile: "post" },
 )
 const emit = defineEmits<{ (e: "update:modelValue", value: string): void }>()
-const ed = ref<Editor | null>(null)
+const ed = shallowRef<Editor | null>(null)
 
 // 화면이 준비되면 Tiptap 에디터 꺼내와서 준비
 onMounted(() => {
-  ed.value = useTiptapEditor(toRef(props, "modelValue"), props.profile, (html) => {
+  const editor = useTiptapEditor(toRef(props, "modelValue"), props.profile, (html) => {
     emit("update:modelValue", html)
   })
+  ed.value = editor
 
-  edit.editor = ed.value
+  edit.editor = editor
   edit.config = props.config
+  syncBlockStyle()
+  editor.on("selectionUpdate", syncBlockStyle)
+  editor.on("transaction", syncBlockStyle)
 })
+
+const syncBlockStyle = () => {
+  if (!ed.value || props.profile !== "post") return
+  const activeLevel = ([1, 2, 3, 4] as const).find((level) =>
+    ed.value?.isActive("heading", { level }),
+  )
+  edit.editorHeadings = activeLevel ? String(activeLevel) : "0"
+}
 
 // 에디터에 연결된 변수값이 업데이트 되면 에디터에서도 맞춰서 변경해주기
 watch(

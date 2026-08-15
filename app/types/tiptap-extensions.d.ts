@@ -35,7 +35,7 @@ declare module "@tiptap/core" {
       /**
        * Toggle a heading
        */
-      toggleHeading: (attributes: { level: 1 | 2 | 3 | 4 | 5 | 6 }) => ReturnType
+      toggleHeading: (attributes: { level: 1 | 2 | 3 | 4 }) => ReturnType
     }
   }
 }

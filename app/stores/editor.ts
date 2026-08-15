@@ -45,7 +45,7 @@ export const useEditorStore = defineStore("editor", () => {
   const categoryUid = ref<number>(1)
   const config = ref<BoardConfig>(BOARD_CONFIG)
   const content = ref<string>("")
-  const editor = ref<Editor | null>(null)
+  const editor = shallowRef<Editor | null>(null)
   const editorHeadings = ref<string>("")
   const editorRemoveAttachedInfo = ref<EditorRemoveAttached>({ fileUid: 0, index: 0 })
   const files = ref<BoardAttachment[]>([])
@@ -116,18 +116,25 @@ export const useEditorStore = defineStore("editor", () => {
 
     if (typeof value === "string") {
       const parsed = parseInt(value, 10)
-      if (!isNaN(parsed) && parsed >= 1 && parsed <= 6) {
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 4) {
         level = parsed as EditorHeadings
       }
     } else if (typeof value === "number") {
-      if (value >= 1 && value <= 6) {
+      if (value >= 1 && value <= 4) {
         level = value as EditorHeadings
       }
     }
 
-    if (!editor.value || level === undefined) {
+    if (!editor.value) {
       return
     }
+
+    if (String(value) === "0") {
+      editor.value.chain().focus().setParagraph().run()
+      return
+    }
+
+    if (level === undefined) return
 
     editor.value.chain().focus().toggleHeading({ level }).run()
   }
@@ -140,9 +147,7 @@ export const useEditorStore = defineStore("editor", () => {
       editor.value.isActive("heading", { level: 1 }) ||
       editor.value.isActive("heading", { level: 2 }) ||
       editor.value.isActive("heading", { level: 3 }) ||
-      editor.value.isActive("heading", { level: 4 }) ||
-      editor.value.isActive("heading", { level: 5 }) ||
-      editor.value.isActive("heading", { level: 6 })
+      editor.value.isActive("heading", { level: 4 })
     )
   }
 
