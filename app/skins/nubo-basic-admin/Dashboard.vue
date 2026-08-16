@@ -283,13 +283,15 @@
             값, 우선순위를 확인합니다.
           </li>
           <li>
-            Namecheap DNS를 사용한다면 <strong>Domain List → Manage → Advanced DNS</strong>의 Host
-            Records에 레코드를 추가합니다. Host에는 전체 도메인 대신 Resend가 안내한
+            Namecheap DNS를 사용한다면 <strong>Domain List → Manage → Advanced DNS</strong>에서 TXT와
+            DKIM은 <strong>Host Records</strong>에, MX는 <strong>Mail Settings → Custom MX</strong>에
+            추가합니다. Host에는 전체 도메인 대신 Resend가 안내한
             <CommonVCode>send</CommonVCode> 같은 이름만 입력합니다.
           </li>
           <li>
             기존 웹사이트 레코드나 루트 도메인의 메일 수신용 MX 레코드를 임의로 지우지 마세요. Resend가
-            요구한 레코드만 추가합니다.
+            요구한 레코드만 추가합니다. Namecheap의 Email Forwarding을 사용 중이라면 Custom MX로
+            변경할 때 기존 전달 기능이 중단될 수 있으므로 먼저 현재 전달 주소와 레코드를 확인하세요.
           </li>
           <li>
             DNS 반영을 기다린 뒤 Resend에서 검증을 다시 실행합니다. 상단에 도메인 경고가 사라지면
