@@ -43,6 +43,8 @@ export const useLoginProvider = (): NuboLoginContext => {
       get: () => join.password2,
       set: (val: string) => (join.password2 = val),
     }),
+    inviteCode: computed({ get: () => join.invite, set: (val: string) => (join.invite = val) }),
+    signupStatus: computed(() => join.signupStatus),
     verifyCode: computed({ get: () => join.code, set: (val: string) => (join.code = val) }),
     verifyTarget: computed({ get: () => join.target, set: (val: number) => (join.target = val) }),
     isLoading: computed({
@@ -83,6 +85,7 @@ export const useLoginProvider = (): NuboLoginContext => {
     submit: async () => {
       await join.submit()
     },
+    loadSignupStatus: () => join.loadSignupStatus(),
     clearJoinForm: () => join.clear(),
     verify: async () => {
       await join.verify()

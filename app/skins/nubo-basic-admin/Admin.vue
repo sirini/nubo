@@ -85,12 +85,13 @@ import {
   FileTextIcon,
   LayoutDashboardIcon,
   MenuIcon,
+  MailIcon,
   MessageCircleWarningIcon,
   PaletteIcon,
   UsersIcon,
 } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
-import { ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_REPORT, ADMIN_SKIN, ADMIN_USER } from "~/types/admin"
+import { ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_MAIL, ADMIN_REPORT, ADMIN_SKIN, ADMIN_USER } from "~/types/admin"
 
 defineOptions({ name: "NuboAdmin" })
 
@@ -101,6 +102,7 @@ const menuItems = [
   { label: "게시판 관리", value: ADMIN_BOARD, icon: FileTextIcon },
   { label: "사용자 관리", value: ADMIN_USER, icon: UsersIcon },
   { label: "신고 관리", value: ADMIN_REPORT, icon: MessageCircleWarningIcon },
+  { label: "단체 메일", value: ADMIN_MAIL, icon: MailIcon },
   { label: "스킨 관리", value: ADMIN_SKIN, icon: PaletteIcon },
 ]
 </script>

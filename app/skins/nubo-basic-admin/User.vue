@@ -8,7 +8,11 @@
         </div>
         <div class="flex gap-2">
           <CommonVTooltip v-if="panel === 'list'" content="새로운 사용자를 추가합니다">
-            <Button size="sm" class="cursor-pointer text-foreground sm:size-default" @click="changePanel('new')">
+            <Button
+              size="sm"
+              class="cursor-pointer text-foreground sm:size-default"
+              @click="changePanel('new')"
+            >
               <PlusIcon class="w-4 h-4" />
               <span>새 사용자 추가</span>
             </Button>
@@ -24,6 +28,7 @@
       </header>
 
       <div>
+        <SignupInvites />
         <UserNew v-if="panel === 'new'" :change-panel="changePanel" />
         <UserEdit
           v-else-if="panel === 'edit'"
@@ -45,6 +50,9 @@ import UserEdit from "./components/UserEdit.vue"
 import UserList from "./components/UserList.vue"
 import UserNew from "./components/UserNew.vue"
 import UserRemoveConfirmDialog from "./components/dialogs/UserRemoveConfirmDialog.vue"
+import SignupInvites from "./components/SignupInvites.vue"
+
+defineOptions({ name: "NuboAdminUser" })
 
 type Panel = "list" | "new" | "edit"
 const selectedUserUid = ref<number>(0)

@@ -1,4 +1,10 @@
-import type { ResetPasswordParam, SignupParam, SignupResult, VerifyParam } from "~/types/auth"
+import type {
+  ResetPasswordParam,
+  SignupParam,
+  SignupResult,
+  SignupStatus,
+  VerifyParam,
+} from "~/types/auth"
 import type { Resp } from "~/types/common"
 import type {
   UpdateMyInfoParam,
@@ -96,6 +102,13 @@ export const useAuth = () => {
     })
   }
 
+  const getSignupStatus = async () => {
+    return await $fetch<Resp<SignupStatus>>("/auth/signup/status", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+    })
+  }
+
   // 인증 코드 전송하고 가입 절차 완료
   const verifyUser = async (param: VerifyParam) => {
     return await $fetch<Resp<boolean>>("/auth/verify", {
@@ -153,6 +166,7 @@ export const useAuth = () => {
     checkUsedEmail,
     checkUsedName,
     submitJoinForm,
+    getSignupStatus,
     verifyUser,
     resetUserPassword,
     updateUserPassword,

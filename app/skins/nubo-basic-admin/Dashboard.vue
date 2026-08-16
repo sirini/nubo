@@ -1,6 +1,52 @@
 <template>
   <div>
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)] p-6">
+      <div
+        v-if="mailStatusLoaded && !mailStatus.configured"
+        class="md:col-span-12 flex flex-col gap-4 rounded-xl border border-primary/25 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between"
+        role="status"
+      >
+        <div class="flex gap-3">
+          <MailWarningIcon class="mt-0.5 size-5 shrink-0 text-primary" />
+          <div>
+            <p class="font-semibold">Resend 이메일 발송 설정이 필요합니다</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">
+              <code>RESEND_API_KEY</code>와 발신 주소를 설정하면 회원가입 인증, 비밀번호 재설정,
+              댓글 알림을 사용할 수 있습니다. 무료 티어는 하루 {{ mailStatus.freeDaily }}건·월
+              {{ mailStatus.freeMonthly.toLocaleString() }}건의 트랜잭션 메일을 지원합니다.
+            </p>
+          </div>
+        </div>
+        <Button variant="outline" as-child class="shrink-0">
+          <a href="https://resend.com/signup" target="_blank" rel="noopener noreferrer">
+            무료로 시작하기
+            <ExternalLinkIcon class="size-4" />
+          </a>
+        </Button>
+      </div>
+      <div
+        v-else-if="mailStatusLoaded && !isMailDomainReady"
+        class="md:col-span-12 flex flex-col gap-4 rounded-xl border border-warning/30 bg-warning/10 p-5 sm:flex-row sm:items-center sm:justify-between"
+        role="status"
+      >
+        <div class="flex gap-3">
+          <MailWarningIcon class="mt-0.5 size-5 shrink-0 text-warning" />
+          <div>
+            <p class="font-semibold">Resend 발신 도메인 확인이 필요합니다</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">
+              API 키는 설정되었지만 <code>{{ mailStatus.from }}</code> 발신 도메인의 상태가
+              <strong>{{ mailStatus.domainStatus }}</strong>입니다. Resend에서 DNS 레코드를 확인한 뒤
+              도메인을 다시 검증해 주세요.
+            </p>
+          </div>
+        </div>
+        <Button variant="outline" as-child class="shrink-0">
+          <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer">
+            도메인 설정 열기
+            <ExternalLinkIcon class="size-4" />
+          </a>
+        </Button>
+      </div>
       <Card
         class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent"
       >
@@ -192,12 +238,100 @@
         </div>
       </Card>
     </div>
+
+    <div class="m-4 rounded-xl border sm:m-6">
+      <h2 class="flex items-center gap-3 border-b p-3 text-xl font-bold">
+        <InfoIcon class="size-5" /> 이메일 발송 알아두기
+      </h2>
+
+      <CommonVCollapsible title="NUBO의 이메일은 어떻게 활성화하나요?">
+        NUBO는 회원가입 인증, 비밀번호 재설정, 댓글 알림에
+        <a href="https://resend.com" target="_blank" rel="noopener noreferrer">
+          <CommonVCode>Resend</CommonVCode>
+        </a>
+        를 사용합니다. Resend에서 API 키와 발신 도메인을 준비한 뒤 GOAPI의
+        <CommonVCode>.env</CommonVCode>에 다음 값을 설정하고 GOAPI를 재시작하세요.
+
+        <ul class="list-disc space-y-1.5 py-4 pl-8 text-sm">
+          <li><CommonVCode>RESEND_API_KEY</CommonVCode>: Resend에서 발급한 API 키</li>
+          <li>
+            <CommonVCode>RESEND_FROM_EMAIL</CommonVCode>: 인증한 도메인의 발신 주소(예:
+            <CommonVCode>noreply@example.com</CommonVCode>)
+          </li>
+          <li>
+            <CommonVCode>RESEND_FROM_NAME</CommonVCode>: 메일에 표시할 사이트 또는 운영자 이름
+          </li>
+          <li>
+            <CommonVCode>RESEND_REPLY_TO_EMAIL</CommonVCode>: 답장을 받을 주소(선택 사항이며 Gmail 등
+            외부 주소도 사용 가능)
+          </li>
+        </ul>
+
+        API 키가 없으면
+        <a href="https://resend.com/signup" target="_blank" rel="noopener noreferrer">
+          <CommonVCode>Resend 무료 계정</CommonVCode>
+        </a>
+        으로 시작할 수 있습니다. 무료 한도와 정책은 변경될 수 있으므로 발송 전 Resend 대시보드에서
+        현재 사용량을 확인하세요.
+      </CommonVCollapsible>
+      <Separator />
+      <CommonVCollapsible title="발신 도메인의 DNS는 어디에 설정하나요?">
+        Resend의 도메인 화면에 표시되는 <CommonVCode>SPF</CommonVCode>와
+        <CommonVCode>DKIM</CommonVCode> 레코드를 도메인의 <strong>현재 DNS 관리 업체</strong>에
+        그대로 등록합니다. 도메인을 Namecheap에서 구입했더라도 네임서버가 Cloudflare 같은 외부
+        서비스로 연결되어 있다면 그 서비스에서 설정해야 합니다.
+
+        <ul class="list-decimal space-y-1.5 py-4 pl-8 text-sm">
+          <li>
+            Resend의 <strong>Domains</strong>에서 발신 도메인을 추가하고 표시된 레코드의 이름, 형식,
+            값, 우선순위를 확인합니다.
+          </li>
+          <li>
+            Namecheap DNS를 사용한다면 <strong>Domain List → Manage → Advanced DNS</strong>에서 TXT와
+            DKIM은 <strong>Host Records</strong>에, MX는 <strong>Mail Settings → Custom MX</strong>에
+            추가합니다. Host에는 전체 도메인 대신 Resend가 안내한
+            <CommonVCode>send</CommonVCode> 같은 이름만 입력합니다.
+          </li>
+          <li>
+            기존 웹사이트 레코드나 루트 도메인의 메일 수신용 MX 레코드를 임의로 지우지 마세요. Resend가
+            요구한 레코드만 추가합니다. Namecheap의 Email Forwarding을 사용 중이라면 Custom MX로
+            변경할 때 기존 전달 기능이 중단될 수 있으므로 먼저 현재 전달 주소와 레코드를 확인하세요.
+          </li>
+          <li>
+            DNS 반영을 기다린 뒤 Resend에서 검증을 다시 실행합니다. 상단에 도메인 경고가 사라지면
+            트랜잭션 메일을 사용할 준비가 된 것입니다.
+          </li>
+        </ul>
+
+        설정이 어렵거나 이 안내만으로 해결되지 않으면
+        <a href="https://nubohub.org" target="_blank" rel="noopener noreferrer">
+          <CommonVCode>nubohub.org</CommonVCode>
+        </a>
+        커뮤니티에서 도움을 요청하세요. API 키 전체 값은 게시글이나 화면 캡처에 노출하지 마세요.
+      </CommonVCollapsible>
+      <Separator />
+      <CommonVCollapsible title="설정했는데도 메일이 발송되지 않으면 무엇을 확인하나요?">
+        먼저 이 화면 상단의 이메일 상태 안내와 Resend의 <strong>Domains</strong> 및
+        <strong>Logs</strong>를 확인하세요. 도메인 검증이 끝나지 않았거나 발신 주소가 인증한 도메인과
+        다르면 발송이 거절될 수 있습니다. DNS 변경은 바로 반영되지 않을 수 있으며, API 키나 발신 주소를
+        바꾼 뒤에는 GOAPI를 재시작해야 합니다.
+      </CommonVCollapsible>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Calendar1Icon, HeartIcon, MessageCircleIcon, User2Icon } from "lucide-vue-next"
+import {
+  Calendar1Icon,
+  ExternalLinkIcon,
+  HeartIcon,
+  InfoIcon,
+  MailWarningIcon,
+  MessageCircleIcon,
+  User2Icon,
+} from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
+import type { AdminMailStatus } from "~/types/admin"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
 defineOptions({ name: "NuboAdminDashboard" })
@@ -219,6 +353,21 @@ const {
   loadInitPostList,
 } = useNuboAdminContext()
 const isLoading = ref<boolean>(false)
+const mailStatusLoaded = ref(false)
+const mailStatus = ref<AdminMailStatus>({
+  configured: false,
+  provider: "resend",
+  from: "",
+  replyTo: "",
+  domainStatus: "not_configured",
+  freeDaily: 100,
+  freeMonthly: 3000,
+  freeMarketingContacts: 1000,
+})
+const { loadMailStatus } = useAdmin()
+const isMailDomainReady = computed(() =>
+  ["verified", "unknown"].includes(mailStatus.value.domainStatus),
+)
 const maxVisit = computed(() => {
   const visits = statVisit.value.history.map((h) => h.visit)
   return Math.max(...visits)
@@ -226,7 +375,16 @@ const maxVisit = computed(() => {
 
 onMounted(async () => {
   try {
-    await Promise.all([loadInitReportList(false, 3), loadInitCommentList(5), loadInitPostList(5)])
+    const [, , , statusResponse] = await Promise.all([
+      loadInitReportList(false, 3),
+      loadInitCommentList(5),
+      loadInitPostList(5),
+      loadMailStatus().catch(() => null),
+    ])
+    if (statusResponse?.success && statusResponse.result) {
+      mailStatus.value = statusResponse.result
+      mailStatusLoaded.value = true
+    }
     if (statVisit.value.history.length < 1) {
       isLoading.value = true
       await loadInitDashboard(90, 5)
