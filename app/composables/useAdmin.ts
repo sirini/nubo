@@ -13,6 +13,7 @@ import type {
   AdminMailCampaign,
   AdminMailCampaignList,
   AdminMailCampaignPreview,
+  AdminMailDeliveryList,
   AdminReportListResult,
   AdminReportSearchParam,
   AdminUserCreateParam,
@@ -90,6 +91,14 @@ export const useAdmin = () => {
     return await $fetch<Resp<AdminMailCampaign>>(`/admin/mail/campaign/${uid}`, {
       baseURL: config.public.apiBase,
       method: "GET",
+    })
+  }
+
+  const loadMailDeliveries = async (page = 1, limit = 20) => {
+    return await $fetch<Resp<AdminMailDeliveryList>>("/admin/mail/deliveries", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: { page, limit },
     })
   }
 
@@ -323,6 +332,7 @@ export const useAdmin = () => {
     loadGeneralUploadUsage,
     loadMailStatus,
     loadMailCampaign,
+    loadMailDeliveries,
     loadMailCampaigns,
     loadGroupInfo,
     loadGroupList,

@@ -77,6 +77,37 @@ export type AdminMailCampaignPreview = {
   text: string
 }
 
+export type AdminMailDeliveryStatus = "accepted" | "failed"
+
+export type AdminMailDelivery = {
+  uid: number
+  type: string
+  recipient: string
+  subject: string
+  provider: string
+  providerMessageId: string
+  status: AdminMailDeliveryStatus
+  error: string
+  created: number
+}
+
+export type AdminMailDeliverySummary = {
+  since: number
+  accepted: number
+  failed: number
+  signupVerification: number
+  passwordReset: number
+  commentNotification: number
+}
+
+export type AdminMailDeliveryList = {
+  items: AdminMailDelivery[]
+  total: number
+  page: number
+  limit: number
+  summary: AdminMailDeliverySummary
+}
+
 // 대시보드 최근 통계들 반환값 정의
 export type AdminDashboardStatisticResult = {
   visit: AdminDashboardStatistic

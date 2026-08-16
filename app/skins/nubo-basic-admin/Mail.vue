@@ -186,12 +186,116 @@
           </div>
         </aside>
       </div>
+
+      <Card>
+        <CardHeader class="border-b">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <CardTitle class="text-base">개별 메일 발송 이력</CardTitle>
+              <CardDescription class="mt-1">
+                회원가입 인증, 비밀번호 초기화, 댓글 알림의 발송 요청을 NUBO 내부 DB에 보관합니다.
+              </CardDescription>
+            </div>
+            <Badge variant="outline">전체 {{ deliveryHistory.total.toLocaleString() }}건</Badge>
+          </div>
+        </CardHeader>
+        <CardContent class="space-y-5 pt-6">
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <div class="rounded-xl border bg-muted/25 p-4">
+              <p class="text-xs text-muted-foreground">최근 30일 발송 요청 완료</p>
+              <p class="mt-2 text-2xl font-semibold">{{ deliveryHistory.summary.accepted.toLocaleString() }}</p>
+            </div>
+            <div class="rounded-xl border bg-muted/25 p-4">
+              <p class="text-xs text-muted-foreground">최근 30일 실패</p>
+              <p class="mt-2 text-2xl font-semibold text-destructive">{{ deliveryHistory.summary.failed.toLocaleString() }}</p>
+            </div>
+            <div class="rounded-xl border bg-muted/25 p-4">
+              <p class="text-xs text-muted-foreground">가입 인증</p>
+              <p class="mt-2 text-2xl font-semibold">{{ deliveryHistory.summary.signupVerification.toLocaleString() }}</p>
+            </div>
+            <div class="rounded-xl border bg-muted/25 p-4">
+              <p class="text-xs text-muted-foreground">비밀번호 초기화</p>
+              <p class="mt-2 text-2xl font-semibold">{{ deliveryHistory.summary.passwordReset.toLocaleString() }}</p>
+            </div>
+            <div class="rounded-xl border bg-muted/25 p-4">
+              <p class="text-xs text-muted-foreground">댓글 알림</p>
+              <p class="mt-2 text-2xl font-semibold">{{ deliveryHistory.summary.commentNotification.toLocaleString() }}</p>
+            </div>
+          </div>
+
+          <div class="rounded-lg border">
+            <div v-if="deliveryLoading" class="flex min-h-48 items-center justify-center text-sm text-muted-foreground">
+              <LoaderCircleIcon class="size-5 animate-spin" />
+            </div>
+            <div v-else-if="deliveryHistory.items.length" class="overflow-x-auto">
+              <table class="w-full min-w-[860px] text-sm">
+                <thead class="border-b bg-muted/35 text-left text-xs text-muted-foreground">
+                  <tr>
+                    <th class="px-4 py-3 font-medium">시각</th>
+                    <th class="px-4 py-3 font-medium">종류</th>
+                    <th class="px-4 py-3 font-medium">수신자</th>
+                    <th class="px-4 py-3 font-medium">제목</th>
+                    <th class="px-4 py-3 font-medium">상태</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in deliveryHistory.items" :key="item.uid" class="border-b last:border-b-0">
+                    <td class="whitespace-nowrap px-4 py-3 text-xs text-muted-foreground">{{ formatTimestamp(item.created) }}</td>
+                    <td class="whitespace-nowrap px-4 py-3">{{ deliveryTypeLabels[item.type] ?? item.type }}</td>
+                    <td class="px-4 py-3">{{ item.recipient }}</td>
+                    <td class="max-w-80 px-4 py-3">
+                      <p class="truncate" :title="item.subject">{{ item.subject }}</p>
+                      <p v-if="item.error" class="mt-1 truncate text-xs text-destructive" :title="item.error">{{ item.error }}</p>
+                    </td>
+                    <td class="whitespace-nowrap px-4 py-3">
+                      <Badge :variant="item.status === 'accepted' ? 'secondary' : 'destructive'">
+                        {{ item.status === "accepted" ? "발송 요청 완료" : "실패" }}
+                      </Badge>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p v-else class="p-8 text-center text-sm text-muted-foreground">아직 기록된 개별 메일 발송 이력이 없습니다.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="text-xs leading-5 text-muted-foreground">
+              발송 요청 완료는 외부 메일 제공자가 요청을 접수했다는 뜻이며, 수신함 도착을 보장하지는 않습니다.
+              메일 본문과 인증 코드는 저장하지 않습니다.
+            </p>
+            <div class="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                :disabled="deliveryLoading || deliveryHistory.page <= 1"
+                @click="loadDeliveryHistory(deliveryHistory.page - 1)"
+              >
+                <ChevronLeftIcon class="size-4" /> 이전
+              </Button>
+              <span class="min-w-20 text-center text-xs text-muted-foreground">
+                {{ deliveryHistory.page }} / {{ deliveryPageCount }}
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                :disabled="deliveryLoading || deliveryHistory.page >= deliveryPageCount"
+                @click="loadDeliveryHistory(deliveryHistory.page + 1)"
+              >
+                다음 <ChevronRightIcon class="size-4" />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
   LoaderCircleIcon,
   MailIcon,
   PlusIcon,
@@ -203,6 +307,7 @@ import { toast } from "vue-sonner"
 import type {
   AdminMailCampaign,
   AdminMailCampaignStatus,
+  AdminMailDeliveryList,
   AdminMailStatus,
 } from "~/types/admin"
 
@@ -232,6 +337,21 @@ const campaignStatusLabels: Record<AdminMailCampaignStatus, string> = {
 const campaign = reactive<AdminMailCampaign>(emptyCampaign())
 const campaigns = ref<AdminMailCampaign[]>([])
 const campaignTotal = ref(0)
+const deliveryLoading = ref(false)
+const deliveryHistory = ref<AdminMailDeliveryList>({
+  items: [],
+  total: 0,
+  page: 1,
+  limit: 20,
+  summary: {
+    since: 0,
+    accepted: 0,
+    failed: 0,
+    signupVerification: 0,
+    passwordReset: 0,
+    commentNotification: 0,
+  },
+})
 const mailStatusLoaded = ref(false)
 const mailStatus = ref<AdminMailStatus>({
   configured: false,
@@ -253,6 +373,7 @@ let syncTimer: ReturnType<typeof setTimeout> | undefined
 const {
   loadMailCampaign,
   loadMailCampaigns,
+  loadMailDeliveries,
   loadMailStatus,
   prepareMailCampaign,
   previewMailCampaign,
@@ -274,6 +395,13 @@ const statusVariant = computed(() => {
   if (campaign.status === "failed") return "destructive"
   return "secondary"
 })
+const deliveryPageCount = computed(() => Math.max(1, Math.ceil(deliveryHistory.value.total / deliveryHistory.value.limit)))
+const deliveryTypeLabels: Record<string, string> = {
+  "signup-verification": "가입 인증",
+  "password-reset": "비밀번호 초기화",
+  "comment-notification": "댓글 알림",
+  transactional: "개별 메일",
+}
 
 const applyCampaign = (value: AdminMailCampaign) => Object.assign(campaign, value)
 
@@ -282,6 +410,19 @@ const refreshCampaigns = async () => {
   if (response.success && response.result) {
     campaigns.value = response.result.items
     campaignTotal.value = response.result.total
+  }
+}
+
+const loadDeliveryHistory = async (page = 1) => {
+  deliveryLoading.value = true
+  try {
+    const response = await loadMailDeliveries(page, deliveryHistory.value.limit)
+    if (!response.success || !response.result) throw new Error(response.error || "이력 조회 실패")
+    deliveryHistory.value = response.result
+  } catch (error) {
+    toast(`❌ 개별 메일 발송 이력을 가져오지 못했습니다: ${error}`)
+  } finally {
+    deliveryLoading.value = false
   }
 }
 
@@ -417,7 +558,11 @@ const newCampaign = () => {
 const formatTimestamp = (value: number) => value ? new Date(value).toLocaleString("ko-KR") : "-"
 
 onMounted(async () => {
-  const [status] = await Promise.all([loadMailStatus().catch(() => null), refreshCampaigns()])
+  const [status] = await Promise.all([
+    loadMailStatus().catch(() => null),
+    refreshCampaigns(),
+    loadDeliveryHistory(),
+  ])
   if (status?.success && status.result) mailStatus.value = status.result
   mailStatusLoaded.value = true
 })
