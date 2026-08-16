@@ -1,197 +1,234 @@
-# 🐿️ Nubo
+# 🐿️ NUBO
 
 <p align="center">
+  <img src="https://img.shields.io/github/v/release/sirini/nubo?style=flat-square&color=E07A5F" alt="release">
   <img src="https://img.shields.io/github/license/sirini/nubo?style=flat-square&color=5D6D7E" alt="license">
   <img src="https://img.shields.io/github/stars/sirini/nubo?style=flat-square&color=F4D03F" alt="stars">
   <img src="https://img.shields.io/github/last-commit/sirini/nubo?style=flat-square&color=2ECC71" alt="last commit">
 </p>
 
-`Nuxt 4`와 `GoFiber v3` 조합으로 다시 태어난 커뮤니티 / 웹사이트 빌더입니다. `TSBOARD`의 자산을 그대로 계승하면서 SSR(Server Side Rendering)을 통한 SEO(Search Engine Optimization), **스킨 기반 UI 커스터마이징**, 개선된 검색 · 페이징 경험을 한 번에 제공합니다.
+NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-### 🛠 NUBO 프로젝트 기술 스택
+현재 버전은 **v1.2.1**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
 
-| Category     | Tools                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| :----------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Frontend** | ![Nuxt](https://img.shields.io/badge/Nuxt_4-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white) ![Vue](https://img.shields.io/badge/Vue_3-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white) ![Pinia](https://img.shields.io/badge/Pinia-FFE148?style=flat-square&logo=pinia&logoColor=black) ![Tailwind](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square&logo=tailwindcss&logoColor=white) ![Shadcn](https://img.shields.io/badge/Shadcn_Vue-000000?style=flat-square&logo=shadcnui&logoColor=white) |
-| **Backend**  | ![Go](https://img.shields.io/badge/Go_Fiber_v3-00ADD8?style=flat-square&logo=go&logoColor=white)                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=flat-square&logo=mariadb&logoColor=white)                                                                                                                                                                                                                                                                                                                        |
+## 어떤 프로젝트인가요?
 
-## 주요 강점
+- 게시판, 갤러리, 블로그, 웹진, 중고거래 게시판을 제공합니다.
+- Nuxt SSR을 사용해 공개 게시물의 검색 엔진 노출과 초기 표시 속도를 고려합니다.
+- 회원가입, 비밀번호 초기화, 댓글 알림 메일을 Resend로 보낼 수 있습니다.
+- 관리자가 Markdown으로 단체 메일을 작성하고 미리보기·테스트 발송 후 회원에게 보낼 수 있습니다.
+- 가입 정책을 이메일 인증, 초대 전용, 가입 중지 중에서 선택할 수 있습니다.
+- TSBOARD 데이터베이스 구조와의 호환성을 유지합니다.
 
-- **개선된 백엔드 엔진**
+## 구성 이해하기
 
-  - TSBOARD에서 검증된 `GoFiber v3` 기반 엔진을 한층 다듬어 높은 성능과 안정성을 제공합니다. 백엔드 코드는 별도로 진행중인 GOAPI([sirini/goapi](https://github.com/sirini/goapi)) 프로젝트를 기반으로 합니다.
+NUBO는 두 프로세스로 실행됩니다.
 
-- **스킨 시스템 내장**
+| 구성 | 기본 포트 | 역할 |
+| --- | ---: | --- |
+| Nuxt/Nitro | `3000` | 화면 렌더링, 브라우저 API 중계, 인증 쿠키 관리 |
+| GOAPI | `3006` | 데이터베이스, 회원·게시물·메일·파일 처리 |
 
-  - 전체 레이아웃부터 게시판 · 로그인 화면까지 스킨만 교체하면 즉시 화면이 바뀝니다. 제로보드4 / 그누보드5 감성을 모던 웹에서 재현하면서도 shadcn-vue + Tailwind CSS 조합으로 새로운 스킨 개발을 더 쉽고 빠르게 해보실 수 있습니다.
-  - 디자이너분들이 최대한 복잡한 로직은 건드리지 않아도 되도록 필수적인 변수나 함수들은 필요할 때만 꺼내서 쓸 수 있도록 구성하였습니다. 덕분에 스킨 디자인을 위해 타입스크립트 언어나 Vue3 프레임워크 혹은 shadcn-vue와 같은 라이브러리를 최소한으로 배우기만 해도 됩니다.
-  - `nubo-basic-board` 와 같은 기본 게시판 스킨을 직접 수정해 보세요!
+두 프로세스는 같은 프로젝트 디렉터리의 `.env`를 읽습니다. 저장소에 포함된 `goapi-linux`를 처음 실행하면 `env.sample`을 바탕으로 `.env`와 데이터베이스를 생성합니다.
 
-- **DB 호환성 유지**
+> `.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 외부에 공개하지 마세요.
 
-  - TSBOARD에서 사용하던 DB 스키마를 그대로 활용하므로 추가 마이그레이션 없이 바로 NUBO로 교체하여 운영 가능합니다.
-  - 기존 TSBOARD 사용자는 `nubo.git/env.sample` 파일을 먼저 `.env` 로 변경한 후 `tsboard.git/.env` 파일에서 아래의 DB 설정 부분을 `nubo.git/.env`에 적용하고 추가로 필요한 설정 후에 바로 사용 가능합니다.
-  - (아래 예시)
+## 빠른 설치
 
-  ```conf
-  # 데이터베이스 세팅 (DB_UNIX_SOCKET 경로를 모를 경우 공란 유지)
-  DB_HOST=localhost
-  DB_USER=root
-  DB_PASS=_______
-  DB_NAME=tsboard
-  DB_TABLE_PREFIX=tsb_
-  DB_UNIX_SOCKET=/var/run/mysqld/mysqld.sock
-  DB_MAX_IDLE=10
-  DB_MAX_OPEN=10
-  ```
+### 1. 준비물
 
-- **SSR로 강화된 SEO**
+- x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
+- Node.js 24 LTS 이상과 npm
+- MySQL 8 또는 MariaDB
+- 이미지 처리를 위한 `libvips` (`libvips-dev` 패키지)
+- 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
+- 기본 포트 `3000`, `3006`을 사용할 수 있는 환경
 
-  - Nuxt 4 기반 SSR로 검색 엔진 친화적이며, Hydration 이후에는 Vue 3 + Pinia의 반응형 경험을 그대로 누릴 수 있습니다.
-  - shadcn-vue가 제공하는 기본적인 접근성 덕분에 검색 엔진 뿐만 아니라 AI 서비스들에서도 페이지가 더 쉽게 읽혀집니다.
-  - 검색 노출이 불필요한 관리 화면이나 회원 간 1:1 채팅, 글작성 페이지 등은 여전히 클라이언트에서 화면이 만들어져 성능과 보안 모두 챙겼습니다.
-
-- **UX / 검색 품질 개선**
-
-  - TSBOARD 대비 더 정확한 페이징, 고도화된 검색 옵션, 정돈된 인터랙션을 기본 제공하여 별도 커스터마이징 없이도 완성도 높은 커뮤니티를 구축할 수 있습니다.
-  - 화면 크기에 따라 매끄럽게 사이트 디자인이 반응합니다. 또한 모바일 기기에서의 UI 접근성이 더욱 개선되었습니다.
-
-## 기술 스택
-
-- 프론트엔드: **Nuxt 4 (Vue 3, SSR)**, **Pinia**, **shadcn-vue**, **Tailwind CSS**, **Tiptap** 에디터
-- 백엔드: **GoFiber v3** 기반 GOAPI (별도 서비스로 실행)
-- 데이터베이스: **MySQL/MariaDB** (TSBOARD 스키마 호환)
-
-## 빠른 시작
-
-### 1) 사전 준비
-
-- 64bit CPU가 탑재된 (가상)서버에서 적어도 2개 이상의 CPU 코어
-- 64bit Linux(WSL2 포함) 혹은 Mac OS
-- 이미지 리사이즈 등의 작업에 필요한 `libvips-dev` 라이브러리 사전 설치
-- `Node.js` 24 LTS 이상 권장 (`Bun` 은 v1.3 이상, `Deno` 는 v2.0 이상 권장)
-- Nginx 웹서버 (Certbot 등으로 SSL 인증서 설치 가능해야 함)
-- MySQL / MariaDB 인스턴스
-- 서버 실행용 포트: Nuxt(기본 3000), GOAPI(기본 3006)
-
-### 2) 프로젝트 클론 및 환경 변수 설정
+Ubuntu 계열의 예시는 다음과 같습니다.
 
 ```bash
+sudo apt update
+sudo apt install libvips-dev
 git clone https://github.com/sirini/nubo.git
 cd nubo
-./goapi-linux
-
-# 최초로 goapi-linux 실행 시 DB 설정을 진행합니다
-# 설정이 완료되면 .env 파일이 생성됩니다
-# 생성된 .env 파일을 vscode나 vi로 열어서 API Key 값 등을 추가로 넣을 수 있습니다
+npm install
 ```
 
-### 3) 프론트엔드 의존성 설치 및 개발 서버 실행
+### 2. 최초 설치와 `.env` 생성
+
+MySQL/MariaDB를 먼저 실행하고, NUBO 디렉터리에서 GOAPI를 실행합니다.
 
 ```bash
-npm install
+chmod +x ./goapi-linux
+./goapi-linux
+```
+
+화면의 질문에 DB 접속 정보와 최초 관리자 이메일·비밀번호를 입력하면 다음 작업이 이루어집니다.
+
+1. `.env` 생성
+2. 데이터베이스와 기본 테이블 생성
+3. 관리자 계정 생성
+4. GOAPI 실행
+
+설치가 끝나면 `.env`에서 아래 값은 반드시 운영 환경에 맞게 확인하세요.
+
+```dotenv
+GOAPI_DOMAIN=https://example.com
+GOAPI_TITLE=My NUBO
+GOAPI_VERSION=1.2.1
+
+GOAPI_PORT=3006
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=nubo
+DB_TABLE_PREFIX=nubo_
+```
+
+`GOAPI_DOMAIN`은 사용자가 접속하는 공개 주소입니다. 운영 서버에서는 `http://localhost`를 그대로 두지 말고 `https://`가 포함된 실제 주소로 변경하세요.
+
+### 3. 개발 서버에서 확인
+
+GOAPI를 실행한 상태에서 별도 터미널을 열어 Nuxt를 시작합니다.
+
+```bash
 npm run dev
 ```
 
-- 기본적으로 `http://localhost:3000`에서 SSR 개발 서버가 실행됩니다.
+기본 접속 주소는 `http://localhost:3000`입니다. 로컬 환경에서는 Resend 메일보다 화면과 게시판 기능을 먼저 확인하는 것이 편합니다.
 
-### 4) GOAPI 백엔드 준비
-
-- 리포지토리에 포함된 `goapi-linux` 바이너리 또는 [sirini/goapi](https://github.com/sirini/goapi) 소스를 사용해 별도 프로세스로 실행합니다.
-- `.env`의 `GOAPI_PORT`, `GOAPI_DOMAIN` 값을 프론트엔드와 일치하도록 맞추고, DB 접속 정보와 관리자 계정을 설정합니다.
-- API가 3006 포트에서 동작한다고 가정하면 프론트엔드는 `NUXT_PUBLIC_GOAPI_PORT` 환경변수로 해당 포트를 노출합니다.
-
-### 5) 프로덕션 빌드
+### 4. 운영 빌드
 
 ```bash
 npm run build
-npm run preview  # 로컬에서 빌드 결과 확인
+node .output/server/index.mjs
 ```
 
-- 실제 배포 환경에서는 **PM2** (권장), systemd, Docker 등으로 `node .output/server/index.mjs`를 장기 실행하거나 Nuxt Preview를 프로세스 매니저로 등록할 수 있습니다.
-- NUBO에서는 Nuxt4 및 GOAPI 바이너리 모두 PM2에서 실행하시는 걸 권장합니다.
-- 만약 트래픽이 많은 웹사이트라면, PM2의 클러스터 모드를 이용하여 프론트엔드만 2~4개 병렬 실행하시면 됩니다.
+장기 운영 시 systemd 또는 PM2로 두 프로세스를 관리할 수 있습니다.
 
 ```bash
-# Node.js 클러스터 활용) 4개의 NUBO 프론트엔드 인스턴스 생성 (자동 부하 분산)
-pm2 start .output/server/index.mjs --name "nubo-web" -i 4
-
-# GOAPI 백엔드 바이너리도 pm2로 실행하여 관리 가능
-pm2 start ./goapi-linux -name "nubo-api"
+pm2 start .output/server/index.mjs --name nubo-web
+pm2 start ./goapi-linux --name nubo-api
+pm2 save
 ```
 
-## 스킨 시스템 활용
+프런트엔드만 PM2 클러스터 모드로 늘릴 수 있습니다. GOAPI는 단일 프로세스로도 여러 요청을 동시에 처리하므로 특별한 이유가 없다면 하나만 실행하는 것을 권장합니다.
 
-- `/app/skins/` 아래에 `layout` · `home` · `board` 등의 경로에서 NUBO의 기본 스킨들이 제공됩니다.
-- `Tailwind` 유틸리티와 `shadcn-vue` 컴포넌트를 선택적으로 사용하여 **색상/타이포 스케일을 쉽게 재정의** 할 수 있습니다.
-- 기본 스킨을 바탕으로 자신만의 디자인 감각을 녹여낸 **신규 스킨 개발을 쉽게** 해보실 수 있습니다.
-- 복잡한 로직들을 모두 알 필요 없이 필요한 변수/함수만 꺼내서 쉽게 호출하여 누구나 자신만의 레이아웃 디자인, 홈 화면 디자인 및 게시판/로그인/프로필 등의 페이지를 디자인 할 수 있습니다.
-- 다른 사용자가 만들어준 다양하고 멋진 스킨들도 쉽게 공유할 수 있도록 지원할 예정입니다.
+## 메일과 회원가입 설정
 
-## Nginx 리버스 프록시 예시
+NUBO의 메일 제공자는 **Resend 하나만 사용**합니다. Gmail 앱 비밀번호나 SMTP 설정은 사용하지 않습니다.
 
-- Nuxt SSR(3000 포트) 및 GOAPI(3006 포트)를 / 와 /goapi 경로에 매핑합니다.
-- /goapi/ 경로 매핑은 OAuth 소셜 로그인(구글, 네이버, 카카오) 기능을 위해서만 필요합니다.
+1. [Resend](https://resend.com)에서 계정을 만들고 발신 도메인을 등록합니다.
+2. Resend가 안내하는 SPF/DKIM DNS 레코드를 도메인의 DNS 관리 화면에 그대로 등록합니다.
+3. 도메인이 `Verified`가 되면 API 키를 만들고 `.env`를 설정합니다.
+4. GOAPI를 다시 시작한 뒤 `관리자 → 대시보드 → 이메일 설정 안내`에서 상태를 확인합니다.
+
+```dotenv
+RESEND_API_KEY=re_xxxxxxxxx
+RESEND_FROM_EMAIL=noreply@example.com
+RESEND_FROM_NAME=My NUBO
+RESEND_REPLY_TO_EMAIL=admin@example.com
+```
+
+- `RESEND_FROM_EMAIL`은 Resend에서 인증한 도메인의 주소여야 합니다. 실제 메일함이 없어도 발신 전용 주소로 사용할 수 있습니다.
+- `RESEND_REPLY_TO_EMAIL`은 선택 사항이며, 답장을 받을 Gmail 등 개인 메일 주소도 사용할 수 있습니다.
+- 단체 메일까지 사용하려면 연락처·세그먼트·Broadcast를 만들 수 있는 Resend API 키 권한이 필요합니다.
+- 무료 플랜 한도와 정책은 변경될 수 있으므로 실제 발송 전 [Resend 요금 안내](https://resend.com/pricing)를 확인하세요.
+
+가입 정책은 다음 중 하나입니다.
+
+```dotenv
+# verified_email | invite_only | disabled
+SIGNUP_MODE=verified_email
+```
+
+| 값 | 동작 |
+| --- | --- |
+| `verified_email` | 기본값. Resend 이메일 인증을 완료해야 가입됩니다. |
+| `invite_only` | 관리자가 발급한 이메일별 초대 링크가 있어야 가입됩니다. |
+| `disabled` | 신규 가입을 즉시 중지합니다. |
+
+Resend를 설정하지 않았다면 `verified_email` 가입은 완료할 수 없습니다. 작은 비공개 사이트라면 먼저 `invite_only`를 선택하고 관리자 화면에서 초대를 발급하는 방식을 권장합니다.
+
+## 선택 환경 변수
+
+- `OAUTH_GOOGLE_*`, `OAUTH_NAVER_*`, `OAUTH_KAKAO_*`: 소셜 로그인 사용 시 설정
+- `OPENAI_API_KEY`: 업로드 이미지 설명 생성 기능에 사용하며 없어도 기본 기능은 동작
+- `SYNC_SECRET_KEY`: 외부 게시물 동기화 API 전용 비밀키. 자동 생성되며 공개하면 안 됨
+- 이미지 크기와 업로드 제한은 `GOAPI_*_SIZE`, `GOAPI_FILE_SIZE_LIMIT`로 조정
+
+전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
+
+## 업데이트
+
+업데이트 전에는 `.env`, 데이터베이스, `upload` 디렉터리를 백업하세요.
+
+```bash
+git pull --ff-only
+npm install
+./goapi-linux install
+npm run build
+```
+
+`./goapi-linux install`은 새 테이블과 컬럼을 반복 실행해도 안전하게 반영하는 명령입니다. 업데이트 후에는 Nuxt와 GOAPI 프로세스를 모두 다시 시작하세요.
+
+## Nginx 예시
+
+아래 예시는 Nuxt를 공개하고, OAuth 콜백용 GOAPI 경로와 업로드 파일을 연결합니다. 인증서 경로와 프로젝트 경로는 자신의 서버에 맞게 바꾸세요.
 
 ```nginx
-# /etc/nginx/sites-available/nubo.conf
-
 server {
-    listen 80;
-    listen 443 ssl;
-
-    # 사용하시는 도메인
+    listen 443 ssl http2;
     server_name example.com;
 
-    # SSL 설정은 인증서/키 경로에 맞춰 별도 구성 (Certbot 등을 활용하시는 걸 권장합니다)
-    # ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
-    # ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
 
-    # 루트 경로 지정 (npm run build 시 만들어지는 dist 폴더를 지정하시면 편합니다)
-    root /var/www/nubo.git/dist;
+    client_max_body_size 100M;
 
-    # Nuxt4의 Nitro서버 포트를 / 경로로 매칭
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
     }
 
-    # 소셜 로그인 동작을 위한 GOAPI 포트 매핑
     location /goapi/ {
         proxy_pass http://127.0.0.1:3006/goapi/;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
     }
 
-    # 첨부파일 업로드 크기 제한 설정 (서버 사정에 맞춰서 조절하세요)
-    client_max_body_size 50M;
-
-    # 업로드 경로 지정 (이미지 등의 첨부파일에 정상적으로 접근하려면 반드시 설정해야 합니다)
     location /upload/ {
-      alias /var/www/nubo.git/upload/;
-      autoindex off;
+        alias /var/www/nubo/upload/;
+        autoindex off;
     }
 }
 ```
 
-- Cloudflare 등 프록시를 앞단에 둘 경우 `X-Forwarded-Proto` 헤더가 올바르게 전달되도록 설정하세요.
+Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS였다는 정보가 `X-Forwarded-Proto`로 전달되는지 확인하세요.
 
-## 참고 리포지토리
+## 스킨 개발
 
-- TSBOARD: https://github.com/sirini/tsboard
-- GOAPI (백엔드 엔진): https://github.com/sirini/goapi
+- 기본 스킨은 `/app/skins` 아래에 기능별로 나뉘어 있습니다.
+- 공통 UI는 Vue 3, Tailwind CSS, shadcn-vue 구성요소를 사용합니다.
+- 복잡한 데이터 처리는 composable/provider에 두고 스킨에서는 필요한 상태와 동작만 가져오는 구조를 지향합니다.
+- 새 스킨을 만들 때 기본 스킨을 복사한 뒤 이름과 스타일을 바꾸는 방식으로 시작할 수 있습니다.
+
+## 문제를 확인할 때
+
+- 화면이 API에 연결되지 않으면 Nuxt와 GOAPI가 모두 실행 중인지, `.env`의 포트와 `GOAPI_BASE`가 일치하는지 확인합니다.
+- 이미지가 보이지 않으면 `upload` 경로의 권한과 Nginx `alias`를 확인합니다.
+- 메일이 오지 않으면 관리자 이메일 설정 화면, Resend 도메인 상태, 발신 주소의 도메인을 차례로 확인합니다.
+- 기존 설치를 업데이트한 뒤 DB 오류가 나면 `./goapi-linux install`을 실행합니다.
+- 추가 도움이 필요하면 [nubohub.org](https://nubohub.org)에서 문의해 주세요.
+
+## 관련 프로젝트
+
+- [GOAPI](https://github.com/sirini/goapi): NUBO 백엔드
+- [TSBOARD](https://github.com/sirini/tsboard): NUBO가 계승한 이전 프로젝트
 
 ## 라이선스
 
