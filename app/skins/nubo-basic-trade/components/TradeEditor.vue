@@ -6,7 +6,7 @@
         <WriteTitle /><WriteTiptapEditor v-model="content" :config="config" /><WriteHashtag />
       </CardContent>
       <CardFooter class="flex items-center justify-between border-t">
-        <div class="flex gap-2"><Button variant="outline" @click="modify ? cancelEditPost() : cancelNewPost()">취소</Button><Button v-if="!modify && isLoadDraft" variant="outline" @click="loadDraft">임시 보관</Button></div>
+        <div class="flex gap-2"><Button variant="outline" @click="modify ? cancelEditPost() : cancelNewPost()">취소</Button><Button v-if="!modify && isLoadDraft" variant="outline" @click="loadDraft">임시글 불러오기</Button></div>
         <Button @click="submit">{{ modify ? "수정하기" : "등록하기" }}</Button>
       </CardFooter>
     </Card>

@@ -1,11 +1,24 @@
 import { navigateTo } from "#app"
+import { CODE } from "~/types/common"
 
 type FetchFailure = {
   response?: { status?: number }
+  data?: { code?: number }
 }
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
+  const router = useRouter()
+
+  const preserveDraftAndLogin = async () => {
+    const route = router.currentRoute.value
+    if (route.path.endsWith("/write")) {
+      useEditorStore().flushDraft()
+    }
+    useAuthStore().expireLocalSession()
+    if (route.path === "/auth/login") return
+    await navigateTo({ path: "/auth/login", query: { redirect: route.fullPath } })
+  }
 
   // 동시에 여러 요청이 만료되어도 토큰 갱신은 한 번만 실행합니다.
   let refreshPromise: Promise<void> | null = null
@@ -32,12 +45,17 @@ export default defineNuxtPlugin(() => {
         // 리프레시 요청 자체가 401이면 세션 최종 만료
         if (request.toString().includes("/auth/refresh")) {
           if (import.meta.client) {
-            navigateTo("/auth/login")
+            await preserveDraftAndLogin()
           }
           throw error
         }
 
         if (import.meta.client) {
+          // safeProxyRequest가 이미 갱신을 시도했다면 같은 리프레시 토큰으로 재시도하지 않습니다.
+          if ((error as FetchFailure).data?.code === CODE.EXPIRED) {
+            await preserveDraftAndLogin()
+            throw error
+          }
           if (!refreshPromise) {
             refreshPromise = (async () => {
               const refreshResult = await baseFetch<{
@@ -63,7 +81,7 @@ export default defineNuxtPlugin(() => {
           try {
             await refreshPromise
           } catch (refreshError) {
-            await navigateTo("/auth/login")
+            await preserveDraftAndLogin()
             throw refreshError
           }
 
@@ -71,7 +89,7 @@ export default defineNuxtPlugin(() => {
             return (await baseFetch<T>(request, { ...options })) as T
           } catch (retryError: unknown) {
             if ((retryError as FetchFailure)?.response?.status === 401) {
-              navigateTo("/auth/login")
+              await preserveDraftAndLogin()
             }
             throw retryError
           }
