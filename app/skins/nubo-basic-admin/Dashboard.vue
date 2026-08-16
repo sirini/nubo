@@ -261,6 +261,10 @@
           <li>
             <CommonVCode>RESEND_FROM_NAME</CommonVCode>: 메일에 표시할 사이트 또는 운영자 이름
           </li>
+          <li>
+            <CommonVCode>RESEND_REPLY_TO_EMAIL</CommonVCode>: 답장을 받을 주소(선택 사항이며 Gmail 등
+            외부 주소도 사용 가능)
+          </li>
         </ul>
 
         API 키가 없으면
@@ -354,9 +358,11 @@ const mailStatus = ref<AdminMailStatus>({
   configured: false,
   provider: "resend",
   from: "",
+  replyTo: "",
   domainStatus: "not_configured",
   freeDaily: 100,
   freeMonthly: 3000,
+  freeMarketingContacts: 1000,
 })
 const { loadMailStatus } = useAdmin()
 const isMailDomainReady = computed(() =>

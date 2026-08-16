@@ -10,6 +10,9 @@ import type {
   AdminLatestParam,
   AdminLatestPost,
   AdminMailStatus,
+  AdminMailCampaign,
+  AdminMailCampaignList,
+  AdminMailCampaignPreview,
   AdminReportListResult,
   AdminReportSearchParam,
   AdminUserCreateParam,
@@ -56,6 +59,58 @@ export const useAdmin = () => {
     return await $fetch<Resp<AdminMailStatus>>("/admin/system/mail", {
       baseURL: config.public.apiBase,
       method: "GET",
+    })
+  }
+
+  const previewMailCampaign = async (subject: string, markdown: string) => {
+    return await $fetch<Resp<AdminMailCampaignPreview>>("/admin/mail/preview", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body: { subject, markdown },
+    })
+  }
+
+  const saveMailCampaign = async (campaign: Pick<AdminMailCampaign, "uid" | "subject" | "markdown">) => {
+    return await $fetch<Resp<AdminMailCampaign>>("/admin/mail/campaign", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body: campaign,
+    })
+  }
+
+  const loadMailCampaigns = async (limit = 20) => {
+    return await $fetch<Resp<AdminMailCampaignList>>("/admin/mail/campaigns", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: { limit },
+    })
+  }
+
+  const loadMailCampaign = async (uid: number) => {
+    return await $fetch<Resp<AdminMailCampaign>>(`/admin/mail/campaign/${uid}`, {
+      baseURL: config.public.apiBase,
+      method: "GET",
+    })
+  }
+
+  const sendMailCampaignTest = async (uid: number) => {
+    return await $fetch<Resp<null>>(`/admin/mail/campaign/${uid}/test`, {
+      baseURL: config.public.apiBase,
+      method: "POST",
+    })
+  }
+
+  const prepareMailCampaign = async (uid: number) => {
+    return await $fetch<Resp<AdminMailCampaign>>(`/admin/mail/campaign/${uid}/prepare`, {
+      baseURL: config.public.apiBase,
+      method: "POST",
+    })
+  }
+
+  const sendMailCampaign = async (uid: number) => {
+    return await $fetch<Resp<AdminMailCampaign>>(`/admin/mail/campaign/${uid}/send`, {
+      baseURL: config.public.apiBase,
+      method: "POST",
     })
   }
 
@@ -267,6 +322,8 @@ export const useAdmin = () => {
     loadGeneralStatistic,
     loadGeneralUploadUsage,
     loadMailStatus,
+    loadMailCampaign,
+    loadMailCampaigns,
     loadGroupInfo,
     loadGroupList,
     loadPostList,
@@ -276,9 +333,14 @@ export const useAdmin = () => {
     modifyExistBoard,
     modifyGroupAdmin,
     modifyUserInfo,
+    prepareMailCampaign,
+    previewMailCampaign,
     removeExistBoard,
     removeExistGroup,
     removeUserAccount,
+    saveMailCampaign,
+    sendMailCampaign,
+    sendMailCampaignTest,
     updateGroupId,
   }
 }
