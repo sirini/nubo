@@ -20,9 +20,10 @@ export interface NuboEditorContext {
   isLoadDraft: ComputedRef<boolean>
   isStrike: ComputedRef<boolean | undefined>
   isUploading: ComputedRef<boolean>
+  lastDraftSavedAt: ComputedRef<number>
   previewInsertImages: ComputedRef<string[]>
   deleteInsertedImage: (imageUid: number) => Promise<void>
-  getAttr: (name: string) => Record<string, any>
+  getAttr: (name: string) => Record<string, string | number | boolean | null | undefined>
   insertImageToEditor: (src: string) => void
   loadDraft: () => void
   loadInsertedImages: (opt?: { reset: boolean } | undefined) => void

@@ -21,11 +21,15 @@
             <CommonVTooltip content="작성 중인 내용은 임시 보관하고 입력 화면을 닫습니다">
               <Button variant="outline" class="cursor-pointer" @click="cancelNewPost">취소</Button>
             </CommonVTooltip>
-            <CommonVTooltip v-if="isLoadDraft" content="아직 작성중인 글을 다시 불러올 수 있습니다">
+            <CommonVTooltip
+              v-if="isLoadDraft"
+              content="이 게시판에 자동 저장된 글을 다시 불러옵니다"
+            >
               <Button variant="outline" class="cursor-pointer text-green-500" @click="loadDraft"
-                >임시 보관</Button
+                >임시글 불러오기</Button
               >
             </CommonVTooltip>
+            <span class="text-xs text-muted-foreground">{{ draftStatus }}</span>
           </div>
 
           <CommonVTooltip content="제출하시기 전에 글내용을 다시 한 번 살펴봐주세요">
@@ -54,5 +58,10 @@ import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
 const { cancelNewPost, isWriting, writeNewPost } = useNuboWriteContext()
-const { content, config, isLoadDraft, loadDraft } = useNuboEditorContext()
+const { content, config, isLoadDraft, lastDraftSavedAt, loadDraft } = useNuboEditorContext()
+
+const draftStatus = computed(() => {
+  if (!lastDraftSavedAt.value) return "내용 입력 시 브라우저에 자동 저장됩니다"
+  return `자동 저장 ${new Intl.DateTimeFormat("ko-KR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(lastDraftSavedAt.value)}`
+})
 </script>

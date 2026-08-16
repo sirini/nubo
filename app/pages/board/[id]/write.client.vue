@@ -28,6 +28,7 @@ const selectedSkin = computed(() => {
 })
 
 await edit.loadBoardConfig(boardId)
+edit.startDraftSession()
 
 if (auth.isLoggedIn) {
   await edit.loadInsertedImages()
@@ -43,15 +44,25 @@ watch(
     () => edit.isSecret,
     () => edit.isNotice,
     () => edit.categoryUid,
-    () => edit.config.type === BOARD.TRADE ? { ...trade.form } : null,
+    () => (edit.config.type === BOARD.TRADE ? { ...trade.form } : null),
   ],
   () => edit.saveDraft(),
   { deep: true },
 )
 
-onMounted(() => window.addEventListener("pagehide", edit.flushDraft))
+const flushHiddenDraft = () => {
+  if (document.visibilityState === "hidden") edit.flushDraft()
+}
+
+onMounted(() => {
+  window.addEventListener("pagehide", edit.flushDraft)
+  document.addEventListener("visibilitychange", flushHiddenDraft)
+})
 onBeforeUnmount(() => edit.preserveDraftAndReset())
-onUnmounted(() => window.removeEventListener("pagehide", edit.flushDraft))
+onUnmounted(() => {
+  window.removeEventListener("pagehide", edit.flushDraft)
+  document.removeEventListener("visibilitychange", flushHiddenDraft)
+})
 
 provide(nuboWriteKey, useWriteProvider())
 provide(nuboEditorKey, useEditorProvider())

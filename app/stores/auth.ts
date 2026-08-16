@@ -97,6 +97,11 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  // 서버 세션이 만료된 경우 API 호출 없이 클라이언트의 로그인 상태만 정리합니다.
+  const expireLocalSession = () => {
+    user.value = MY_INFO_RESULT
+  }
+
   // 내 프로필 정보 업데이트
   const update = async () => {
     try {
@@ -141,6 +146,7 @@ export const useAuthStore = defineStore("auth", () => {
     getInitUserLatestContent,
     login,
     logout,
+    expireLocalSession,
     update,
   }
 })

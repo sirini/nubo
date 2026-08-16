@@ -27,6 +27,7 @@ export const useEditorProvider = (): NuboEditorContext => {
     isLoadDraft: computed(() => edit.isLoadDraft),
     isStrike: computed(() => edit.editor?.isActive("strike")),
     isUploading: computed(() => edit.isUploading),
+    lastDraftSavedAt: computed(() => edit.lastDraftSavedAt),
     previewInsertImages: computed(() => edit.previewInsertImages),
 
     setLink: (url: string) => {
@@ -70,7 +71,10 @@ export const useEditorProvider = (): NuboEditorContext => {
       return edit.editor?.chain().focus().redo().run() || false
     },
     getAttr: (name: string) => {
-      return edit.editor?.getAttributes(name) || {}
+      return (edit.editor?.getAttributes(name) || {}) as Record<
+        string,
+        string | number | boolean | null | undefined
+      >
     },
     selectTextColor: (event: Event) => {
       edit.selectColor(event)
