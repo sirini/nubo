@@ -1,6 +1,52 @@
 <template>
   <div>
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)] p-6">
+      <div
+        v-if="mailStatusLoaded && !mailStatus.configured"
+        class="md:col-span-12 flex flex-col gap-4 rounded-xl border border-primary/25 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between"
+        role="status"
+      >
+        <div class="flex gap-3">
+          <MailWarningIcon class="mt-0.5 size-5 shrink-0 text-primary" />
+          <div>
+            <p class="font-semibold">Resend 이메일 발송 설정이 필요합니다</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">
+              <code>RESEND_API_KEY</code>와 발신 주소를 설정하면 회원가입 인증, 비밀번호 재설정,
+              댓글 알림을 사용할 수 있습니다. 무료 티어는 하루 {{ mailStatus.freeDaily }}건·월
+              {{ mailStatus.freeMonthly.toLocaleString() }}건의 트랜잭션 메일을 지원합니다.
+            </p>
+          </div>
+        </div>
+        <Button variant="outline" as-child class="shrink-0">
+          <a href="https://resend.com/signup" target="_blank" rel="noopener noreferrer">
+            무료로 시작하기
+            <ExternalLinkIcon class="size-4" />
+          </a>
+        </Button>
+      </div>
+      <div
+        v-else-if="mailStatusLoaded && !isMailDomainReady"
+        class="md:col-span-12 flex flex-col gap-4 rounded-xl border border-warning/30 bg-warning/10 p-5 sm:flex-row sm:items-center sm:justify-between"
+        role="status"
+      >
+        <div class="flex gap-3">
+          <MailWarningIcon class="mt-0.5 size-5 shrink-0 text-warning" />
+          <div>
+            <p class="font-semibold">Resend 발신 도메인 확인이 필요합니다</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">
+              API 키는 설정되었지만 <code>{{ mailStatus.from }}</code> 발신 도메인의 상태가
+              <strong>{{ mailStatus.domainStatus }}</strong>입니다. Resend에서 DNS 레코드를 확인한 뒤
+              도메인을 다시 검증해 주세요.
+            </p>
+          </div>
+        </div>
+        <Button variant="outline" as-child class="shrink-0">
+          <a href="https://resend.com/domains" target="_blank" rel="noopener noreferrer">
+            도메인 설정 열기
+            <ExternalLinkIcon class="size-4" />
+          </a>
+        </Button>
+      </div>
       <Card
         class="md:col-span-8 flex flex-col justify-between p-8 bg-linear-to-br from-primary/5 via-transparent to-transparent"
       >
@@ -196,8 +242,16 @@
 </template>
 
 <script setup lang="ts">
-import { Calendar1Icon, HeartIcon, MessageCircleIcon, User2Icon } from "lucide-vue-next"
+import {
+  Calendar1Icon,
+  ExternalLinkIcon,
+  HeartIcon,
+  MailWarningIcon,
+  MessageCircleIcon,
+  User2Icon,
+} from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
+import type { AdminMailStatus } from "~/types/admin"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
 defineOptions({ name: "NuboAdminDashboard" })
@@ -219,6 +273,19 @@ const {
   loadInitPostList,
 } = useNuboAdminContext()
 const isLoading = ref<boolean>(false)
+const mailStatusLoaded = ref(false)
+const mailStatus = ref<AdminMailStatus>({
+  configured: false,
+  provider: "resend",
+  from: "",
+  domainStatus: "not_configured",
+  freeDaily: 100,
+  freeMonthly: 3000,
+})
+const { loadMailStatus } = useAdmin()
+const isMailDomainReady = computed(() =>
+  ["verified", "unknown"].includes(mailStatus.value.domainStatus),
+)
 const maxVisit = computed(() => {
   const visits = statVisit.value.history.map((h) => h.visit)
   return Math.max(...visits)
@@ -226,7 +293,16 @@ const maxVisit = computed(() => {
 
 onMounted(async () => {
   try {
-    await Promise.all([loadInitReportList(false, 3), loadInitCommentList(5), loadInitPostList(5)])
+    const [, , , statusResponse] = await Promise.all([
+      loadInitReportList(false, 3),
+      loadInitCommentList(5),
+      loadInitPostList(5),
+      loadMailStatus().catch(() => null),
+    ])
+    if (statusResponse?.success && statusResponse.result) {
+      mailStatus.value = statusResponse.result
+      mailStatusLoaded.value = true
+    }
     if (statVisit.value.history.length < 1) {
       isLoading.value = true
       await loadInitDashboard(90, 5)

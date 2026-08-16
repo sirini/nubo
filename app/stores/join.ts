@@ -1,6 +1,5 @@
 import { toast } from "vue-sonner"
-import { useResetPasswordTemplate } from "~/skins/nubo-basic-login/resetPasswordTemplate"
-import { useVerifyCodeTemplate } from "~/skins/nubo-basic-login/verifyCodeTemplate"
+import { CODE } from "~/types/common"
 
 export const useJoinStore = defineStore("join", () => {
   const {
@@ -11,7 +10,6 @@ export const useJoinStore = defineStore("join", () => {
     updateUserPassword,
     resetUserPassword,
   } = useAuth()
-  const config = useRuntimeConfig()
   const code = ref<string>("")
   const email = ref<string>("")
   const name = ref<string>("")
@@ -102,30 +100,28 @@ export const useJoinStore = defineStore("join", () => {
     }
     try {
       isLoading.value = true
-      const mailTemplate = useVerifyCodeTemplate()
       const response = await submitJoinForm({
         id: email.value,
         password: password.value,
         name: name.value,
-        template: mailTemplate.template,
       })
       if (!response.success || !response.result) {
+        if (response.code === CODE.MAIL_NOT_CONFIGURED) {
+          toast(`❌ 현재 사이트의 이메일 발송 기능이 준비되지 않았습니다. 관리자에게 문의해 주세요.`)
+          return
+        }
+        if (response.code === CODE.RATE_LIMITED) {
+          toast(`⚠️ 인증 메일을 방금 요청했습니다. 잠시 후 다시 시도해 주세요.`)
+          return
+        }
         toast(`❌ 인증 메일 발송을 하지 못했습니다: ${response.error}`)
         return
       }
-      if (response.result.sendmail) {
-        toast(
-          `✅ 인증코드 6자리를 ${email.value}로 요청하였습니다. 받은 편지함/스팸함 등을 확인해보세요!`,
-        )
-        target.value = response.result.target
-        isValidPassword.value = true
-      } else {
-        isValidCode.value = true
-        toast(`✅ 가입이 정상적으로 처리되었습니다, 로그인 화면으로 곧 이동합니다`)
-        setTimeout(() => {
-          navigateTo(`/auth/login`)
-        }, 3000)
-      }
+      toast(
+        `✅ 인증코드 6자리를 ${email.value}로 요청하였습니다. 받은 편지함/스팸함 등을 확인해보세요!`,
+      )
+      target.value = response.result.target
+      isValidPassword.value = true
     } catch (e) {
       toast(`❌ 인증 메일 발송을 하지 못했습니다: ${e}`)
     } finally {
@@ -174,19 +170,15 @@ export const useJoinStore = defineStore("join", () => {
     }
     try {
       isLoading.value = true
-      const mailTemplate = useResetPasswordTemplate()
       const response = await resetUserPassword({
         email: email.value,
-        template: mailTemplate.template,
       })
       if (!response.success) {
+        if (response.code === CODE.MAIL_NOT_CONFIGURED) {
+          toast(`❌ 현재 사이트의 이메일 발송 기능이 준비되지 않았습니다. 관리자에게 문의해 주세요.`)
+          return
+        }
         toast(`❌ 비밀번호 초기화 요청을 보내지 못했습니다: ${response.error}`)
-        return
-      }
-      if (!response.result) {
-        toast(
-          `❌ 비밀번호를 초기화하지 못했습니다: ${config.public.adminId} 으로 초기화 요청을 보내주세요!`,
-        )
         return
       }
       toast(`✅ 요청을 보냈습니다: 이메일에서 받은편지함 혹은 스팸함을 확인해주세요`)

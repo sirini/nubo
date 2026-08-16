@@ -9,6 +9,7 @@ import type {
   AdminLatestComment,
   AdminLatestParam,
   AdminLatestPost,
+  AdminMailStatus,
   AdminReportListResult,
   AdminReportSearchParam,
   AdminUserCreateParam,
@@ -46,6 +47,13 @@ export const useAdmin = () => {
   // 업로드 폴더 사용량 가져오기
   const loadGeneralUploadUsage = async () => {
     return await $fetch<Resp<number>>("/admin/dashboard/usage", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+    })
+  }
+
+  const loadMailStatus = async () => {
+    return await $fetch<Resp<AdminMailStatus>>("/admin/system/mail", {
       baseURL: config.public.apiBase,
       method: "GET",
     })
@@ -258,6 +266,7 @@ export const useAdmin = () => {
     loadGeneralItem,
     loadGeneralStatistic,
     loadGeneralUploadUsage,
+    loadMailStatus,
     loadGroupInfo,
     loadGroupList,
     loadPostList,

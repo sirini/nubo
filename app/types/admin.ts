@@ -40,6 +40,15 @@ export type AdminDashboard = {
   item: AdminDashboardItem
 }
 
+export type AdminMailStatus = {
+  configured: boolean
+  provider: "resend"
+  from: string
+  domainStatus: "verified" | "pending" | "failed" | "not_found" | "not_configured" | "unknown"
+  freeDaily: number
+  freeMonthly: number
+}
+
 // 대시보드 최근 통계들 반환값 정의
 export type AdminDashboardStatisticResult = {
   visit: AdminDashboardStatistic
