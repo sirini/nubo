@@ -262,7 +262,12 @@ const {
 } = useAdmin()
 
 const isSent = computed(() => campaign.status === "sent")
-const isLocked = computed(() => isSent.value || campaign.resendBroadcastId !== "")
+const isLocked = computed(() =>
+  campaign.status === "syncing"
+  || campaign.status === "sending"
+  || isSent.value
+  || campaign.resendBroadcastId !== "",
+)
 const statusLabel = computed(() => campaignStatusLabels[campaign.status])
 const statusVariant = computed(() => {
   if (campaign.status === "sent") return "default"
