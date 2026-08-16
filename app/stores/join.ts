@@ -1,11 +1,13 @@
 import { toast } from "vue-sonner"
 import { CODE } from "~/types/common"
+import type { SignupStatus } from "~/types/auth"
 
 export const useJoinStore = defineStore("join", () => {
   const {
     checkUsedEmail,
     checkUsedName,
     submitJoinForm,
+    getSignupStatus,
     verifyUser,
     updateUserPassword,
     resetUserPassword,
@@ -16,6 +18,8 @@ export const useJoinStore = defineStore("join", () => {
   const password = ref<string>("")
   const password2 = ref<string>("")
   const target = ref<number>(0)
+  const invite = ref<string>("")
+  const signupStatus = ref<SignupStatus | null>(null)
   const isLoading = ref<boolean>(false)
   const isValidEmail = ref<boolean>(false)
   const isValidName = ref<boolean>(false)
@@ -29,6 +33,15 @@ export const useJoinStore = defineStore("join", () => {
   const EMAIL_REGEX =
     /^(?!.*\.\.)(?!\.)(?!.*\.$)[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]+@(?:(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2,}$/
   const PW_REGEX = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9\s])[^\s]{8,}$/
+
+  const loadSignupStatus = async () => {
+    try {
+      const response = await getSignupStatus()
+      if (response.success) signupStatus.value = response.result
+    } catch {
+      signupStatus.value = null
+    }
+  }
 
   // 이미 등록된 이메일 주소인지 확인 (true: 이미 사용중)
   const isUsedEmail = async () => {
@@ -100,25 +113,48 @@ export const useJoinStore = defineStore("join", () => {
     }
     try {
       isLoading.value = true
+      let inviteToken = invite.value.trim()
+      try {
+        inviteToken = new URL(inviteToken).searchParams.get("invite") || inviteToken
+      } catch {
+        // Raw invitation tokens are expected to be non-URL strings.
+      }
       const response = await submitJoinForm({
         id: email.value,
         password: password.value,
         name: name.value,
+        invite: inviteToken,
       })
       if (!response.success || !response.result) {
         if (response.code === CODE.MAIL_NOT_CONFIGURED) {
-          toast(`❌ 현재 사이트의 이메일 발송 기능이 준비되지 않았습니다. 관리자에게 문의해 주세요.`)
+          toast(
+            `❌ 현재 사이트의 이메일 발송 기능이 준비되지 않았습니다. 관리자에게 문의해 주세요.`,
+          )
           return
         }
         if (response.code === CODE.RATE_LIMITED) {
           toast(`⚠️ 인증 메일을 방금 요청했습니다. 잠시 후 다시 시도해 주세요.`)
           return
         }
+        if (response.code === CODE.SIGNUP_DISABLED) {
+          toast(`❌ 현재 사이트는 신규 회원가입을 받지 않습니다.`)
+          return
+        }
+        if (response.code === CODE.INVALID_INVITE) {
+          toast(`❌ 초대 링크가 올바르지 않거나 만료·사용·취소되었습니다.`)
+          return
+        }
         toast(`❌ 인증 메일 발송을 하지 못했습니다: ${response.error}`)
         return
       }
+      if (response.result.completed) {
+        isValidPassword.value = true
+        isValidCode.value = true
+        toast(`✅ 초대 확인이 완료되어 회원가입되었습니다.`)
+        return
+      }
       toast(
-        `✅ 인증코드 6자리를 ${email.value}로 요청하였습니다. 받은 편지함/스팸함 등을 확인해보세요!`,
+        `✅ 인증코드 6자리를 ${email.value}로 요청했습니다. 받은 편지함과 스팸함을 확인해 주세요.`,
       )
       target.value = response.result.target
       isValidPassword.value = true
@@ -175,7 +211,9 @@ export const useJoinStore = defineStore("join", () => {
       })
       if (!response.success) {
         if (response.code === CODE.MAIL_NOT_CONFIGURED) {
-          toast(`❌ 현재 사이트의 이메일 발송 기능이 준비되지 않았습니다. 관리자에게 문의해 주세요.`)
+          toast(
+            `❌ 현재 사이트의 이메일 발송 기능이 준비되지 않았습니다. 관리자에게 문의해 주세요.`,
+          )
           return
         }
         toast(`❌ 비밀번호 초기화 요청을 보내지 못했습니다: ${response.error}`)
@@ -235,10 +273,12 @@ export const useJoinStore = defineStore("join", () => {
     email.value = ""
     name.value = ""
     password.value = ""
+    password2.value = ""
     target.value = 0
     code.value = ""
     isValidEmail.value = false
     isValidName.value = false
+    isValidPassword.value = false
     isValidCode.value = false
   }
 
@@ -249,6 +289,8 @@ export const useJoinStore = defineStore("join", () => {
     password,
     password2,
     target,
+    invite,
+    signupStatus,
     isLoading,
     isValidEmail,
     isValidName,
@@ -264,6 +306,7 @@ export const useJoinStore = defineStore("join", () => {
     isUsedEmail,
     isUsedName,
     clear,
+    loadSignupStatus,
     verify,
     requestResetPassword,
     updatePassword,

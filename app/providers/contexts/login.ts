@@ -4,6 +4,8 @@ export interface NuboLoginContext {
   joinName: ComputedRef<string>
   joinPassword: WritableComputedRef<string>
   joinPassword2: WritableComputedRef<string>
+  inviteCode: WritableComputedRef<string>
+  signupStatus: ComputedRef<import("~/types/auth").SignupStatus | null>
   verifyCode: WritableComputedRef<string>
   verifyTarget: WritableComputedRef<number>
   isLoading: WritableComputedRef<boolean>
@@ -19,10 +21,11 @@ export interface NuboLoginContext {
   resetTarget: WritableComputedRef<number>
   resetPassword: WritableComputedRef<string>
   resetPassword2: WritableComputedRef<string>
-  login: (e?: Event | undefined) => Promise<void | undefined>
+  login: (e?: Event | undefined) => Promise<unknown>
   isUsedEmail: () => Promise<void>
   isUsedName: () => Promise<void>
   submit: () => Promise<void>
+  loadSignupStatus: () => Promise<void>
   clearJoinForm: () => void
   verify: () => Promise<void>
   requestResetPassword: () => Promise<void>

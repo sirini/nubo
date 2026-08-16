@@ -8,7 +8,7 @@
       <CardContent>
         <div class="grid gap-6">
           <form @submit="login">
-            <FormField name="email" v-slot="{ componentField }">
+            <FormField v-slot="{ componentField }" name="email">
               <FormItem class="mb-6">
                 <FormLabel class="text-muted">이메일</FormLabel>
                 <FormControl>
@@ -18,7 +18,7 @@
               </FormItem>
             </FormField>
 
-            <FormField name="password" v-slot="{ componentField }">
+            <FormField v-slot="{ componentField }" name="password">
               <FormItem class="mb-6">
                 <FormLabel class="text-muted">비밀번호</FormLabel>
                 <FormControl>
@@ -39,8 +39,14 @@
               </Button>
             </CommonVTooltip>
 
-            <div class="grid grid-cols-2 gap-3 mt-3">
-              <CommonVTooltip content="본인 이메일 주소를 이용하여 인증 후 가입합니다">
+            <div
+              class="grid gap-3 mt-3"
+              :class="signupStatus?.mode === 'disabled' ? 'grid-cols-1' : 'grid-cols-2'"
+            >
+              <CommonVTooltip
+                v-if="signupStatus?.mode !== 'disabled'"
+                content="사이트 가입 정책에 따라 신규 회원으로 가입합니다"
+              >
                 <NuxtLink to="/auth/join">
                   <Button type="button" variant="outline" class="w-full cursor-pointer gap-2">
                     <UserPlusIcon class="w-4 h-4" />
@@ -63,7 +69,11 @@
               class="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border my-6"
             >
               <span class="relative z-10 bg-background px-2 text-muted-foreground">
-                혹은 소셜 로그인
+                {{
+                  signupStatus?.oauthRegistrationAllowed === false
+                    ? "기존 회원 소셜 로그인"
+                    : "혹은 소셜 로그인"
+                }}
               </span>
             </div>
 
@@ -141,5 +151,18 @@
 import { LockKeyholeOpenIcon, LogInIcon, UserPlusIcon } from "lucide-vue-next"
 import { useNuboLoginContext } from "~/providers/contexts/login"
 
+defineOptions({ name: "NuboLogin" })
+
 const { oauthGoogleUrl, oauthNaverUrl, oauthKakaoUrl, login } = useNuboLoginContext()
+const { getSignupStatus } = useAuth()
+const signupStatus = ref<import("~/types/auth").SignupStatus | null>(null)
+
+onMounted(async () => {
+  try {
+    const response = await getSignupStatus()
+    if (response.success) signupStatus.value = response.result
+  } catch {
+    signupStatus.value = null
+  }
+})
 </script>
