@@ -37,7 +37,7 @@ NUBO는 두 프로세스로 실행됩니다.
 
 ### 1. 준비물
 
-- x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
+- Ubuntu 22.04 이상 x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
 - Node.js 24 LTS 이상과 npm
 - MySQL 8 또는 MariaDB
 - 이미지 처리를 위한 `libvips` (`libvips-dev` 패키지)
@@ -157,6 +157,8 @@ Resend를 설정하지 않았다면 `verified_email` 가입은 완료할 수 없
 - 이미지 크기와 업로드 제한은 `GOAPI_*_SIZE`, `GOAPI_FILE_SIZE_LIMIT`로 조정
 
 전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
+
+저장소에 포함된 `goapi-linux`는 최신 개발 호스트의 시스템 라이브러리에 종속되지 않도록 Ubuntu 22.04 Docker 환경에서 빌드하고 검증합니다. Ubuntu 22.04/24.04 계열에서는 `libvips` 런타임이 준비되어 있어야 하며, ARM 서버나 다른 Linux 계열은 [GOAPI 빌드 안내](https://github.com/sirini/goapi#직접-빌드하기)를 참고하세요.
 
 ## 업데이트
 

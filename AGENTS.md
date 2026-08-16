@@ -19,6 +19,7 @@ NUBO is a reusable community builder and media-oriented publishing platform. It 
 - Use focused commits for coherent work units. After a successful commit, push the current branch without asking again.
 - Run validation proportional to the change. For frontend work, include relevant lint/type/build/tests where available.
 - Treat the frontend and `/Users/sirini/github/goapi.git` backend as one product; check API contract effects across both repositories.
+- Replace the bundled `goapi-linux` only with the output of GOAPI's `./scripts/build-ubuntu22.sh`; never bundle a binary compiled directly on the host OS.
 
 ## Current design direction
 
