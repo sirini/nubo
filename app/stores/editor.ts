@@ -78,6 +78,8 @@ export const useEditorStore = defineStore("editor", () => {
   // localStorage 값은 이전 버전 또는 수동 변경으로 타입이 깨질 수 있으므로 외부 입력으로 취급
   const draftPost = useLocalStorage<unknown>("nubo-draft-post", null)
   let draftSaveTimer: ReturnType<typeof setTimeout> | undefined
+  const canRestoreDraft = ref(false)
+  const isDraftSaveSuspended = ref(true)
 
   const normalizeDraft = (value: unknown): WriteDraftParam | null => {
     if (!value || typeof value !== "object" || Array.isArray(value)) return null
@@ -96,9 +98,10 @@ export const useEditorStore = defineStore("editor", () => {
         typeof draft.categoryUid === "number" && Number.isFinite(draft.categoryUid)
           ? draft.categoryUid
           : 0,
-      trade: draft.trade && typeof draft.trade === "object"
-        ? draft.trade as WriteDraftParam["trade"]
-        : undefined,
+      trade:
+        draft.trade && typeof draft.trade === "object"
+          ? (draft.trade as WriteDraftParam["trade"])
+          : undefined,
       updatedAt:
         typeof draft.updatedAt === "number" && Number.isFinite(draft.updatedAt)
           ? draft.updatedAt
@@ -122,12 +125,13 @@ export const useEditorStore = defineStore("editor", () => {
     if (!draft || (draft.boardId && draft.boardId !== config.value.id)) return false
 
     return (
-      draft.title.trim().length > 0 ||
-      hasMeaningfulContent(draft.content) ||
-      draft.tags.length > 0
+      draft.title.trim().length > 0 || hasMeaningfulContent(draft.content) || draft.tags.length > 0
     )
   })
-  const isLoadDraft = computed(() => hasDraftContent.value)
+  const isLoadDraft = computed(() => canRestoreDraft.value && hasDraftContent.value)
+  const lastDraftSavedAt = computed(() =>
+    hasDraftContent.value ? normalizedDraft.value?.updatedAt || 0 : 0,
+  )
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
@@ -485,8 +489,10 @@ export const useEditorStore = defineStore("editor", () => {
   // 작성 완료 후 입력 폼과 임시 보관본 초기화
   const clear = () => {
     cancelDraftSave()
+    isDraftSaveSuspended.value = true
     resetForm()
     draftPost.value = null
+    canRestoreDraft.value = false
   }
 
   // 공통 파라미터들 반환
@@ -517,14 +523,16 @@ export const useEditorStore = defineStore("editor", () => {
     const param: EditorWriteParam = getParams()
     try {
       isWriting.value = true
-      const response = config.value.type === BOARD.TRADE
-        ? await trade.writePost({ ...param, ...trade.form })
-        : await writeNewPost(param)
+      const response =
+        config.value.type === BOARD.TRADE
+          ? await trade.writePost({ ...param, ...trade.form })
+          : await writeNewPost(param)
       if (!response.success) {
         toast(`❌ 게시글을 작성하지 못했습니다: ${response.error}`)
         return
       }
-      const writtenPostUid = typeof response.result === "number" ? response.result : response.result?.postUid
+      const writtenPostUid =
+        typeof response.result === "number" ? response.result : response.result?.postUid
       if (writtenPostUid > 0) {
         clear()
         trade.resetForm()
@@ -555,9 +563,10 @@ export const useEditorStore = defineStore("editor", () => {
 
     try {
       isWriting.value = true
-      const response = config.value.type === BOARD.TRADE
-        ? await trade.modifyPost({ ...param, ...trade.form })
-        : await modifyPrevPost(param)
+      const response =
+        config.value.type === BOARD.TRADE
+          ? await trade.modifyPost({ ...param, ...trade.form })
+          : await modifyPrevPost(param)
       if (!response.success) {
         toast(`❌ 게시글을 수정하지 못했습니다: ${response.error}`)
         return
@@ -622,6 +631,11 @@ export const useEditorStore = defineStore("editor", () => {
   }
 
   const persistDraft = () => {
+    if (!hasCurrentContent()) {
+      draftPost.value = null
+      canRestoreDraft.value = false
+      return
+    }
     draftPost.value = {
       boardId: config.value.id,
       title: title.value,
@@ -630,6 +644,7 @@ export const useEditorStore = defineStore("editor", () => {
       isSecret: isSecret.value,
       isNotice: isNotice.value,
       categoryUid: categoryUid.value,
+      trade: config.value.type === BOARD.TRADE ? { ...trade.form } : undefined,
       updatedAt: Date.now(),
     }
   }
@@ -647,8 +662,9 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 입력 발생 시 호출할 디바운스 함수
   const saveDraft = () => {
+    if (isDraftSaveSuspended.value) return
     cancelDraftSave()
-    draftSaveTimer = setTimeout(persistDraft, 3000)
+    draftSaveTimer = setTimeout(persistDraft, 1000)
   }
 
   const flushDraft = () => {
@@ -658,8 +674,16 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 화면을 떠날 때 최신 내용을 보관하고 공유 중인 입력 상태는 비우기
   const preserveDraftAndReset = () => {
-    flushDraft()
+    cancelDraftSave()
+    if (hasCurrentContent()) persistDraft()
+    isDraftSaveSuspended.value = true
     resetForm()
+  }
+
+  const startDraftSession = () => {
+    cancelDraftSave()
+    canRestoreDraft.value = hasDraftContent.value
+    isDraftSaveSuspended.value = false
   }
 
   // 임시 보관중이던 글 불러오기
@@ -674,6 +698,7 @@ export const useEditorStore = defineStore("editor", () => {
     isNotice.value = draft.isNotice
     categoryUid.value = draft.categoryUid
     if (draft.trade) Object.assign(trade.form, draft.trade)
+    canRestoreDraft.value = false
   }
 
   return {
@@ -703,6 +728,7 @@ export const useEditorStore = defineStore("editor", () => {
     isSecret,
     isUploading,
     isWriting,
+    lastDraftSavedAt,
     postUid,
     previewEditorSelectedImages,
     previewInsertImages,
@@ -735,6 +761,7 @@ export const useEditorStore = defineStore("editor", () => {
     removeTag,
     resetForm,
     preserveDraftAndReset,
+    startDraftSession,
     saveDraft,
     searchTags,
     searchTitles,
