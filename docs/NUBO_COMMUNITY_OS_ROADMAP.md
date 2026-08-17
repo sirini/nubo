@@ -442,20 +442,21 @@ npm run build
 
 - 우선순위: `P1`
 - 크기: `S`
-- 상태: `READY`
+- 상태: `IN_PROGRESS`
 - 저장소: GOAPI + NUBO
 
 ### 엔드포인트
 
-- [ ] `/healthz`: 프로세스 생존
-- [ ] `/readyz`: DB 등 필수 의존성 준비
-- [ ] `/version`: NUBO, GOAPI, API contract, build commit
+- [x] `/health`: 프로세스 생존
+- [x] `/ready`: DB 등 필수 의존성 준비
+- [x] `/version`: NUBO, GOAPI, API contract
+- [ ] release manifest에서 build commit 확인
 - [ ] 관리자 대시보드에서 버전 불일치 경고
 - [ ] Nitro 시작 시 GOAPI contract 호환성 확인
 
 ### 원칙
 
-`healthz`는 가볍고 실패 원인을 노출하지 않는다. 상세 진단은 관리자 또는 로컬 `nuboctl doctor`에서만 보여준다.
+`health`는 가볍고 실패 원인을 노출하지 않는다. 상세 진단은 관리자 또는 로컬 `nuboctl doctor`에서만 보여준다. Kubernetes식 `z` 접미사는 NUBO의 독립 HTTP API에는 사용하지 않는다.
 
 ## S0-Q05. 기준 성능 측정
 
