@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Finish a lean `S0-Q01` security slice that locks the highest-risk cross-board resource boundaries without pursuing broad coverage targets or new test infrastructure.
+- Finish the minimal `S0-Q04` runtime status surface, then use it to validate a no-build Nuxt `.output` deployment PoC instead of extending the stabilization phase indefinitely.
 
 ## Recent completion
 
+- Added public `/health`, `/ready`, and `/version` endpoints to Nitro and GOAPI; readiness checks the real GOAPI/DB dependency chain while responses hide internal failure details.
 - Audited post, comment, and attachment ownership checks and added focused GOAPI regressions for cross-board reads and mutations; no missing authorization guard was found in the reviewed paths.
 - Changed OpenAI vision input to send the generated 512px small WebP thumbnail directly, without a second 256px resize or JPEG re-encode; retained `detail: low` and disabled reasoning.
 - Added Nitro regression coverage for 401 refresh/retry, refreshed and backend cookies, binary request-body replay, missing refresh credentials, and concurrent refresh deduplication.
@@ -17,6 +18,8 @@
 
 ## Decisions
 
+- Use the plain `/health`, `/ready`, and `/version` paths. The Kubernetes-style `z` suffix is only an ecosystem convention and adds no value to NUBO's own HTTP API.
+- Treat status endpoints as the last small prerequisite for the prebuilt `.output` PoC; defer dashboard warnings, startup enforcement, and build-commit metadata to later release-manifest work.
 - Test security invariants at the GOAPI authorization boundary, not every frontend path. Add DB-backed concurrency infrastructure only when an observed defect or risky database change requires it; do not optimize for broad coverage percentages.
 - Keep the existing Nuxt `^4.5.2` dependency unchanged. Low-resource servers may receive a prebuilt `.output` from a higher-resource build machine rather than downgrading to the known-vulnerable 4.4.2 release.
 - Build `S0-Q02` incrementally: unit/Nuxt harness first, Nitro authentication proxy tests next, then SSR/test DB and Playwright only when their fixtures are defined.
@@ -28,6 +31,7 @@
 
 ## Verification
 
+- Status endpoints: GOAPI focused tests, `go test ./...`, `go vet ./...`, Ubuntu 22.04/24.04 binary checks; NUBO targeted ESLint, 3-file/7-test Vitest suite, typecheck, production build, and built-server HTTP smoke passed on Node 26.7.0.
 - Core resource authorization: focused GOAPI service tests, service race tests, `go test ./...`, and `go vet ./...` passed; authenticated handlers overwrite client-supplied user IDs with the JWT identity.
 - Nitro proxy slice on Node 26.7.0: targeted ESLint, `npm test` (3 files, 7 tests), `npm run typecheck`, and `npm run build` passed.
 - AI image descriptions: GOAPI `go test ./...`, `go vet ./...`, focused race tests, and the Ubuntu 22.04 release build passed; NUBO typecheck/build passed on Node 26.7.0.
@@ -43,4 +47,4 @@
 
 ## Next action
 
-- Product-owner review of the focused cross-board regression scope, then merge the GOAPI test branch and this documentation branch before choosing the next small security invariant.
+- Product-owner QA of the status responses, then merge both status branches and begin `S2-Q01` by running the built `.output` without source or root `node_modules`.
