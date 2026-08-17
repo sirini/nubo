@@ -13,12 +13,13 @@ NUBO is a reusable community builder and media-oriented publishing platform. It 
 
 ## Workflow
 
-- Read `/Users/sirini/github/nubo.git/PROJECT_STATUS.md` at the beginning of work when it exists.
-- Keep that untracked file concise and current: active goal, open findings, decisions, verification, and next action.
+- Read `docs/PROJECT_STATUS.md` at the beginning of work when it exists.
+- Keep that tracked file concise and current: active goal, open findings, decisions, verification, and next action.
 - Remove resolved work from active sections; retain only a short recent-completion note when useful.
+- Use `docs/NUBO_COMMUNITY_OS_ROADMAP.md` as adaptable long-term direction, not as a mandatory implementation sequence. Confirm current product state and agree on a bounded scope before starting a large roadmap item.
 - Use focused commits for coherent work units. After a successful commit, push the current branch without asking again.
 - Run validation proportional to the change. For frontend work, include relevant lint/type/build/tests where available.
-- Treat the frontend and `/Users/sirini/github/goapi.git` backend as one product; check API contract effects across both repositories.
+- Treat the frontend and the sibling GOAPI backend repository as one product; check API contract effects across both repositories.
 - Replace the bundled `goapi-linux` only with the output of GOAPI's `./scripts/build-ubuntu22.sh`; never bundle a binary compiled directly on the host OS.
 
 ## Current design direction
