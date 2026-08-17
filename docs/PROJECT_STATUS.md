@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Define the first bounded `S2-Q03` slice: read-only `nuboctl doctor` and `nuboctl status` diagnostics.
+- Define the next bounded `S2-Q03` slice: safe `nuboctl install` preflight, path preparation, environment generation, and template rendering without touching an existing Nginx site.
 
 ## Recent completion
 
+- Added a static Linux amd64 `nuboctl` to the integrated archive. Its read-only `doctor` and `status` commands diagnose the supported Ubuntu platform, runtime dependencies, exhaustive release integrity, environment permissions and required values, upload access, systemd/Nginx state, and HTTP health without mutating the server.
 - Narrowed the official Ubuntu reverse proxy to Nginx, added the missing direct `/goapi/` route for OAuth/RSS, made both application listeners explicit loopback endpoints for new installs, and defined existing target-domain Nginx configuration as read-only to `nuboctl`.
 - Added renderable systemd units plus an Nginx example to the integrated archive. Installation can substitute users, release/config/state paths, ports, the GOAPI path, Node, domain, body limit, and an existing upload root; GOAPI alone receives write access while the Nuxt release stays read-only.
 - Made the upload filesystem root independently injectable through `NUBO_UPLOAD_DIR` while preserving the legacy `./upload` default, existing symlinks, and stable `/upload/...` DB/HTTP paths; upload path resolution rejects traversal outside the configured root.
@@ -25,6 +26,7 @@
 
 ## Decisions
 
+- Keep the first `nuboctl` binary self-contained and statically linked. `doctor` performs slower exhaustive release verification, while `status` favors operational checks and does not recalculate every checksum; both commands remain strictly read-only.
 - Support Nginx as the only first-phase Ubuntu reverse proxy. On a clean target-domain configuration `nuboctl install` may render and validate a new site; if that domain is already configured or an installation is adopted, it must not edit or reload Nginx. Certbot and TLS lifecycle remain operator-owned.
 - Treat systemd and reverse-proxy files as installer inputs with explicit `@TOKEN@` substitution, not as hard-coded units to copy blindly. Keep systemd as the first Ubuntu adapter and leave room for other service managers later.
 - Treat `/var/lib/nubo/upload` as the Linux prebuilt default selected by the installer/service working directory, not a hard-coded product path. Operators may set `NUBO_UPLOAD_DIR` to an existing absolute directory such as `/var/www/<domain>/upload`.
@@ -44,6 +46,7 @@
 
 ## Verification
 
+- `nuboctl`: unit tests, race tests, and `go vet ./...` passed. The static binary ran on Ubuntu 22.04/24.04; the integrated release rebuilt the official GOAPI binary, verified and extracted the archive on Ubuntu 24.04, passed the web smoke suite, and an extracted `doctor` run passed platform, manifest, target, and exhaustive checksum checks while correctly reporting absent server dependencies.
 - Nginx and loopback boundary: GOAPI focused/full tests and `go vet ./...` passed; the legacy absent-host default remains `0.0.0.0` while the shared prebuilt sample selects `127.0.0.1`. The rendered Nginx template passed its official validator with separate Nuxt and GOAPI upstreams and forwarded headers.
 - Linux service templates: focused ESLint and 2-file/3-test Vitest coverage passed; rendered units using an existing `/var/www/<domain>/upload` path passed `systemd-analyze verify`, and the rendered Nginx example passed its official configuration validator. The rebuilt integrated archive passed the official GOAPI Ubuntu 22.04/24.04 checks, checksum/manifest verification, and prebuilt web smoke suite and contained every service template. The tracked `goapi-linux` was replaced only through GOAPI's official Ubuntu 22.04 builder.
 - Configurable upload root: focused config/utility/service/handler tests, full GOAPI tests, and `go vet ./...` passed; the shared environment sample regression confirms the legacy `./upload` default remains explicit.
@@ -66,4 +69,4 @@
 
 ## Next action
 
-- Define `nuboctl doctor` and `nuboctl status` as read-only checks over platform/runtime dependencies, manifest/checksums, environment and upload paths, systemd state, Nginx detection without mutation, and HTTP health/readiness before implementing installation commands.
+- Bound the first `nuboctl install` implementation around explicit inputs, idempotent directory/environment/template preparation, dry-run visibility, and a hard stop when the target domain already has an Nginx configuration; defer DB mutation, service activation, and health-driven completion until that foundation is verified.

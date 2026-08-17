@@ -22,6 +22,7 @@ for NUBO_REQUIRED_FILE in \
   "${NUBO_PROJECT_ROOT}/.output/server/index.mjs" \
   "${NUBO_PROJECT_ROOT}/deploy/README.md" \
   "${NUBO_PROJECT_ROOT}/env.sample" \
+  "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" \
   "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh"; do
   if [[ ! -f "${NUBO_REQUIRED_FILE}" ]]; then
     echo "Missing release input: ${NUBO_REQUIRED_FILE}" >&2
@@ -43,6 +44,7 @@ mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/s
 cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
 cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
+"${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl"
 "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" "${NUBO_STAGE_ROOT}/bin/goapi"
 
 NUBO_COMMIT="$(git -C "${NUBO_PROJECT_ROOT}" rev-parse HEAD)"
@@ -65,7 +67,7 @@ writeFileSync(manifestPath, JSON.stringify({
     nubo: { version: "${NUBO_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
     goapi: { version: "${NUBO_GOAPI_VERSION}", commit: "${GOAPI_COMMIT}", dirty: ${GOAPI_DIRTY} },
   },
-  entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi" },
+  entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi", nuboctl: "nuboctl" },
   configuration: { sample: "share/env.sample", externalPath: "/etc/nubo/nubo.env" },
   mutableData: { uploadDefault: "/var/lib/nubo/upload", uploadVariable: "NUBO_UPLOAD_DIR" },
   serviceTemplates: { systemd: "share/systemd", nginx: "share/nginx" },
@@ -98,6 +100,7 @@ docker run --rm \
   test ! -e .env
   test ! -e upload
   test ! -e node_modules
+  ./nuboctl version
 )
 node "${NUBO_PROJECT_ROOT}/scripts/prebuilt-smoke.mjs" "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}/web/.output"
 mv "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar.zst" "${NUBO_ARCHIVE_PATH}"

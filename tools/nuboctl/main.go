@@ -1,0 +1,121 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
+const version = "0.1.0"
+
+type options struct {
+	releaseDir  string
+	envFile     string
+	stateDir    string
+	serviceUser string
+	webURL      string
+}
+
+func main() {
+	os.Exit(run(os.Args[1:]))
+}
+
+func run(args []string) int {
+	if len(args) == 0 {
+		printUsage()
+		return 2
+	}
+
+	switch args[0] {
+	case "doctor":
+		options, err := parseOptions("doctor", args[1:])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 2
+		}
+		return printReport(runDoctor(options, systemRunner{}))
+	case "status":
+		options, err := parseOptions("status", args[1:])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 2
+		}
+		return printReport(runStatus(options, systemRunner{}))
+	case "version", "--version", "-v":
+		fmt.Printf("nuboctl %s\n", version)
+		return 0
+	case "help", "--help", "-h":
+		printUsage()
+		return 0
+	default:
+		fmt.Fprintf(os.Stderr, "알 수 없는 명령: %s\n", args[0])
+		printUsage()
+		return 2
+	}
+}
+
+func parseOptions(command string, args []string) (options, error) {
+	defaults := options{
+		releaseDir:  detectReleaseDir(),
+		envFile:     environmentFilePath(),
+		stateDir:    "/var/lib/nubo",
+		serviceUser: "nubo",
+	}
+
+	flags := flag.NewFlagSet(command, flag.ContinueOnError)
+	flags.SetOutput(os.Stderr)
+	flags.StringVar(&defaults.releaseDir, "release", defaults.releaseDir, "검사할 릴리스 디렉터리")
+	flags.StringVar(&defaults.envFile, "env", defaults.envFile, "검사할 nubo.env 파일")
+	flags.StringVar(&defaults.stateDir, "state", defaults.stateDir, "상태 데이터 디렉터리")
+	flags.StringVar(&defaults.serviceUser, "user", defaults.serviceUser, "서비스 실행 사용자")
+	flags.StringVar(&defaults.webURL, "web-url", "", "상태 엔드포인트 기본 URL")
+	if err := flags.Parse(args); err != nil {
+		return options{}, err
+	}
+	if flags.NArg() != 0 {
+		return options{}, fmt.Errorf("예상하지 못한 인자: %s", flags.Arg(0))
+	}
+
+	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir} {
+		if absolute, err := filepath.Abs(*item); err == nil {
+			*item = absolute
+		}
+	}
+	return defaults, nil
+}
+
+func environmentFilePath() string {
+	if path := os.Getenv("NUBO_ENV_FILE"); path != "" {
+		return path
+	}
+	return "/etc/nubo/nubo.env"
+}
+
+func detectReleaseDir() string {
+	if path := os.Getenv("NUBO_RELEASE_DIR"); path != "" {
+		return path
+	}
+	if executable, err := os.Executable(); err == nil {
+		if resolved := resolveExecutable(executable); resolved != "" {
+			return resolved
+		}
+	}
+	return "/opt/nubo/current"
+}
+
+func resolveExecutable(executable string) string {
+	resolved, err := filepath.EvalSymlinks(executable)
+	if err != nil {
+		resolved = executable
+	}
+	directory := filepath.Dir(resolved)
+	if _, err := os.Stat(filepath.Join(directory, "manifest.json")); err == nil {
+		return directory
+	}
+	return ""
+}
+
+func printUsage() {
+	fmt.Fprintln(os.Stderr, "사용법: nuboctl <doctor|status|version> [옵션]")
+}

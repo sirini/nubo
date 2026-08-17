@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly NUBO_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly NUBO_OUTPUT_PATH="$(realpath -m "${1:-${NUBO_PROJECT_ROOT}/nuboctl-linux}")"
+readonly NUBO_BUILD_ROOT="$(mktemp -d)"
+
+cleanup() {
+  rm -rf "${NUBO_BUILD_ROOT}"
+}
+trap cleanup EXIT
+
+mkdir -p "$(dirname "${NUBO_OUTPUT_PATH}")"
+docker run --rm \
+  --volume "${NUBO_PROJECT_ROOT}:/src:ro" \
+  --volume "${NUBO_BUILD_ROOT}:/out" \
+  --workdir /src/tools/nuboctl \
+  golang:1.26.4-bookworm \
+  bash -lc 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 /usr/local/go/bin/go build -buildvcs=false -trimpath -ldflags="-s -w" -o /out/nuboctl .'
+
+install -m 0755 "${NUBO_BUILD_ROOT}/nuboctl" "${NUBO_OUTPUT_PATH}"
+
+for NUBO_UBUNTU_VERSION in 22.04 24.04; do
+  docker run --rm \
+    --volume "${NUBO_OUTPUT_PATH}:/usr/local/bin/nuboctl:ro" \
+    "ubuntu:${NUBO_UBUNTU_VERSION}" \
+    /usr/local/bin/nuboctl version
+done
+
+echo "Built Linux amd64 nuboctl: ${NUBO_OUTPUT_PATH}"
+file "${NUBO_OUTPUT_PATH}"

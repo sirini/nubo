@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "build:nuboctl": "bash scripts/build-nuboctl-linux.sh",
     "build:release": "bash scripts/build-release-bundle.sh",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",

@@ -793,6 +793,10 @@ GOAPI의 공식 x86-64 바이너리는 반드시 `scripts/build-ubuntu22.sh` 산
 - 우선순위: `P0`
 - 크기: `XL`
 
+### 완료된 기반
+
+- [x] Phase 1 읽기 전용 `doctor`와 `status`: 플랫폼·런타임·release checksum·환경/업로드·systemd·Nginx·HTTP 상태 진단
+
 큰 명령 집합을 한 번에 구현하지 않는다. 각 단계는 실제 운영에서 검증한 뒤 다음 단계로 확장한다.
 
 ### Phase 1 — 진단
