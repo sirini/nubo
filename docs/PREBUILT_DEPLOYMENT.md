@@ -36,8 +36,12 @@ Node installation provides but a bare Node binary copied into a minimal Ubuntu i
 
 ## Runtime configuration
 
-The production server does not load the repository `.env` file automatically. Supply concrete
-values through the process manager. For example, a dedicated web environment file can contain:
+The production web server does not load a `.env` file automatically. GOAPI loads `.env` from its
+working directory by default, or the explicit path supplied through `NUBO_ENV_FILE`. A prebuilt
+installation can therefore keep one persistent file such as `/etc/nubo/nubo.env` outside every
+release and give that same file to both processes.
+
+The shared file contains concrete GOAPI and Nuxt values. Its web-facing portion looks like:
 
 ```dotenv
 NITRO_HOST=127.0.0.1
@@ -49,16 +53,23 @@ NUXT_PUBLIC_TITLE=Example Community
 NUXT_PUBLIC_VERSION=1.2.1
 ```
 
-Start the artifact with a process manager `EnvironmentFile`, or directly on supported Node releases:
+Point GOAPI at the file and pass the same file to Node:
 
 ```bash
-node --env-file=/etc/nubo/nubo-web.env /opt/nubo/current/web/.output/server/index.mjs
+NUBO_ENV_FILE=/etc/nubo/nubo.env /opt/nubo/current/bin/goapi
+node --env-file=/etc/nubo/nubo.env /opt/nubo/current/web/.output/server/index.mjs
 ```
 
 `NUXT_API_BASE_INTERNAL` is server-only and may use a loopback or private network address.
 `NUXT_PUBLIC_GOAPI_BASE` is the public path used for browser-facing GOAPI routes such as OAuth and
 RSS. Node's built-in `--env-file` does not expand `${OTHER_VARIABLE}` references, so its environment
 file must contain final values as shown above.
+
+Existing source installations require no change: without `NUBO_ENV_FILE`, GOAPI continues to use
+`.env` in its working directory. Values already present in the GOAPI process environment override
+values read from the file. When changing a shared setting such as the public domain, title, version,
+GOAPI path, port, size limit, or token lifetime, keep its `GOAPI_*`/`JWT_*` and `NUXT_*` entries in
+sync. A later installer will generate these paired concrete values.
 
 ## Upload ownership
 

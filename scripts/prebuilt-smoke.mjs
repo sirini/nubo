@@ -2,14 +2,16 @@
 
 import assert from "node:assert/strict"
 import { spawn } from "node:child_process"
-import { cp, mkdtemp, readdir, rm, stat } from "node:fs/promises"
+import { cp, mkdtemp, readdir, rm, stat, writeFile } from "node:fs/promises"
 import { createServer } from "node:http"
 import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
 
 const sourceOutput = resolve(process.argv[2] || ".output")
 const deploymentDirectory = await mkdtemp(join(tmpdir(), "nubo-prebuilt-smoke-"))
+const configurationDirectory = await mkdtemp(join(tmpdir(), "nubo-prebuilt-config-"))
 const deployedOutput = join(deploymentDirectory, ".output")
+const runtimeEnvironmentFile = join(configurationDirectory, "nubo.env")
 const runtimeTitle = "Prebuilt Runtime Community"
 const runtimeDomain = "https://prebuilt-runtime.example"
 const runtimeVersion = "9.8.7-prebuilt"
@@ -118,18 +120,40 @@ try {
   const webPort = await reservePort()
   const logs = []
 
-  webProcess = spawn(process.execPath, [join(deployedOutput, "server", "index.mjs")], {
+  await writeFile(
+    runtimeEnvironmentFile,
+    [
+      "NITRO_HOST=127.0.0.1",
+      `NITRO_PORT=${webPort}`,
+      `NUXT_API_BASE_INTERNAL=http://127.0.0.1:${goapiPort}/${runtimeGoapiBase}`,
+      `NUXT_PUBLIC_DOMAIN=${runtimeDomain}`,
+      `NUXT_PUBLIC_GOAPI_BASE=${runtimeGoapiBase}`,
+      `NUXT_PUBLIC_TITLE=${runtimeTitle}`,
+      `NUXT_PUBLIC_VERSION=${runtimeVersion}`,
+      "",
+    ].join("\n"),
+    { mode: 0o600 },
+  )
+
+  const inheritedEnvironment = { ...process.env }
+  for (const key of [
+    "NITRO_HOST",
+    "NITRO_PORT",
+    "NUXT_API_BASE_INTERNAL",
+    "NUXT_PUBLIC_DOMAIN",
+    "NUXT_PUBLIC_GOAPI_BASE",
+    "NUXT_PUBLIC_TITLE",
+    "NUXT_PUBLIC_VERSION",
+  ]) {
+    delete inheritedEnvironment[key]
+  }
+
+  webProcess = spawn(process.execPath, [
+    `--env-file=${runtimeEnvironmentFile}`,
+    join(deployedOutput, "server", "index.mjs"),
+  ], {
     cwd: deploymentDirectory,
-    env: {
-      ...process.env,
-      NITRO_HOST: "127.0.0.1",
-      NITRO_PORT: String(webPort),
-      NUXT_API_BASE_INTERNAL: `http://127.0.0.1:${goapiPort}/${runtimeGoapiBase}`,
-      NUXT_PUBLIC_DOMAIN: runtimeDomain,
-      NUXT_PUBLIC_GOAPI_BASE: runtimeGoapiBase,
-      NUXT_PUBLIC_TITLE: runtimeTitle,
-      NUXT_PUBLIC_VERSION: runtimeVersion,
-    },
+    env: inheritedEnvironment,
     stdio: ["ignore", "pipe", "pipe"],
   })
   webProcess.stdout.on("data", (chunk) => logs.push(chunk.toString()))
@@ -193,4 +217,5 @@ finally {
   await stopWebProcess()
   if (mockGoapi.listening) await close(mockGoapi)
   await rm(deploymentDirectory, { recursive: true, force: true })
+  await rm(configurationDirectory, { recursive: true, force: true })
 }
