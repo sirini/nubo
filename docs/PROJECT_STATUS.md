@@ -2,38 +2,36 @@
 
 ## Active goal
 
-- Product-owner QA for the OpenAI image-description safety branch; no new AI feature is being added in this work unit.
+- Add focused Nitro authentication proxy regression tests for token refresh, refreshed cookies, request-body replay, and concurrent refresh deduplication.
 
 ## Recent completion
 
-- Stabilized the existing image-description path: an API key no longer implies consent, explicit opt-in defaults off, requests default to three images per post and one concurrent call, low-detail vision input and a 300-token output ceiling bound cost, and logs expose failures plus token usage.
-- Kept `gpt-4o-mini` as the default after the current official OpenAI model documentation confirmed that it remains active and supports image input; made the model configurable for future migrations.
-- Moved the Community OS roadmap and shared project status into tracked `docs/` files.
-- Defined the roadmap as an adaptable 5–10 year milestone map, not a mandatory implementation sequence.
-- Assigned backup creation, transfer, retention, and recovery execution to server operators; NUBO documents data locations, compatibility, and pre-update checks instead of providing a backup engine.
-- Added a staged scope for `nuboctl`, beginning with diagnostics rather than implementing the full command set at once.
-- Made NUBO and GOAPI working agreements refer to the same portable project documents.
+- Merged the first `S0-Q02` frontend test harness: separate Vitest projects cover fast Node unit tests and Nuxt runtime tests, with initial coverage for content utilities and every built-in skin registration.
+- Merged guarded OpenAI image descriptions: explicit opt-in defaults off, requests default to three images per post and one concurrent call, and token/failure logs make usage observable.
+- Changed the default vision model to `gpt-5.6-luna`, fixed JPEG data URL encoding, disabled unnecessary reasoning, and fixed the pre-Base64 vision input at 256px with JPEG quality 60.
+- Moved the Community OS roadmap and shared project status into tracked `docs/` files and defined the roadmap as an adaptable 5–10 year milestone map.
 
 ## Decisions
 
-- Keep AI capabilities disabled by default and require a feature-specific switch in addition to server-side credentials. Environment limits are the first safety layer; common admin controls and a usage ledger belong to a later vertical AI feature slice.
-- Verify current product state and agree on a small, testable scope before implementing a large roadmap item; do not add abstractions or infrastructure merely because they appear in the roadmap.
+- Build `S0-Q02` incrementally: unit/Nuxt harness first, Nitro authentication proxy tests next, then SSR/test DB and Playwright only when their fixtures are defined.
+- Keep AI capabilities disabled by default and require a feature-specific switch in addition to server-side credentials. Common admin controls and a usage ledger belong to a later vertical AI feature slice.
+- Use Node 26 through `nvm use 26` for frontend work and validation.
 - Keep Ubuntu 22.04 and its libvips 8.12 runtime supported because it remains a practical Cafe24 deployment target.
-- Use govips v2.16 as the only image backend; it is the newest tested line that builds on Ubuntu 22.04.
-- Continue using WebP for generated images; do not add AVIF output to the synchronous upload path.
-- Treat an OpenAI key as AI capability availability, not automatic feature consent. Future AI work should start with a common service, per-feature admin controls, hard quotas/usage ledger, asynchronous image metadata, then selection translation and writing assistance.
+- Use govips v2.16 as the only image backend and continue using WebP for generated images; do not add AVIF output to the synchronous upload path.
+- Backup creation, transfer, retention, and recovery remain server-operator responsibilities; NUBO documents data locations and compatibility rather than providing a backup engine.
 
 ## Verification
 
-- AI image-description safety: GOAPI `go test ./...`, `go vet ./...`, focused configuration/service race tests, and `./scripts/build-ubuntu22.sh` passed; the bundled Linux binary passed Ubuntu 22.04 glibc/libvips checks and Ubuntu 24.04 runtime link checks.
-- Documentation paths, internal roadmap references, backup responsibility wording, and both repository working agreements reviewed with targeted searches and diffs.
+- AI image descriptions: GOAPI `go test ./...`, `go vet ./...`, focused race tests, and the Ubuntu 22.04 release build passed; NUBO typecheck/build passed on Node 26.7.0.
+- Frontend test harness: clean `npm ci`, `npm test` (2 files, 4 tests), targeted ESLint, `npm run typecheck`, and `npm run build` passed.
 - Previous image work: GOAPI `go test ./...`, `go vet ./...`, Ubuntu 22.04 release build and runtime checks; NUBO typecheck/build and targeted lint passed.
 
 ## Open findings
 
-- Full NUBO ESLint still reports 358 pre-existing findings outside the imaging change.
+- Full NUBO ESLint still reports 358 pre-existing findings outside the completed work.
 - govips v2.17 advertises libvips 8.10+ but its generated `VipsTextWrap` binding does not compile against Ubuntu 22.04's libvips 8.12; keep v2.16 pinned while that deployment target remains.
+- Live OpenAI response quality, latency, and billing remain part of product-owner server QA because automated tests do not spend API credits.
 
 ## Next action
 
-- Complete and product-owner QA the image-description safety branch, then begin the first bounded `S0-Q02` frontend test-harness slice.
+- Create the next `S0-Q02` branch from merged `main` and implement Nitro refresh/cookie/body replay regression tests.

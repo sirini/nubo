@@ -9,6 +9,10 @@
     "lint": "eslint .",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "test": "vitest run",
+    "test:nuxt": "vitest run --project nuxt",
+    "test:unit": "vitest run --project unit",
+    "test:watch": "vitest",
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
@@ -82,14 +86,18 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^4.1.0",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^24.3.1",
+    "@vue/test-utils": "^2.4.11",
+    "happy-dom": "^20.11.2",
     "sass-embedded": "^1.90.0",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
     "vue-tsc": "^3.3.9"
   },
   "overrides": {
