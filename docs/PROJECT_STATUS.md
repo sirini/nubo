@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Build the next bounded `S2-Q02` slice: systemd and reverse-proxy templates for the integrated release bundle.
+- Define the first bounded `S2-Q03` slice: read-only `nuboctl doctor` and `nuboctl status` diagnostics.
 
 ## Recent completion
 
+- Added renderable systemd units plus Nginx and Caddy examples to the integrated archive. Installation can substitute users, release/config/state paths, Node, domain, body limit, and an existing upload root; GOAPI alone receives write access while the Nuxt release stays read-only.
 - Made the upload filesystem root independently injectable through `NUBO_UPLOAD_DIR` while preserving the legacy `./upload` default, existing symlinks, and stable `/upload/...` DB/HTTP paths; upload path resolution rejects traversal outside the configured root.
 - Added a minimal integrated release builder that packages the proven `.output`, an official Ubuntu 22.04 GOAPI build, the shared environment sample, independently versioned component provenance, and SHA-256 checksums; it extracts and verifies the archive on Ubuntu 24.04 and reruns the web artifact smoke suite without including secrets or mutable data.
 - Defined one persistent runtime environment-file contract for both processes: GOAPI accepts `NUBO_ENV_FILE`, prebuilt Node uses `--env-file`, process values override file values, and legacy source installs still default to `.env`; the shared sample now uses concrete Nuxt values that require no variable expansion.
@@ -23,6 +24,7 @@
 
 ## Decisions
 
+- Treat systemd and reverse-proxy files as installer inputs with explicit `@TOKEN@` substitution, not as hard-coded units to copy blindly. Keep systemd as the first Ubuntu adapter and leave room for other service managers later.
 - Treat `/var/lib/nubo/upload` as the Linux prebuilt default selected by the installer/service working directory, not a hard-coded product path. Operators may set `NUBO_UPLOAD_DIR` to an existing absolute directory such as `/var/www/<domain>/upload`.
 - Keep the minimal archive limited to immutable application artifacts and metadata. Record the NUBO and GOAPI versions, commits, and dirty states independently; add service templates and `nuboctl` in later bounded slices.
 - Keep one concrete environment file outside release directories and pass it explicitly to both processes. Paired GOAPI/Nuxt values remain duplicated in the file until a later installer generates them; do not depend on shell-style `${...}` expansion.
@@ -40,6 +42,7 @@
 
 ## Verification
 
+- Linux service templates: focused ESLint and 2-file/3-test Vitest coverage passed; rendered units using an existing `/var/www/<domain>/upload` path passed `systemd-analyze verify`, and rendered Nginx/Caddy examples passed their official configuration validators. The rebuilt integrated archive passed the official GOAPI Ubuntu 22.04/24.04 checks, checksum/manifest verification, and prebuilt web smoke suite and contained every service template. The tracked `goapi-linux` was replaced only through GOAPI's official Ubuntu 22.04 builder.
 - Configurable upload root: focused config/utility/service/handler tests, full GOAPI tests, and `go vet ./...` passed; the shared environment sample regression confirms the legacy `./upload` default remains explicit.
 - Integrated release bundle: the builder completed the required GOAPI Ubuntu 22.04 build and Ubuntu 22.04/24.04 runtime checks, verified checksums before and after archive transport, parsed the extracted manifest, confirmed secrets/mutable data/root dependencies were absent, and passed the prebuilt web smoke suite from the Ubuntu 24.04-extracted artifact.
 - Shared runtime configuration: GOAPI focused config tests, `go test ./...`, and `go vet ./...` passed; the official Ubuntu 22.04 build completed, passed its Ubuntu 22.04/24.04 runtime checks, and the bundled binary loaded an external `NUBO_ENV_FILE` through database initialization. NUBO targeted ESLint, `npm test` (4 files, 8 tests), typecheck, production build, local prebuilt smoke, and Ubuntu 22.04/24.04 prebuilt smoke passed on Node 26.7.0.
@@ -60,4 +63,4 @@
 
 ## Next action
 
-- Define systemd units and Nginx/Caddy examples that consume `/etc/nubo/nubo.env`, keep uploads under `/var/lib/nubo/upload`, and run the two immutable release entrypoints with explicit users and restart behavior.
+- Define `nuboctl doctor` and `nuboctl status` as read-only checks over platform/runtime dependencies, manifest/checksums, environment and upload paths, systemd state, and HTTP health/readiness before implementing installation or mutation commands.

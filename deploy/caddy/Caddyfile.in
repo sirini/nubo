@@ -1,0 +1,10 @@
+@NUBO_DOMAIN@ {
+	handle_path /upload/* {
+		root * @NUBO_UPLOAD_DIR@
+		file_server
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3000
+	}
+}

@@ -1,0 +1,26 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name @NUBO_DOMAIN@;
+
+    client_max_body_size @NUBO_MAX_BODY_SIZE@;
+
+    location = /upload {
+        return 301 /upload/;
+    }
+
+    location /upload/ {
+        alias @NUBO_UPLOAD_DIR@/;
+        autoindex off;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

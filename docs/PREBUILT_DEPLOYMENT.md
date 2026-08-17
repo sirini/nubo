@@ -90,8 +90,18 @@ location /upload/ {
 }
 ```
 
-The final directory, service, reverse-proxy, manifest, checksum, and rollback contracts belong to
-the later integrated release bundle and `nuboctl` work.
+The final directory, installation, and rollback contracts belong to the later `nuboctl` work.
+
+## Linux service templates
+
+The integrated bundle contains renderable templates under `share/systemd`, `share/nginx`, and
+`share/caddy`. Their `@TOKEN@` values let the installer keep the standard `/opt/nubo`, `/etc/nubo`,
+and `/var/lib/nubo` layout or adopt an existing absolute upload directory. The GOAPI unit is the
+only application process granted write access to that directory; the web unit treats the release as
+read-only, and the selected reverse proxy serves the same directory at `/upload/`.
+
+The templates are not yet a one-command installation interface. Until `nuboctl install` renders,
+installs, and verifies them, follow `share/README.md` and replace every token before using them.
 
 ## Minimal integrated bundle
 
@@ -105,4 +115,6 @@ It rebuilds GOAPI through its required Ubuntu 22.04 build script, records both r
 `manifest.json`, generates SHA-256 checksums, creates `dist/nubo-<version>-linux-amd64.tar.zst`, and
 extracts it again on Ubuntu 24.04 before running the prebuilt web smoke suite. A dirty source state is
 recorded in the manifest so a development artifact cannot be mistaken for a clean official release.
-The bundle intentionally excludes secrets, uploads, root dependencies, service files, and `nuboctl`.
+The bundle intentionally excludes secrets, uploads, root dependencies, rendered service files, and
+`nuboctl`; it includes only the unprivileged service and proxy templates used as future installer
+inputs.

@@ -763,6 +763,7 @@ Docker는 선택지를 늘리는 수단이지 유일한 설치 경로가 아니�
 
 - [x] 릴리스 외부의 단일 환경 파일을 GOAPI와 prebuilt Nuxt가 공유하는 런타임 계약
 - [x] 공식 GOAPI 빌드, Nuxt `.output`, 환경 샘플, 독립적인 컴포넌트 provenance, checksum을 포함한 최소 통합 archive와 Ubuntu 24.04 재검증
+- [x] 설치 경로와 업로드 경로를 렌더링할 수 있는 systemd, Nginx, Caddy 템플릿
 
 ### 권장 산출물
 

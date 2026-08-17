@@ -1,0 +1,7 @@
+[Unit]
+Description=NUBO application services
+Wants=nubo-goapi.service nubo-web.service
+After=nubo-goapi.service nubo-web.service
+
+[Install]
+WantedBy=multi-user.target

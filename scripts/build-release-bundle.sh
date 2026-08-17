@@ -20,6 +20,7 @@ trap cleanup EXIT
 
 for NUBO_REQUIRED_FILE in \
   "${NUBO_PROJECT_ROOT}/.output/server/index.mjs" \
+  "${NUBO_PROJECT_ROOT}/deploy/README.md" \
   "${NUBO_PROJECT_ROOT}/env.sample" \
   "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh"; do
   if [[ ! -f "${NUBO_REQUIRED_FILE}" ]]; then
@@ -40,6 +41,7 @@ fi
 
 mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/share"
 cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
+cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
 "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" "${NUBO_STAGE_ROOT}/bin/goapi"
 
@@ -65,7 +67,8 @@ writeFileSync(manifestPath, JSON.stringify({
   },
   entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi" },
   configuration: { sample: "share/env.sample", externalPath: "/etc/nubo/nubo.env" },
-  mutableData: { upload: "/var/lib/nubo/upload" },
+  mutableData: { uploadDefault: "/var/lib/nubo/upload", uploadVariable: "NUBO_UPLOAD_DIR" },
+  serviceTemplates: { systemd: "share/systemd", nginx: "share/nginx", caddy: "share/caddy" },
 }, null, 2) + "\n", { mode: 0o644 })
 EOF
 

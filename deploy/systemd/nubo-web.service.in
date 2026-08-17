@@ -1,0 +1,23 @@
+[Unit]
+Description=NUBO Nuxt web server
+After=network-online.target nubo-goapi.service
+Wants=network-online.target nubo-goapi.service
+PartOf=nubo.target
+
+[Service]
+Type=simple
+User=@NUBO_USER@
+Group=@NUBO_GROUP@
+WorkingDirectory=@NUBO_RELEASE_DIR@/web
+ExecStart=@NODE_BINARY@ --env-file=@NUBO_ENV_FILE@ @NUBO_RELEASE_DIR@/web/.output/server/index.mjs
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+UMask=0027
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+
+[Install]
+WantedBy=nubo.target
