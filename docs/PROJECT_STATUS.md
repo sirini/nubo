@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Start the next session with a bounded `S2-Q01` PoC that runs a prebuilt Nuxt `.output` without source files or root `node_modules`.
+- Product-owner QA for the completed `S2-Q01` prebuilt Nuxt PoC and its artifact/runtime boundary.
 
 ## Recent completion
 
+- Proved that a clean Node 26 build's `.output` runs without source files or root `node_modules` on Node 24/26 and Ubuntu 22.04/24.04; added repeatable local/container smoke tests for runtime overrides, SSR, static assets, GOAPI proxying, multipart bodies, and external upload ownership.
 - Added public `/health`, `/ready`, and `/version` endpoints to Nitro and GOAPI; readiness checks the real GOAPI/DB dependency chain while responses hide internal failure details.
 - Audited post, comment, and attachment ownership checks and added focused GOAPI regressions for cross-board reads and mutations; no missing authorization guard was found in the reviewed paths.
 - Changed OpenAI vision input to send the generated 512px small WebP thumbnail directly, without a second 256px resize or JPEG re-encode; retained `detail: low` and disabled reasoning.
@@ -18,6 +19,7 @@
 
 ## Decisions
 
+- Treat `.output` as the complete replaceable web artifact; keep source, root dependencies, configuration, and uploads outside it. Production must inject concrete `NUXT_API_BASE_INTERNAL` and matching `NUXT_PUBLIC_*` values through the process manager rather than rely on automatic `.env` loading or `${...}` expansion.
 - Use the plain `/health`, `/ready`, and `/version` paths. The Kubernetes-style `z` suffix is only an ecosystem convention and adds no value to NUBO's own HTTP API.
 - Treat status endpoints as the last small prerequisite for the prebuilt `.output` PoC; defer dashboard warnings, startup enforcement, and build-commit metadata to later release-manifest work.
 - Test security invariants at the GOAPI authorization boundary, not every frontend path. Add DB-backed concurrency infrastructure only when an observed defect or risky database change requires it; do not optimize for broad coverage percentages.
@@ -31,6 +33,7 @@
 
 ## Verification
 
+- Prebuilt PoC: clean source snapshot `npm ci`, `npm test` (3 files, 7 tests), `npm run typecheck`, and `npm run build` passed on Node 26.7.0; focused ESLint and `git diff --check` passed. The isolated-artifact smoke suite passed on local Node 26.7.0 and Node 24.3.0 and in clean Ubuntu 22.04/24.04 containers with Node's `libatomic1` runtime dependency installed. Full lint remains at the known baseline of 358 findings (221 errors, 137 warnings).
 - Status endpoints: GOAPI focused tests, `go test ./...`, `go vet ./...`, Ubuntu 22.04/24.04 binary checks; NUBO targeted ESLint, 3-file/7-test Vitest suite, typecheck, production build, and built-server HTTP smoke passed on Node 26.7.0.
 - Core resource authorization: focused GOAPI service tests, service race tests, `go test ./...`, and `go vet ./...` passed; authenticated handlers overwrite client-supplied user IDs with the JWT identity.
 - Nitro proxy slice on Node 26.7.0: targeted ESLint, `npm test` (3 files, 7 tests), `npm run typecheck`, and `npm run build` passed.
@@ -47,4 +50,4 @@
 
 ## Next action
 
-- In a fresh session, define the prebuilt artifact boundary and verify runtime environment overrides, static assets, SSR, GOAPI proxying, and upload-path behavior from a clean deployment directory.
+- Product owner reviews the documented prebuilt contract and QA commands; after approval, mark `S2-Q01` done and use the proven boundary when scoping the later integrated release bundle.

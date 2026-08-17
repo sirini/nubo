@@ -3,8 +3,8 @@ import { resolve } from "pathe"
 
 const env = process.env
 const GOAPI_PORT = env.NUXT_PUBLIC_GOAPI_PORT || "3006"
-const GOAPI_PATH = env.NUXT_PUBLIC_GOAPI_PATH || "goapi"
-const GOAPI_URL = `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_PATH}`
+const GOAPI_PATH = env.NUXT_PUBLIC_GOAPI_BASE || env.NUXT_PUBLIC_GOAPI_PATH || "goapi"
+const GOAPI_URL = env.NUXT_API_BASE_INTERNAL || `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_PATH}`
 
 // 기본 스킨 설정
 const defaultSkins = {

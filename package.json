@@ -11,6 +11,8 @@
     "postinstall": "nuxt prepare",
     "test": "vitest run",
     "test:nuxt": "vitest run --project nuxt",
+    "test:prebuilt": "node scripts/prebuilt-smoke.mjs",
+    "test:prebuilt:ubuntu": "bash scripts/prebuilt-ubuntu-smoke.sh",
     "test:unit": "vitest run --project unit",
     "test:watch": "vitest",
     "typecheck": "nuxt typecheck"
