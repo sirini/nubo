@@ -2,15 +2,16 @@
 
 ## Active goal
 
-- Product-owner QA for the Nitro authentication proxy regression slice on `test/nitro-auth-proxy`.
+- Decide whether to retain and exactly pin security-patched Nuxt 4.5.2 or knowingly accept the risks of a 4.4.2 low-memory build fallback before merging the current QA work.
 
 ## Recent completion
 
+- Changed OpenAI vision input to send the generated 512px small WebP thumbnail directly, without a second 256px resize or JPEG re-encode; retained `detail: low` and disabled reasoning.
 - Added Nitro regression coverage for 401 refresh/retry, refreshed and backend cookies, binary request-body replay, missing refresh credentials, and concurrent refresh deduplication.
 - Made the proxy utility's H3 and runtime-config dependencies explicit so the production module can be tested directly without changing request behavior.
 - Merged the first `S0-Q02` frontend test harness: separate Vitest projects cover fast Node unit tests and Nuxt runtime tests, with initial coverage for content utilities and every built-in skin registration.
 - Merged guarded OpenAI image descriptions: explicit opt-in defaults off, requests default to three images per post and one concurrent call, and token/failure logs make usage observable.
-- Changed the default vision model to `gpt-5.6-luna`, fixed JPEG data URL encoding, disabled unnecessary reasoning, and fixed the pre-Base64 vision input at 256px with JPEG quality 60.
+- Changed the default vision model to `gpt-5.6-luna`, fixed image data URL encoding, and disabled unnecessary reasoning.
 - Moved the Community OS roadmap and shared project status into tracked `docs/` files and defined the roadmap as an adaptable 5–10 year milestone map.
 
 ## Decisions
@@ -31,10 +32,12 @@
 
 ## Open findings
 
+- Nuxt 4.4.2 predates the official 4.5.1 security fixes for multiple 4.x issues. NUBO does not currently use the affected server-island, authenticated cache/ISR, or route-rule authorization features, but pinning a known vulnerable framework conflicts with the security-first stabilization direction.
+- Nuxt 4.5 moved the default build layer to Vite 8; this is the most material upstream change that could explain the reported low-memory build regression. Nuxt describes its optional Rspack 2 builder as faster and lighter, but adopting it requires a separate compatibility test rather than an incidental config switch.
 - Full NUBO ESLint still reports 358 pre-existing findings outside the completed work.
 - govips v2.17 advertises libvips 8.10+ but its generated `VipsTextWrap` binding does not compile against Ubuntu 22.04's libvips 8.12; keep v2.16 pinned while that deployment target remains.
 - Live OpenAI response quality, latency, and billing remain part of product-owner server QA because automated tests do not spend API credits.
 
 ## Next action
 
-- Product-owner QA of `test/nitro-auth-proxy`; merge it into `main` only after approval, then choose the next bounded stabilization slice.
+- Resolve the Nuxt version decision. Recommended path: pin 4.5.2 and move low-resource production builds off-host or evaluate the Rspack builder separately; merge the QA branches only after product-owner approval.
