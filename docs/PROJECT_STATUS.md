@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Product-owner QA for the completed `S2-Q01` prebuilt Nuxt PoC and its artifact/runtime boundary.
+- Agree on the next bounded release-distribution slice after completing `S2-Q01`.
 
 ## Recent completion
 
+- Product-owner QA approved the `S2-Q01` prebuilt artifact/runtime boundary for merge to `main`.
 - Proved that a clean Node 26 build's `.output` runs without source files or root `node_modules` on Node 24/26 and Ubuntu 22.04/24.04; added repeatable local/container smoke tests for runtime overrides, SSR, static assets, GOAPI proxying, multipart bodies, and external upload ownership.
 - Added public `/health`, `/ready`, and `/version` endpoints to Nitro and GOAPI; readiness checks the real GOAPI/DB dependency chain while responses hide internal failure details.
 - Audited post, comment, and attachment ownership checks and added focused GOAPI regressions for cross-board reads and mutations; no missing authorization guard was found in the reviewed paths.
@@ -50,4 +51,4 @@
 
 ## Next action
 
-- Product owner reviews the documented prebuilt contract and QA commands; after approval, mark `S2-Q01` done and use the proven boundary when scoping the later integrated release bundle.
+- Explain and agree on a bounded first slice of `S2-Q02` before implementing an integrated NUBO/GOAPI release bundle.
