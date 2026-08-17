@@ -156,7 +156,7 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 - `OAUTH_GOOGLE_*`, `OAUTH_NAVER_*`, `OAUTH_KAKAO_*`: 소셜 로그인 사용 시 설정
 - `OPENAI_API_KEY`: OpenAI 연동 자격 증명. 키만 설정해도 AI 기능은 활성화되지 않음
 - `OPENAI_IMAGE_DESCRIPTION_ENABLED`: 업로드 이미지 설명 생성을 명시적으로 활성화 (`false`가 기본값)
-- `OPENAI_IMAGE_DESCRIPTION_MODEL`: 이미지 입력을 지원하는 모델 ID (`gpt-4o-mini`가 기본값)
+- `OPENAI_IMAGE_DESCRIPTION_MODEL`: 이미지 입력을 지원하는 모델 ID (`gpt-5.6-luna`가 기본값)
 - `OPENAI_IMAGE_DESCRIPTION_MAX_PER_POST`, `OPENAI_IMAGE_DESCRIPTION_CONCURRENCY`: 게시글당 생성 수와 서버 전체 동시 호출 상한
 - `SYNC_SECRET_KEY`: 외부 게시물 동기화 API 전용 비밀키. 자동 생성되며 공개하면 안 됨
 - 이미지 크기와 업로드 제한은 `GOAPI_*_SIZE`, `GOAPI_FILE_SIZE_LIMIT`로 조정
