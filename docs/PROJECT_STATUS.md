@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Complete the approved Nitro authentication regression and direct 512px vision-thumbnail work, then continue security-first stabilization from `main`.
+- Finish a lean `S0-Q01` security slice that locks the highest-risk cross-board resource boundaries without pursuing broad coverage targets or new test infrastructure.
 
 ## Recent completion
 
+- Audited post, comment, and attachment ownership checks and added focused GOAPI regressions for cross-board reads and mutations; no missing authorization guard was found in the reviewed paths.
 - Changed OpenAI vision input to send the generated 512px small WebP thumbnail directly, without a second 256px resize or JPEG re-encode; retained `detail: low` and disabled reasoning.
 - Added Nitro regression coverage for 401 refresh/retry, refreshed and backend cookies, binary request-body replay, missing refresh credentials, and concurrent refresh deduplication.
 - Made the proxy utility's H3 and runtime-config dependencies explicit so the production module can be tested directly without changing request behavior.
@@ -16,6 +17,7 @@
 
 ## Decisions
 
+- Test security invariants at the GOAPI authorization boundary, not every frontend path. Add DB-backed concurrency infrastructure only when an observed defect or risky database change requires it; do not optimize for broad coverage percentages.
 - Keep the existing Nuxt `^4.5.2` dependency unchanged. Low-resource servers may receive a prebuilt `.output` from a higher-resource build machine rather than downgrading to the known-vulnerable 4.4.2 release.
 - Build `S0-Q02` incrementally: unit/Nuxt harness first, Nitro authentication proxy tests next, then SSR/test DB and Playwright only when their fixtures are defined.
 - Keep AI capabilities disabled by default and require a feature-specific switch in addition to server-side credentials. Common admin controls and a usage ledger belong to a later vertical AI feature slice.
@@ -26,6 +28,7 @@
 
 ## Verification
 
+- Core resource authorization: focused GOAPI service tests, service race tests, `go test ./...`, and `go vet ./...` passed; authenticated handlers overwrite client-supplied user IDs with the JWT identity.
 - Nitro proxy slice on Node 26.7.0: targeted ESLint, `npm test` (3 files, 7 tests), `npm run typecheck`, and `npm run build` passed.
 - AI image descriptions: GOAPI `go test ./...`, `go vet ./...`, focused race tests, and the Ubuntu 22.04 release build passed; NUBO typecheck/build passed on Node 26.7.0.
 - Frontend test harness: clean `npm ci`, `npm test` (2 files, 4 tests), targeted ESLint, `npm run typecheck`, and `npm run build` passed.
@@ -40,4 +43,4 @@
 
 ## Next action
 
-- Continue the next agreed roadmap stabilization slice from the updated `main` branches while product-owner server QA covers live OpenAI behavior and deployment-specific regressions.
+- Product-owner review of the focused cross-board regression scope, then merge the GOAPI test branch and this documentation branch before choosing the next small security invariant.
