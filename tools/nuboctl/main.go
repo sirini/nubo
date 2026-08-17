@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 
 type options struct {
 	releaseDir  string
@@ -28,6 +28,20 @@ func run(args []string) int {
 	}
 
 	switch args[0] {
+	case "install":
+		options, err := parseInstallOptions(args[1:])
+		if err != nil {
+			if err == flag.ErrHelp {
+				return 0
+			}
+			fmt.Fprintln(os.Stderr, err)
+			return 2
+		}
+		if err := runInstall(options, systemRunner{}, true); err != nil {
+			fmt.Fprintln(os.Stderr, "설치 준비 실패:", err)
+			return 1
+		}
+		return 0
 	case "doctor":
 		options, err := parseOptions("doctor", args[1:])
 		if err != nil {
@@ -117,5 +131,5 @@ func resolveExecutable(executable string) string {
 }
 
 func printUsage() {
-	fmt.Fprintln(os.Stderr, "사용법: nuboctl <doctor|status|version> [옵션]")
+	fmt.Fprintln(os.Stderr, "사용법: nuboctl <install|doctor|status|version> [옵션]")
 }

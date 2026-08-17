@@ -41,6 +41,7 @@ cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
 "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl"
 "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" "${NUBO_STAGE_ROOT}/bin/goapi"
+NUBOCTL_VERSION="$("${NUBO_STAGE_ROOT}/nuboctl" version | awk '{print $2}')"
 
 NUBO_COMMIT="$(git -C "${NUBO_PROJECT_ROOT}" rev-parse HEAD)"
 GOAPI_COMMIT="$(git -C "${NUBO_GOAPI_ROOT}" rev-parse HEAD)"
@@ -61,6 +62,7 @@ writeFileSync(manifestPath, JSON.stringify({
   components: {
     nubo: { version: "${NUBO_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
     goapi: { version: "${NUBO_GOAPI_VERSION}", commit: "${GOAPI_COMMIT}", dirty: ${GOAPI_DIRTY} },
+    nuboctl: { version: "${NUBOCTL_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
   },
   entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi", nuboctl: "nuboctl" },
   configuration: { sample: "share/env.sample", externalPath: "/etc/nubo/nubo.env" },

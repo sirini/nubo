@@ -2,10 +2,11 @@
 
 ## Active goal
 
-- Define the next bounded `S2-Q03` slice: safe `nuboctl install` preflight, path preparation, environment generation, and template rendering without touching an existing Nginx site.
+- Product-owner QA the safe `nuboctl install` preparation flow, then bound systemd process controls and final activation separately from DB/bootstrap work.
 
 ## Recent completion
 
+- Added `nuboctl install` preparation with mandatory release/Node/input checks, dry-run visibility, service identity and path creation, generated deployment settings and secrets, conflict-safe systemd/Nginx rendering, and idempotent reruns. It never overwrites an operator-owned file or activates/reloads a service, and it stops before all writes when the target domain is already present anywhere in the Nginx tree.
 - Added a static Linux amd64 `nuboctl` to the integrated archive. Its read-only `doctor` and `status` commands diagnose the supported Ubuntu platform, runtime dependencies, exhaustive release integrity, environment permissions and required values, upload access, systemd/Nginx state, and HTTP health without mutating the server.
 - Narrowed the official Ubuntu reverse proxy to Nginx, added the missing direct `/goapi/` route for OAuth/RSS, made both application listeners explicit loopback endpoints for new installs, and defined existing target-domain Nginx configuration as read-only to `nuboctl`.
 - Added renderable systemd units plus an Nginx example to the integrated archive. Installation can substitute users, release/config/state paths, ports, the GOAPI path, Node, domain, body limit, and an existing upload root; GOAPI alone receives write access while the Nuxt release stays read-only.
@@ -26,6 +27,8 @@
 
 ## Decisions
 
+- Split installation preparation from activation. The first `install` slice may create the service account, state/upload paths, a new external environment file, inactive systemd units, and an unenabled Nginx site; it must not fill DB/admin placeholders, run DB setup, call `daemon-reload`, enable/start units, enable/reload Nginx, or manage TLS.
+- Treat an existing environment file as operator-owned: validate and preserve it. Treat rendered systemd/Nginx files as idempotent only while byte-identical; otherwise fail instead of overwriting. Scan the whole Nginx configuration tree for exact, wildcard, and common regex coverage of the requested domain before writing anything.
 - Keep only the latest local release archive. A successful same-version build replaces the previous `dist/` output after verification; historical artifacts remain reproducible from Git commits and are not retained under ad-hoc backup names.
 - Keep the first `nuboctl` binary self-contained and statically linked. `doctor` performs slower exhaustive release verification, while `status` favors operational checks and does not recalculate every checksum; both commands remain strictly read-only.
 - Support Nginx as the only first-phase Ubuntu reverse proxy. On a clean target-domain configuration `nuboctl install` may render and validate a new site; if that domain is already configured or an installation is adopted, it must not edit or reload Nginx. Certbot and TLS lifecycle remain operator-owned.
@@ -47,6 +50,7 @@
 
 ## Verification
 
+- `nuboctl install`: Go unit/race/vet tests passed for actual preparation, rerun idempotency, dry-run immutability, operator-file conflicts, environment/domain validation, and exact/wildcard/regex Nginx ownership. An extracted integrated archive ran `nuboctl 0.2.0` under Node 26 in a clean container, created and then preserved all expected files, generated `0640` secrets/config, and passed `systemd-analyze verify` plus official `nginx -t`; the release builder and prebuilt web smoke suite also passed.
 - `nuboctl`: unit tests, race tests, and `go vet ./...` passed. The static binary ran on Ubuntu 22.04/24.04; the integrated release rebuilt the official GOAPI binary, verified and extracted the archive on Ubuntu 24.04, passed the web smoke suite, and an extracted `doctor` run passed platform, manifest, target, and exhaustive checksum checks while correctly reporting absent server dependencies.
 - Nginx and loopback boundary: GOAPI focused/full tests and `go vet ./...` passed; the legacy absent-host default remains `0.0.0.0` while the shared prebuilt sample selects `127.0.0.1`. The rendered Nginx template passed its official validator with separate Nuxt and GOAPI upstreams and forwarded headers.
 - Linux service templates: focused ESLint and 2-file/3-test Vitest coverage passed; rendered units using an existing `/var/www/<domain>/upload` path passed `systemd-analyze verify`, and the rendered Nginx example passed its official configuration validator. The rebuilt integrated archive passed the official GOAPI Ubuntu 22.04/24.04 checks, checksum/manifest verification, and prebuilt web smoke suite and contained every service template. The tracked `goapi-linux` was replaced only through GOAPI's official Ubuntu 22.04 builder.
@@ -70,4 +74,4 @@
 
 ## Next action
 
-- Bound the first `nuboctl install` implementation around explicit inputs, idempotent directory/environment/template preparation, dry-run visibility, and a hard stop when the target domain already has an Nginx configuration; defer DB mutation, service activation, and health-driven completion until that foundation is verified.
+- After product-owner QA, define systemd-backed `start`, `stop`, `restart`, and bounded journal viewing so activation can reuse tested controls. Keep GOAPI DB/bootstrap, Nginx enable/reload, readiness-driven completion, and first-admin guidance as explicit later installation slices.

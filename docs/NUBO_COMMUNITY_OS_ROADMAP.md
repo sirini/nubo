@@ -796,6 +796,7 @@ GOAPI의 공식 x86-64 바이너리는 반드시 `scripts/build-ubuntu22.sh` 산
 ### 완료된 기반
 
 - [x] Phase 1 읽기 전용 `doctor`와 `status`: 플랫폼·런타임·release checksum·환경/업로드·systemd·Nginx·HTTP 상태 진단
+- [x] Phase 2 설치 준비: dry-run, 사전 검사, 경로/환경 생성, systemd/Nginx 렌더링, 기존 설정 보호
 
 큰 명령 집합을 한 번에 구현하지 않는다. 각 단계는 실제 운영에서 검증한 뒤 다음 단계로 확장한다.
 

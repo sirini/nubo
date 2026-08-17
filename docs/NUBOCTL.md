@@ -1,7 +1,42 @@
-# nuboctl 진단 명령
+# nuboctl 설치 준비와 진단
 
-현재 `nuboctl` MVP는 Ubuntu 서버 상태를 읽기만 하는 `doctor`와 `status`를 제공한다. 설정 파일,
-Nginx, systemd, 데이터베이스, 업로드 파일을 생성·수정·삭제하거나 서비스를 재시작하지 않는다.
+현재 `nuboctl` MVP는 안전한 설치 준비를 하는 `install`과 서버 상태를 읽기만 하는
+`doctor`, `status`를 제공한다.
+
+## install
+
+실제 변경 전에 반드시 dry-run으로 계획을 확인한다.
+
+```bash
+sudo ./nuboctl install \
+  --domain community.example.com \
+  --release /opt/nubo/releases/1.2.1 \
+  --upload /var/www/community.example.com/upload \
+  --dry-run
+```
+
+계획이 올바르면 `--dry-run`만 제거하고 같은 명령을 실행한다. 기본값은 `nubo` 사용자/그룹,
+`/etc/nubo/nubo.env`, `/var/lib/nubo`, `/var/lib/nubo/upload`, Nuxt `3000`, GOAPI `3006`이다.
+
+`install`이 수행하는 일:
+
+- release manifest와 전체 checksum, 필수 entrypoint/템플릿 검증
+- 서비스 사용자/그룹과 상태·업로드 경로 준비
+- 환경 파일이 없으면 sample에서 생성하고 JWT/SYNC 비밀값을 무작위로 생성
+- 환경 파일을 `0640`, `root:<서비스 그룹>`으로 저장
+- systemd unit을 `/etc/systemd/system`에 렌더링
+- Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
+
+안전 규칙:
+
+- 기존 환경 파일은 덮어쓰지 않고 권한·도메인·포트를 검증한 후 보존한다.
+- 기존 systemd/Nginx 파일이 예상 결과와 다르면 덮어쓰지 않고 실패한다.
+- Nginx 전체 설정 트리에서 대상 도메인이 발견되면 어떤 파일도 만들기 전에 중단한다.
+- `nuboctl`이 이전에 만든 동일한 파일은 변경 없이 보존하며 재실행해도 결과가 같다.
+
+이 단계는 DB/관리자 placeholder를 자동 입력하지 않는다. systemd `daemon-reload`·enable·start,
+Nginx enable·reload, Certbot/TLS도 하지 않는다. 환경 파일을 완성하고 `doctor`를 다시 실행한 뒤
+후속 프로세스 제어 단계로 넘어간다.
 
 ## doctor
 
@@ -52,4 +87,4 @@ sudo /opt/nubo/current/nuboctl status
 - `1`: 하나 이상의 검사 실패
 - `2`: 잘못된 명령이나 옵션
 
-`install`, `start`, `stop`, `restart`, `logs`, `update`, `rollback`은 아직 구현되지 않았다.
+`start`, `stop`, `restart`, `logs`, `update`, `rollback`은 아직 구현되지 않았다.

@@ -1,11 +1,10 @@
 # NUBO Linux service templates
 
-These templates are inputs for the future `nuboctl install` command. They are not ready to copy into
-`/etc` until every `@TOKEN@` has been replaced. The supported first target is Ubuntu 22.04/24.04 on
-amd64.
+These templates are inputs for `nuboctl install`. They are not ready to copy into `/etc` until every
+`@TOKEN@` has been replaced. The supported first target is Ubuntu 22.04/24.04 on amd64.
 
-The release-root `nuboctl` currently provides read-only `doctor` and `status` commands. It does not
-render or install these templates yet; see `docs/NUBOCTL.md` in the source repository.
+The release-root `nuboctl` renders these files without activating or reloading systemd or Nginx and
+also provides read-only `doctor` and `status` commands; see `docs/NUBOCTL.md` in the source repository.
 
 Recommended defaults:
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"os/user"
@@ -70,17 +71,24 @@ func checkNode(runner commandRunner) checkResult {
 	if err != nil {
 		return fail("Node.js", compactOutput(output, err))
 	}
+	if err := validateNodeVersion(output); err != nil {
+		return fail("Node.js", err.Error())
+	}
+	return pass("Node.js", strings.TrimPrefix(strings.TrimSpace(output), "v"))
+}
+
+func validateNodeVersion(output string) error {
 	version := strings.TrimPrefix(strings.TrimSpace(output), "v")
 	parts := strings.Split(version, ".")
 	if len(parts) < 2 {
-		return fail("Node.js", "버전을 해석할 수 없습니다: "+version)
+		return fmt.Errorf("버전을 해석할 수 없습니다: %s", version)
 	}
 	major, majorErr := strconv.Atoi(parts[0])
 	minor, minorErr := strconv.Atoi(parts[1])
 	if majorErr != nil || minorErr != nil || major < 24 || major >= 27 || (major == 24 && minor < 11) {
-		return fail("Node.js", version+"은 지원 범위 >=24.11.0 <27 밖입니다")
+		return fmt.Errorf("%s은 지원 범위 >=24.11.0 <27 밖입니다", version)
 	}
-	return pass("Node.js", version)
+	return nil
 }
 
 func checkLibvips(runner commandRunner) checkResult {

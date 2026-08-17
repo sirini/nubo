@@ -14,6 +14,7 @@ describe("Linux release templates", () => {
     expect(goapi).toContain('Environment="NUBO_ENV_FILE=@NUBO_ENV_FILE@"')
     expect(goapi).toContain("WorkingDirectory=@NUBO_STATE_DIR@")
     expect(goapi).toContain("ReadWritePaths=@NUBO_UPLOAD_DIR@")
+    expect(goapi).toContain("UMask=0022")
     expect(goapi).toContain("ExecStart=@NUBO_RELEASE_DIR@/bin/goapi")
     expect(web).toContain("@NODE_BINARY@ --env-file=@NUBO_ENV_FILE@")
     expect(web).toContain("@NUBO_RELEASE_DIR@/web/.output/server/index.mjs")
