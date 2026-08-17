@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- Finish the minimal `S0-Q04` runtime status surface, then use it to validate a no-build Nuxt `.output` deployment PoC instead of extending the stabilization phase indefinitely.
+- Start the next session with a bounded `S2-Q01` PoC that runs a prebuilt Nuxt `.output` without source files or root `node_modules`.
 
 ## Recent completion
 
@@ -47,4 +47,4 @@
 
 ## Next action
 
-- Product-owner QA of the status responses, then merge both status branches and begin `S2-Q01` by running the built `.output` without source or root `node_modules`.
+- In a fresh session, define the prebuilt artifact boundary and verify runtime environment overrides, static assets, SSR, GOAPI proxying, and upload-path behavior from a clean deployment directory.
