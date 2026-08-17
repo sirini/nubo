@@ -2,10 +2,12 @@
 
 ## Active goal
 
-- Add focused Nitro authentication proxy regression tests for token refresh, refreshed cookies, request-body replay, and concurrent refresh deduplication.
+- Product-owner QA for the Nitro authentication proxy regression slice on `test/nitro-auth-proxy`.
 
 ## Recent completion
 
+- Added Nitro regression coverage for 401 refresh/retry, refreshed and backend cookies, binary request-body replay, missing refresh credentials, and concurrent refresh deduplication.
+- Made the proxy utility's H3 and runtime-config dependencies explicit so the production module can be tested directly without changing request behavior.
 - Merged the first `S0-Q02` frontend test harness: separate Vitest projects cover fast Node unit tests and Nuxt runtime tests, with initial coverage for content utilities and every built-in skin registration.
 - Merged guarded OpenAI image descriptions: explicit opt-in defaults off, requests default to three images per post and one concurrent call, and token/failure logs make usage observable.
 - Changed the default vision model to `gpt-5.6-luna`, fixed JPEG data URL encoding, disabled unnecessary reasoning, and fixed the pre-Base64 vision input at 256px with JPEG quality 60.
@@ -22,6 +24,7 @@
 
 ## Verification
 
+- Nitro proxy slice on Node 26.7.0: targeted ESLint, `npm test` (3 files, 7 tests), `npm run typecheck`, and `npm run build` passed.
 - AI image descriptions: GOAPI `go test ./...`, `go vet ./...`, focused race tests, and the Ubuntu 22.04 release build passed; NUBO typecheck/build passed on Node 26.7.0.
 - Frontend test harness: clean `npm ci`, `npm test` (2 files, 4 tests), targeted ESLint, `npm run typecheck`, and `npm run build` passed.
 - Previous image work: GOAPI `go test ./...`, `go vet ./...`, Ubuntu 22.04 release build and runtime checks; NUBO typecheck/build and targeted lint passed.
@@ -34,4 +37,4 @@
 
 ## Next action
 
-- Create the next `S0-Q02` branch from merged `main` and implement Nitro refresh/cookie/body replay regression tests.
+- Product-owner QA of `test/nitro-auth-proxy`; merge it into `main` only after approval, then choose the next bounded stabilization slice.
