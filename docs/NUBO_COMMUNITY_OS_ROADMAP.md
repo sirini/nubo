@@ -739,19 +739,19 @@ Docker는 선택지를 늘리는 수단이지 유일한 설치 경로가 아니�
 
 - 우선순위: `P0`
 - 크기: `M`
-- 상태: `LOCKED`
+- 상태: `DONE`
 - 선행: S0 테스트 기반
 
 ### 작업
 
-- [ ] clean checkout에서 `npm ci`
-- [ ] lint/typecheck/test
-- [ ] `nuxt build`
-- [ ] `.output`만 별도 서버로 복사
-- [ ] 소스와 `node_modules` 없이 실행
-- [ ] fresh Ubuntu 22.04/24.04 smoke test
-- [ ] runtimeConfig가 배포 후 환경 변수로 정상 반영되는지 확인
-- [ ] 정적 자산과 upload 경로 확인
+- [x] clean checkout에서 `npm ci`
+- [x] 변경 파일 lint와 전체 typecheck/test (전체 lint의 기존 358건은 별도 finding으로 유지)
+- [x] `nuxt build`
+- [x] `.output`만 별도 서버로 복사
+- [x] 소스와 루트 `node_modules` 없이 실행
+- [x] fresh Ubuntu 22.04/24.04 smoke test
+- [x] runtimeConfig가 배포 후 환경 변수로 정상 반영되는지 확인
+- [x] 정적 자산과 외부 upload 경로 확인
 
 ## S2-Q02. 통합 릴리스 번들
 

@@ -115,6 +115,9 @@ npm run build
 node .output/server/index.mjs
 ```
 
+빌드 서버에서 만든 `.output`만 운영 서버로 옮기는 no-build 배포 PoC와 런타임 환경 변수
+계약은 [Prebuilt Nuxt deployment PoC](./docs/PREBUILT_DEPLOYMENT.md)를 참고하세요.
+
 장기 운영 시 systemd 또는 PM2로 두 프로세스를 관리할 수 있습니다.
 
 ```bash
