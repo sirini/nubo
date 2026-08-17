@@ -26,6 +26,7 @@
 
 ## Decisions
 
+- Keep only the latest local release archive. A successful same-version build replaces the previous `dist/` output after verification; historical artifacts remain reproducible from Git commits and are not retained under ad-hoc backup names.
 - Keep the first `nuboctl` binary self-contained and statically linked. `doctor` performs slower exhaustive release verification, while `status` favors operational checks and does not recalculate every checksum; both commands remain strictly read-only.
 - Support Nginx as the only first-phase Ubuntu reverse proxy. On a clean target-domain configuration `nuboctl install` may render and validate a new site; if that domain is already configured or an installation is adopted, it must not edit or reload Nginx. Certbot and TLS lifecycle remain operator-owned.
 - Treat systemd and reverse-proxy files as installer inputs with explicit `@TOKEN@` substitution, not as hard-coded units to copy blindly. Keep systemd as the first Ubuntu adapter and leave room for other service managers later.

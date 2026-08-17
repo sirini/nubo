@@ -126,6 +126,8 @@ It rebuilds GOAPI through its required Ubuntu 22.04 build script, records both r
 `manifest.json`, generates SHA-256 checksums, creates `dist/nubo-<version>-linux-amd64.tar.zst`, and
 extracts it again on Ubuntu 24.04 before running the prebuilt web smoke suite. A dirty source state is
 recorded in the manifest so a development artifact cannot be mistaken for a clean official release.
+The verified output replaces an existing archive with the same version, so `dist/` only needs the
+latest bundle rather than manually named intermediate backups.
 The bundle intentionally excludes secrets, uploads, root dependencies, and rendered service files.
 It includes the static Linux `nuboctl` binary with read-only `doctor` and `status` commands plus the
 unprivileged service and proxy templates used as future installer inputs.

@@ -35,11 +35,6 @@ if [[ -z "${NUBO_VERSION}" || -z "${NUBO_GOAPI_VERSION}" ]]; then
   exit 1
 fi
 
-if [[ -e "${NUBO_ARCHIVE_PATH}" ]]; then
-  echo "Release archive already exists: ${NUBO_ARCHIVE_PATH}" >&2
-  exit 1
-fi
-
 mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/share"
 cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
 cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
