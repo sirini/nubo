@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- Decide whether to retain and exactly pin security-patched Nuxt 4.5.2 or knowingly accept the risks of a 4.4.2 low-memory build fallback before merging the current QA work.
+- Complete the approved Nitro authentication regression and direct 512px vision-thumbnail work, then continue security-first stabilization from `main`.
 
 ## Recent completion
 
@@ -16,6 +16,7 @@
 
 ## Decisions
 
+- Keep the existing Nuxt `^4.5.2` dependency unchanged. Low-resource servers may receive a prebuilt `.output` from a higher-resource build machine rather than downgrading to the known-vulnerable 4.4.2 release.
 - Build `S0-Q02` incrementally: unit/Nuxt harness first, Nitro authentication proxy tests next, then SSR/test DB and Playwright only when their fixtures are defined.
 - Keep AI capabilities disabled by default and require a feature-specific switch in addition to server-side credentials. Common admin controls and a usage ledger belong to a later vertical AI feature slice.
 - Use Node 26 through `nvm use 26` for frontend work and validation.
@@ -32,12 +33,11 @@
 
 ## Open findings
 
-- Nuxt 4.4.2 predates the official 4.5.1 security fixes for multiple 4.x issues. NUBO does not currently use the affected server-island, authenticated cache/ISR, or route-rule authorization features, but pinning a known vulnerable framework conflicts with the security-first stabilization direction.
-- Nuxt 4.5 moved the default build layer to Vite 8; this is the most material upstream change that could explain the reported low-memory build regression. Nuxt describes its optional Rspack 2 builder as faster and lighter, but adopting it requires a separate compatibility test rather than an incidental config switch.
+- Nuxt 4.5's Vite 8 build can exceed the resources available on some deployment servers. Off-host builds are the current operational workaround; Rspack compatibility can be evaluated separately if this becomes a recurring maintenance burden.
 - Full NUBO ESLint still reports 358 pre-existing findings outside the completed work.
 - govips v2.17 advertises libvips 8.10+ but its generated `VipsTextWrap` binding does not compile against Ubuntu 22.04's libvips 8.12; keep v2.16 pinned while that deployment target remains.
 - Live OpenAI response quality, latency, and billing remain part of product-owner server QA because automated tests do not spend API credits.
 
 ## Next action
 
-- Resolve the Nuxt version decision. Recommended path: pin 4.5.2 and move low-resource production builds off-host or evaluate the Rspack builder separately; merge the QA branches only after product-owner approval.
+- Continue the next agreed roadmap stabilization slice from the updated `main` branches while product-owner server QA covers live OpenAI behavior and deployment-specific regressions.
