@@ -1,7 +1,16 @@
 // server/utils/proxy.ts
-import type { H3Event } from "h3"
+import {
+  appendHeader,
+  getCookie,
+  getHeader,
+  getQuery,
+  readRawBody,
+  setResponseStatus,
+  type H3Event,
+} from "h3"
 import { createHash } from "node:crypto"
 import { $fetch as ofetch } from "ofetch"
+import { useRuntimeConfig } from "#imports"
 import { AUTH_KEY, CODE } from "~/types/common"
 
 type RefreshResult = {
