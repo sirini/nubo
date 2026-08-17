@@ -71,6 +71,12 @@ values read from the file. When changing a shared setting such as the public dom
 GOAPI path, port, size limit, or token lifetime, keep its `GOAPI_*`/`JWT_*` and `NUXT_*` entries in
 sync. A later installer will generate these paired concrete values.
 
+`NUBO_UPLOAD_DIR` independently selects the mutable upload root. Its default remains `./upload`, so
+source installs and existing upload symlinks keep working. A prebuilt install normally sets it to
+`/var/lib/nubo/upload`, while an existing site can point directly to a path such as
+`/var/www/example.org/upload`. Stored database and public HTTP paths remain `/upload/...` regardless
+of the filesystem location.
+
 ## Upload ownership
 
 The replaceable `.output/` artifact never owns user uploads. GOAPI writes them to persistent storage,

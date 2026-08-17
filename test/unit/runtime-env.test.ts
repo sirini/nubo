@@ -28,5 +28,6 @@ describe("shared runtime environment sample", () => {
     expect(environment.NUXT_PUBLIC_VERSION).toBe(environment.GOAPI_VERSION)
     expect(environment.NUXT_PUBLIC_DOMAIN).toBe(environment.GOAPI_DOMAIN)
     expect(environment.NUXT_PUBLIC_TITLE).toBe(environment.GOAPI_TITLE)
+    expect(environment.NUBO_UPLOAD_DIR).toBe("./upload")
   })
 })
