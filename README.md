@@ -38,7 +38,7 @@ NUBO는 두 프로세스로 실행됩니다.
 ### 1. 준비물
 
 - Ubuntu 22.04 이상 x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
-- Node.js 24 LTS 이상과 npm
+- Node.js 24 LTS 24.11 이상과 npm
 - MySQL 8 또는 MariaDB
 - 이미지 처리를 위한 `libvips` (`libvips-dev` 패키지)
 - 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
@@ -95,6 +95,18 @@ npm run dev
 ```
 
 기본 접속 주소는 `http://localhost:3000`입니다. 로컬 환경에서는 Resend 메일보다 화면과 게시판 기능을 먼저 확인하는 것이 편합니다.
+
+### 개발 검증
+
+```bash
+npm test
+npm run test:unit
+npm run test:nuxt
+npm run typecheck
+npm run build
+```
+
+`npm test`는 빠른 Node 단위 테스트와 Nuxt 런타임 테스트를 모두 실행합니다. 브라우저 E2E와 테스트 DB는 다음 테스트 하네스 단계에서 별도로 추가합니다.
 
 ### 4. 운영 빌드
 

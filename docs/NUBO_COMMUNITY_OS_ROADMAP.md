@@ -361,17 +361,24 @@ Codex가 코드를 작성했다고 퀘스트가 끝난 것이 아니다.
 
 - 우선순위: `P0`
 - 크기: `M`
-- 상태: `READY`
+- 상태: `IN_PROGRESS`
 - 저장소: NUBO
 
 ### 권장 구성
 
-- Vitest
-- `@nuxt/test-utils`
-- Vue Test Utils
-- Playwright
-- 테스트 전용 환경 변수와 DB
-- 최소 smoke seed
+- [x] Vitest
+- [x] `@nuxt/test-utils`
+- [x] Vue Test Utils
+- [ ] Playwright
+- [ ] 테스트 전용 환경 변수와 DB
+- [ ] 최소 smoke seed
+
+### 단계적 진행
+
+- [x] Phase 1: Node 단위 테스트와 Nuxt 런타임 테스트를 분리하고, 콘텐츠 유틸리티와 기본 스킨 registry를 검증
+- [ ] Phase 2: Nitro 인증 프록시의 refresh·cookie·본문 재전송 회귀 테스트
+- [ ] Phase 3: 공개 SSR smoke와 테스트 DB/seed
+- [ ] Phase 4: Playwright 핵심 사용자 여정
 
 ### 첫 테스트 대상
 
