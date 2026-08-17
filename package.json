@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "build:release": "bash scripts/build-release-bundle.sh",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
     "lint": "eslint .",

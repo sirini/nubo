@@ -86,3 +86,17 @@ location /upload/ {
 
 The final directory, service, reverse-proxy, manifest, checksum, and rollback contracts belong to
 the later integrated release bundle and `nuboctl` work.
+
+## Minimal integrated bundle
+
+After `npm run build`, the current `S2-Q02` assembly PoC can be run with:
+
+```bash
+npm run build:release
+```
+
+It rebuilds GOAPI through its required Ubuntu 22.04 build script, records both repository commits in
+`manifest.json`, generates SHA-256 checksums, creates `dist/nubo-<version>-linux-amd64.tar.zst`, and
+extracts it again on Ubuntu 24.04 before running the prebuilt web smoke suite. A dirty source state is
+recorded in the manifest so a development artifact cannot be mistaken for a clean official release.
+The bundle intentionally excludes secrets, uploads, root dependencies, service files, and `nuboctl`.
