@@ -24,6 +24,9 @@ describe("shared runtime environment sample", () => {
       expect(value, key).not.toContain("${")
     }
     expect(environment.NUXT_API_BASE_INTERNAL).toBe("http://127.0.0.1:3006/goapi")
+    expect(environment.GOAPI_HOST).toBe("127.0.0.1")
+    expect(environment.NITRO_HOST).toBe("127.0.0.1")
+    expect(environment.NITRO_PORT).toBe("3000")
     expect(environment.NUXT_PUBLIC_GOAPI_BASE).toBe(environment.GOAPI_BASE)
     expect(environment.NUXT_PUBLIC_VERSION).toBe(environment.GOAPI_VERSION)
     expect(environment.NUXT_PUBLIC_DOMAIN).toBe(environment.GOAPI_DOMAIN)

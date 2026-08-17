@@ -44,6 +44,8 @@ release and give that same file to both processes.
 The shared file contains concrete GOAPI and Nuxt values. Its web-facing portion looks like:
 
 ```dotenv
+GOAPI_HOST=127.0.0.1
+GOAPI_PORT=3006
 NITRO_HOST=127.0.0.1
 NITRO_PORT=3000
 NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi
@@ -80,7 +82,7 @@ of the filesystem location.
 ## Upload ownership
 
 The replaceable `.output/` artifact never owns user uploads. GOAPI writes them to persistent storage,
-and Nginx or Caddy serves that directory at `/upload/`. A release replacement must therefore leave
+and Nginx serves that directory at `/upload/`. A release replacement must therefore leave
 the upload directory untouched. For the current single-host layout, the Nginx boundary remains:
 
 ```nginx
@@ -94,11 +96,20 @@ The final directory, installation, and rollback contracts belong to the later `n
 
 ## Linux service templates
 
-The integrated bundle contains renderable templates under `share/systemd`, `share/nginx`, and
-`share/caddy`. Their `@TOKEN@` values let the installer keep the standard `/opt/nubo`, `/etc/nubo`,
-and `/var/lib/nubo` layout or adopt an existing absolute upload directory. The GOAPI unit is the
-only application process granted write access to that directory; the web unit treats the release as
-read-only, and the selected reverse proxy serves the same directory at `/upload/`.
+The integrated bundle contains renderable templates under `share/systemd` and `share/nginx`. Their
+`@TOKEN@` values let the installer keep the standard `/opt/nubo`, `/etc/nubo`, and `/var/lib/nubo`
+layout or adopt an existing absolute upload directory. The GOAPI unit is the only application process
+granted write access to that directory; the web unit treats the release as read-only, and Nginx serves
+the same directory at `/upload/`. Nginx sends `/` to Nuxt on port 3000 and `/goapi/` directly to the
+loopback-only GOAPI listener on port 3006. Browser application calls under `/api/` still pass through
+Nuxt so its authentication refresh and cookie handling remain active; direct `/goapi/` access supports
+OAuth and RSS routes.
+
+On a clean server, `nuboctl install` may create and validate a new site configuration. If a server
+block for the target domain already exists, or an existing installation is adopted, `nuboctl` must
+not edit Nginx files or enable, disable, or reload any Nginx configuration. Read-only diagnostics and
+printing a recommended configuration remain allowed. TLS certificate issuance and Certbot stay under
+the server operator's control.
 
 The templates are not yet a one-command installation interface. Until `nuboctl install` renders,
 installs, and verifies them, follow `share/README.md` and replace every token before using them.

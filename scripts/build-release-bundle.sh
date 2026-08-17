@@ -68,7 +68,7 @@ writeFileSync(manifestPath, JSON.stringify({
   entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi" },
   configuration: { sample: "share/env.sample", externalPath: "/etc/nubo/nubo.env" },
   mutableData: { uploadDefault: "/var/lib/nubo/upload", uploadVariable: "NUBO_UPLOAD_DIR" },
-  serviceTemplates: { systemd: "share/systemd", nginx: "share/nginx", caddy: "share/caddy" },
+  serviceTemplates: { systemd: "share/systemd", nginx: "share/nginx" },
 }, null, 2) + "\n", { mode: 0o644 })
 EOF
 

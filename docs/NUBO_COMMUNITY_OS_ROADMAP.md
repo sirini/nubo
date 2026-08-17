@@ -636,7 +636,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 - [ ] 포트 충돌
 - [ ] upload 쓰기 권한
 - [ ] 도메인·HTTPS
-- [ ] Nginx/Caddy proxy header
+- [ ] Nginx proxy header
 - [ ] NUBO–GOAPI 버전 호환
 - [ ] 메일 provider 설정
 - [ ] 운영자 백업·복구 문서와 데이터 경로 안내
@@ -700,7 +700,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 - Node LTS
 - MySQL/MariaDB
 - libvips
-- Nginx 또는 Caddy
+- Nginx
 
 공식 릴리스에 포함:
 
@@ -708,7 +708,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 - Ubuntu 22.04 호환 `goapi-linux`
 - `env.sample`
 - systemd 예제
-- Nginx/Caddy 예제
+- Nginx 예제
 - checksums
 - release manifest
 
@@ -763,7 +763,7 @@ Docker는 선택지를 늘리는 수단이지 유일한 설치 경로가 아니�
 
 - [x] 릴리스 외부의 단일 환경 파일을 GOAPI와 prebuilt Nuxt가 공유하는 런타임 계약
 - [x] 공식 GOAPI 빌드, Nuxt `.output`, 환경 샘플, 독립적인 컴포넌트 provenance, checksum을 포함한 최소 통합 archive와 Ubuntu 24.04 재검증
-- [x] 설치 경로와 업로드 경로를 렌더링할 수 있는 systemd, Nginx, Caddy 템플릿
+- [x] 설치 경로와 업로드 경로를 렌더링할 수 있는 systemd와 Nginx 템플릿
 
 ### 권장 산출물
 
@@ -778,7 +778,6 @@ nubo-1.3.0-linux-amd64.tar.zst
 │   ├── env.sample
 │   ├── systemd/
 │   ├── nginx/
-│   ├── caddy/
 │   └── THIRD_PARTY_LICENSES
 ├── manifest.json
 ├── checksums.txt

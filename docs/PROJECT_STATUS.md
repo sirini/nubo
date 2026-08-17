@@ -6,7 +6,8 @@
 
 ## Recent completion
 
-- Added renderable systemd units plus Nginx and Caddy examples to the integrated archive. Installation can substitute users, release/config/state paths, Node, domain, body limit, and an existing upload root; GOAPI alone receives write access while the Nuxt release stays read-only.
+- Narrowed the official Ubuntu reverse proxy to Nginx, added the missing direct `/goapi/` route for OAuth/RSS, made both application listeners explicit loopback endpoints for new installs, and defined existing target-domain Nginx configuration as read-only to `nuboctl`.
+- Added renderable systemd units plus an Nginx example to the integrated archive. Installation can substitute users, release/config/state paths, ports, the GOAPI path, Node, domain, body limit, and an existing upload root; GOAPI alone receives write access while the Nuxt release stays read-only.
 - Made the upload filesystem root independently injectable through `NUBO_UPLOAD_DIR` while preserving the legacy `./upload` default, existing symlinks, and stable `/upload/...` DB/HTTP paths; upload path resolution rejects traversal outside the configured root.
 - Added a minimal integrated release builder that packages the proven `.output`, an official Ubuntu 22.04 GOAPI build, the shared environment sample, independently versioned component provenance, and SHA-256 checksums; it extracts and verifies the archive on Ubuntu 24.04 and reruns the web artifact smoke suite without including secrets or mutable data.
 - Defined one persistent runtime environment-file contract for both processes: GOAPI accepts `NUBO_ENV_FILE`, prebuilt Node uses `--env-file`, process values override file values, and legacy source installs still default to `.env`; the shared sample now uses concrete Nuxt values that require no variable expansion.
@@ -24,6 +25,7 @@
 
 ## Decisions
 
+- Support Nginx as the only first-phase Ubuntu reverse proxy. On a clean target-domain configuration `nuboctl install` may render and validate a new site; if that domain is already configured or an installation is adopted, it must not edit or reload Nginx. Certbot and TLS lifecycle remain operator-owned.
 - Treat systemd and reverse-proxy files as installer inputs with explicit `@TOKEN@` substitution, not as hard-coded units to copy blindly. Keep systemd as the first Ubuntu adapter and leave room for other service managers later.
 - Treat `/var/lib/nubo/upload` as the Linux prebuilt default selected by the installer/service working directory, not a hard-coded product path. Operators may set `NUBO_UPLOAD_DIR` to an existing absolute directory such as `/var/www/<domain>/upload`.
 - Keep the minimal archive limited to immutable application artifacts and metadata. Record the NUBO and GOAPI versions, commits, and dirty states independently; add service templates and `nuboctl` in later bounded slices.
@@ -42,7 +44,8 @@
 
 ## Verification
 
-- Linux service templates: focused ESLint and 2-file/3-test Vitest coverage passed; rendered units using an existing `/var/www/<domain>/upload` path passed `systemd-analyze verify`, and rendered Nginx/Caddy examples passed their official configuration validators. The rebuilt integrated archive passed the official GOAPI Ubuntu 22.04/24.04 checks, checksum/manifest verification, and prebuilt web smoke suite and contained every service template. The tracked `goapi-linux` was replaced only through GOAPI's official Ubuntu 22.04 builder.
+- Nginx and loopback boundary: GOAPI focused/full tests and `go vet ./...` passed; the legacy absent-host default remains `0.0.0.0` while the shared prebuilt sample selects `127.0.0.1`. The rendered Nginx template passed its official validator with separate Nuxt and GOAPI upstreams and forwarded headers.
+- Linux service templates: focused ESLint and 2-file/3-test Vitest coverage passed; rendered units using an existing `/var/www/<domain>/upload` path passed `systemd-analyze verify`, and the rendered Nginx example passed its official configuration validator. The rebuilt integrated archive passed the official GOAPI Ubuntu 22.04/24.04 checks, checksum/manifest verification, and prebuilt web smoke suite and contained every service template. The tracked `goapi-linux` was replaced only through GOAPI's official Ubuntu 22.04 builder.
 - Configurable upload root: focused config/utility/service/handler tests, full GOAPI tests, and `go vet ./...` passed; the shared environment sample regression confirms the legacy `./upload` default remains explicit.
 - Integrated release bundle: the builder completed the required GOAPI Ubuntu 22.04 build and Ubuntu 22.04/24.04 runtime checks, verified checksums before and after archive transport, parsed the extracted manifest, confirmed secrets/mutable data/root dependencies were absent, and passed the prebuilt web smoke suite from the Ubuntu 24.04-extracted artifact.
 - Shared runtime configuration: GOAPI focused config tests, `go test ./...`, and `go vet ./...` passed; the official Ubuntu 22.04 build completed, passed its Ubuntu 22.04/24.04 runtime checks, and the bundled binary loaded an external `NUBO_ENV_FILE` through database initialization. NUBO targeted ESLint, `npm test` (4 files, 8 tests), typecheck, production build, local prebuilt smoke, and Ubuntu 22.04/24.04 prebuilt smoke passed on Node 26.7.0.
@@ -63,4 +66,4 @@
 
 ## Next action
 
-- Define `nuboctl doctor` and `nuboctl status` as read-only checks over platform/runtime dependencies, manifest/checksums, environment and upload paths, systemd state, and HTTP health/readiness before implementing installation or mutation commands.
+- Define `nuboctl doctor` and `nuboctl status` as read-only checks over platform/runtime dependencies, manifest/checksums, environment and upload paths, systemd state, Nginx detection without mutation, and HTTP health/readiness before implementing installation commands.
