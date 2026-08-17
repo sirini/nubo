@@ -8,7 +8,7 @@ NUBO is a reusable community builder and media-oriented publishing platform. It 
 
 - The product owner defines product behavior, visual direction, usability, and performs final QA.
 - Codex critically reviews proposals, implements agreed changes, tests them, and commits and pushes completed work units.
-- Do not merge stabilization or feature branches into `main` until product-owner QA is complete.
+- After a coherent work unit passes proportional validation, merge it into `main` with a merge commit and push immediately. Product-owner QA may follow on `main`; pause before merging only when the product owner explicitly requests a QA gate or validation is incomplete.
 - Preserve unrelated user changes and avoid destructive Git operations.
 
 ## Workflow
