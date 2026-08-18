@@ -808,6 +808,7 @@ glibc가 CPU에 맞게 자동 선택하며 운영 서버에는 libvips 패키지
 
 - [x] Phase 1 읽기 전용 `doctor`와 `status`: 플랫폼·런타임·release checksum·환경/업로드·systemd·Nginx·HTTP 상태 진단
 - [x] Phase 2 설치 준비: dry-run, 사전 검사, 경로/환경 생성, systemd/Nginx 렌더링, 기존 설정 보호
+- [x] Phase 3 update 기반: 운영자 배치 릴리스 검증, 외부 백업 확인, additive migration, 원자적 전환과 readiness 실패 복구
 
 ### 사용자 계약
 
@@ -859,16 +860,14 @@ nuboctl rollback
 
 ### `update`
 
-1. 현재 상태 검사
-2. 운영자 백업 확인과 호환성 경고
-3. 새 릴리스 다운로드와 checksum 확인
-4. 새 디렉터리에 압축 해제
-5. 호환성 확인
-6. DB additive migration
-7. 새 프로세스 시작
-8. readiness 확인
-9. symlink 전환
-10. 실패 시 rollback
+1. [x] 현재 상태와 checksum 검사
+2. [x] 운영자 외부 백업 확인과 호환성 경고
+3. [ ] 새 릴리스 다운로드와 압축 해제 — 현재는 운영자 책임
+4. [x] 같은 releases 디렉터리의 더 높은 버전과 운영 템플릿 호환성 확인
+5. [x] DB additive migration
+6. [x] 런타임 버전과 current symlink 원자적 전환
+7. [x] 서비스 restart와 readiness 확인
+8. [x] 실패 시 이전 환경·링크·프로세스 복구
 
 ## S2-Q04. GitHub Actions 릴리스 파이프라인
 

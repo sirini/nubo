@@ -167,15 +167,20 @@ func validateDomain(domain string) error {
 
 // 실제 설치를 검증한 Ubuntu amd64 환경으로 제한한다.
 func validateInstallPlatform(osReleaseFile string) error {
+	return validateSupportedPlatform("install", osReleaseFile)
+}
+
+// 변경 명령을 실제 검증한 Ubuntu amd64 환경으로 제한한다.
+func validateSupportedPlatform(command, osReleaseFile string) error {
 	if runtime.GOOS != "linux" || runtime.GOARCH != "amd64" {
-		return fmt.Errorf("install은 현재 Linux amd64에서만 지원됩니다")
+		return fmt.Errorf("%s는 현재 Linux amd64에서만 지원됩니다", command)
 	}
 	values, err := readEnvironment(osReleaseFile)
 	if err != nil {
 		return fmt.Errorf("운영체제 확인 실패: %w", err)
 	}
 	if values["ID"] != "ubuntu" || (values["VERSION_ID"] != "22.04" && values["VERSION_ID"] != "24.04") {
-		return fmt.Errorf("install은 현재 Ubuntu 22.04/24.04에서만 지원됩니다: %s %s", values["ID"], values["VERSION_ID"])
+		return fmt.Errorf("%s는 현재 Ubuntu 22.04/24.04에서만 지원됩니다: %s %s", command, values["ID"], values["VERSION_ID"])
 	}
 	return nil
 }

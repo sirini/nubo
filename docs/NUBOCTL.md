@@ -1,7 +1,7 @@
 # nuboctl 설치 준비와 진단
 
 현재 `nuboctl` MVP는 한국어 대화형 설치를 하는 `install`, 공개 프록시를 연결하는
-`activate-nginx`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
+`activate-nginx`, 배치된 릴리스를 전환하는 `update`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
 최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
 ## install
@@ -81,21 +81,43 @@ sudo ./nuboctl activate-nginx
 `certbot --nginx -d <도메인> --redirect` 명령으로 운영자가 약관·연락처를 확인하고 TLS를 발급한다.
 Certbot 설치와 인증서 발급은 `nuboctl`의 책임 범위에 포함하지 않는다.
 
-## update 계약
+## update
 
 릴리스는 `/opt/nubo/releases/<버전>` 아래의 변경하지 않는 디렉터리로 배치하고, systemd는 항상
-`/opt/nubo/current` 심볼릭 링크를 참조한다. 이후 `update`는 운영자가 미리 배치한 새 릴리스만 받아
-checksum과 호환성을 확인하고 다음 순서로 전환한다.
+`/opt/nubo/current` 심볼릭 링크를 참조한다. `update`는 운영자가 같은 `releases` 디렉터리에 미리
+배치한 더 높은 `major.minor.patch` 릴리스만 받아 checksum과 호환성을 확인하고 전환한다.
+
+후보 릴리스에 포함된 `nuboctl`로 먼저 dry-run한다.
+
+```bash
+sudo /opt/nubo/releases/1.3.0/nuboctl update \
+  --release /opt/nubo/releases/1.3.0 \
+  --dry-run
+sudo /opt/nubo/releases/1.3.0/nuboctl update \
+  --release /opt/nubo/releases/1.3.0
+```
+
+실제 실행에서는 계획 출력 후 외부 DB·업로드 백업을 완료했다는 의미로 `BACKUP`을 직접 입력해야 한다.
+AI·자동화는 질문 대신 두 플래그를 모두 명시한다.
+
+```bash
+sudo /opt/nubo/releases/1.3.0/nuboctl update \
+  --release /opt/nubo/releases/1.3.0 \
+  --non-interactive \
+  --backup-confirmed
+```
 
 1. 외부 백업 완료 확인
 2. 새 릴리스의 additive DB migration 실행
-3. `current` 링크를 원자적으로 교체
-4. NUBO 서비스 재시작과 readiness 확인
-5. 실패하면 이전 링크를 복원하고 이전 서비스를 다시 시작
+3. 외부 환경 파일의 GOAPI/Nuxt 런타임 버전을 후보 값으로 원자적 갱신
+4. `current` 링크를 원자적으로 교체
+5. NUBO 서비스 재시작과 readiness 확인
+6. 실패하면 이전 환경·링크를 복원하고 이전 서비스를 다시 시작해 readiness 재확인
 
 DB migration은 되돌리지 않는다. 따라서 새 migration은 직전 릴리스와 호환되는 additive 변경이어야 한다.
-릴리스 다운로드·압축 해제와 데이터 백업은 `nuboctl update`의 책임에 포함하지 않는다. 이 계약의 실제
-`update` 명령은 아직 구현되지 않았다.
+릴리스 다운로드·압축 해제와 데이터 백업은 `nuboctl update`의 책임에 포함하지 않는다. 동시 update는
+설치별 잠금으로 차단한다. 현재 자동 update는 설치된 unit이 `current`를 참조하고 두 릴리스의 systemd/Nginx
+템플릿이 같을 때만 허용한다. 운영 템플릿 변경이 필요한 릴리스는 별도 전환 지원이 추가되기 전까지 거부한다.
 
 ## doctor
 
@@ -146,4 +168,4 @@ sudo /opt/nubo/current/nuboctl status
 - `1`: 하나 이상의 검사 실패
 - `2`: 잘못된 명령이나 옵션
 
-`start`, `stop`, `restart`, `logs`, `update`, `rollback`은 아직 구현되지 않았다.
+`start`, `stop`, `restart`, `logs`, `rollback`은 아직 구현되지 않았다.

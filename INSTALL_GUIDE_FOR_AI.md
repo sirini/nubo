@@ -85,13 +85,36 @@ sudo ./nuboctl activate-nginx
 두 명령이 모두 성공하면 HTTP 공개 상태다. Certbot 설치, 약관 동의, 인증서 발급과 HTTPS redirect는
 운영자에게 넘기고 `activate-nginx`가 출력한 도메인별 명령을 임의로 자동 실행하지 않는다.
 
+## update
+
+새 릴리스는 현재 릴리스와 같은 `/opt/nubo/releases` 아래에 먼저 압축 해제한다. DB와 업로드의 외부
+백업 완료를 사용자에게 확인받고 후보 릴리스의 `nuboctl`로 dry-run을 먼저 실행한다.
+
+```bash
+sudo /opt/nubo/releases/1.3.0/nuboctl update \
+  --release /opt/nubo/releases/1.3.0 \
+  --dry-run
+```
+
+dry-run과 백업이 모두 확인됐을 때만 자동화용 실행 플래그를 사용한다.
+
+```bash
+sudo /opt/nubo/releases/1.3.0/nuboctl update \
+  --release /opt/nubo/releases/1.3.0 \
+  --non-interactive \
+  --backup-confirmed
+```
+
+`--backup-confirmed`를 추측으로 추가하지 않는다. update 실패 시 출력에 이전 릴리스 복구 성공 여부와
+DB migration이 유지된다는 안내가 포함되므로, 추가 전환 전에 그대로 사용자에게 보고한다.
+
 DB 설치가 실패해도 기존 레코드를 덮어쓰지 않으므로 원인을 고친 뒤 같은 명령을 다시 실행한다.
 
 진단 명령:
 
 ```bash
 sudo ./nuboctl doctor \
-  --release /opt/nubo/releases/1.3.0 \
+  --release /opt/nubo/current \
   --env /etc/nubo/nubo.env \
   --state /var/lib/nubo \
   --user nubo

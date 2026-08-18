@@ -120,9 +120,12 @@ release-root `INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
 
 The update boundary intentionally starts with an operator-staged release and a confirmed external backup.
 After checksum and compatibility validation, `nuboctl` runs only additive database migrations, atomically
-switches `current`, restarts the services, and checks readiness. A readiness failure restores the previous
-link and processes, but does not reverse database migrations; every migration must therefore remain compatible
-with the immediately previous release. Downloading, extracting, backup, and restore remain operator concerns.
+updates the two runtime version values, switches `current`, restarts the services, and checks readiness. A
+readiness failure restores the previous environment, link, and processes, but does not reverse database
+migrations; every migration must therefore remain compatible with the immediately previous release.
+Downloading, extracting, backup, and restore remain operator concerns. The first update implementation also
+requires both releases to carry identical systemd and Nginx templates because it does not rewrite live service
+configuration during a release transition.
 
 ## Minimal integrated bundle
 
@@ -142,5 +145,5 @@ The bundle intentionally excludes secrets, uploads, root dependencies, and rende
 It includes x86-64 baseline and x86-64-v2 sharp-libvips variants under `lib/`, with provenance and
 license records under `licenses/sharp-libvips/`. glibc selects the compatible variant automatically,
 so runtime servers do not install a system libvips package. It also includes the static Linux `nuboctl` binary
-with safe `install` preparation and read-only `doctor` and `status` commands plus the unprivileged
-service and proxy templates used by the installer.
+with safe `install`, `activate-nginx`, and operator-staged `update` flows, read-only `doctor` and `status`
+commands, and the unprivileged service and proxy templates used by the installer.

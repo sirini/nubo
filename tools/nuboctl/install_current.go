@@ -20,21 +20,10 @@ func validateCurrentRelease(releaseDir, currentLink string) (bool, error) {
 	if insidePath(releaseTarget, currentLink) {
 		return false, fmt.Errorf("current 링크를 릴리스 내부에 둘 수 없습니다: %s", currentLink)
 	}
-	info, err := os.Lstat(currentLink)
+	currentTarget, err := resolveCurrentRelease(currentLink)
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	if err != nil {
-		return false, err
-	}
-	if info.Mode()&os.ModeSymlink == 0 {
-		return false, fmt.Errorf("current 경로가 심볼릭 링크가 아닙니다: %s", currentLink)
-	}
-	currentTarget, err := filepath.EvalSymlinks(currentLink)
-	if err != nil {
-		return false, fmt.Errorf("current 링크 확인 실패: %w", err)
-	}
-	currentTarget, err = filepath.Abs(currentTarget)
 	if err != nil {
 		return false, err
 	}
@@ -42,6 +31,30 @@ func validateCurrentRelease(releaseDir, currentLink string) (bool, error) {
 		return false, fmt.Errorf("current가 다른 릴리스를 가리킵니다: %s -> %s", currentLink, currentTarget)
 	}
 	return true, nil
+}
+
+// current 링크가 가리키는 실제 릴리스 디렉터리를 반환한다.
+func resolveCurrentRelease(currentLink string) (string, error) {
+	info, err := os.Lstat(currentLink)
+	if err != nil {
+		return "", err
+	}
+	if info.Mode()&os.ModeSymlink == 0 {
+		return "", fmt.Errorf("current 경로가 심볼릭 링크가 아닙니다: %s", currentLink)
+	}
+	target, err := filepath.EvalSymlinks(currentLink)
+	if err != nil {
+		return "", fmt.Errorf("current 링크 확인 실패: %w", err)
+	}
+	target, err = filepath.Abs(target)
+	if err != nil {
+		return "", err
+	}
+	info, err = os.Stat(target)
+	if err != nil || !info.IsDir() {
+		return "", fmt.Errorf("current 대상이 릴리스 디렉터리가 아닙니다: %s", target)
+	}
+	return target, nil
 }
 
 // 검증된 릴리스의 실제 경로를 가리키는 current 링크를 충돌 없이 만든다.
