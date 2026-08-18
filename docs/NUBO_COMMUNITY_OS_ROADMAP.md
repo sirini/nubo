@@ -34,6 +34,31 @@ NUBO가 먼저 달성해야 할 목표를 **“사진·전자기기·게임·취
 - 큰 퀘스트는 독립적으로 검증 가능한 작은 변경으로 나누고, 필요가 확인된 만큼만 구현한다.
 - 로드맵에 있다는 이유만으로 추상 계층, 상시 프로세스, 외부 인프라를 미리 만들지 않는다.
 - 안정화와 제품 차별화는 한쪽을 장기간 미루지 않고, 위험과 효과가 분명한 작은 단위로 번갈아 진행할 수 있다.
+- 이 문서의 장기 항목은 아이디어 지도이며 현재 구현 의무가 아니다. 실제 작업은 `docs/PROJECT_STATUS.md`의 작은 목표를 우선한다.
+
+## 0.2 현재 제품 범위
+
+NUBO의 현재 대상은 직접 서버를 운영하며 한국어 커뮤니티를 만들고 싶은 개인·소규모 운영자다.
+먼저 한 대의 익숙한 Ubuntu 서버에 부담 없이 설치하고 운영하는 경험을 완성한 뒤, 실제 수요가 확인된 범위만 넓힌다.
+
+현재 지원 범위:
+
+- 한국어 사용자와 한국어 설치 안내
+- Ubuntu 22.04/24.04 amd64 한 대
+- systemd, Nginx, Node.js, MySQL/MariaDB
+- 소스 빌드가 필요 없는 공식 prebuilt
+- 사람을 위한 대화형 `nuboctl install`
+- AI·자동화를 위한 명확한 비대화형 옵션과 설치 계약 문서
+
+현재 범위에서 제외:
+
+- 컨테이너와 Kubernetes
+- 다중 Linux 배포판과 범용 배포 추상화
+- 다국어 CLI와 다국어 설치 문서
+- 복잡한 stable/preview/nightly 릴리스 채널
+- 다중 인스턴스와 대규모 분산 운영
+
+제외 항목은 미래 약속이 아니다. 실제 사용자 요구와 유지보수 여력이 생길 때 다시 판단한다.
 
 ---
 
@@ -689,11 +714,11 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 사이트별 코드 수정이 필요한 개발자는 별도 **Developer Mode**를 사용한다.
 
-## 8.1 배포 전략 3단계
+## 8.1 현재 배포 전략
 
-### Phase A — No-build release
+### No-build release
 
-가장 먼저 구현할 현실적인 단계.
+현재 완성할 유일한 공식 배포 방식이다.
 
 운영 서버 요구사항:
 
@@ -712,28 +737,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 - checksums
 - release manifest
 
-운영자는 Node를 설치하지만 소스 빌드는 하지 않는다.
-
-### Phase B — Appliance bundle
-
-공식 릴리스에 Node runtime과 `nuboctl`을 포함한다.
-
-운영 서버 요구사항:
-
-- MySQL/MariaDB
-- libvips 또는 GOAPI container
-- 기본 Linux 도구
-
-### Phase C — OCI/Docker 배포
-
-- NUBO web image
-- GOAPI image
-- 선택적 DB compose
-- 사용자 데이터 volume과 운영자 백업 절차
-- healthcheck
-- 업그레이드 절차
-
-Docker는 선택지를 늘리는 수단이지 유일한 설치 경로가 아니다.
+운영자는 Node를 설치하지만 소스 빌드는 하지 않는다. Node 번들, 컨테이너, 다른 배포판 지원은 현재 목표에 포함하지 않는다.
 
 ## S2-Q01. Prebuilt Nuxt 산출물 PoC
 
@@ -798,6 +802,14 @@ GOAPI의 공식 x86-64 바이너리는 반드시 `scripts/build-ubuntu22.sh` 산
 - [x] Phase 1 읽기 전용 `doctor`와 `status`: 플랫폼·런타임·release checksum·환경/업로드·systemd·Nginx·HTTP 상태 진단
 - [x] Phase 2 설치 준비: dry-run, 사전 검사, 경로/환경 생성, systemd/Nginx 렌더링, 기존 설정 보호
 
+### 사용자 계약
+
+- 사람이 `nuboctl install`을 실행하면 한국어 대화형 안내를 기본으로 제공한다.
+- AI와 자동화는 `--non-interactive` 옵션 및 번들 안의 `INSTALL_GUIDE_FOR_AI.md`를 사용한다.
+- 비밀번호와 비밀값은 명령행 인자로 받지 않고 숨김 입력 또는 권한이 제한된 입력 파일로 받는다.
+- 자동으로 알아낼 수 있는 값은 묻지 않고, 실행 전 계획과 실행 후 다음 행동을 분명하게 보여준다.
+- `nuboctl`은 범용 서버 관리자가 아니라 NUBO 실행에 필요한 최소 환경을 준비하고 진단하는 도구다.
+
 큰 명령 집합을 한 번에 구현하지 않는다. 각 단계는 실제 운영에서 검증한 뒤 다음 단계로 확장한다.
 
 ### Phase 1 — 진단
@@ -828,13 +840,13 @@ nuboctl rollback
 
 ### `install`
 
-- [ ] 사전 검사
-- [ ] 경로 생성
+- [x] 사전 검사
+- [x] 경로 생성
 - [ ] 환경 설정 입력
 - [ ] DB 준비
 - [ ] GOAPI install 실행
-- [ ] systemd unit 설치
-- [ ] reverse proxy 템플릿 생성
+- [x] systemd unit 설치
+- [x] reverse proxy 템플릿 생성
 - [ ] healthcheck
 - [ ] 최초 관리자 URL 표시
 
@@ -867,9 +879,6 @@ nuboctl rollback
 - [ ] Ubuntu 22.04 fresh install smoke
 - [ ] Ubuntu 24.04 fresh install smoke
 - [ ] checksums
-- [ ] SBOM
-- [ ] third-party license notice
-- [ ] 서명 또는 provenance
 - [ ] GitHub Release 업로드
 
 ### 태그 전략
@@ -894,16 +903,9 @@ nuboctl rollback
 
 - 우선순위: `P2`
 - 크기: `L`
+- 상태: `DEFERRED`
 
-- [ ] GOAPI image에 libvips 포함
-- [ ] NUBO web image
-- [ ] non-root 실행
-- [ ] read-only root filesystem 검토
-- [ ] healthcheck
-- [ ] upload와 상태 데이터 volume
-- [ ] Compose sample
-- [ ] external DB와 bundled dev DB 구성 분리
-- [ ] arm64 빌드 검토
+현재 대상 사용자의 설치 경험을 개선하지 않으므로 구현 범위에서 제외한다. 실제 컨테이너 배포 수요가 확인될 때 새 범위를 합의한다.
 
 ## S2-Q06. 사이트별 수정과 prebuilt의 공존
 
