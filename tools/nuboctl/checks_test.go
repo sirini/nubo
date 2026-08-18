@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TestCheckNodeEnforcesSupportedRange는 지원 Node 범위의 경계 아래 버전을 거부하는지 확인한다.
+// 지원 Node 범위의 경계 아래 버전을 거부하는지 확인한다.
 func TestCheckNodeEnforcesSupportedRange(t *testing.T) {
 	runner := fakeRunner{
 		paths:   map[string]bool{"node": true},
@@ -23,7 +23,7 @@ func TestCheckNodeEnforcesSupportedRange(t *testing.T) {
 	}
 }
 
-// TestCheckHTTPRequiresHealthyJSON은 200 JSON이어도 정상 상태가 아니면 실패하는지 확인한다.
+// 200 JSON이어도 정상 상태가 아니면 실패하는지 확인한다.
 func TestCheckHTTPRequiresHealthyJSON(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		response.Header().Set("content-type", "application/json")

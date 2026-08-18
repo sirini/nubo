@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// TestVerifyReleaseChecksums는 목록에 기록된 파일의 정상값과 변경을 구분하는지 확인한다.
+// 목록에 기록된 파일의 정상값과 변경을 구분하는지 확인한다.
 func TestVerifyReleaseChecksums(t *testing.T) {
 	releaseDir := t.TempDir()
 	filePath := filepath.Join(releaseDir, "share", "env.sample")
@@ -38,7 +38,7 @@ func TestVerifyReleaseChecksums(t *testing.T) {
 	}
 }
 
-// TestVerifyReleaseChecksumsRejectsTraversal은 checksum 항목이 릴리스 밖 파일을 읽지 못하게 한다.
+// checksum 항목이 릴리스 밖 파일을 읽지 못하게 한다.
 func TestVerifyReleaseChecksumsRejectsTraversal(t *testing.T) {
 	releaseDir := t.TempDir()
 	line := strings.Repeat("0", 64) + "  ./../outside\n"
@@ -50,7 +50,7 @@ func TestVerifyReleaseChecksumsRejectsTraversal(t *testing.T) {
 	}
 }
 
-// TestVerifyReleaseChecksumsRejectsListedEscapingSymlink은 검증 대상 링크가 릴리스 밖을 가리키지 못하게 한다.
+// 검증 대상 링크가 릴리스 밖을 가리키지 못하게 한다.
 func TestVerifyReleaseChecksumsRejectsListedEscapingSymlink(t *testing.T) {
 	releaseDir := t.TempDir()
 	outside := filepath.Join(t.TempDir(), "outside")
@@ -74,7 +74,7 @@ func TestVerifyReleaseChecksumsRejectsListedEscapingSymlink(t *testing.T) {
 	}
 }
 
-// TestVerifyReleaseChecksumsAllowsUnlistedFile은 사용자 추가 파일을 릴리스 손상으로 오인하지 않게 한다.
+// 사용자 추가 파일을 릴리스 손상으로 오인하지 않게 한다.
 func TestVerifyReleaseChecksumsAllowsUnlistedFile(t *testing.T) {
 	releaseDir := t.TempDir()
 	filePath := filepath.Join(releaseDir, "manifest.json")

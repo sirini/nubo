@@ -2,7 +2,7 @@ package main
 
 import "testing"
 
-// TestNginxServerNameMatchesCoveredDomain은 exact·wildcard·정규식 도메인 충돌을 찾는지 확인한다.
+// exact·wildcard·정규식 도메인 충돌을 찾는지 확인한다.
 func TestNginxServerNameMatchesCoveredDomain(t *testing.T) {
 	for _, serverName := range []string{"community.example.com", "*.example.com", "~^community\\.example\\.com$", "~^community.example.com$"} {
 		if !nginxServerNameMatches(serverName, "community.example.com") {

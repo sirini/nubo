@@ -10,7 +10,7 @@ import (
 
 var serverNamePattern = regexp.MustCompile(`\bserver_name\s+([^;{}]+);`)
 
-// renderInstallFiles는 release 템플릿을 현재 서버 값으로 치환해 설치 대상 목록을 만든다.
+// release 템플릿을 현재 서버 값으로 치환해 설치 대상 목록을 만든다.
 func renderInstallFiles(options installOptions, tokens map[string]string, environment []byte, environmentExists bool) ([]installFile, error) {
 	sources := []struct {
 		source      string
@@ -43,7 +43,7 @@ func renderInstallFiles(options installOptions, tokens map[string]string, enviro
 	return files, nil
 }
 
-// protectExistingNginx는 대상 도메인을 이미 다루는 운영자 설정이 있으면 어떤 파일도 쓰기 전에 중단한다.
+// 대상 도메인을 이미 다루는 운영자 설정이 있으면 어떤 파일도 쓰기 전에 중단한다.
 func protectExistingNginx(options installOptions, files []installFile) error {
 	var expected installFile
 	for _, file := range files {
@@ -78,7 +78,7 @@ func protectExistingNginx(options installOptions, files []installFile) error {
 	})
 }
 
-// nginxContainsDomain은 주석을 제외한 server_name 중 대상 도메인을 포괄하는 항목을 찾는다.
+// 주석을 제외한 server_name 중 대상 도메인을 포괄하는 항목을 찾는다.
 func nginxContainsDomain(contents, domain string) bool {
 	var uncommented strings.Builder
 	for _, line := range strings.Split(contents, "\n") {
@@ -95,7 +95,7 @@ func nginxContainsDomain(contents, domain string) bool {
 	return false
 }
 
-// nginxServerNameMatches는 exact, wildcard와 흔한 정규식 server_name의 도메인 포함 여부를 판정한다.
+// exact, wildcard와 흔한 정규식 server_name의 도메인 포함 여부를 판정한다.
 func nginxServerNameMatches(serverName, domain string) bool {
 	serverName = strings.ToLower(serverName)
 	domain = strings.ToLower(domain)

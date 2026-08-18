@@ -24,12 +24,12 @@ type terminalPrompter struct {
 	reader *bufio.Reader
 }
 
-// newTerminalPrompter는 한 터미널에서 일반값과 숨김 비밀번호를 읽는 설치 입력기를 만든다.
+// 한 터미널에서 일반값과 숨김 비밀번호를 읽는 설치 입력기를 만든다.
 func newTerminalPrompter(input *os.File, output io.Writer) terminalPrompter {
 	return terminalPrompter{input: input, output: output, reader: bufio.NewReader(input)}
 }
 
-// ask는 기본값을 함께 보여주고 한 줄의 사용자 입력을 읽는다.
+// 기본값을 함께 보여주고 한 줄의 사용자 입력을 읽는다.
 func (prompt terminalPrompter) ask(label, defaultValue string) (string, error) {
 	if defaultValue == "" {
 		fmt.Fprintf(prompt.output, "%s: ", label)
@@ -47,7 +47,7 @@ func (prompt terminalPrompter) ask(label, defaultValue string) (string, error) {
 	return value, nil
 }
 
-// askSecret은 stty로 터미널 표시를 잠시 끄고 비밀번호 한 줄을 읽는다.
+// stty로 터미널 표시를 잠시 끄고 비밀번호 한 줄을 읽는다.
 func (prompt terminalPrompter) askSecret(label string) (string, error) {
 	info, err := prompt.input.Stat()
 	if err != nil || info.Mode()&os.ModeCharDevice == 0 {
@@ -69,7 +69,7 @@ func (prompt terminalPrompter) askSecret(label string) (string, error) {
 	return strings.TrimSpace(value), err
 }
 
-// confirm은 한국어 예·아니요 입력을 읽고 빈 입력은 동의로 처리한다.
+// 한국어 예·아니요 입력을 읽고 빈 입력은 동의로 처리한다.
 func (prompt terminalPrompter) confirm(label string) (bool, error) {
 	value, err := prompt.ask(label+" [Y/n]", "")
 	if err != nil {
@@ -88,7 +88,7 @@ func (prompt terminalPrompter) confirm(label string) (bool, error) {
 	}
 }
 
-// promptInstallOptions는 사람에게 꼭 필요한 사이트·DB·관리자 정보만 한국어로 묻는다.
+// 사람에게 꼭 필요한 사이트·DB·관리자 정보만 한국어로 묻는다.
 func promptInstallOptions(options installOptions, prompt installPrompter) (installOptions, error) {
 	if domain, ok := existingInstallDomain(options.envFile); ok {
 		options.domain = domain
@@ -177,7 +177,7 @@ func promptInstallOptions(options installOptions, prompt installPrompter) (insta
 	return options, nil
 }
 
-// existingInstallDomain은 기존 환경 파일에서 재실행에 사용할 공개 도메인을 찾는다.
+// 기존 환경 파일에서 재실행에 사용할 공개 도메인을 찾는다.
 func existingInstallDomain(path string) (string, bool) {
 	values, err := readEnvironment(path)
 	if err != nil {
@@ -192,7 +192,7 @@ func existingInstallDomain(path string) (string, bool) {
 	return "", false
 }
 
-// firstError는 입력 오류가 있으면 보존하고 없으면 이해하기 쉬운 검증 오류를 만든다.
+// 입력 오류가 있으면 보존하고 없으면 이해하기 쉬운 검증 오류를 만든다.
 func firstError(err error, message string) error {
 	if err != nil {
 		return err

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// readInstallEnvironmentInput은 비대화형 입력 파일의 비밀값 보호 권한과 구문을 검사한다.
+// 비대화형 입력 파일의 비밀값 보호 권한과 구문을 검사한다.
 func readInstallEnvironmentInput(path string) (map[string]string, error) {
 	info, err := os.Stat(path)
 	if err != nil {
@@ -27,7 +27,7 @@ func readInstallEnvironmentInput(path string) (map[string]string, error) {
 	return values, nil
 }
 
-// validateInstallEnvironmentInput은 질문 없는 설치에 필요한 DB·관리자 값을 모두 요구한다.
+// 질문 없는 설치에 필요한 DB·관리자 값을 모두 요구한다.
 func validateInstallEnvironmentInput(values map[string]string) error {
 	required := []string{
 		"DB_HOST", "DB_PORT", "DB_USER", "DB_PASS", "DB_NAME", "DB_TABLE_PREFIX",

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// TestReadEnvironmentAndRuntimePaths는 env 구문과 상대 업로드·웹 주소 계산을 함께 검증한다.
+// env 구문과 상대 업로드·웹 주소 계산을 함께 검증한다.
 func TestReadEnvironmentAndRuntimePaths(t *testing.T) {
 	root := t.TempDir()
 	environmentPath := filepath.Join(root, "nubo.env")
@@ -41,7 +41,7 @@ func TestReadEnvironmentAndRuntimePaths(t *testing.T) {
 	}
 }
 
-// TestIsLoopbackHost는 로컬 수신 주소만 안전한 loopback으로 판정하는지 확인한다.
+// 로컬 수신 주소만 안전한 loopback으로 판정하는지 확인한다.
 func TestIsLoopbackHost(t *testing.T) {
 	for _, host := range []string{"localhost", "127.0.0.1", "::1", "[::1]"} {
 		if !isLoopbackHost(host) {
@@ -53,7 +53,7 @@ func TestIsLoopbackHost(t *testing.T) {
 	}
 }
 
-// TestExistingEnvironmentMustMatchInstallDomain은 기존 설정을 다른 도메인 설치에 재사용하지 못하게 한다.
+// 기존 설정을 다른 도메인 설치에 재사용하지 못하게 한다.
 func TestExistingEnvironmentMustMatchInstallDomain(t *testing.T) {
 	options := installTestOptions(t)
 	values := map[string]string{

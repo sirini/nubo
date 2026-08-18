@@ -9,17 +9,17 @@ import (
 	"strconv"
 )
 
-// currentEUID는 테스트 가능한 이름으로 현재 프로세스의 유효 사용자 ID를 반환한다.
+// 테스트 가능한 이름으로 현재 프로세스의 유효 사용자 ID를 반환한다.
 func currentEUID() int {
 	return os.Geteuid()
 }
 
-// configDirectory는 환경 파일을 담을 설정 디렉터리를 반환한다.
+// 환경 파일을 담을 설정 디렉터리를 반환한다.
 func configDirectory(options installOptions) string {
 	return filepath.Dir(options.envFile)
 }
 
-// preflightInstallFiles는 기존 파일이 예상 결과와 다르면 덮어쓰기 전에 설치를 중단한다.
+// 기존 파일이 예상 결과와 다르면 덮어쓰기 전에 설치를 중단한다.
 func preflightInstallFiles(files []installFile) error {
 	for _, file := range files {
 		contents, err := os.ReadFile(file.path)
@@ -36,13 +36,13 @@ func preflightInstallFiles(files []installFile) error {
 	return nil
 }
 
-// sameFileContent는 설치 계획에서 기존 파일을 유지할 수 있는지 확인한다.
+// 설치 계획에서 기존 파일을 유지할 수 있는지 확인한다.
 func sameFileContent(path string, expected []byte) bool {
 	contents, err := os.ReadFile(path)
 	return err == nil && string(contents) == string(expected)
 }
 
-// printIdentityPlan은 서비스 사용자와 그룹을 새로 만들지 유지할지 보여준다.
+// 서비스 사용자와 그룹을 새로 만들지 유지할지 보여준다.
 func printIdentityPlan(options installOptions) {
 	if _, err := user.LookupGroup(options.serviceGroup); err != nil {
 		fmt.Printf("- 생성: 시스템 그룹 %s\n", options.serviceGroup)
@@ -56,7 +56,7 @@ func printIdentityPlan(options installOptions) {
 	}
 }
 
-// validateExistingUploadDirectory는 운영자 소유 경로를 바꾸지 않고 서비스 사용자의 쓰기 권한을 확인한다.
+// 운영자 소유 경로를 바꾸지 않고 서비스 사용자의 쓰기 권한을 확인한다.
 func validateExistingUploadDirectory(options installOptions, runner commandRunner) error {
 	info, err := os.Stat(options.uploadDir)
 	if os.IsNotExist(err) {
@@ -86,7 +86,7 @@ func validateExistingUploadDirectory(options installOptions, runner commandRunne
 	return nil
 }
 
-// ensureServiceIdentity는 지정된 시스템 그룹과 로그인 불가능한 서비스 사용자를 필요한 경우에만 만든다.
+// 지정된 시스템 그룹과 로그인 불가능한 서비스 사용자를 필요한 경우에만 만든다.
 func ensureServiceIdentity(options installOptions, runner commandRunner) (int, int, error) {
 	group, groupErr := user.LookupGroup(options.serviceGroup)
 	if groupErr != nil {
@@ -126,7 +126,7 @@ func ensureServiceIdentity(options installOptions, runner commandRunner) (int, i
 	return uid, gid, nil
 }
 
-// ensureInstallDirectory는 없는 디렉터리만 만들고 기존 운영자 경로의 권한은 변경하지 않는다.
+// 없는 디렉터리만 만들고 기존 운영자 경로의 권한은 변경하지 않는다.
 func ensureInstallDirectory(path string, mode os.FileMode, uid, gid int) error {
 	info, err := os.Stat(path)
 	if err == nil {
@@ -150,7 +150,7 @@ func ensureInstallDirectory(path string, mode os.FileMode, uid, gid int) error {
 	return nil
 }
 
-// installFileIfNeeded는 같은 파일은 보존하고 새 파일은 임시 파일과 hard link로 원자적으로 생성한다.
+// 같은 파일은 보존하고 새 파일은 임시 파일과 hard link로 원자적으로 생성한다.
 func installFileIfNeeded(file installFile) error {
 	contents, err := os.ReadFile(file.path)
 	if err == nil {

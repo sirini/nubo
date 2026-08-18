@@ -14,7 +14,7 @@ type scriptedPrompter struct {
 	agreed  bool
 }
 
-// ask는 질문 이름에 대응하는 준비된 일반 입력을 반환한다.
+// 질문 이름에 대응하는 준비된 일반 입력을 반환한다.
 func (prompt *scriptedPrompter) ask(label, defaultValue string) (string, error) {
 	if value, ok := prompt.answers[label]; ok {
 		return value, nil
@@ -22,7 +22,7 @@ func (prompt *scriptedPrompter) ask(label, defaultValue string) (string, error) 
 	return defaultValue, nil
 }
 
-// askSecret은 준비된 비밀값을 입력 순서대로 반환한다.
+// 준비된 비밀값을 입력 순서대로 반환한다.
 func (prompt *scriptedPrompter) askSecret(_ string) (string, error) {
 	if prompt.index >= len(prompt.secrets) {
 		return "", errors.New("준비된 비밀값이 없습니다")
@@ -32,12 +32,12 @@ func (prompt *scriptedPrompter) askSecret(_ string) (string, error) {
 	return value, nil
 }
 
-// confirm은 테스트가 지정한 최종 설치 동의 여부를 반환한다.
+// 테스트가 지정한 최종 설치 동의 여부를 반환한다.
 func (prompt *scriptedPrompter) confirm(_ string) (bool, error) {
 	return prompt.agreed, nil
 }
 
-// TestPromptInstallOptionsCollectsRuntimeValues는 대화형 입력이 공용 환경 설정으로 정확히 연결되는지 확인한다.
+// 대화형 입력이 공용 환경 설정으로 정확히 연결되는지 확인한다.
 func TestPromptInstallOptionsCollectsRuntimeValues(t *testing.T) {
 	options := installTestOptions(t)
 	options.domain = ""
@@ -70,7 +70,7 @@ func TestPromptInstallOptionsCollectsRuntimeValues(t *testing.T) {
 	}
 }
 
-// TestReadInstallEnvironmentInputRequiresPrivateMode는 비밀 입력 파일의 타인 접근 권한을 거부한다.
+// 비밀 입력 파일의 타인 접근 권한을 거부한다.
 func TestReadInstallEnvironmentInputRequiresPrivateMode(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "install.env")
 	if err := os.WriteFile(path, []byte("DB_PASS=secret\n"), 0o644); err != nil {
@@ -81,14 +81,14 @@ func TestReadInstallEnvironmentInputRequiresPrivateMode(t *testing.T) {
 	}
 }
 
-// TestValidateInstallEnvironmentInputReportsMissingKeys는 비대화형 필수값을 한 번에 안내하는지 확인한다.
+// 비대화형 필수값을 한 번에 안내하는지 확인한다.
 func TestValidateInstallEnvironmentInputReportsMissingKeys(t *testing.T) {
 	if err := validateInstallEnvironmentInput(map[string]string{"DB_HOST": "127.0.0.1"}); err == nil {
 		t.Fatal("필수값이 빠진 비대화형 설치 입력을 허용했습니다")
 	}
 }
 
-// TestValidateInstallEnvironmentInputChecksRelatedValues는 자동 설치 값 사이의 정합성을 검사한다.
+// 자동 설치 값 사이의 정합성을 검사한다.
 func TestValidateInstallEnvironmentInputChecksRelatedValues(t *testing.T) {
 	valid := map[string]string{
 		"DB_HOST": "127.0.0.1", "DB_PORT": "3306", "DB_USER": "nubo", "DB_PASS": "database-secret",

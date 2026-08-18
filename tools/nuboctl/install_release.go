@@ -7,7 +7,7 @@ import (
 	"runtime"
 )
 
-// validateInstallRelease는 현재 플랫폼과 필수 실행 파일·템플릿이 준비된 릴리스인지 확인한다.
+// 현재 플랫폼과 필수 실행 파일·템플릿이 준비된 릴리스인지 확인한다.
 func validateInstallRelease(releaseDir string) error {
 	manifest, err := readManifest(releaseDir)
 	if err != nil {
@@ -31,7 +31,7 @@ func validateInstallRelease(releaseDir string) error {
 	return nil
 }
 
-// resolveNodeBinary는 지원 버전의 실행 가능한 Node.js 절대 경로를 찾는다.
+// 지원 버전의 실행 가능한 Node.js 절대 경로를 찾는다.
 func resolveNodeBinary(configured string, runner commandRunner) (string, error) {
 	path := configured
 	var err error

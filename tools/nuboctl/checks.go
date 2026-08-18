@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// runDoctor는 설치 전후에 필요한 플랫폼·릴리스·환경·의존성 검사를 모두 실행한다.
+// 설치 전후에 필요한 플랫폼·릴리스·환경·의존성 검사를 모두 실행한다.
 func runDoctor(options options, runner commandRunner) []checkResult {
 	results := checkPlatform()
 	results = append(results, checkRelease(options.releaseDir, true)...)
@@ -25,7 +25,7 @@ func runDoctor(options options, runner commandRunner) []checkResult {
 	return results
 }
 
-// runStatus는 설치된 서비스와 웹 상태를 빠르게 읽고 변경 없이 보고한다.
+// 설치된 서비스와 웹 상태를 빠르게 읽고 변경 없이 보고한다.
 func runStatus(options options, runner commandRunner) []checkResult {
 	results := checkRelease(options.releaseDir, false)
 	environmentResults, values := checkEnvironment(options, true)
@@ -44,7 +44,7 @@ func runStatus(options options, runner commandRunner) []checkResult {
 	return results
 }
 
-// checkPlatform은 현재 CPU와 운영체제가 공식 지원 범위인지 진단한다.
+// 현재 CPU와 운영체제가 공식 지원 범위인지 진단한다.
 func checkPlatform() []checkResult {
 	results := make([]checkResult, 0, 2)
 	if runtime.GOOS != "linux" || runtime.GOARCH != "amd64" {
@@ -66,7 +66,7 @@ func checkPlatform() []checkResult {
 	return results
 }
 
-// checkNode는 PATH의 Node.js가 실행되고 지원 버전 범위에 드는지 확인한다.
+// PATH의 Node.js가 실행되고 지원 버전 범위에 드는지 확인한다.
 func checkNode(runner commandRunner) checkResult {
 	if !commandExists(runner, "node") {
 		return fail("Node.js", "실행 파일을 찾을 수 없습니다")
@@ -81,7 +81,7 @@ func checkNode(runner commandRunner) checkResult {
 	return pass("Node.js", strings.TrimPrefix(strings.TrimSpace(output), "v"))
 }
 
-// validateNodeVersion은 Node.js 버전 문자열을 해석해 현재 지원 범위를 적용한다.
+// Node.js 버전 문자열을 해석해 현재 지원 범위를 적용한다.
 func validateNodeVersion(output string) error {
 	version := strings.TrimPrefix(strings.TrimSpace(output), "v")
 	parts := strings.Split(version, ".")
@@ -96,7 +96,7 @@ func validateNodeVersion(output string) error {
 	return nil
 }
 
-// checkLibvips는 pkg-config 또는 동적 라이브러리 목록에서 GOAPI 의존성을 찾는다.
+// pkg-config 또는 동적 라이브러리 목록에서 GOAPI 의존성을 찾는다.
 func checkLibvips(runner commandRunner) checkResult {
 	if commandExists(runner, "pkg-config") {
 		if output, err := runner.run("pkg-config", "--modversion", "vips"); err == nil {
@@ -111,7 +111,7 @@ func checkLibvips(runner commandRunner) checkResult {
 	return fail("libvips", "libvips.so.42를 찾을 수 없습니다")
 }
 
-// checkSystemd는 systemctl이 존재하고 정상적으로 버전을 보고하는지 확인한다.
+// systemctl이 존재하고 정상적으로 버전을 보고하는지 확인한다.
 func checkSystemd(runner commandRunner) checkResult {
 	if !commandExists(runner, "systemctl") {
 		return fail("systemd", "systemctl을 찾을 수 없습니다")
@@ -124,7 +124,7 @@ func checkSystemd(runner commandRunner) checkResult {
 	return pass("systemd", line)
 }
 
-// checkNginx는 Nginx 설치 여부와 현재 전체 설정의 문법을 확인한다.
+// Nginx 설치 여부와 현재 전체 설정의 문법을 확인한다.
 func checkNginx(runner commandRunner) checkResult {
 	if !commandExists(runner, "nginx") {
 		return fail("Nginx", "실행 파일을 찾을 수 없습니다")
@@ -136,7 +136,7 @@ func checkNginx(runner commandRunner) checkResult {
 	return pass("Nginx 설정", "nginx -t 통과")
 }
 
-// checkUpload는 업로드 경로와 서비스 사용자의 실제 쓰기 권한을 확인한다.
+// 업로드 경로와 서비스 사용자의 실제 쓰기 권한을 확인한다.
 func checkUpload(options options, values map[string]string, runner commandRunner) checkResult {
 	directory := uploadDirectory(options, values)
 	info, err := os.Stat(directory)
@@ -157,7 +157,7 @@ func checkUpload(options options, values map[string]string, runner commandRunner
 	return pass("업로드 디렉터리", directory)
 }
 
-// checkService는 지정한 systemd 서비스가 active 상태인지 확인한다.
+// 지정한 systemd 서비스가 active 상태인지 확인한다.
 func checkService(runner commandRunner, service string) checkResult {
 	if !commandExists(runner, "systemctl") {
 		return fail(service, "systemctl을 찾을 수 없습니다")
@@ -173,7 +173,7 @@ func checkService(runner commandRunner, service string) checkResult {
 	return pass(service, "active")
 }
 
-// checkHTTP는 상태 URL이 200과 정상 상태 JSON을 반환하는지 확인한다.
+// 상태 URL이 200과 정상 상태 JSON을 반환하는지 확인한다.
 func checkHTTP(endpoint string) checkResult {
 	client := http.Client{Timeout: 3 * time.Second}
 	response, err := client.Get(endpoint)
@@ -194,7 +194,7 @@ func checkHTTP(endpoint string) checkResult {
 	return pass(endpoint, response.Status)
 }
 
-// compactOutput은 긴 명령 출력을 사용자가 읽을 수 있는 짧은 오류 한 줄로 줄인다.
+// 긴 명령 출력을 사용자가 읽을 수 있는 짧은 오류 한 줄로 줄인다.
 func compactOutput(output string, err error) string {
 	lines := strings.Fields(strings.TrimSpace(output))
 	if len(lines) > 12 {

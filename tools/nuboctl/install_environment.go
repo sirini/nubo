@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// prepareInstallEnvironment는 기존 설정을 보존하거나 sample에서 새 설정과 비밀값을 만든다.
+// 기존 설정을 보존하거나 sample에서 새 설정과 비밀값을 만든다.
 func prepareInstallEnvironment(options installOptions) (map[string]string, []byte, bool, error) {
 	if info, err := os.Stat(options.envFile); err == nil {
 		if info.Mode().Perm()&0o007 != 0 || info.Mode().Perm()&0o020 != 0 {
@@ -65,7 +65,7 @@ func prepareInstallEnvironment(options installOptions) (map[string]string, []byt
 	return replacements, content, false, err
 }
 
-// randomSecret은 설정 파일에 바로 저장할 256비트 임의 비밀값을 만든다.
+// 설정 파일에 바로 저장할 256비트 임의 비밀값을 만든다.
 func randomSecret() (string, error) {
 	value := make([]byte, 32)
 	if _, err := rand.Read(value); err != nil {
@@ -74,7 +74,7 @@ func randomSecret() (string, error) {
 	return hex.EncodeToString(value), nil
 }
 
-// renderEnvironmentSample은 sample의 순서와 설명을 유지하며 지정된 설정만 교체한다.
+// sample의 순서와 설명을 유지하며 지정된 설정만 교체한다.
 func renderEnvironmentSample(path string, replacements map[string]string) ([]byte, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -98,7 +98,7 @@ func renderEnvironmentSample(path string, replacements map[string]string) ([]byt
 	return []byte(output.String()), nil
 }
 
-// applyEnvironmentToInstallOptions는 기존 설정의 포트와 경로를 렌더링 기준으로 재사용한다.
+// 기존 설정의 포트와 경로를 렌더링 기준으로 재사용한다.
 func applyEnvironmentToInstallOptions(options installOptions, values map[string]string) (installOptions, error) {
 	for key, destination := range map[string]*int{"NITRO_PORT": &options.webPort, "GOAPI_PORT": &options.goapiPort} {
 		value := strings.TrimSpace(values[key])

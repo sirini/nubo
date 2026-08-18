@@ -28,7 +28,7 @@ type releaseManifest struct {
 	} `json:"components"`
 }
 
-// readManifest는 릴리스 manifest를 읽고 지원하는 최소 형식인지 확인한다.
+// 릴리스 manifest를 읽고 지원하는 최소 형식인지 확인한다.
 func readManifest(releaseDir string) (releaseManifest, error) {
 	var manifest releaseManifest
 	contents, err := os.ReadFile(filepath.Join(releaseDir, "manifest.json"))
@@ -44,7 +44,7 @@ func readManifest(releaseDir string) (releaseManifest, error) {
 	return manifest, nil
 }
 
-// checkRelease는 manifest 대상과 선택적인 checksum 결과를 진단 항목으로 만든다.
+// manifest 대상과 선택적인 checksum 결과를 진단 항목으로 만든다.
 func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 	manifest, err := readManifest(releaseDir)
 	if err != nil {
@@ -77,7 +77,7 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 	return results
 }
 
-// verifyReleaseChecksums는 목록에 기록된 파일만 검증하며 운영자가 추가한 파일은 허용한다.
+// 목록에 기록된 파일만 검증하며 운영자가 추가한 파일은 허용한다.
 func verifyReleaseChecksums(releaseDir string) error {
 	file, err := os.Open(filepath.Join(releaseDir, "checksums.txt"))
 	if err != nil {
@@ -133,7 +133,7 @@ func verifyReleaseChecksums(releaseDir string) error {
 	return nil
 }
 
-// ensureResolvedInside는 checksum에 기록된 경로가 심볼릭 링크로 릴리스 밖을 가리키지 않도록 막는다.
+// checksum에 기록된 경로가 심볼릭 링크로 릴리스 밖을 가리키지 않도록 막는다.
 func ensureResolvedInside(root, target string) error {
 	rootPath, err := filepath.EvalSymlinks(root)
 	if err != nil {
@@ -150,7 +150,7 @@ func ensureResolvedInside(root, target string) error {
 	return nil
 }
 
-// fileSHA256은 지정한 일반 파일의 SHA-256 값을 소문자 16진수로 계산한다.
+// 지정한 일반 파일의 SHA-256 값을 소문자 16진수로 계산한다.
 func fileSHA256(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {

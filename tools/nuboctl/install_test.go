@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-// TestInstallCreatesFilesAndIsIdempotent는 설치 준비가 필요한 파일을 만들고 재실행 시 그대로 보존하는지 확인한다.
+// 설치 준비가 필요한 파일을 만들고 재실행 시 그대로 보존하는지 확인한다.
 func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 	options := installTestOptions(t)
 	if err := runInstall(options, systemRunner{}, false); err != nil {
@@ -56,7 +56,7 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 	}
 }
 
-// TestInstallDryRunDoesNotCreateFiles는 dry-run이 계획만 보여주고 서버 파일을 바꾸지 않는지 확인한다.
+// dry-run이 계획만 보여주고 서버 파일을 바꾸지 않는지 확인한다.
 func TestInstallDryRunDoesNotCreateFiles(t *testing.T) {
 	options := installTestOptions(t)
 	options.dryRun = true
@@ -71,7 +71,7 @@ func TestInstallDryRunDoesNotCreateFiles(t *testing.T) {
 	}
 }
 
-// TestInstallUsesPrivateEnvironmentInput은 비대화형 DB·관리자 입력을 최종 환경 파일에 반영한다.
+// 비대화형 DB·관리자 입력을 최종 환경 파일에 반영한다.
 func TestInstallUsesPrivateEnvironmentInput(t *testing.T) {
 	options := installTestOptions(t)
 	options.envInput = filepath.Join(t.TempDir(), "install.env")
@@ -97,7 +97,7 @@ func TestInstallUsesPrivateEnvironmentInput(t *testing.T) {
 	}
 }
 
-// TestInstallRejectsExistingNginxDomainBeforeWriting은 기존 도메인 설정 발견 시 모든 쓰기를 막는다.
+// 기존 도메인 설정 발견 시 모든 쓰기를 막는다.
 func TestInstallRejectsExistingNginxDomainBeforeWriting(t *testing.T) {
 	options := installTestOptions(t)
 	conflicting := filepath.Join(filepath.Dir(options.nginxDir), "conf.d", "existing.conf")
@@ -116,7 +116,7 @@ func TestInstallRejectsExistingNginxDomainBeforeWriting(t *testing.T) {
 	}
 }
 
-// TestInstallRefusesToOverwriteRenderedFiles는 운영자 소유 unit이 다르면 설치가 중단되는지 확인한다.
+// 운영자 소유 unit이 다르면 설치가 중단되는지 확인한다.
 func TestInstallRefusesToOverwriteRenderedFiles(t *testing.T) {
 	options := installTestOptions(t)
 	target := filepath.Join(options.systemdDir, "nubo-web.service")
@@ -131,7 +131,7 @@ func TestInstallRefusesToOverwriteRenderedFiles(t *testing.T) {
 	}
 }
 
-// TestValidateExistingUploadDirectoryRejectsNoWrite는 기존 업로드 경로의 쓰기 실패를 설치 전에 알린다.
+// 기존 업로드 경로의 쓰기 실패를 설치 전에 알린다.
 func TestValidateExistingUploadDirectoryRejectsNoWrite(t *testing.T) {
 	options := installTestOptions(t)
 	if err := os.MkdirAll(options.uploadDir, 0o755); err != nil {
@@ -152,7 +152,7 @@ func TestValidateExistingUploadDirectoryRejectsNoWrite(t *testing.T) {
 	}
 }
 
-// TestInstallPlatformRejectsUnsupportedDistribution은 지원하지 않는 배포판에서 설치를 막는다.
+// 지원하지 않는 배포판에서 설치를 막는다.
 func TestInstallPlatformRejectsUnsupportedDistribution(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "os-release")
 	if err := os.WriteFile(path, []byte("ID=debian\nVERSION_ID=13\n"), 0o644); err != nil {

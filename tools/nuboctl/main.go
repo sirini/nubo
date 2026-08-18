@@ -17,12 +17,12 @@ type options struct {
 	webURL      string
 }
 
-// main은 명령 실행 결과를 운영체제 종료 코드로 전달한다.
+// 명령 실행 결과를 운영체제 종료 코드로 전달한다.
 func main() {
 	os.Exit(run(os.Args[1:]))
 }
 
-// run은 하위 명령을 해석하고 사용자 오류와 검사 실패를 구분해 종료 코드를 반환한다.
+// 하위 명령을 해석하고 사용자 오류와 검사 실패를 구분해 종료 코드를 반환한다.
 func run(args []string) int {
 	if len(args) == 0 {
 		printUsage()
@@ -87,7 +87,7 @@ func run(args []string) int {
 	}
 }
 
-// parseOptions는 doctor와 status가 공유하는 경로·사용자 옵션을 읽는다.
+// doctor와 status가 공유하는 경로·사용자 옵션을 읽는다.
 func parseOptions(command string, args []string) (options, error) {
 	defaults := options{
 		releaseDir:  detectReleaseDir(),
@@ -118,7 +118,7 @@ func parseOptions(command string, args []string) (options, error) {
 	return defaults, nil
 }
 
-// environmentFilePath는 명시된 공용 환경 파일 또는 Linux 기본 경로를 선택한다.
+// 명시된 공용 환경 파일 또는 Linux 기본 경로를 선택한다.
 func environmentFilePath() string {
 	if path := os.Getenv("NUBO_ENV_FILE"); path != "" {
 		return path
@@ -126,7 +126,7 @@ func environmentFilePath() string {
 	return "/etc/nubo/nubo.env"
 }
 
-// detectReleaseDir은 환경값이나 실행 파일 위치에서 현재 릴리스 경로를 찾는다.
+// 환경값이나 실행 파일 위치에서 현재 릴리스 경로를 찾는다.
 func detectReleaseDir() string {
 	if path := os.Getenv("NUBO_RELEASE_DIR"); path != "" {
 		return path
@@ -139,7 +139,7 @@ func detectReleaseDir() string {
 	return "/opt/nubo/current"
 }
 
-// resolveExecutable은 실행 파일과 같은 디렉터리에 manifest가 있을 때 그 경로를 반환한다.
+// 실행 파일과 같은 디렉터리에 manifest가 있을 때 그 경로를 반환한다.
 func resolveExecutable(executable string) string {
 	resolved, err := filepath.EvalSymlinks(executable)
 	if err != nil {
@@ -152,7 +152,7 @@ func resolveExecutable(executable string) string {
 	return ""
 }
 
-// printUsage는 현재 제공하는 명령의 짧은 사용법을 표준 오류에 출력한다.
+// 현재 제공하는 명령의 짧은 사용법을 표준 오류에 출력한다.
 func printUsage() {
 	fmt.Fprintln(os.Stderr, "사용법: nuboctl <install|doctor|status|version> [옵션]")
 }

@@ -47,7 +47,7 @@ var (
 	bodySizePattern    = regexp.MustCompile(`^[1-9][0-9]*[kKmMgG]?$`)
 )
 
-// parseInstallOptions는 비대화형 설치 옵션을 읽고 모든 경로를 절대 경로로 정규화한다.
+// 비대화형 설치 옵션을 읽고 모든 경로를 절대 경로로 정규화한다.
 func parseInstallOptions(args []string) (installOptions, error) {
 	defaults := installOptions{
 		options: options{
@@ -119,7 +119,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 	return defaults, nil
 }
 
-// validateInstallOptions는 템플릿이나 시스템 명령에 전달하기 전에 사용자 입력 형식을 제한한다.
+// 템플릿이나 시스템 명령에 전달하기 전에 사용자 입력 형식을 제한한다.
 func validateInstallOptions(options installOptions) error {
 	if err := validateDomain(options.domain); err != nil {
 		return err
@@ -147,7 +147,7 @@ func validateInstallOptions(options installOptions) error {
 	return nil
 }
 
-// validateDomain은 scheme이나 포트가 없는 DNS 호스트 이름만 설치 도메인으로 허용한다.
+// scheme이나 포트가 없는 DNS 호스트 이름만 설치 도메인으로 허용한다.
 func validateDomain(domain string) error {
 	if domain == "" || len(domain) > 253 || net.ParseIP(domain) != nil || strings.ContainsAny(domain, "/:@") {
 		return fmt.Errorf("--domain에 포트나 scheme 없는 유효한 도메인을 입력하세요")
@@ -160,7 +160,7 @@ func validateDomain(domain string) error {
 	return nil
 }
 
-// validateInstallPlatform은 실제 설치를 검증한 Ubuntu amd64 환경으로 제한한다.
+// 실제 설치를 검증한 Ubuntu amd64 환경으로 제한한다.
 func validateInstallPlatform(osReleaseFile string) error {
 	if runtime.GOOS != "linux" || runtime.GOARCH != "amd64" {
 		return fmt.Errorf("install은 현재 Linux amd64에서만 지원됩니다")

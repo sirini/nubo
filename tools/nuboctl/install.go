@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-// runInstall은 모든 입력과 기존 파일을 먼저 검사한 뒤 설치 준비 파일을 안전하게 생성한다.
+// 모든 입력과 기존 파일을 먼저 검사한 뒤 설치 준비 파일을 안전하게 생성한다.
 func runInstall(options installOptions, runner commandRunner, requireRoot bool) error {
 	if requireRoot && !options.dryRun && currentEUID() != 0 {
 		return fmt.Errorf("실제 설치 준비는 root 권한이 필요합니다; 먼저 --dry-run으로 확인하세요")
@@ -120,7 +120,7 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	return nil
 }
 
-// printInstallPlan은 생성·보존할 경로와 이번 단계에서 하지 않는 작업을 실행 전에 보여준다.
+// 생성·보존할 경로와 이번 단계에서 하지 않는 작업을 실행 전에 보여준다.
 func printInstallPlan(options installOptions, files []installFile, environmentExists bool, nodeBinary string) {
 	fmt.Printf("NUBO 설치 준비 계획 (%s)\n", options.domain)
 	fmt.Printf("- 릴리스: %s\n", options.releaseDir)

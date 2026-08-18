@@ -17,7 +17,7 @@ type fakeRunner struct {
 	errors  map[string]error
 }
 
-// lookPath는 테스트에서 지정한 명령만 시스템에 존재하는 것처럼 돌려준다.
+// 테스트에서 지정한 명령만 시스템에 존재하는 것처럼 돌려준다.
 func (runner fakeRunner) lookPath(name string) (string, error) {
 	if runner.paths[name] {
 		return "/usr/bin/" + name, nil
@@ -25,7 +25,7 @@ func (runner fakeRunner) lookPath(name string) (string, error) {
 	return "", errors.New("not found")
 }
 
-// run은 명령 전체 문자열을 키로 사용해 준비된 출력과 오류를 돌려준다.
+// 명령 전체 문자열을 키로 사용해 준비된 출력과 오류를 돌려준다.
 func (runner fakeRunner) run(name string, args ...string) (string, error) {
 	key := strings.Join(append([]string{name}, args...), " ")
 	return runner.outputs[key], runner.errors[key]
@@ -36,7 +36,7 @@ type testIdentity struct {
 	group    string
 }
 
-// userCurrent는 설치 테스트가 실제 시스템 계정을 새로 만들지 않도록 현재 계정을 반환한다.
+// 설치 테스트가 실제 시스템 계정을 새로 만들지 않도록 현재 계정을 반환한다.
 func userCurrent() (testIdentity, error) {
 	account, err := user.Current()
 	if err != nil {
@@ -49,7 +49,7 @@ func userCurrent() (testIdentity, error) {
 	return testIdentity{username: account.Username, group: group.Name}, nil
 }
 
-// installTestOptions는 실제 시스템 경로 대신 임시 경로를 사용하는 완전한 설치 옵션을 만든다.
+// 실제 시스템 경로 대신 임시 경로를 사용하는 완전한 설치 옵션을 만든다.
 func installTestOptions(t *testing.T) installOptions {
 	t.Helper()
 	root := t.TempDir()
@@ -95,7 +95,7 @@ func installTestOptions(t *testing.T) installOptions {
 	}
 }
 
-// createInstallTestRelease는 manifest, 필수 파일과 checksum을 갖춘 작은 릴리스를 만든다.
+// manifest, 필수 파일과 checksum을 갖춘 작은 릴리스를 만든다.
 func createInstallTestRelease(t *testing.T, releaseDir string) {
 	t.Helper()
 	files := map[string]string{
