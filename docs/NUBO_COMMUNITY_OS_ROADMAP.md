@@ -655,7 +655,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 - [ ] OS/CPU 아키텍처
 - [ ] 메모리·디스크
 - [ ] Node 또는 번들 Node
-- [ ] libvips
+- [x] 릴리스에 포함된 libvips와 SSE4.2
 - [ ] MySQL/MariaDB 연결
 - [ ] DB charset와 권한
 - [ ] 포트 충돌
@@ -724,13 +724,13 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 - Node LTS
 - MySQL/MariaDB
-- libvips
 - Nginx
 
 공식 릴리스에 포함:
 
 - Nuxt `.output`
 - Ubuntu 22.04 호환 `goapi-linux`
+- sharp-libvips 기반 `libvips`와 라이선스 자료
 - `env.sample`
 - systemd 예제
 - Nginx 예제
@@ -775,6 +775,10 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 nubo-1.3.0-linux-amd64.tar.zst
 ├── bin/
 │   └── goapi
+├── lib/
+│   └── libvips-cpp.so.8.18.3
+├── licenses/
+│   └── sharp-libvips/
 ├── web/
 │   └── .output/
 ├── share/
@@ -790,6 +794,7 @@ nubo-1.3.0-linux-amd64.tar.zst
 ### 현재 GOAPI 빌드 원칙
 
 GOAPI의 공식 x86-64 바이너리는 반드시 `scripts/build-ubuntu22.sh` 산출물을 사용한다. 호스트에서 직접 빌드한 바이너리를 공식 번들에 넣지 않는다.
+sharp 프로젝트의 고정된 사전 빌드 libvips를 함께 넣고 상대 RPATH로 참조한다. 운영 서버에는 libvips 패키지를 설치하지 않는다.
 
 ## S2-Q03. `nuboctl` MVP
 

@@ -96,3 +96,12 @@ func TestVerifyReleaseChecksumsAllowsUnlistedFile(t *testing.T) {
 		t.Fatalf("checksum에 없는 추가 파일을 거부했습니다: %v", err)
 	}
 }
+
+// 네이티브 라이브러리 경로가 릴리스 밖으로 벗어나지 못하게 한다.
+func TestValidateNativeLibraryRejectsTraversal(t *testing.T) {
+	releaseDir := t.TempDir()
+	library := nativeLibrary{Version: "8.18.3", Path: "../libvips.so"}
+	if err := validateNativeLibrary(releaseDir, library); err == nil {
+		t.Fatal("릴리스 밖 네이티브 라이브러리 경로를 허용했습니다")
+	}
+}

@@ -15,10 +15,11 @@ import (
 // 설치 전후에 필요한 플랫폼·릴리스·환경·의존성 검사를 모두 실행한다.
 func runDoctor(options options, runner commandRunner) []checkResult {
 	results := checkPlatform()
+	results = append(results, checkCPUFeature("/proc/cpuinfo", "sse4_2"))
 	results = append(results, checkRelease(options.releaseDir, true)...)
 	environmentResults, values := checkEnvironment(options, false)
 	results = append(results, environmentResults...)
-	results = append(results, checkNode(runner), checkLibvips(runner), checkSystemd(runner), checkNginx(runner))
+	results = append(results, checkNode(runner), checkSystemd(runner), checkNginx(runner))
 	if values != nil {
 		results = append(results, checkUpload(options, values, runner))
 	}
@@ -94,21 +95,6 @@ func validateNodeVersion(output string) error {
 		return fmt.Errorf("%s은 지원 범위 >=24.11.0 <27 밖입니다", version)
 	}
 	return nil
-}
-
-// pkg-config 또는 동적 라이브러리 목록에서 GOAPI 의존성을 찾는다.
-func checkLibvips(runner commandRunner) checkResult {
-	if commandExists(runner, "pkg-config") {
-		if output, err := runner.run("pkg-config", "--modversion", "vips"); err == nil {
-			return pass("libvips", strings.TrimSpace(output))
-		}
-	}
-	if commandExists(runner, "ldconfig") {
-		if output, err := runner.run("ldconfig", "-p"); err == nil && strings.Contains(output, "libvips.so.42") {
-			return pass("libvips", "libvips.so.42")
-		}
-	}
-	return fail("libvips", "libvips.so.42를 찾을 수 없습니다")
 }
 
 // systemctl이 존재하고 정상적으로 버전을 보고하는지 확인한다.

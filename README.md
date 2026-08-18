@@ -40,7 +40,7 @@ NUBO는 두 프로세스로 실행됩니다.
 - Ubuntu 22.04 이상 x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
 - Node.js 24 LTS 24.11 이상과 npm
 - MySQL 8 또는 MariaDB
-- 이미지 처리를 위한 `libvips` (`libvips-dev` 패키지)
+- 소스에서 GOAPI를 직접 빌드할 때만 이미지 처리를 위한 `libvips-dev`
 - 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
 - 기본 포트 `3000`, `3006`을 사용할 수 있는 환경
 
@@ -53,6 +53,9 @@ git clone https://github.com/sirini/nubo.git
 cd nubo
 npm install
 ```
+
+위 `libvips-dev` 설치는 소스 개발 환경에만 해당합니다. `nuboctl`을 포함한 공식 Linux 릴리스는
+sharp-libvips 기반 라이브러리와 이미지 코덱을 내장하므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
 
 ### 2. 최초 설치와 `.env` 생성
 
@@ -178,7 +181,7 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 
 전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
 
-저장소에 포함된 `goapi-linux`는 최신 개발 호스트의 시스템 라이브러리에 종속되지 않도록 Ubuntu 22.04 Docker 환경에서 빌드하고 검증합니다. Ubuntu 22.04/24.04 계열에서는 `libvips` 런타임이 준비되어 있어야 하며, ARM 서버나 다른 Linux 계열은 [GOAPI 빌드 안내](https://github.com/sirini/goapi#직접-빌드하기)를 참고하세요.
+공식 릴리스의 GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2를 지원하는 x86-64 서버에는 별도 libvips가 필요 없으며, ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
 
 ## 업데이트
 

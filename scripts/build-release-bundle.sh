@@ -37,13 +37,16 @@ if [[ -z "${NUBO_VERSION}" || -z "${NUBO_GOAPI_VERSION}" ]]; then
   exit 1
 fi
 
-mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/share"
+mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/lib" "${NUBO_STAGE_ROOT}/licenses" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/share"
 cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
 cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
 install -m 0644 "${NUBO_PROJECT_ROOT}/INSTALL_GUIDE_FOR_AI.md" "${NUBO_STAGE_ROOT}/INSTALL_GUIDE_FOR_AI.md"
 "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl"
-"${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" "${NUBO_STAGE_ROOT}/bin/goapi"
+"${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" \
+  "${NUBO_STAGE_ROOT}/bin/goapi" \
+  "${NUBO_STAGE_ROOT}/lib" \
+  "${NUBO_STAGE_ROOT}/licenses/sharp-libvips"
 NUBOCTL_VERSION="$("${NUBO_STAGE_ROOT}/nuboctl" version | awk '{print $2}')"
 
 NUBO_COMMIT="$(git -C "${NUBO_PROJECT_ROOT}" rev-parse HEAD)"
@@ -62,6 +65,13 @@ writeFileSync(manifestPath, JSON.stringify({
   target: { os: "linux", arch: "amd64" },
   runtime: { node: ">=24.11.0 <27" },
   apiContract: "1",
+  nativeLibraries: {
+    libvips: {
+      version: "8.18.3",
+      path: "lib/libvips-cpp.so.8.18.3",
+      source: "@img/sharp-libvips-linux-x64@1.3.2",
+    },
+  },
   components: {
     nubo: { version: "${NUBO_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
     goapi: { version: "${NUBO_GOAPI_VERSION}", commit: "${GOAPI_COMMIT}", dirty: ${GOAPI_DIRTY} },
@@ -101,7 +111,12 @@ docker run --rm \
   test ! -e upload
   test ! -e node_modules
   test -f INSTALL_GUIDE_FOR_AI.md
+  test -f lib/libvips-cpp.so.8.18.3
+  test -f licenses/sharp-libvips/versions.json
   test -f share/install-input.sample
+  ldd bin/goapi
+  ! ldd bin/goapi | grep --quiet "not found"
+  ldd bin/goapi | grep --quiet "lib/libvips-cpp.so.8.18.3"
   ./nuboctl version
 )
 node "${NUBO_PROJECT_ROOT}/scripts/prebuilt-smoke.mjs" "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}/web/.output"

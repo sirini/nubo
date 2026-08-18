@@ -21,6 +21,8 @@
 - 사람용 `install`은 한국어 대화형을 기본으로 하고, 비대화형 모드는 비밀값을 CLI 인자가 아닌 제한된 입력 파일로 받는다.
 - DB/bootstrap, 서비스 활성화, Nginx reload, TLS는 준비 단계와 분리한 뒤 각각 실제 설치 흐름으로 연결한다.
 - 설정과 업로드는 릴리스 밖에 보존하며, 운영 서버에서는 `npm install`이나 Nuxt 빌드를 하지 않는다.
+- 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
+- 현재 x86-64 릴리스는 sharp와 같은 SSE4.2 CPU를 최소 조건으로 삼는다.
 
 ## Recent completion
 
@@ -28,6 +30,7 @@
 - `nuboctl` 구현과 테스트를 210줄 이하의 의미 단위 파일로 나누고 함수 주석을 짧은 한국어로 정리했다.
 - checksum 목록 밖의 일반 파일은 허용하되 기록된 파일과 위험 경로는 검증하며, 기존 업로드 경로의 쓰기 권한을 확인한다.
 - 한국어 대화형 설치와 비밀 입력 파일 기반 비대화형 설치, 번들 최상위 AI 설치 가이드를 추가했다.
+- govips 2.18과 sharp-libvips 1.3.2(libvips 8.18.3)를 결합해 시스템 libvips 의존성을 제거했다.
 
 ## Open findings
 
@@ -37,11 +40,11 @@
 
 ## Verification
 
-- `nuboctl`: `go test ./...`, race, vet 통과; 모든 Go 파일 210줄 이하와 함수 주석을 확인했다.
-- NUBO: 변경 파일 ESLint, 11개 테스트, typecheck, production build 통과.
-- prebuilt: Ubuntu 22.04/24.04 runtime smoke와 공식 GOAPI를 포함한 통합 릴리스 빌드 통과.
+- `nuboctl`: `go test ./...`, race, vet 통과; 내장 libvips와 SSE4.2 진단을 Ubuntu 22.04에서 확인했다.
+- NUBO: 11개 테스트, typecheck, production build 통과.
+- prebuilt: 시스템 libvips가 없는 Ubuntu 22.04/24.04 이미지 변환 테스트와 통합 릴리스 빌드 통과.
 
 ## Next action
 
-- 변경 단위를 커밋한 뒤 실제 Ubuntu 서버에서 대화형 설치 준비와 오류 안내를 QA한다.
+- 실제 Ubuntu 서버에서 대화형 설치 준비와 오류 안내를 QA한다.
 - QA 결과를 바탕으로 DB 준비와 서비스 활성화 중 다음 한 단계를 확정한다.

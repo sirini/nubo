@@ -26,6 +26,13 @@ type releaseManifest struct {
 		Commit  string `json:"commit"`
 		Dirty   bool   `json:"dirty"`
 	} `json:"components"`
+	NativeLibraries map[string]nativeLibrary `json:"nativeLibraries"`
+}
+
+type nativeLibrary struct {
+	Version string `json:"version"`
+	Path    string `json:"path"`
+	Source  string `json:"source"`
 }
 
 // 릴리스 manifest를 읽고 지원하는 최소 형식인지 확인한다.
@@ -41,6 +48,10 @@ func readManifest(releaseDir string) (releaseManifest, error) {
 	if manifest.SchemaVersion != 1 || manifest.ReleaseVersion == "" {
 		return manifest, fmt.Errorf("지원하지 않는 manifest 형식입니다")
 	}
+	libvips, ok := manifest.NativeLibraries["libvips"]
+	if !ok || libvips.Version == "" || libvips.Path == "" {
+		return manifest, fmt.Errorf("libvips 묶음 정보가 없습니다")
+	}
 	return manifest, nil
 }
 
@@ -55,6 +66,11 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 		results = append(results, fail("릴리스 대상", fmt.Sprintf("%s/%s 릴리스는 현재 %s/%s와 호환되지 않습니다", manifest.Target.OS, manifest.Target.Arch, runtime.GOOS, runtime.GOARCH)))
 	} else {
 		results = append(results, pass("릴리스 대상", manifest.Target.OS+"/"+manifest.Target.Arch))
+	}
+	if err := validateNativeLibrary(releaseDir, manifest.NativeLibraries["libvips"]); err != nil {
+		results = append(results, fail("내장 libvips", err.Error()))
+	} else {
+		results = append(results, pass("내장 libvips", manifest.NativeLibraries["libvips"].Version))
 	}
 	componentNames := make([]string, 0, len(manifest.Components))
 	for name := range manifest.Components {
@@ -75,6 +91,23 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 		}
 	}
 	return results
+}
+
+// manifest에 기록된 네이티브 라이브러리가 릴리스 안의 일반 파일인지 확인한다.
+func validateNativeLibrary(releaseDir string, library nativeLibrary) error {
+	clean := filepath.Clean(library.Path)
+	if clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("잘못된 라이브러리 경로: %s", library.Path)
+	}
+	path := filepath.Join(releaseDir, clean)
+	if err := ensureResolvedInside(releaseDir, path); err != nil {
+		return err
+	}
+	info, err := os.Stat(path)
+	if err != nil || !info.Mode().IsRegular() {
+		return fmt.Errorf("라이브러리 파일이 없습니다: %s", library.Path)
+	}
+	return nil
 }
 
 // 목록에 기록된 파일만 검증하며 운영자가 추가한 파일은 허용한다.

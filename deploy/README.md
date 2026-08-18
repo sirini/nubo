@@ -2,6 +2,7 @@
 
 이 파일들은 `nuboctl install`이 사용하는 입력 템플릿이다. 모든 `@TOKEN@`이 치환되기 전에는
 `/etc`에 직접 복사하지 않는다. 공식 지원 환경은 Ubuntu 22.04/24.04 amd64다.
+GOAPI용 libvips와 이미지 코덱은 공식 릴리스의 `lib/`에 포함되며 별도 시스템 패키지가 필요 없다.
 
 릴리스 최상위의 `nuboctl`은 systemd나 Nginx를 활성화·reload하지 않고 이 파일을 렌더링한다.
 사람은 한국어 대화형 설치를, AI·자동화는 `INSTALL_GUIDE_FOR_AI.md`의 비대화형 설치를 사용한다.

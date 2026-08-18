@@ -23,6 +23,17 @@ func TestCheckNodeEnforcesSupportedRange(t *testing.T) {
 	}
 }
 
+// CPU 기능 이름을 부분 문자열이 아닌 독립 토큰으로 판별하는지 확인한다.
+func TestContainsCPUFeature(t *testing.T) {
+	contents := "flags : fpu sse4_1 sse4_2 avx\n"
+	if !containsCPUFeature(contents, "sse4_2") {
+		t.Fatal("sse4_2 기능을 찾지 못했습니다")
+	}
+	if containsCPUFeature(contents, "sse4") {
+		t.Fatal("부분 문자열을 CPU 기능으로 잘못 판별했습니다")
+	}
+}
+
 // 200 JSON이어도 정상 상태가 아니면 실패하는지 확인한다.
 func TestCheckHTTPRequiresHealthyJSON(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {

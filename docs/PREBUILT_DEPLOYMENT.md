@@ -130,5 +130,7 @@ recorded in the manifest so a development artifact cannot be mistaken for a clea
 The verified output replaces an existing archive with the same version, so `dist/` only needs the
 latest bundle rather than manually named intermediate backups.
 The bundle intentionally excludes secrets, uploads, root dependencies, and rendered service files.
-It includes the static Linux `nuboctl` binary with safe `install` preparation and read-only `doctor`
-and `status` commands plus the unprivileged service and proxy templates used by the installer.
+It includes sharp-libvips and its license records under `lib/` and `licenses/sharp-libvips/`; runtime
+servers do not install a system libvips package. It also includes the static Linux `nuboctl` binary
+with safe `install` preparation and read-only `doctor` and `status` commands plus the unprivileged
+service and proxy templates used by the installer.

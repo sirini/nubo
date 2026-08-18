@@ -16,8 +16,14 @@ func validateInstallRelease(releaseDir string) error {
 	if manifest.Target.OS != runtime.GOOS || manifest.Target.Arch != runtime.GOARCH {
 		return fmt.Errorf("현재 플랫폼과 릴리스 대상이 다릅니다")
 	}
+	if err := requireCPUFeature("/proc/cpuinfo", "sse4_2"); err != nil {
+		return err
+	}
 	if err := verifyReleaseChecksums(releaseDir); err != nil {
 		return fmt.Errorf("릴리스 checksum: %w", err)
+	}
+	if err := validateNativeLibrary(releaseDir, manifest.NativeLibraries["libvips"]); err != nil {
+		return fmt.Errorf("내장 libvips: %w", err)
 	}
 	for _, relative := range []string{
 		"bin/goapi", "web/.output/server/index.mjs", "share/env.sample",
