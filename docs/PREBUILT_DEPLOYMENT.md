@@ -108,8 +108,9 @@ OAuth and RSS routes.
 On a clean server, `nuboctl install` may create and validate a new site configuration. If a server
 block for the target domain already exists, or an existing installation is adopted, `nuboctl` must
 not edit Nginx files or enable, disable, or reload any Nginx configuration. Read-only diagnostics and
-printing a recommended configuration remain allowed. TLS certificate issuance and Certbot stay under
-the server operator's control.
+printing a recommended configuration remain allowed. After a clean install, the separate idempotent
+`nuboctl activate-nginx` command links only that generated site, validates the complete configuration,
+and starts or reloads Nginx. TLS certificate issuance and Certbot stay under the server operator's control.
 
 `nuboctl install` renders and installs these templates without enabling or reloading services.
 Human operators use its Korean interactive flow; AI and automation follow the release-root

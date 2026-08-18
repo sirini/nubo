@@ -23,6 +23,7 @@ libvips와 이미지 코덱은 호환판·최적화판으로 릴리스에 포함
 4. 기존 환경·systemd·Nginx 파일을 직접 덮어쓰거나 삭제하지 않는다.
 5. 기존 Nginx 설정이 도메인을 사용하면 자동 우회하지 말고 사용자에게 충돌 파일을 알린다.
 6. 실패하면 먼저 오류 출력을 보존하고 `nuboctl doctor`로 현재 상태를 확인한다.
+7. Nginx 활성화 전에도 `activate-nginx --dry-run`을 먼저 성공시킨다.
 
 ## 새 설치 입력 파일
 
@@ -71,7 +72,16 @@ sudo ./nuboctl install \
 
 `install`은 서비스 계정, 환경 파일, 상태·업로드 경로와 DB의 기본 관리자·게시판·최신 스키마를 준비한다.
 systemd 서비스를 활성화하고 로컬 readiness까지 확인하지만 Nginx site는 비활성 상태로 만든다.
-Nginx enable/reload와 TLS 발급은 아직 실행하지 않으므로 완료 메시지의 다음 행동을 따른다.
+
+`doctor`와 설치가 성공한 뒤 설치기가 만든 site만 별도 활성화한다.
+
+```bash
+sudo ./nuboctl activate-nginx --dry-run
+sudo ./nuboctl activate-nginx
+```
+
+두 명령이 모두 성공하면 HTTP 공개 상태다. Certbot 설치, 약관 동의, 인증서 발급과 HTTPS redirect는
+운영자에게 넘기고 `activate-nginx`가 출력한 도메인별 명령을 임의로 자동 실행하지 않는다.
 
 DB 설치가 실패해도 기존 레코드를 덮어쓰지 않으므로 원인을 고친 뒤 같은 명령을 다시 실행한다.
 

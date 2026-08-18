@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.4.0"
+const version = "0.5.0"
 
 type options struct {
 	releaseDir  string
@@ -57,6 +57,20 @@ func run(args []string) int {
 		}
 		if err := runInstall(options, systemRunner{}, true); err != nil {
 			fmt.Fprintln(os.Stderr, "설치 준비 실패:", err)
+			return 1
+		}
+		return 0
+	case "activate-nginx":
+		options, err := parseNginxActivationOptions(args[1:])
+		if err != nil {
+			if err == flag.ErrHelp {
+				return 0
+			}
+			fmt.Fprintln(os.Stderr, err)
+			return 2
+		}
+		if err := activateNginx(options, systemRunner{}, true); err != nil {
+			fmt.Fprintln(os.Stderr, "Nginx 활성화 실패:", err)
 			return 1
 		}
 		return 0
@@ -154,5 +168,5 @@ func resolveExecutable(executable string) string {
 
 // 현재 제공하는 명령의 짧은 사용법을 표준 오류에 출력한다.
 func printUsage() {
-	fmt.Fprintln(os.Stderr, "사용법: nuboctl <install|doctor|status|version> [옵션]")
+	fmt.Fprintln(os.Stderr, "사용법: nuboctl <install|activate-nginx|doctor|status|version> [옵션]")
 }

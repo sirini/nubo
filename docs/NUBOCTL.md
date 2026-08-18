@@ -1,7 +1,8 @@
 # nuboctl 설치 준비와 진단
 
-현재 `nuboctl` MVP는 한국어 대화형 설치 준비를 하는 `install`과 서버 상태를 읽기만 하는
-`doctor`, `status`를 제공한다. AI·자동화는 릴리스 최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
+현재 `nuboctl` MVP는 한국어 대화형 설치를 하는 `install`, 공개 프록시를 연결하는
+`activate-nginx`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
+최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
 ## install
 
@@ -57,6 +58,25 @@ sudo ./nuboctl install \
 
 Nginx enable·reload와 Certbot/TLS는 아직 수행하지 않는다. DB와 두 애플리케이션 서비스가 준비된 뒤
 `doctor`로 실행 조건을 확인하고 공개 프록시 단계로 넘어간다.
+
+## activate-nginx
+
+`install`이 성공한 직후 또는 `status`로 서비스 readiness를 확인한 뒤 설치기가 만든 site만
+`sites-enabled`에 연결한다. 전체 설정의
+`nginx -t`가 통과해야 Nginx를 부팅 활성화하고, 실행 중이면 reload하며 멈춰 있으면 start한다.
+
+```bash
+sudo ./nuboctl activate-nginx --dry-run
+sudo ./nuboctl activate-nginx
+```
+
+도메인은 `/etc/nubo/nubo.env`의 `NUXT_PUBLIC_DOMAIN`에서 읽는다. 기존 enabled 항목이 일반 파일이거나
+다른 설정을 가리키는 링크이면 덮어쓰지 않는다. 설정 검증이나 서비스 반영에 실패하면 이번 실행에서
+만든 링크를 제거한다.
+
+이 단계는 HTTP 공개만 활성화한다. DNS가 서버를 가리키는지 확인한 뒤 출력되는
+`certbot --nginx -d <도메인> --redirect` 명령으로 운영자가 약관·연락처를 확인하고 TLS를 발급한다.
+Certbot 설치와 인증서 발급은 `nuboctl`의 책임 범위에 포함하지 않는다.
 
 ## doctor
 
