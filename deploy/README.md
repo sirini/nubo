@@ -1,12 +1,12 @@
-# NUBO Linux service templates
+# NUBO Linux 서비스 템플릿
 
-These templates are inputs for `nuboctl install`. They are not ready to copy into `/etc` until every
-`@TOKEN@` has been replaced. The supported first target is Ubuntu 22.04/24.04 on amd64.
+이 파일들은 `nuboctl install`이 사용하는 입력 템플릿이다. 모든 `@TOKEN@`이 치환되기 전에는
+`/etc`에 직접 복사하지 않는다. 공식 지원 환경은 Ubuntu 22.04/24.04 amd64다.
 
-The release-root `nuboctl` renders these files without activating or reloading systemd or Nginx and
-also provides read-only `doctor` and `status` commands; see `docs/NUBOCTL.md` in the source repository.
+릴리스 최상위의 `nuboctl`은 systemd나 Nginx를 활성화·reload하지 않고 이 파일을 렌더링한다.
+사람은 한국어 대화형 설치를, AI·자동화는 `INSTALL_GUIDE_FOR_AI.md`의 비대화형 설치를 사용한다.
 
-Recommended defaults:
+기본값:
 
 | Token | Default |
 | --- | --- |
@@ -23,16 +23,12 @@ Recommended defaults:
 | `@NUBO_GOAPI_PATH@` | `goapi` |
 | `@NUBO_MAX_BODY_SIZE@` | `100m` or another Nginx-compatible size |
 
-An existing upload tree may be used directly, for example
-`@NUBO_UPLOAD_DIR@=/var/www/nubohub.org/upload`. Use the same rendered path in the GOAPI unit and the
-Nginx configuration, set `NUBO_UPLOAD_DIR` to it in `nubo.env`, and grant the NUBO service user write
-access plus the Nginx user read/traverse access. Existing upload symlinks remain valid, but a direct
-absolute path makes ownership and service hardening easier to audit.
+기존 업로드 경로도 `@NUBO_UPLOAD_DIR@=/var/www/nubohub.org/upload`처럼 직접 사용할 수 있다.
+GOAPI unit, Nginx, `nubo.env`에는 같은 절대 경로를 사용한다. NUBO 서비스 사용자는 쓰기 권한이,
+Nginx 사용자는 읽기와 상위 경로 통과 권한이 필요하다. 설치 도구는 기존 경로의 소유권을 임의로 바꾸지 않는다.
 
-Nginx is the only supported reverse proxy for the first Ubuntu release. On a clean server the future
-installer may create a new site configuration, validate it with `nginx -t`, and reload Nginx. If a
-configuration for the target domain already exists—or an existing installation is being adopted—the
-installer must not edit, enable, disable, or reload Nginx; it may only report the recommended changes.
+현재 지원하는 reverse proxy는 Nginx뿐이다. 새 서버에서는 설치 도구가 site 설정을 만들지만 아직
+enable이나 reload하지 않는다. 대상 도메인의 기존 설정이 있으면 수정·활성화·비활성화하지 않고 충돌 위치를 알린다.
 
-The systemd units log to the journal and are grouped by `nubo.target`; `nubo-web.service` starts after
-GOAPI but each process can restart independently.
+systemd unit은 journal에 로그를 남기고 `nubo.target`으로 묶인다. `nubo-web.service`는 GOAPI 뒤에
+시작하지만 두 프로세스는 각각 재시작할 수 있다.

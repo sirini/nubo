@@ -16,10 +16,20 @@ const runtimeTitle = "Prebuilt Runtime Community"
 const runtimeDomain = "https://prebuilt-runtime.example"
 const runtimeVersion = "9.8.7-prebuilt"
 const runtimeGoapiBase = "runtime-goapi"
+const runtimeProfileSize = "901"
+const runtimeContentInsertSize = "902"
+const runtimeThumbnailSize = "903"
+const runtimeFullSize = "904"
+const runtimeFileSizeLimit = "905000"
+const runtimeAccessHours = "906"
+const runtimeRefreshDays = "907"
+const runtimeAdminId = "runtime-admin@prebuilt.example"
 let webProcess
 
+// 지정한 시간 뒤 다음 smoke 단계로 진행한다.
 const delay = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds))
 
+// 임시 HTTP 서버를 loopback 임의 포트에 열고 실제 포트를 반환한다.
 const listen = (server) =>
   new Promise((resolveListen, rejectListen) => {
     server.once("error", rejectListen)
@@ -29,11 +39,13 @@ const listen = (server) =>
     })
   })
 
+// 임시 HTTP 서버가 모든 연결을 정리한 뒤 닫힐 때까지 기다린다.
 const close = (server) =>
   new Promise((resolveClose, rejectClose) => {
     server.close((error) => (error ? rejectClose(error) : resolveClose()))
   })
 
+// 운영체제가 고른 비어 있는 포트를 확인한 뒤 테스트 프로세스에 사용한다.
 const reservePort = async () => {
   const server = createServer()
   const port = await listen(server)
@@ -41,6 +53,7 @@ const reservePort = async () => {
   return port
 }
 
+// 테스트가 끝나면 Nuxt 프로세스를 정상 종료하고 필요할 때만 강제 종료한다.
 const stopWebProcess = async () => {
   if (!webProcess || webProcess.exitCode !== null) return
 
@@ -51,12 +64,14 @@ const stopWebProcess = async () => {
   ])
 }
 
+// JSON 상태·프록시 응답을 HTTP 정보와 함께 반환한다.
 const requestJson = async (url, options) => {
   const response = await fetch(url, options)
   const body = await response.json()
   return { response, body }
 }
 
+// Nuxt가 준비될 때까지 짧게 재시도하고 조기 종료 로그를 오류에 포함한다.
 const waitForServer = async (url, logs) => {
   for (let attempt = 0; attempt < 100; attempt += 1) {
     if (webProcess.exitCode !== null) {
@@ -130,6 +145,14 @@ try {
       `NUXT_PUBLIC_GOAPI_BASE=${runtimeGoapiBase}`,
       `NUXT_PUBLIC_TITLE=${runtimeTitle}`,
       `NUXT_PUBLIC_VERSION=${runtimeVersion}`,
+      `NUXT_PUBLIC_PROFILE_SIZE=${runtimeProfileSize}`,
+      `NUXT_PUBLIC_CONTENT_INSERT_SIZE=${runtimeContentInsertSize}`,
+      `NUXT_PUBLIC_THUMBNAIL_SIZE=${runtimeThumbnailSize}`,
+      `NUXT_PUBLIC_FULL_SIZE=${runtimeFullSize}`,
+      `NUXT_PUBLIC_FILE_SIZE_LIMIT=${runtimeFileSizeLimit}`,
+      `NUXT_PUBLIC_ACCESS_HOURS=${runtimeAccessHours}`,
+      `NUXT_PUBLIC_REFRESH_DAYS=${runtimeRefreshDays}`,
+      `NUXT_PUBLIC_ADMIN_ID=${runtimeAdminId}`,
       "",
     ].join("\n"),
     { mode: 0o600 },
@@ -144,6 +167,14 @@ try {
     "NUXT_PUBLIC_GOAPI_BASE",
     "NUXT_PUBLIC_TITLE",
     "NUXT_PUBLIC_VERSION",
+    "NUXT_PUBLIC_PROFILE_SIZE",
+    "NUXT_PUBLIC_CONTENT_INSERT_SIZE",
+    "NUXT_PUBLIC_THUMBNAIL_SIZE",
+    "NUXT_PUBLIC_FULL_SIZE",
+    "NUXT_PUBLIC_FILE_SIZE_LIMIT",
+    "NUXT_PUBLIC_ACCESS_HOURS",
+    "NUXT_PUBLIC_REFRESH_DAYS",
+    "NUXT_PUBLIC_ADMIN_ID",
   ]) {
     delete inheritedEnvironment[key]
   }
@@ -178,7 +209,21 @@ try {
   const ssrResponse = await fetch(`${baseUrl}/privacy`)
   const ssrHtml = await ssrResponse.text()
   assert.equal(ssrResponse.status, 200)
-  for (const runtimeValue of [runtimeTitle, runtimeDomain, runtimeVersion, runtimeGoapiBase]) {
+  assert.equal(ssrHtml.includes(`<title>${runtimeTitle}</title>`), true, "document title is not runtime-configured")
+  for (const runtimeValue of [
+    runtimeTitle,
+    runtimeDomain,
+    runtimeVersion,
+    runtimeGoapiBase,
+    runtimeProfileSize,
+    runtimeContentInsertSize,
+    runtimeThumbnailSize,
+    runtimeFullSize,
+    runtimeFileSizeLimit,
+    runtimeAccessHours,
+    runtimeRefreshDays,
+    runtimeAdminId,
+  ]) {
     assert.equal(ssrHtml.includes(runtimeValue), true, `SSR HTML is missing ${runtimeValue}`)
   }
 

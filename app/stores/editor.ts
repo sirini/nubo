@@ -221,8 +221,8 @@ export const useEditorStore = defineStore("editor", () => {
     const arr = Array.from(targets)
     for (const target of arr) {
       totalSize += target.size
-      if (totalSize > parseInt(runtimeConfig.public.fileSize)) {
-        toast(`⚠️ 파일 크기 제한을 초과하였습니다: ${totalSize} > ${runtimeConfig.public.fileSize}`)
+      if (totalSize > parseInt(runtimeConfig.public.fileSizeLimit)) {
+        toast(`⚠️ 파일 크기 제한을 초과하였습니다: ${totalSize} > ${runtimeConfig.public.fileSizeLimit}`)
         break
       }
       images.value.push(target)
@@ -254,7 +254,7 @@ export const useEditorStore = defineStore("editor", () => {
     }
 
     const totalSize = targets.reduce((sum, file) => sum + file.size, 0)
-    const sizeLimit = parseInt(runtimeConfig.public.fileSize)
+    const sizeLimit = parseInt(runtimeConfig.public.fileSizeLimit)
     if (totalSize > sizeLimit) {
       toast(`⚠️ 파일 크기 제한을 초과하였습니다: ${totalSize} > ${sizeLimit}`)
       return []
@@ -397,7 +397,7 @@ export const useEditorStore = defineStore("editor", () => {
   // 첨부파일들을 추가하고, 이미지는 따로 미리보기용 URL 만들어서 보관
   const manageAttachments = (fileList: FileList) => {
     let totalSize = 0
-    const totalLimit = parseInt(nuxtConfig.public.fileSize)
+    const totalLimit = parseInt(nuxtConfig.public.fileSizeLimit)
     previewEditorSelectedImages.value.forEach((img) => URL.revokeObjectURL(img.url))
     previewEditorSelectedImages.value = []
     attaches.value = []

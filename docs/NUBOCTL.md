@@ -1,11 +1,18 @@
 # nuboctl 설치 준비와 진단
 
-현재 `nuboctl` MVP는 안전한 설치 준비를 하는 `install`과 서버 상태를 읽기만 하는
-`doctor`, `status`를 제공한다.
+현재 `nuboctl` MVP는 한국어 대화형 설치 준비를 하는 `install`과 서버 상태를 읽기만 하는
+`doctor`, `status`를 제공한다. AI·자동화는 릴리스 최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
 ## install
 
-실제 변경 전에 반드시 dry-run으로 계획을 확인한다.
+사람이 실행할 때는 옵션 없이 시작한다. 도메인·커뮤니티 이름·DB·최초 관리자 정보를 한국어로 묻고,
+비밀번호는 화면에 표시하지 않는다. 실제 변경 전에 전체 계획을 보여주고 마지막 동의를 받는다.
+
+```bash
+sudo ./nuboctl install
+```
+
+기본 경로와 일부 값을 바꾸려면 옵션을 함께 줄 수 있으며, 질문 화면에서 나머지를 입력한다.
 
 ```bash
 sudo ./nuboctl install \
@@ -15,12 +22,23 @@ sudo ./nuboctl install \
   --dry-run
 ```
 
-계획이 올바르면 `--dry-run`만 제거하고 같은 명령을 실행한다. 기본값은 `nubo` 사용자/그룹,
+`--dry-run`은 입력과 계획을 확인하지만 파일을 변경하지 않는다. 기본값은 `nubo` 사용자/그룹,
 `/etc/nubo/nubo.env`, `/var/lib/nubo`, `/var/lib/nubo/upload`, Nuxt `3000`, GOAPI `3006`이다.
+
+AI·자동화는 비밀값을 CLI에 노출하지 않고 `0600` 입력 파일과 명시적인 비대화형 모드를 사용한다.
+
+```bash
+sudo ./nuboctl install \
+  --non-interactive \
+  --domain community.example.com \
+  --release /opt/nubo/releases/1.3.0 \
+  --env-input /root/nubo-install.env \
+  --dry-run
+```
 
 `install`이 수행하는 일:
 
-- release manifest와 전체 checksum, 필수 entrypoint/템플릿 검증
+- release manifest와 checksum 목록의 파일, 필수 entrypoint/템플릿 검증
 - 서비스 사용자/그룹과 상태·업로드 경로 준비
 - 환경 파일이 없으면 sample에서 생성하고 JWT/SYNC 비밀값을 무작위로 생성
 - 환경 파일을 `0640`, `root:<서비스 그룹>`으로 저장
@@ -55,7 +73,7 @@ sudo ./nuboctl doctor \
 - Linux amd64와 Ubuntu 22.04/24.04 여부
 - Node `>=24.11.0 <27`, libvips, systemd, Nginx
 - `manifest.json` 대상 플랫폼과 컴포넌트 dirty 상태
-- `checksums.txt`의 모든 항목과 release 밖 경로·심볼릭 링크 차단
+- `checksums.txt`에 기록된 파일의 손상과 release 밖 경로·심볼릭 링크 차단
 - 환경 파일 구문, 필수값, 비밀값 파일 권한, loopback 수신 주소
 - `NUBO_UPLOAD_DIR` 또는 기본 업로드 경로와 `nubo` 사용자의 쓰기 권한
 - 기존 Nginx 전체 설정의 `nginx -t` 결과

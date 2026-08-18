@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// readEnvironment는 단순 KEY=VALUE 환경 파일을 읽고 따옴표로 감싼 값을 풀어낸다.
 func readEnvironment(path string) (map[string]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -45,6 +46,7 @@ func readEnvironment(path string) (map[string]string, error) {
 	return values, nil
 }
 
+// checkEnvironment는 환경 파일 권한·구문·필수값·수신 주소를 진단한다.
 func checkEnvironment(options options, required bool) ([]checkResult, map[string]string) {
 	info, err := os.Stat(options.envFile)
 	if err != nil {
@@ -100,6 +102,7 @@ func checkEnvironment(options options, required bool) ([]checkResult, map[string
 	return results, values
 }
 
+// isLoopbackHost는 localhost와 IPv4·IPv6 loopback 주소를 판정한다.
 func isLoopbackHost(host string) bool {
 	if strings.EqualFold(host, "localhost") {
 		return true
@@ -108,6 +111,7 @@ func isLoopbackHost(host string) bool {
 	return ip != nil && ip.IsLoopback()
 }
 
+// uploadDirectory는 환경값의 절대·상대 경로를 실제 업로드 경로로 해석한다.
 func uploadDirectory(options options, values map[string]string) string {
 	configured := strings.TrimSpace(values["NUBO_UPLOAD_DIR"])
 	if configured == "" {
@@ -119,6 +123,7 @@ func uploadDirectory(options options, values map[string]string) string {
 	return filepath.Join(options.stateDir, configured)
 }
 
+// webBaseURL은 명시 옵션이나 환경 설정으로 로컬 Nuxt 상태 확인 주소를 만든다.
 func webBaseURL(options options, values map[string]string) string {
 	if options.webURL != "" {
 		return strings.TrimRight(options.webURL, "/")

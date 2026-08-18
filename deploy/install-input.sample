@@ -1,0 +1,19 @@
+# 이 파일은 nuboctl install --non-interactive 전용 입력 예시입니다.
+# 실제 값을 입력한 뒤 반드시 chmod 0600으로 보호하세요.
+
+GOAPI_TITLE=내 커뮤니티
+NUXT_PUBLIC_TITLE=내 커뮤니티
+
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=nubo
+DB_PASS=#db_password#
+DB_NAME=nubo
+DB_TABLE_PREFIX=nubo_
+DB_UNIX_SOCKET=
+DB_MAX_IDLE=10
+DB_MAX_OPEN=10
+
+ADMIN_ID=admin@example.com
+ADMIN_PW=#admin_password#
+NUXT_PUBLIC_ADMIN_ID=admin@example.com

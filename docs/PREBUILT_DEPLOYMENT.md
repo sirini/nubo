@@ -71,7 +71,7 @@ Existing source installations require no change: without `NUBO_ENV_FILE`, GOAPI 
 `.env` in its working directory. Values already present in the GOAPI process environment override
 values read from the file. When changing a shared setting such as the public domain, title, version,
 GOAPI path, port, size limit, or token lifetime, keep its `GOAPI_*`/`JWT_*` and `NUXT_*` entries in
-sync. A later installer will generate these paired concrete values.
+sync. The interactive installer and its non-interactive input file generate these paired concrete values.
 
 `NUBO_UPLOAD_DIR` independently selects the mutable upload root. Its default remains `./upload`, so
 source installs and existing upload symlinks keep working. A prebuilt install normally sets it to
@@ -111,8 +111,9 @@ not edit Nginx files or enable, disable, or reload any Nginx configuration. Read
 printing a recommended configuration remain allowed. TLS certificate issuance and Certbot stay under
 the server operator's control.
 
-The templates are not yet a one-command installation interface. Until `nuboctl install` renders,
-installs, and verifies them, follow `share/README.md` and replace every token before using them.
+`nuboctl install` renders and installs these templates without enabling or reloading services.
+Human operators use its Korean interactive flow; AI and automation follow the release-root
+`INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
 
 ## Minimal integrated bundle
 

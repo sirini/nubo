@@ -774,8 +774,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 ```text
 nubo-1.3.0-linux-amd64.tar.zst
 ├── bin/
-│   ├── goapi
-│   └── node                 # Phase B부터
+│   └── goapi
 ├── web/
 │   └── .output/
 ├── share/

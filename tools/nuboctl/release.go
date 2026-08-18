@@ -28,6 +28,7 @@ type releaseManifest struct {
 	} `json:"components"`
 }
 
+// readManifest는 릴리스 manifest를 읽고 지원하는 최소 형식인지 확인한다.
 func readManifest(releaseDir string) (releaseManifest, error) {
 	var manifest releaseManifest
 	contents, err := os.ReadFile(filepath.Join(releaseDir, "manifest.json"))
@@ -43,6 +44,7 @@ func readManifest(releaseDir string) (releaseManifest, error) {
 	return manifest, nil
 }
 
+// checkRelease는 manifest 대상과 선택적인 checksum 결과를 진단 항목으로 만든다.
 func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 	manifest, err := readManifest(releaseDir)
 	if err != nil {
@@ -75,6 +77,7 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 	return results
 }
 
+// verifyReleaseChecksums는 목록에 기록된 파일만 검증하며 운영자가 추가한 파일은 허용한다.
 func verifyReleaseChecksums(releaseDir string) error {
 	file, err := os.Open(filepath.Join(releaseDir, "checksums.txt"))
 	if err != nil {
@@ -127,37 +130,10 @@ func verifyReleaseChecksums(releaseDir string) error {
 	if count == 0 {
 		return fmt.Errorf("checksum 항목이 없습니다")
 	}
-	return verifyReleaseTree(releaseDir, checked)
+	return nil
 }
 
-// verifyReleaseTree는 목록에 없는 파일과 릴리스 밖을 가리키는 모든 심볼릭 링크를 거부한다.
-func verifyReleaseTree(releaseDir string, checked map[string]bool) error {
-	return filepath.WalkDir(releaseDir, func(path string, entry os.DirEntry, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
-		}
-		if entry.Type()&os.ModeSymlink != 0 {
-			return ensureResolvedInside(releaseDir, path)
-		}
-		info, err := entry.Info()
-		if err != nil {
-			return err
-		}
-		if !info.Mode().IsRegular() {
-			return nil
-		}
-		relative, err := filepath.Rel(releaseDir, path)
-		if err != nil || relative == "checksums.txt" {
-			return err
-		}
-		if !checked[relative] {
-			return fmt.Errorf("checksum 목록에 없는 파일: %s", relative)
-		}
-		return nil
-	})
-}
-
-// ensureResolvedInside는 checksum 경로의 심볼릭 링크가 릴리스 밖을 가리키지 않도록 막는다.
+// ensureResolvedInside는 checksum에 기록된 경로가 심볼릭 링크로 릴리스 밖을 가리키지 않도록 막는다.
 func ensureResolvedInside(root, target string) error {
 	rootPath, err := filepath.EvalSymlinks(root)
 	if err != nil {
@@ -174,6 +150,7 @@ func ensureResolvedInside(root, target string) error {
 	return nil
 }
 
+// fileSHA256은 지정한 일반 파일의 SHA-256 값을 소문자 16진수로 계산한다.
 func fileSHA256(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {

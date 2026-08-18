@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- 좁아진 제품 범위에 맞춰 `nuboctl`을 읽기 쉽게 정리하고, 모든 prebuilt 설정이 런타임에 반영되도록 고친다.
-- 한국어 사용자는 대화형 설치를, AI·자동화는 문서화된 비대화형 설치를 사용하도록 설치 계약을 다듬는다.
+- 좁아진 제품 범위에서 새 `nuboctl install` 흐름을 실제 Ubuntu 서버 QA로 이어간다.
+- DB 준비, 서비스 활성화, readiness 확인을 각각 작고 검증 가능한 후속 작업으로 정한다.
 
 ## Current product boundary
 
@@ -24,23 +24,24 @@
 
 ## Recent completion
 
-- `.output`, 공식 Ubuntu 22.04 GOAPI, 환경 샘플, 서비스 템플릿, manifest/checksum, 정적 `nuboctl`을 묶는 통합 릴리스를 검증했다.
-- 읽기 전용 `doctor`/`status`와 덮어쓰기 없는 `install` 준비 단계를 구현했다.
-- GOAPI와 Nuxt가 릴리스 외부의 한 환경 파일을 사용하고 업로드 루트를 독립적으로 지정하도록 했다.
+- 모든 Nuxt 공개 설정과 문서 제목이 prebuilt 실행 시 환경 파일에서 바뀌도록 런타임 계약을 바로잡았다.
+- `nuboctl` 구현과 테스트를 210줄 이하의 의미 단위 파일로 나누고 함수 주석을 짧은 한국어로 정리했다.
+- checksum 목록 밖의 일반 파일은 허용하되 기록된 파일과 위험 경로는 검증하며, 기존 업로드 경로의 쓰기 권한을 확인한다.
+- 한국어 대화형 설치와 비밀 입력 파일 기반 비대화형 설치, 번들 최상위 AI 설치 가이드를 추가했다.
 
 ## Open findings
 
-- 중첩된 Nuxt 설정의 환경 변수 이름이 런타임 계약과 맞지 않아 일부 값이 prebuilt 빌드 시점에 고정된다.
-- `install.go`와 단일 테스트 파일이 길고 대부분의 함수에 이해를 돕는 한국어 주석이 없다.
-- 현재 `install`은 DB 준비, 서비스 활성화, readiness, 최초 관리자 안내까지 수행하지 않는다.
+- 현재 `install`은 DB 준비, 서비스 활성화, readiness 완료 확인까지 수행하지 않는다.
+- 새 설치 흐름은 실제 깨끗한 Ubuntu 서버에서 운영자 관점의 QA가 필요하다.
 - 전체 NUBO ESLint에는 완료된 작업 밖의 기존 358건이 남아 있다.
 
 ## Verification
 
-- 현재 `nuboctl`: `go test ./...`, `go test -race ./...`, `go vet ./...` 통과.
-- 기존 prebuilt: Node 24/26 및 Ubuntu 22.04/24.04 smoke 통과.
+- `nuboctl`: `go test ./...`, race, vet 통과; 모든 Go 파일 210줄 이하와 함수 주석을 확인했다.
+- NUBO: 변경 파일 ESLint, 11개 테스트, typecheck, production build 통과.
+- prebuilt: Ubuntu 22.04/24.04 runtime smoke와 공식 GOAPI를 포함한 통합 릴리스 빌드 통과.
 
 ## Next action
 
-- 문서 범위 확정 후 런타임 설정·checksum·업로드 검사를 바로잡고 코드와 테스트를 의미 단위로 나눈다.
-- 이어서 한국어 대화형 설치와 번들 최상위의 AI 설치 가이드를 구현한다.
+- 변경 단위를 커밋한 뒤 실제 Ubuntu 서버에서 대화형 설치 준비와 오류 안내를 QA한다.
+- QA 결과를 바탕으로 DB 준비와 서비스 활성화 중 다음 한 단계를 확정한다.

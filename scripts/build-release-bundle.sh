@@ -13,6 +13,7 @@ readonly NUBO_TEMP_ROOT="$(mktemp -d)"
 readonly NUBO_STAGE_ROOT="${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}"
 readonly NUBO_VERIFY_ROOT="${NUBO_TEMP_ROOT}/verify"
 
+# 임시 staging과 검증 디렉터리를 작업 성공 여부와 관계없이 제거합니다.
 cleanup() {
   rm -rf "${NUBO_TEMP_ROOT}"
 }
@@ -20,6 +21,7 @@ trap cleanup EXIT
 
 for NUBO_REQUIRED_FILE in \
   "${NUBO_PROJECT_ROOT}/.output/server/index.mjs" \
+  "${NUBO_PROJECT_ROOT}/INSTALL_GUIDE_FOR_AI.md" \
   "${NUBO_PROJECT_ROOT}/deploy/README.md" \
   "${NUBO_PROJECT_ROOT}/env.sample" \
   "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" \
@@ -39,6 +41,7 @@ mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/s
 cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
 cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
+install -m 0644 "${NUBO_PROJECT_ROOT}/INSTALL_GUIDE_FOR_AI.md" "${NUBO_STAGE_ROOT}/INSTALL_GUIDE_FOR_AI.md"
 "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl"
 "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" "${NUBO_STAGE_ROOT}/bin/goapi"
 NUBOCTL_VERSION="$("${NUBO_STAGE_ROOT}/nuboctl" version | awk '{print $2}')"
@@ -97,6 +100,8 @@ docker run --rm \
   test ! -e .env
   test ! -e upload
   test ! -e node_modules
+  test -f INSTALL_GUIDE_FOR_AI.md
+  test -f share/install-input.sample
   ./nuboctl version
 )
 node "${NUBO_PROJECT_ROOT}/scripts/prebuilt-smoke.mjs" "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}/web/.output"

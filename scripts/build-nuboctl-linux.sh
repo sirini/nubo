@@ -6,6 +6,7 @@ readonly NUBO_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly NUBO_OUTPUT_PATH="$(realpath -m "${1:-${NUBO_PROJECT_ROOT}/nuboctl-linux}")"
 readonly NUBO_BUILD_ROOT="$(mktemp -d)"
 
+# 컨테이너가 만든 임시 nuboctl 빌드 디렉터리를 제거합니다.
 cleanup() {
   rm -rf "${NUBO_BUILD_ROOT}"
 }

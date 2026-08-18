@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
         path: "/",
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
-        maxAge: 60 * 60 * parseInt(config.public.auth.accessTokenHours),
+        maxAge: 60 * 60 * parseInt(config.public.accessHours),
       })
     }
 

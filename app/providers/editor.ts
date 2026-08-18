@@ -7,7 +7,11 @@ export const useEditorProvider = (): NuboEditorContext => {
   return {
     config: computed(() => edit.config),
     content: computed({ get: () => edit.content, set: (val: string) => (edit.content = val) }),
-    imageSizeLimit: computed(() => config.public.imageSize),
+    imageSizeLimit: computed(() => ({
+      profile: config.public.profileSize,
+      contentInsert: config.public.contentInsertSize,
+      thumbnail: config.public.thumbnailSize,
+    })),
     imageUrl: computed(() => edit.imageUrl),
     insertedImageResult: computed(() => edit.insertedImageResult),
     insertedImages: computed(() => edit.insertedImages),

@@ -19,12 +19,6 @@ const defaultSkins = {
 }
 
 export default defineNuxtConfig({
-  // 사이트 타이틀, 기본 폴더 시작점 설정
-  app: {
-    head: {
-      titleTemplate: "nubo | a new unified board" /* 본인 사이트에 맞춰 수정 필요 */,
-    },
-  },
   srcDir: "app/",
   compatibilityDate: "2025-05-15",
   devtools: { enabled: false },
@@ -39,16 +33,14 @@ export default defineNuxtConfig({
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
       title: env.NUXT_PUBLIC_TITLE || "NUBO | A New Unified Board",
       adminId: env.NUXT_PUBLIC_ADMIN_ID || "example-admin@nubohub.org",
-      imageSize: {
-        profile: env.NUXT_PUBLIC_PROFILE_SIZE || "256",
-        contentInsert: env.NUXT_PUBLIC_CONTENT_INSERT_SIZE || "1024",
-        thumbnail: env.NUXT_PUBLIC_THUMBNAIL_SIZE || "512",
-      },
-      fileSize: env.NUXT_PUBLIC_FILE_SIZE_LIMIT || "104857600",
-      auth: {
-        accessTokenHours: env.NUXT_PUBLIC_ACCESS_HOURS || "2",
-        refreshTokenDays: env.NUXT_PUBLIC_REFRESH_DAYS || "7",
-      },
+      // env.sample의 이름과 같은 1단계 키를 사용해야 prebuilt 실행 시 값이 덮어써진다.
+      profileSize: env.NUXT_PUBLIC_PROFILE_SIZE || "256",
+      contentInsertSize: env.NUXT_PUBLIC_CONTENT_INSERT_SIZE || "1024",
+      thumbnailSize: env.NUXT_PUBLIC_THUMBNAIL_SIZE || "512",
+      fullSize: env.NUXT_PUBLIC_FULL_SIZE || "2048",
+      fileSizeLimit: env.NUXT_PUBLIC_FILE_SIZE_LIMIT || "104857600",
+      accessHours: env.NUXT_PUBLIC_ACCESS_HOURS || "2",
+      refreshDays: env.NUXT_PUBLIC_REFRESH_DAYS || "7",
       skins: defaultSkins,
     },
   },
