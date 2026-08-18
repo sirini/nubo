@@ -1,29 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
 
-// CPU 정보에서 sharp-libvips 실행에 필요한 명령어 집합을 확인한다.
-func checkCPUFeature(path, feature string) checkResult {
-	if err := requireCPUFeature(path, feature); err != nil {
-		return fail("CPU", err.Error())
-	}
-	return pass("CPU", strings.ToUpper(strings.ReplaceAll(feature, "_", "."))+" 지원")
-}
-
-// 지정한 CPU 기능이 없으면 설치를 중단할 수 있는 오류를 반환한다.
-func requireCPUFeature(path, feature string) error {
+// CPU 정보로 이미지 라이브러리의 예상 자동 선택 결과를 안내한다.
+func checkImageCPU(path string) checkResult {
 	contents, err := os.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("CPU 기능을 확인할 수 없습니다: %w", err)
+		return warn("이미지 CPU", "CPU 정보 확인 실패 · glibc가 내장판을 자동 선택합니다")
 	}
-	if !containsCPUFeature(string(contents), feature) {
-		return fmt.Errorf("내장 libvips 실행에 필요한 %s를 지원하지 않습니다", strings.ToUpper(strings.ReplaceAll(feature, "_", ".")))
+	if !containsCPUFeature(string(contents), "sse4_2") {
+		return pass("이미지 CPU", "SSE4.2 없음 · x86-64 호환판 자동 선택")
 	}
-	return nil
+	return pass("이미지 CPU", "glibc가 호환판 또는 x86-64-v2 최적화판 자동 선택")
 }
 
 // cpuinfo의 공백 구분 토큰에서 기능 이름이 정확히 일치하는지 찾는다.

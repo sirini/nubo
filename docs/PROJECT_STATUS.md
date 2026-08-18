@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- 좁아진 제품 범위에서 새 `nuboctl install` 흐름을 실제 Ubuntu 서버 QA로 이어간다.
-- DB 준비, 서비스 활성화, readiness 확인을 각각 작고 검증 가능한 후속 작업으로 정한다.
+- 새 `nuboctl install`과 이미지 CPU 호환성을 실제 Ubuntu 서버에서 QA한다.
+- QA 뒤 DB 준비, 서비스 활성화, readiness 확인을 작고 검증 가능한 후속 작업으로 정한다.
 
 ## Current product boundary
 
@@ -22,7 +22,8 @@
 - DB/bootstrap, 서비스 활성화, Nginx reload, TLS는 준비 단계와 분리한 뒤 각각 실제 설치 흐름으로 연결한다.
 - 설정과 업로드는 릴리스 밖에 보존하며, 운영 서버에서는 `npm install`이나 Nuxt 빌드를 하지 않는다.
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
-- 현재 x86-64 릴리스는 sharp와 같은 SSE4.2 CPU를 최소 조건으로 삼는다.
+- x86-64 호환판을 기본 경로에, sharp 공식 x86-64-v2판을 glibc-hwcaps 경로에 함께 둔다.
+- CPU 판별과 선택은 glibc에 맡기며 `nuboctl`은 SSE4.2가 없다는 이유로 설치를 거부하지 않는다.
 
 ## Recent completion
 
@@ -31,20 +32,23 @@
 - checksum 목록 밖의 일반 파일은 허용하되 기록된 파일과 위험 경로는 검증하며, 기존 업로드 경로의 쓰기 권한을 확인한다.
 - 한국어 대화형 설치와 비밀 입력 파일 기반 비대화형 설치, 번들 최상위 AI 설치 가이드를 추가했다.
 - govips 2.18과 sharp-libvips 1.3.2(libvips 8.18.3)를 결합해 시스템 libvips 의존성을 제거했다.
+- sharp-libvips 고정 소스의 x86-64 호환판과 공식 x86-64-v2판을 함께 배포하고 glibc가 자동 선택하게 했다.
 
 ## Open findings
 
 - 현재 `install`은 DB 준비, 서비스 활성화, readiness 완료 확인까지 수행하지 않는다.
 - 새 설치 흐름은 실제 깨끗한 Ubuntu 서버에서 운영자 관점의 QA가 필요하다.
+- Cafe24의 실제 `cpu64-rhel6` 가상 CPU에서 호환판 이미지 처리 최종 QA가 필요하다.
 - 전체 NUBO ESLint에는 완료된 작업 밖의 기존 358건이 남아 있다.
 
 ## Verification
 
-- `nuboctl`: `go test ./...`, race, vet 통과; 내장 libvips와 SSE4.2 진단을 Ubuntu 22.04에서 확인했다.
+- `nuboctl`: 테스트, race, vet 통과; SSE4.2 없는 CPU 안내와 manifest 스키마 2를 확인했다.
 - NUBO: 11개 테스트, typecheck, production build 통과.
-- prebuilt: 시스템 libvips가 없는 Ubuntu 22.04/24.04 이미지 변환 테스트와 통합 릴리스 빌드 통과.
+- GOAPI: Ubuntu 22.04/24.04에서 최적화판, QEMU `qemu64`에서 호환판 JPEG→WebP 변환 통과.
+- prebuilt: 두 libvips 변형, 출처, checksum, x86-64-v2 자동 선택과 통합 릴리스 smoke test 통과.
 
 ## Next action
 
-- 실제 Ubuntu 서버에서 대화형 설치 준비와 오류 안내를 QA한다.
-- QA 결과를 바탕으로 DB 준비와 서비스 활성화 중 다음 한 단계를 확정한다.
+- Cafe24 실제 `cpu64-rhel6` 서버에서 이미지 업로드·변환을 QA한다.
+- 깨끗한 Ubuntu 서버에서 대화형 설치 준비와 오류 안내를 QA한다.

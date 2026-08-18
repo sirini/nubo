@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 )
 
@@ -23,14 +25,15 @@ func TestCheckNodeEnforcesSupportedRange(t *testing.T) {
 	}
 }
 
-// CPU 기능 이름을 부분 문자열이 아닌 독립 토큰으로 판별하는지 확인한다.
-func TestContainsCPUFeature(t *testing.T) {
-	contents := "flags : fpu sse4_1 sse4_2 avx\n"
-	if !containsCPUFeature(contents, "sse4_2") {
-		t.Fatal("sse4_2 기능을 찾지 못했습니다")
+// SSE4.2가 없는 CPU를 실패시키지 않고 호환판 사용으로 안내한다.
+func TestCheckImageCPUAllowsBaselineCPU(t *testing.T) {
+	path := t.TempDir() + "/cpuinfo"
+	if err := os.WriteFile(path, []byte("flags : fpu sse sse2 pni\n"), 0o644); err != nil {
+		t.Fatal(err)
 	}
-	if containsCPUFeature(contents, "sse4") {
-		t.Fatal("부분 문자열을 CPU 기능으로 잘못 판별했습니다")
+	result := checkImageCPU(path)
+	if result.level != levelPass || !strings.Contains(result.detail, "호환판") {
+		t.Fatalf("baseline CPU result = %+v", result)
 	}
 }
 

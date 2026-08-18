@@ -99,10 +99,11 @@ func installTestOptions(t *testing.T) installOptions {
 func createInstallTestRelease(t *testing.T, releaseDir string) {
 	t.Helper()
 	files := map[string]string{
-		"manifest.json":                fmt.Sprintf(`{"schemaVersion":1,"releaseVersion":"1.2.1","target":{"os":%q,"arch":%q},"components":{},"nativeLibraries":{"libvips":{"version":"8.18.3","path":"lib/libvips-cpp.so.8.18.3","source":"test"}}}`, runtime.GOOS, runtime.GOARCH) + "\n",
-		"bin/goapi":                    "binary\n",
-		"lib/libvips-cpp.so.8.18.3":    "library\n",
-		"web/.output/server/index.mjs": "export default {}\n",
+		"manifest.json":             fmt.Sprintf(`{"schemaVersion":2,"releaseVersion":"1.2.1","target":{"os":%q,"arch":%q},"components":{},"nativeLibraries":{"libvips":{"version":"8.18.3","selection":"glibc-hwcaps","variants":{"x86-64":{"path":"lib/libvips-cpp.so.8.18.3","source":"test"},"x86-64-v2":{"path":"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3","source":"test"}}}}}`, runtime.GOOS, runtime.GOARCH) + "\n",
+		"bin/goapi":                 "binary\n",
+		"lib/libvips-cpp.so.8.18.3": "library\n",
+		"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3": "optimized library\n",
+		"web/.output/server/index.mjs":                     "export default {}\n",
 		"share/env.sample": strings.Join([]string{
 			"GOAPI_BASE=goapi", "GOAPI_HOST=127.0.0.1", "GOAPI_PORT=3006", "GOAPI_DOMAIN=http://localhost", "GOAPI_TITLE=NUBO",
 			"NUBO_UPLOAD_DIR=./upload", "JWT_SECRET_KEY=#jwtsecret#", "SYNC_SECRET_KEY=#syncsecret#",

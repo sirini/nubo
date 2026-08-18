@@ -181,7 +181,7 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 
 전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
 
-공식 릴리스의 GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2를 지원하는 x86-64 서버에는 별도 libvips가 필요 없으며, ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
+공식 릴리스의 GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다. 별도 libvips 설치는 필요 없으며 ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
 
 ## 업데이트
 

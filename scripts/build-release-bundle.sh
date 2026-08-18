@@ -60,7 +60,7 @@ node - "${NUBO_STAGE_ROOT}/manifest.json" <<EOF
 const { writeFileSync } = require("node:fs")
 const [manifestPath] = process.argv.slice(2)
 writeFileSync(manifestPath, JSON.stringify({
-  schemaVersion: 1,
+  schemaVersion: 2,
   releaseVersion: "${NUBO_VERSION}",
   target: { os: "linux", arch: "amd64" },
   runtime: { node: ">=24.11.0 <27" },
@@ -68,8 +68,17 @@ writeFileSync(manifestPath, JSON.stringify({
   nativeLibraries: {
     libvips: {
       version: "8.18.3",
-      path: "lib/libvips-cpp.so.8.18.3",
-      source: "@img/sharp-libvips-linux-x64@1.3.2",
+      selection: "glibc-hwcaps",
+      variants: {
+        "x86-64": {
+          path: "lib/libvips-cpp.so.8.18.3",
+          source: "sharp-libvips@4da6d14c0d59866adfb9d8cf52bcaa53846dc4f6 (-march=x86-64)",
+        },
+        "x86-64-v2": {
+          path: "lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3",
+          source: "@img/sharp-libvips-linux-x64@1.3.2",
+        },
+      },
     },
   },
   components: {
@@ -112,11 +121,13 @@ docker run --rm \
   test ! -e node_modules
   test -f INSTALL_GUIDE_FOR_AI.md
   test -f lib/libvips-cpp.so.8.18.3
+  test -f lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3
+  test -f licenses/sharp-libvips/compat-build.json
   test -f licenses/sharp-libvips/versions.json
   test -f share/install-input.sample
   ldd bin/goapi
   ! ldd bin/goapi | grep --quiet "not found"
-  ldd bin/goapi | grep --quiet "lib/libvips-cpp.so.8.18.3"
+  ldd bin/goapi | grep --quiet "lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3"
   ./nuboctl version
 )
 node "${NUBO_PROJECT_ROOT}/scripts/prebuilt-smoke.mjs" "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}/web/.output"

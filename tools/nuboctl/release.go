@@ -30,9 +30,14 @@ type releaseManifest struct {
 }
 
 type nativeLibrary struct {
-	Version string `json:"version"`
-	Path    string `json:"path"`
-	Source  string `json:"source"`
+	Version   string                          `json:"version"`
+	Selection string                          `json:"selection"`
+	Variants  map[string]nativeLibraryVariant `json:"variants"`
+}
+
+type nativeLibraryVariant struct {
+	Path   string `json:"path"`
+	Source string `json:"source"`
 }
 
 // 릴리스 manifest를 읽고 지원하는 최소 형식인지 확인한다.
@@ -45,12 +50,17 @@ func readManifest(releaseDir string) (releaseManifest, error) {
 	if err := json.Unmarshal(contents, &manifest); err != nil {
 		return manifest, err
 	}
-	if manifest.SchemaVersion != 1 || manifest.ReleaseVersion == "" {
+	if manifest.SchemaVersion != 2 || manifest.ReleaseVersion == "" {
 		return manifest, fmt.Errorf("지원하지 않는 manifest 형식입니다")
 	}
 	libvips, ok := manifest.NativeLibraries["libvips"]
-	if !ok || libvips.Version == "" || libvips.Path == "" {
+	if !ok || libvips.Version == "" || libvips.Selection != "glibc-hwcaps" {
 		return manifest, fmt.Errorf("libvips 묶음 정보가 없습니다")
+	}
+	for _, level := range []string{"x86-64", "x86-64-v2"} {
+		if libvips.Variants[level].Path == "" {
+			return manifest, fmt.Errorf("libvips %s 변형 정보가 없습니다", level)
+		}
 	}
 	return manifest, nil
 }
@@ -67,10 +77,11 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 	} else {
 		results = append(results, pass("릴리스 대상", manifest.Target.OS+"/"+manifest.Target.Arch))
 	}
-	if err := validateNativeLibrary(releaseDir, manifest.NativeLibraries["libvips"]); err != nil {
+	libvips := manifest.NativeLibraries["libvips"]
+	if err := validateNativeLibrary(releaseDir, libvips); err != nil {
 		results = append(results, fail("내장 libvips", err.Error()))
 	} else {
-		results = append(results, pass("내장 libvips", manifest.NativeLibraries["libvips"].Version))
+		results = append(results, pass("내장 libvips", libvips.Version+" · CPU에 맞게 자동 선택"))
 	}
 	componentNames := make([]string, 0, len(manifest.Components))
 	for name := range manifest.Components {
@@ -93,11 +104,26 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 	return results
 }
 
-// manifest에 기록된 네이티브 라이브러리가 릴리스 안의 일반 파일인지 확인한다.
+// CPU별 네이티브 라이브러리가 모두 릴리스 안의 일반 파일인지 확인한다.
 func validateNativeLibrary(releaseDir string, library nativeLibrary) error {
-	clean := filepath.Clean(library.Path)
+	levels := make([]string, 0, len(library.Variants))
+	for level := range library.Variants {
+		levels = append(levels, level)
+	}
+	sort.Strings(levels)
+	for _, level := range levels {
+		if err := validateNativeLibraryVariant(releaseDir, level, library.Variants[level]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 한 CPU 변형의 경로가 릴리스 밖으로 벗어나거나 파일이 아닌 경우를 거부한다.
+func validateNativeLibraryVariant(releaseDir, level string, variant nativeLibraryVariant) error {
+	clean := filepath.Clean(variant.Path)
 	if clean == "." || filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
-		return fmt.Errorf("잘못된 라이브러리 경로: %s", library.Path)
+		return fmt.Errorf("잘못된 %s 라이브러리 경로: %s", level, variant.Path)
 	}
 	path := filepath.Join(releaseDir, clean)
 	if err := ensureResolvedInside(releaseDir, path); err != nil {
@@ -105,7 +131,7 @@ func validateNativeLibrary(releaseDir string, library nativeLibrary) error {
 	}
 	info, err := os.Stat(path)
 	if err != nil || !info.Mode().IsRegular() {
-		return fmt.Errorf("라이브러리 파일이 없습니다: %s", library.Path)
+		return fmt.Errorf("%s 라이브러리 파일이 없습니다: %s", level, variant.Path)
 	}
 	return nil
 }

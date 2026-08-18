@@ -70,8 +70,8 @@ sudo ./nuboctl doctor \
 
 검사 항목:
 
-- Linux amd64, SSE4.2와 Ubuntu 22.04/24.04 여부
-- Node `>=24.11.0 <27`, 릴리스에 포함된 libvips, systemd, Nginx
+- Linux amd64와 Ubuntu 22.04/24.04 여부
+- CPU에 맞춰 자동 선택되는 내장 libvips 호환판·최적화판, Node `>=24.11.0 <27`, systemd, Nginx
 - `manifest.json` 대상 플랫폼과 컴포넌트 dirty 상태
 - `checksums.txt`에 기록된 파일의 손상과 release 밖 경로·심볼릭 링크 차단
 - 환경 파일 구문, 필수값, 비밀값 파일 권한, loopback 수신 주소

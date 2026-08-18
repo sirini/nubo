@@ -15,7 +15,7 @@ import (
 // 설치 전후에 필요한 플랫폼·릴리스·환경·의존성 검사를 모두 실행한다.
 func runDoctor(options options, runner commandRunner) []checkResult {
 	results := checkPlatform()
-	results = append(results, checkCPUFeature("/proc/cpuinfo", "sse4_2"))
+	results = append(results, checkImageCPU("/proc/cpuinfo"))
 	results = append(results, checkRelease(options.releaseDir, true)...)
 	environmentResults, values := checkEnvironment(options, false)
 	results = append(results, environmentResults...)

@@ -100,8 +100,29 @@ func TestVerifyReleaseChecksumsAllowsUnlistedFile(t *testing.T) {
 // 네이티브 라이브러리 경로가 릴리스 밖으로 벗어나지 못하게 한다.
 func TestValidateNativeLibraryRejectsTraversal(t *testing.T) {
 	releaseDir := t.TempDir()
-	library := nativeLibrary{Version: "8.18.3", Path: "../libvips.so"}
+	library := nativeLibrary{Version: "8.18.3", Variants: map[string]nativeLibraryVariant{
+		"x86-64": {Path: "../libvips.so"},
+	}}
 	if err := validateNativeLibrary(releaseDir, library); err == nil {
 		t.Fatal("릴리스 밖 네이티브 라이브러리 경로를 허용했습니다")
+	}
+}
+
+// manifest에 기록된 CPU 변형 중 파일이 빠지면 릴리스 검증을 실패시킨다.
+func TestValidateNativeLibraryRequiresEveryVariantFile(t *testing.T) {
+	releaseDir := t.TempDir()
+	baseline := filepath.Join(releaseDir, "lib", "libvips.so")
+	if err := os.MkdirAll(filepath.Dir(baseline), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(baseline, []byte("baseline\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	library := nativeLibrary{Version: "8.18.3", Variants: map[string]nativeLibraryVariant{
+		"x86-64":    {Path: "lib/libvips.so"},
+		"x86-64-v2": {Path: "lib/glibc-hwcaps/x86-64-v2/libvips.so"},
+	}}
+	if err := validateNativeLibrary(releaseDir, library); err == nil {
+		t.Fatal("누락된 최적화 라이브러리 파일을 허용했습니다")
 	}
 }
