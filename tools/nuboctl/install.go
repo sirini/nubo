@@ -113,8 +113,11 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 			return err
 		}
 	}
+	if err := installDatabase(options, runner); err != nil {
+		return err
+	}
 
-	fmt.Println("\n설치 준비가 완료되었습니다.")
+	fmt.Println("\n설치 준비와 데이터베이스 초기화가 완료되었습니다.")
 	fmt.Println("환경 설정과 서비스 파일을 준비했습니다. nuboctl doctor로 실행 조건을 확인하세요.")
 	fmt.Println("systemd와 Nginx 설정은 아직 활성화하거나 reload하지 않았습니다.")
 	return nil
@@ -137,5 +140,6 @@ func printInstallPlan(options installOptions, files []installFile, environmentEx
 			fmt.Printf("- 생성: %s (%s)\n", file.path, file.label)
 		}
 	}
-	fmt.Println("- 제외: DB 준비, systemd 활성화/시작, Nginx enable/reload, TLS")
+	fmt.Println("- 실행: GOAPI DB 생성, 기본 관리자·게시판 준비, 최신 스키마 반영")
+	fmt.Println("- 제외: systemd 활성화/시작, Nginx enable/reload, TLS")
 }

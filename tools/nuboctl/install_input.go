@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/mail"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -45,6 +46,9 @@ func validateInstallEnvironmentInput(values map[string]string) error {
 	}
 	if len(values["ADMIN_PW"]) < 8 {
 		return fmt.Errorf("ADMIN_PW는 8자 이상이어야 합니다")
+	}
+	if matched, _ := regexp.MatchString(`^[A-Za-z0-9_]+$`, values["DB_TABLE_PREFIX"]); !matched {
+		return fmt.Errorf("DB_TABLE_PREFIX에는 영문, 숫자, 밑줄만 사용할 수 있습니다")
 	}
 	port, err := strconv.Atoi(values["DB_PORT"])
 	if err != nil || port < 1 || port > 65535 {

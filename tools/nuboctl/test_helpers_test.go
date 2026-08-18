@@ -15,6 +15,7 @@ type fakeRunner struct {
 	paths   map[string]bool
 	outputs map[string]string
 	errors  map[string]error
+	calls   *[]string
 }
 
 // 테스트에서 지정한 명령만 시스템에 존재하는 것처럼 돌려준다.
@@ -28,6 +29,9 @@ func (runner fakeRunner) lookPath(name string) (string, error) {
 // 명령 전체 문자열을 키로 사용해 준비된 출력과 오류를 돌려준다.
 func (runner fakeRunner) run(name string, args ...string) (string, error) {
 	key := strings.Join(append([]string{name}, args...), " ")
+	if runner.calls != nil {
+		*runner.calls = append(*runner.calls, key)
+	}
 	return runner.outputs[key], runner.errors[key]
 }
 
@@ -100,7 +104,7 @@ func createInstallTestRelease(t *testing.T, releaseDir string) {
 	t.Helper()
 	files := map[string]string{
 		"manifest.json":             fmt.Sprintf(`{"schemaVersion":2,"releaseVersion":"1.2.1","target":{"os":%q,"arch":%q},"components":{},"nativeLibraries":{"libvips":{"version":"8.18.3","selection":"glibc-hwcaps","variants":{"x86-64":{"path":"lib/libvips-cpp.so.8.18.3","source":"test"},"x86-64-v2":{"path":"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3","source":"test"}}}}}`, runtime.GOOS, runtime.GOARCH) + "\n",
-		"bin/goapi":                 "binary\n",
+		"bin/goapi":                 "#!/bin/sh\nexit 0\n",
 		"lib/libvips-cpp.so.8.18.3": "library\n",
 		"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3": "optimized library\n",
 		"web/.output/server/index.mjs":                     "export default {}\n",

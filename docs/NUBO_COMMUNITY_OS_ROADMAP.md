@@ -849,9 +849,9 @@ nuboctl rollback
 
 - [x] 사전 검사
 - [x] 경로 생성
-- [ ] 환경 설정 입력
-- [ ] DB 준비
-- [ ] GOAPI install 실행
+- [x] 환경 설정 입력
+- [x] DB 준비
+- [x] GOAPI install 실행
 - [x] systemd unit 설치
 - [x] reverse proxy 템플릿 생성
 - [ ] healthcheck

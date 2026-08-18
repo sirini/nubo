@@ -30,6 +30,7 @@ NUBO는 두 프로세스로 실행됩니다.
 | GOAPI | `3006` | 데이터베이스, 회원·게시물·메일·파일 처리 |
 
 소스 설치에서는 두 프로세스가 같은 프로젝트 디렉터리의 `.env` 설정을 사용합니다. 저장소에 포함된 `goapi-linux`를 처음 실행하면 `env.sample`을 바탕으로 `.env`와 데이터베이스를 생성합니다. Prebuilt 배포에서는 같은 형식의 파일을 `/etc/nubo/nubo.env`처럼 릴리스 밖에 두고 GOAPI에는 `NUBO_ENV_FILE`로, Node에는 `--env-file`로 명시합니다.
+Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관리자까지 준비하므로 운영 서버에서 npm 설치나 Nuxt 빌드를 반복하지 않습니다.
 
 > `.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 외부에 공개하지 마세요.
 

@@ -42,19 +42,20 @@ sudo ./nuboctl install \
 - 서비스 사용자/그룹과 상태·업로드 경로 준비
 - 환경 파일이 없으면 sample에서 생성하고 JWT/SYNC 비밀값을 무작위로 생성
 - 환경 파일을 `0640`, `root:<서비스 그룹>`으로 저장
+- 지정한 DB가 없으면 생성하고 기본 관리자·게시판과 최신 스키마 준비
 - systemd unit을 `/etc/systemd/system`에 렌더링
 - Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
 
 안전 규칙:
 
 - 기존 환경 파일은 덮어쓰지 않고 권한·도메인·포트를 검증한 후 보존한다.
+- 기존 DB 레코드는 덮어쓰지 않으며 중단된 설치는 같은 명령으로 다시 시도할 수 있다.
 - 기존 systemd/Nginx 파일이 예상 결과와 다르면 덮어쓰지 않고 실패한다.
 - Nginx 전체 설정 트리에서 대상 도메인이 발견되면 어떤 파일도 만들기 전에 중단한다.
 - `nuboctl`이 이전에 만든 동일한 파일은 변경 없이 보존하며 재실행해도 결과가 같다.
 
-이 단계는 DB/관리자 placeholder를 자동 입력하지 않는다. systemd `daemon-reload`·enable·start,
-Nginx enable·reload, Certbot/TLS도 하지 않는다. 환경 파일을 완성하고 `doctor`를 다시 실행한 뒤
-후속 프로세스 제어 단계로 넘어간다.
+systemd `daemon-reload`·enable·start, Nginx enable·reload, Certbot/TLS는 아직 수행하지 않는다.
+DB 준비까지 완료한 뒤 `doctor`로 실행 조건을 확인하고 후속 프로세스 제어 단계로 넘어간다.
 
 ## doctor
 
