@@ -63,7 +63,7 @@ writeFileSync(manifestPath, JSON.stringify({
   schemaVersion: 2,
   releaseVersion: "${NUBO_VERSION}",
   target: { os: "linux", arch: "amd64" },
-  runtime: { node: ">=24.11.0 <27" },
+  runtime: { node: ">=22" },
   apiContract: "1",
   nativeLibraries: {
     libvips: {

@@ -44,7 +44,7 @@ NUBO의 현재 대상은 직접 서버를 운영하며 한국어 커뮤니티를
 현재 지원 범위:
 
 - 한국어 사용자와 한국어 설치 안내
-- Ubuntu 22.04/24.04 amd64 한 대
+- Ubuntu 22.04 이상 amd64 한 대
 - systemd, Nginx, Node.js, MySQL/MariaDB
 - 소스 빌드가 필요 없는 공식 prebuilt
 - 사람을 위한 대화형 `nuboctl install`

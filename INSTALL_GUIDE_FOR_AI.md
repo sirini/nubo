@@ -5,15 +5,17 @@
 
 ## 지원 환경
 
-- Ubuntu 22.04 또는 24.04 amd64 한 대
+- Ubuntu 22.04 이상 amd64 한 대
 - 일반 x86-64 CPU(SSE4.2가 없는 구형 가상 CPU 포함)
-- systemd, Nginx, Node.js `>=24.11.0 <27`
+- systemd, Nginx, Node.js 22 이상
 - MySQL 또는 MariaDB
 - 압축을 푼 NUBO 공식 `linux-amd64` 릴리스
 
 컨테이너, 다른 Linux 배포판, Kubernetes는 현재 지원하지 않는다.
 libvips와 이미지 코덱은 호환판·최적화판으로 릴리스에 포함된다. CPU에 맞는 판을 glibc가 자동 선택하므로
 `libvips-dev`나 `libvips42`를 설치하거나 CPU 옵션을 지정하지 않는다.
+Ubuntu와 Node.js는 위 최소 버전만 검사하며 이후 버전에 별도 상한을 두지 않는다. 설치 전후의 실제
+호환성은 `nuboctl doctor`와 서비스 readiness로 확인한다.
 
 ## 반드시 지킬 규칙
 

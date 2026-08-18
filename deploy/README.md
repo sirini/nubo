@@ -1,7 +1,7 @@
 # NUBO Linux 서비스 템플릿
 
 이 파일들은 `nuboctl install`이 사용하는 입력 템플릿이다. 모든 `@TOKEN@`이 치환되기 전에는
-`/etc`에 직접 복사하지 않는다. 공식 지원 환경은 Ubuntu 22.04/24.04 amd64다.
+`/etc`에 직접 복사하지 않는다. 최소 지원 환경은 Ubuntu 22.04 amd64와 Node.js 22이며 이후 버전에는 별도 상한을 두지 않는다.
 GOAPI용 libvips와 이미지 코덱은 공식 릴리스의 `lib/`에 포함되며 별도 시스템 패키지가 필요 없다.
 
 릴리스 최상위의 `nuboctl install`은 unit을 렌더링하고 systemd 서비스를 활성화하지만 Nginx는 별도

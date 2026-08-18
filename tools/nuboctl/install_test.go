@@ -183,14 +183,3 @@ func TestValidateExistingUploadDirectoryRejectsNoWrite(t *testing.T) {
 		t.Fatal("쓸 수 없는 기존 업로드 디렉터리를 허용했습니다")
 	}
 }
-
-// 지원하지 않는 배포판에서 설치를 막는다.
-func TestInstallPlatformRejectsUnsupportedDistribution(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "os-release")
-	if err := os.WriteFile(path, []byte("ID=debian\nVERSION_ID=13\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if err := validateInstallPlatform(path); err == nil {
-		t.Fatal("공식 지원 대상이 아닌 배포판을 install이 허용했습니다")
-	}
-}

@@ -39,7 +39,7 @@ Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관
 ### 1. 준비물
 
 - Ubuntu 22.04 이상 x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
-- Node.js 24 LTS 24.11 이상과 npm
+- Node.js 22 이상과 npm
 - MySQL 8 또는 MariaDB
 - 소스에서 GOAPI를 직접 빌드할 때만 이미지 처리를 위한 `libvips-dev`
 - 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
@@ -182,7 +182,7 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 
 전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
 
-공식 릴리스의 GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다. 별도 libvips 설치는 필요 없으며 ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
+공식 릴리스의 기준 환경은 Ubuntu 22.04와 Node.js 22입니다. 이후 Ubuntu와 Node.js 버전에는 별도 상한을 두지 않으며 실제 `nuboctl doctor`와 readiness 결과로 실행 가능 여부를 확인합니다. GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다. 별도 libvips 설치는 필요 없으며 ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
 
 ## 업데이트
 

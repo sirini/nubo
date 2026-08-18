@@ -7,7 +7,7 @@
 ## Current product boundary
 
 - 대상: 직접 서버를 운영하는 한국어권 개인·소규모 커뮤니티 운영자.
-- 지원: Ubuntu 22.04/24.04 amd64 단일 서버, systemd, Nginx, Node.js, MySQL/MariaDB, no-build prebuilt.
+- 지원: Ubuntu 22.04 이상 amd64, Node.js 22 이상인 단일 서버, systemd, Nginx, MySQL/MariaDB, no-build prebuilt.
 - 제외: 컨테이너, Kubernetes, 다중 배포판, 다국어 CLI, 복잡한 릴리스 채널, 범용 배포 추상화.
 - 장기 로드맵은 아이디어 지도이며 현재 작업은 이 문서의 작은 목표를 우선한다.
 
@@ -28,6 +28,8 @@
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
 - x86-64 호환판을 기본 경로에, sharp 공식 x86-64-v2판을 glibc-hwcaps 경로에 함께 둔다.
 - CPU 판별과 선택은 glibc에 맡기며 `nuboctl`은 SSE4.2가 없다는 이유로 설치를 거부하지 않는다.
+- Ubuntu와 Node.js는 각각 22.04와 22라는 최소 기준만 두고 이후 버전에 별도 상한이나 허용 목록을 두지 않는다.
+- 최소 기준 이후의 실제 호환성은 설치 전후 doctor와 서비스 readiness 결과로 판단한다.
 
 ## Recent completion
 
@@ -42,6 +44,7 @@
 - 별도 `activate-nginx`로 site 링크, 전체 설정 검사, Nginx enable/start/reload를 멱등적으로 수행한다.
 - install이 검증·DB 준비용 버전 디렉터리와 서비스용 `current` 링크를 분리하도록 바로잡았다.
 - update가 checksum·환경·unit·readiness를 preflight하고 migration·버전 환경·current를 전환하며 실패 시 복구한다.
+- 설치 정책을 Ubuntu 22.04 이상과 Node.js 22 이상이라는 두 하한선으로 단순화했다.
 
 ## Open findings
 
@@ -59,9 +62,9 @@
 - current 링크: 신규 생성·재실행 보존·다른 대상/일반 경로 충돌 보호·unit 안정 경로 사용 테스트 통과.
 - update: 상위 버전 제한, 동시 실행 잠금, 템플릿 충돌, dry-run/취소/migration 실패, 성공 전환과 readiness 실패 복구 테스트 통과.
 - DB bootstrap: 외부 관리자 설정 로딩, DB 식별자 보호, nuboctl 실행·오류 전달 테스트 통과.
-- NUBO: 11개 테스트, typecheck, production build 통과.
+- NUBO: Node.js 22.23.2에서 11개 테스트, typecheck, production build 통과.
 - GOAPI: Ubuntu 22.04/24.04에서 최적화판, QEMU `qemu64`에서 호환판 JPEG→WebP 변환 통과.
-- prebuilt: 두 libvips 변형, 출처, checksum, x86-64-v2 자동 선택과 통합 릴리스 smoke test 통과.
+- prebuilt: Node.js 22.23.2에서 런타임 설정·health/readiness·SSR·프록시 smoke test를 통과했고, 두 libvips 변형·출처·checksum·x86-64-v2 자동 선택과 통합 릴리스도 검증했다.
 
 ## Next action
 

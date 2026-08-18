@@ -59,10 +59,10 @@ func checkPlatform() []checkResult {
 	}
 	id := values["ID"]
 	version := values["VERSION_ID"]
-	if id == "ubuntu" && (version == "22.04" || version == "24.04") {
+	if id == "ubuntu" && isSupportedUbuntuVersion(version) {
 		results = append(results, pass("운영체제", "Ubuntu "+version))
 	} else {
-		results = append(results, warn("운영체제", id+" "+version+"는 공식 검증 대상이 아닙니다"))
+		results = append(results, warn("운영체제", id+" "+version+"는 Ubuntu 22.04 이상이 아닙니다"))
 	}
 	return results
 }
@@ -82,17 +82,19 @@ func checkNode(runner commandRunner) checkResult {
 	return pass("Node.js", strings.TrimPrefix(strings.TrimSpace(output), "v"))
 }
 
-// Node.js 버전 문자열을 해석해 현재 지원 범위를 적용한다.
+// Node.js 버전 문자열을 해석해 최소 지원 버전을 적용한다.
 func validateNodeVersion(output string) error {
 	version := strings.TrimPrefix(strings.TrimSpace(output), "v")
-	parts := strings.Split(version, ".")
-	if len(parts) < 2 {
+	majorText, _, _ := strings.Cut(version, ".")
+	if majorText == "" {
 		return fmt.Errorf("버전을 해석할 수 없습니다: %s", version)
 	}
-	major, majorErr := strconv.Atoi(parts[0])
-	minor, minorErr := strconv.Atoi(parts[1])
-	if majorErr != nil || minorErr != nil || major < 24 || major >= 27 || (major == 24 && minor < 11) {
-		return fmt.Errorf("%s은 지원 범위 >=24.11.0 <27 밖입니다", version)
+	major, err := strconv.Atoi(majorText)
+	if err != nil {
+		return fmt.Errorf("버전을 해석할 수 없습니다: %s", version)
+	}
+	if major < 22 {
+		return fmt.Errorf("%s은 최소 지원 버전 22 미만입니다", version)
 	}
 	return nil
 }

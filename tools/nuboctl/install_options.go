@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -165,12 +166,12 @@ func validateDomain(domain string) error {
 	return nil
 }
 
-// 실제 설치를 검증한 Ubuntu amd64 환경으로 제한한다.
+// 설치를 Ubuntu 22.04 이상 amd64 환경으로 제한한다.
 func validateInstallPlatform(osReleaseFile string) error {
 	return validateSupportedPlatform("install", osReleaseFile)
 }
 
-// 변경 명령을 실제 검증한 Ubuntu amd64 환경으로 제한한다.
+// 변경 명령을 Ubuntu 22.04 이상 amd64 환경으로 제한한다.
 func validateSupportedPlatform(command, osReleaseFile string) error {
 	if runtime.GOOS != "linux" || runtime.GOARCH != "amd64" {
 		return fmt.Errorf("%s는 현재 Linux amd64에서만 지원됩니다", command)
@@ -179,8 +180,22 @@ func validateSupportedPlatform(command, osReleaseFile string) error {
 	if err != nil {
 		return fmt.Errorf("운영체제 확인 실패: %w", err)
 	}
-	if values["ID"] != "ubuntu" || (values["VERSION_ID"] != "22.04" && values["VERSION_ID"] != "24.04") {
-		return fmt.Errorf("%s는 현재 Ubuntu 22.04/24.04에서만 지원됩니다: %s %s", command, values["ID"], values["VERSION_ID"])
+	if values["ID"] != "ubuntu" || !isSupportedUbuntuVersion(values["VERSION_ID"]) {
+		return fmt.Errorf("%s는 Ubuntu 22.04 이상에서 지원됩니다: %s %s", command, values["ID"], values["VERSION_ID"])
 	}
 	return nil
+}
+
+// Ubuntu VERSION_ID가 최소 기준인 22.04 이상인지 확인한다.
+func isSupportedUbuntuVersion(version string) bool {
+	parts := strings.Split(version, ".")
+	if len(parts) < 2 {
+		return false
+	}
+	major, majorErr := strconv.Atoi(parts[0])
+	minor, minorErr := strconv.Atoi(parts[1])
+	if majorErr != nil || minorErr != nil {
+		return false
+	}
+	return major > 22 || (major == 22 && minor >= 4)
 }

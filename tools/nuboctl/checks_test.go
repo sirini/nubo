@@ -8,18 +8,23 @@ import (
 	"testing"
 )
 
-// 지원 Node 범위의 경계 아래 버전을 거부하는지 확인한다.
-func TestCheckNodeEnforcesSupportedRange(t *testing.T) {
+// Node 22 이상을 허용하고 그 아래 버전만 거부하는지 확인한다.
+func TestCheckNodeEnforcesMinimumVersion(t *testing.T) {
 	runner := fakeRunner{
 		paths:   map[string]bool{"node": true},
-		outputs: map[string]string{"node --version": "v26.7.0\n"},
+		outputs: map[string]string{"node --version": "v22.0.0\n"},
 		errors:  map[string]error{},
 	}
 	if result := checkNode(runner); result.level != levelPass {
 		t.Fatalf("supported Node result = %+v", result)
 	}
 
-	runner.outputs["node --version"] = "v24.10.0\n"
+	runner.outputs["node --version"] = "v30.0.0\n"
+	if result := checkNode(runner); result.level != levelPass {
+		t.Fatalf("newer Node result = %+v", result)
+	}
+
+	runner.outputs["node --version"] = "v21.99.0\n"
 	if result := checkNode(runner); result.level != levelFail {
 		t.Fatalf("old Node result = %+v", result)
 	}
