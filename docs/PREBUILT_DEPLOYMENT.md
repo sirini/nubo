@@ -92,7 +92,8 @@ location /upload/ {
 }
 ```
 
-The final directory, installation, and rollback contracts belong to the later `nuboctl` work.
+Versioned bundles live in immutable `/opt/nubo/releases/<version>` directories. Services refer only to
+the `/opt/nubo/current` symlink, while configuration, state, and uploads remain outside every release.
 
 ## Linux service templates
 
@@ -112,9 +113,16 @@ printing a recommended configuration remain allowed. After a clean install, the 
 `nuboctl activate-nginx` command links only that generated site, validates the complete configuration,
 and starts or reloads Nginx. TLS certificate issuance and Certbot stay under the server operator's control.
 
-`nuboctl install` renders and installs these templates without enabling or reloading services.
-Human operators use its Korean interactive flow; AI and automation follow the release-root
-`INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
+`nuboctl install` renders these templates, points the systemd units at `current`, and starts the application
+services after database preparation. It leaves the generated Nginx site disabled until the separate
+`activate-nginx` step. Human operators use its Korean interactive flow; AI and automation follow the
+release-root `INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
+
+The update boundary intentionally starts with an operator-staged release and a confirmed external backup.
+After checksum and compatibility validation, `nuboctl` runs only additive database migrations, atomically
+switches `current`, restarts the services, and checks readiness. A readiness failure restores the previous
+link and processes, but does not reverse database migrations; every migration must therefore remain compatible
+with the immediately previous release. Downloading, extracting, backup, and restore remain operator concerns.
 
 ## Minimal integrated bundle
 

@@ -87,6 +87,7 @@ func installTestOptions(t *testing.T) installOptions {
 		},
 		domain:        "community.example.com",
 		serviceGroup:  current.group,
+		currentLink:   filepath.Join(root, "opt", "nubo", "current"),
 		uploadDir:     filepath.Join(root, "var", "lib", "nubo", "upload"),
 		nodeBinary:    nodeBinary,
 		webPort:       3000,

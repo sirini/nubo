@@ -4,7 +4,8 @@
 `/etc`에 직접 복사하지 않는다. 공식 지원 환경은 Ubuntu 22.04/24.04 amd64다.
 GOAPI용 libvips와 이미지 코덱은 공식 릴리스의 `lib/`에 포함되며 별도 시스템 패키지가 필요 없다.
 
-릴리스 최상위의 `nuboctl`은 systemd나 Nginx를 활성화·reload하지 않고 이 파일을 렌더링한다.
+릴리스 최상위의 `nuboctl install`은 unit을 렌더링하고 systemd 서비스를 활성화하지만 Nginx는 별도
+`activate-nginx` 명령 전까지 활성화·reload하지 않는다.
 사람은 한국어 대화형 설치를, AI·자동화는 `INSTALL_GUIDE_FOR_AI.md`의 비대화형 설치를 사용한다.
 
 기본값:
@@ -32,4 +33,5 @@ Nginx 사용자는 읽기와 상위 경로 통과 권한이 필요하다. 설치
 enable이나 reload하지 않는다. 대상 도메인의 기존 설정이 있으면 수정·활성화·비활성화하지 않고 충돌 위치를 알린다.
 
 systemd unit은 journal에 로그를 남기고 `nubo.target`으로 묶인다. `nubo-web.service`는 GOAPI 뒤에
-시작하지만 두 프로세스는 각각 재시작할 수 있다.
+시작하지만 두 프로세스는 각각 재시작할 수 있다. unit의 릴리스 경로는 버전 디렉터리가 아니라
+`/opt/nubo/current` 링크로 고정해 이후 원자적인 릴리스 전환이 가능해야 한다.

@@ -50,6 +50,14 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 			t.Fatalf("치환되지 않은 토큰이 있습니다: %s", path)
 		}
 	}
+	currentTarget, err := filepath.EvalSymlinks(options.currentLink)
+	if err != nil || currentTarget != options.releaseDir {
+		t.Fatalf("current 링크 = %s, %v", currentTarget, err)
+	}
+	webUnit, err := os.ReadFile(filepath.Join(options.systemdDir, "nubo-web.service"))
+	if err != nil || !strings.Contains(string(webUnit), options.currentLink+"/web/.output/server/index.mjs") {
+		t.Fatalf("웹 unit이 current 링크를 사용하지 않습니다: %v", err)
+	}
 
 	if err := runInstall(options, systemRunner{}, false); err != nil {
 		t.Fatalf("두 번째 설치 준비가 멱등적이지 않습니다: %v", err)
@@ -68,6 +76,30 @@ func TestInstallDryRunDoesNotCreateFiles(t *testing.T) {
 	}
 	if _, err := os.Stat(options.stateDir); !os.IsNotExist(err) {
 		t.Fatal("dry-run이 상태 디렉터리를 생성했습니다")
+	}
+	if _, err := os.Lstat(options.currentLink); !os.IsNotExist(err) {
+		t.Fatal("dry-run이 current 링크를 생성했습니다")
+	}
+}
+
+// 다른 릴리스를 가리키는 current 링크를 install이 바꾸지 않는다.
+func TestInstallRefusesToReplaceCurrentRelease(t *testing.T) {
+	options := installTestOptions(t)
+	other := filepath.Join(t.TempDir(), "other-release")
+	if err := os.MkdirAll(other, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(options.currentLink), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(other, options.currentLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := runInstall(options, systemRunner{}, false); err == nil {
+		t.Fatal("install이 다른 current 릴리스를 바꾸려고 했습니다")
+	}
+	if target, err := filepath.EvalSymlinks(options.currentLink); err != nil || target != other {
+		t.Fatalf("기존 current 링크가 변경됐습니다: %s, %v", target, err)
 	}
 }
 

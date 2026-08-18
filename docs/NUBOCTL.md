@@ -24,7 +24,8 @@ sudo ./nuboctl install \
 ```
 
 `--dry-run`은 입력과 계획을 확인하지만 파일을 변경하지 않는다. 기본값은 `nubo` 사용자/그룹,
-`/etc/nubo/nubo.env`, `/var/lib/nubo`, `/var/lib/nubo/upload`, Nuxt `3000`, GOAPI `3006`이다.
+`/opt/nubo/current` 릴리스 링크, `/etc/nubo/nubo.env`, `/var/lib/nubo`, `/var/lib/nubo/upload`,
+Nuxt `3000`, GOAPI `3006`이다.
 
 AI·자동화는 비밀값을 CLI에 노출하지 않고 `0600` 입력 파일과 명시적인 비대화형 모드를 사용한다.
 
@@ -44,6 +45,7 @@ sudo ./nuboctl install \
 - 환경 파일이 없으면 sample에서 생성하고 JWT/SYNC 비밀값을 무작위로 생성
 - 환경 파일을 `0640`, `root:<서비스 그룹>`으로 저장
 - 지정한 DB가 없으면 생성하고 기본 관리자·게시판과 최신 스키마 준비
+- `/opt/nubo/current`가 검증한 버전 디렉터리를 가리키도록 생성
 - systemd unit을 `/etc/systemd/system`에 렌더링
 - `nubo.target`을 enable/start하고 로컬 `/ready`가 정상일 때까지 확인
 - Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
@@ -53,6 +55,7 @@ sudo ./nuboctl install \
 - 기존 환경 파일은 덮어쓰지 않고 권한·도메인·포트를 검증한 후 보존한다.
 - 기존 DB 레코드는 덮어쓰지 않으며 중단된 설치는 같은 명령으로 다시 시도할 수 있다.
 - 기존 systemd/Nginx 파일이 예상 결과와 다르면 덮어쓰지 않고 실패한다.
+- 기존 `current`가 일반 경로이거나 다른 릴리스를 가리키면 install로 바꾸지 않고 실패한다.
 - Nginx 전체 설정 트리에서 대상 도메인이 발견되면 어떤 파일도 만들기 전에 중단한다.
 - `nuboctl`이 이전에 만든 동일한 파일은 변경 없이 보존하며 재실행해도 결과가 같다.
 
@@ -77,6 +80,22 @@ sudo ./nuboctl activate-nginx
 이 단계는 HTTP 공개만 활성화한다. DNS가 서버를 가리키는지 확인한 뒤 출력되는
 `certbot --nginx -d <도메인> --redirect` 명령으로 운영자가 약관·연락처를 확인하고 TLS를 발급한다.
 Certbot 설치와 인증서 발급은 `nuboctl`의 책임 범위에 포함하지 않는다.
+
+## update 계약
+
+릴리스는 `/opt/nubo/releases/<버전>` 아래의 변경하지 않는 디렉터리로 배치하고, systemd는 항상
+`/opt/nubo/current` 심볼릭 링크를 참조한다. 이후 `update`는 운영자가 미리 배치한 새 릴리스만 받아
+checksum과 호환성을 확인하고 다음 순서로 전환한다.
+
+1. 외부 백업 완료 확인
+2. 새 릴리스의 additive DB migration 실행
+3. `current` 링크를 원자적으로 교체
+4. NUBO 서비스 재시작과 readiness 확인
+5. 실패하면 이전 링크를 복원하고 이전 서비스를 다시 시작
+
+DB migration은 되돌리지 않는다. 따라서 새 migration은 직전 릴리스와 호환되는 additive 변경이어야 한다.
+릴리스 다운로드·압축 해제와 데이터 백업은 `nuboctl update`의 책임에 포함하지 않는다. 이 계약의 실제
+`update` 명령은 아직 구현되지 않았다.
 
 ## doctor
 
