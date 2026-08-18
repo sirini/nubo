@@ -27,6 +27,7 @@ type installOptions struct {
 	dryRun            bool
 	nonInteractive    bool
 	envInput          string
+	activateServices  bool
 	environmentValues map[string]string
 	confirm           func() (bool, error)
 }
@@ -56,14 +57,15 @@ func parseInstallOptions(args []string) (installOptions, error) {
 			stateDir:    "/var/lib/nubo",
 			serviceUser: "nubo",
 		},
-		serviceGroup:  "nubo",
-		webPort:       3000,
-		goapiPort:     3006,
-		goapiPath:     "goapi",
-		maxBodySize:   "100m",
-		systemdDir:    "/etc/systemd/system",
-		nginxDir:      "/etc/nginx/sites-available",
-		osReleaseFile: "/etc/os-release",
+		serviceGroup:     "nubo",
+		webPort:          3000,
+		goapiPort:        3006,
+		goapiPath:        "goapi",
+		maxBodySize:      "100m",
+		systemdDir:       "/etc/systemd/system",
+		nginxDir:         "/etc/nginx/sites-available",
+		osReleaseFile:    "/etc/os-release",
+		activateServices: true,
 	}
 
 	flags := flag.NewFlagSet("install", flag.ContinueOnError)

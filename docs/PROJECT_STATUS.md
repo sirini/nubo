@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- `nuboctl install`의 DB bootstrap 다음으로 서비스 활성화와 readiness 확인을 연결한다.
+- `nuboctl install`의 DB bootstrap과 서비스 readiness 다음으로 공개 Nginx/TLS 경계를 정한다.
 - 실제 Ubuntu/Cafe24 통합 QA는 설치·업데이트 흐름이 이어진 뒤 한 번에 수행한다.
 
 ## Current product boundary
@@ -19,7 +19,7 @@
 - 새 업로드 경로는 서비스 계정 소유로 만들고, 기존 경로는 변경하지 않은 채 실제 쓰기 권한을 사전 검사한다.
 - 기존 환경·systemd·Nginx 파일은 보존하고 예상 내용과 다르면 덮어쓰지 않는다.
 - 사람용 `install`은 한국어 대화형을 기본으로 하고, 비대화형 모드는 비밀값을 CLI 인자가 아닌 제한된 입력 파일로 받는다.
-- DB bootstrap은 `install`에 연결하고 서비스 활성화, Nginx reload, TLS는 작은 후속 단계로 나눈다.
+- DB bootstrap과 systemd readiness는 `install`에 연결하고 Nginx reload와 TLS는 별도 단계로 둔다.
 - 설정과 업로드는 릴리스 밖에 보존하며, 운영 서버에서는 `npm install`이나 Nuxt 빌드를 하지 않는다.
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
 - x86-64 호환판을 기본 경로에, sharp 공식 x86-64-v2판을 glibc-hwcaps 경로에 함께 둔다.
@@ -34,10 +34,11 @@
 - govips 2.18과 sharp-libvips 1.3.2(libvips 8.18.3)를 결합해 시스템 libvips 의존성을 제거했다.
 - sharp-libvips 고정 소스의 x86-64 호환판과 공식 x86-64-v2판을 함께 배포하고 glibc가 자동 선택하게 했다.
 - 외부 환경 파일로 DB·기본 관리자·게시판·최신 스키마를 멱등적으로 준비하도록 `nuboctl install`을 연결했다.
+- `nubo.target`을 부팅 자동 시작하고 Nuxt `/ready`가 GOAPI·DB까지 정상인지 확인하게 했다.
 
 ## Open findings
 
-- 현재 `install`은 서비스 활성화와 readiness 완료 확인까지 수행하지 않는다.
+- 현재 `install`은 Nginx site 활성화/reload와 TLS 발급까지 수행하지 않는다.
 - 실제 MySQL/MariaDB를 사용한 fresh DB·기존 DB 통합 검증은 서버 QA 때 확인해야 한다.
 - 새 설치 흐름은 실제 깨끗한 Ubuntu 서버에서 운영자 관점의 QA가 필요하다.
 - Cafe24의 실제 `cpu64-rhel6` 가상 CPU에서 호환판 이미지 처리 최종 QA가 필요하다.
@@ -45,7 +46,7 @@
 
 ## Verification
 
-- `nuboctl`: 테스트, race, vet 통과; SSE4.2 없는 CPU 안내와 manifest 스키마 2를 확인했다.
+- `nuboctl`: 테스트, race, vet 통과; systemd 명령 순서와 readiness 응답, SSE4.2 없는 CPU 안내를 확인했다.
 - DB bootstrap: 외부 관리자 설정 로딩, DB 식별자 보호, nuboctl 실행·오류 전달 테스트 통과.
 - NUBO: 11개 테스트, typecheck, production build 통과.
 - GOAPI: Ubuntu 22.04/24.04에서 최적화판, QEMU `qemu64`에서 호환판 JPEG→WebP 변환 통과.
@@ -53,5 +54,5 @@
 
 ## Next action
 
-- systemd 서비스 활성화와 GOAPI/Nuxt readiness 확인을 `install`에 연결한다.
+- Nginx 공개 활성화와 TLS를 자동화할 범위를 작게 결정한다.
 - 이후 update 흐름까지 이어서 Cafe24와 깨끗한 Ubuntu 서버에서 통합 QA한다.

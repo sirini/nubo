@@ -69,9 +69,9 @@ sudo ./nuboctl install \
 
 ## 현재 완료 범위
 
-`install`은 서비스 계정, 환경 파일, 상태·업로드 경로와 DB의 기본 관리자·게시판·최신 스키마를 준비하고,
-비활성 systemd unit과 비활성 Nginx site를 만든다. 서비스 시작, Nginx enable/reload, TLS 발급은
-아직 실행하지 않으므로 완료 메시지의 다음 행동을 따른다.
+`install`은 서비스 계정, 환경 파일, 상태·업로드 경로와 DB의 기본 관리자·게시판·최신 스키마를 준비한다.
+systemd 서비스를 활성화하고 로컬 readiness까지 확인하지만 Nginx site는 비활성 상태로 만든다.
+Nginx enable/reload와 TLS 발급은 아직 실행하지 않으므로 완료 메시지의 다음 행동을 따른다.
 
 DB 설치가 실패해도 기존 레코드를 덮어쓰지 않으므로 원인을 고친 뒤 같은 명령을 다시 실행한다.
 

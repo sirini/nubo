@@ -854,8 +854,8 @@ nuboctl rollback
 - [x] GOAPI install 실행
 - [x] systemd unit 설치
 - [x] reverse proxy 템플릿 생성
-- [ ] healthcheck
-- [ ] 최초 관리자 URL 표시
+- [x] healthcheck
+- [x] 최초 관리자 URL 표시
 
 ### `update`
 

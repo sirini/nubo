@@ -44,6 +44,7 @@ sudo ./nuboctl install \
 - 환경 파일을 `0640`, `root:<서비스 그룹>`으로 저장
 - 지정한 DB가 없으면 생성하고 기본 관리자·게시판과 최신 스키마 준비
 - systemd unit을 `/etc/systemd/system`에 렌더링
+- `nubo.target`을 enable/start하고 로컬 `/ready`가 정상일 때까지 확인
 - Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
 
 안전 규칙:
@@ -54,8 +55,8 @@ sudo ./nuboctl install \
 - Nginx 전체 설정 트리에서 대상 도메인이 발견되면 어떤 파일도 만들기 전에 중단한다.
 - `nuboctl`이 이전에 만든 동일한 파일은 변경 없이 보존하며 재실행해도 결과가 같다.
 
-systemd `daemon-reload`·enable·start, Nginx enable·reload, Certbot/TLS는 아직 수행하지 않는다.
-DB 준비까지 완료한 뒤 `doctor`로 실행 조건을 확인하고 후속 프로세스 제어 단계로 넘어간다.
+Nginx enable·reload와 Certbot/TLS는 아직 수행하지 않는다. DB와 두 애플리케이션 서비스가 준비된 뒤
+`doctor`로 실행 조건을 확인하고 공개 프록시 단계로 넘어간다.
 
 ## doctor
 
