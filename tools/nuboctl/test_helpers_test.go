@@ -11,6 +11,8 @@ import (
 	"testing"
 )
 
+var errTestCommand = errors.New("test command failed")
+
 type fakeRunner struct {
 	paths   map[string]bool
 	outputs map[string]string
@@ -97,6 +99,7 @@ func installTestOptions(t *testing.T) installOptions {
 		systemdDir:    systemdDir,
 		nginxDir:      nginxDir,
 		osReleaseFile: osReleaseFile,
+		manageNginx:   true,
 	}
 }
 

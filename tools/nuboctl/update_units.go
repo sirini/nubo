@@ -45,6 +45,9 @@ func validateUpdateUnits(options updateOptions, runner commandRunner) error {
 	if goapi["ExecStart"] != filepath.Join(options.currentLink, "bin", "goapi") {
 		return fmt.Errorf("GOAPI unit이 current 링크를 참조하지 않습니다")
 	}
+	if goapi["User"] != options.serviceUser || web["User"] != options.serviceUser {
+		return fmt.Errorf("systemd 서비스 사용자와 update 실행 사용자가 다릅니다")
+	}
 	if web["WorkingDirectory"] != filepath.Join(options.currentLink, "web") {
 		return fmt.Errorf("Nuxt unit이 current 링크를 참조하지 않습니다")
 	}

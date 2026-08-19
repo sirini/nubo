@@ -30,6 +30,7 @@ type installOptions struct {
 	nonInteractive    bool
 	envInput          string
 	activateServices  bool
+	manageNginx       bool
 	environmentValues map[string]string
 	confirm           func() (bool, error)
 }
@@ -69,6 +70,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 		nginxDir:         "/etc/nginx/sites-available",
 		osReleaseFile:    "/etc/os-release",
 		activateServices: true,
+		manageNginx:      true,
 	}
 
 	flags := flag.NewFlagSet("install", flag.ContinueOnError)

@@ -20,7 +20,11 @@ func renderInstallFiles(options installOptions, tokens map[string]string, enviro
 		{"share/systemd/nubo.target", filepath.Join(options.systemdDir, "nubo.target"), "systemd target"},
 		{"share/systemd/nubo-goapi.service.in", filepath.Join(options.systemdDir, "nubo-goapi.service"), "GOAPI unit"},
 		{"share/systemd/nubo-web.service.in", filepath.Join(options.systemdDir, "nubo-web.service"), "Nuxt unit"},
-		{"share/nginx/nubo.conf.in", filepath.Join(options.nginxDir, "nubo-"+strings.ToLower(options.domain)+".conf"), "Nginx site"},
+	}
+	if options.manageNginx {
+		sources = append(sources, struct {
+			source, destination, label string
+		}{"share/nginx/nubo.conf.in", filepath.Join(options.nginxDir, "nubo-"+strings.ToLower(options.domain)+".conf"), "Nginx site"})
 	}
 	files := make([]installFile, 0, len(sources)+1)
 	if !environmentExists {
@@ -45,6 +49,9 @@ func renderInstallFiles(options installOptions, tokens map[string]string, enviro
 
 // 대상 도메인을 이미 다루는 운영자 설정이 있으면 어떤 파일도 쓰기 전에 중단한다.
 func protectExistingNginx(options installOptions, files []installFile) error {
+	if !options.manageNginx {
+		return nil
+	}
 	var expected installFile
 	for _, file := range files {
 		if file.label == "Nginx site" {

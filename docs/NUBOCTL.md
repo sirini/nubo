@@ -1,8 +1,37 @@
 # nuboctl 설치 준비와 진단
 
-현재 `nuboctl` MVP는 한국어 대화형 설치를 하는 `install`, 공개 프록시를 연결하는
+현재 `nuboctl` MVP는 기존 소스 설치를 전환하는 `adopt`, 한국어 대화형 설치를 하는 `install`, 공개 프록시를 연결하는
 `activate-nginx`, 배치된 릴리스를 전환하는 `update`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
 최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
+
+## adopt
+
+`adopt`는 v1.2.0 이전의 소스·PM2 설치를 v1.2.2 이후의 prebuilt·systemd 운영 체제로 한 번만
+전환한다. 일반 사용자는 하위 바이너리를 직접 실행하지 않고 저장소 wrapper를 사용한다.
+
+```bash
+git pull --ff-only
+npm run server:adopt -- --dry-run
+npm run server:adopt
+```
+
+wrapper는 현재 공식 통합 릴리스를 내려받아 checksum을 검증하고 `/opt/nubo/releases`에 배치한 뒤,
+현재 프로젝트 경로를 `--source`로 전달한다. 실제 전환 전에는 외부 DB·업로드 백업을 완료했다는 의미로
+`BACKUP`을 입력해야 한다. 자동화는 `--non-interactive --backup-confirmed`를 함께 사용한다.
+
+전환 시 기존 소스, `.env`, 업로드, DB와 Nginx/TLS는 원래 위치에 그대로 둔다. `.env`의 단순
+`${KEY}` 참조를 풀어 현재 sample 형식의 `/etc/nubo/nubo.env`를 만들고, 기존 소스 소유자를 systemd
+서비스 사용자로 사용한다. 환경 원본 참고본은 `/var/lib/nubo/adoption/legacy.env`에 `0600`으로 보관한다.
+레거시 Gmail 설정은 현재의 Resend 계약으로 자동 변환할 수 없어 경고하며 복사하지 않는다.
+기존 프로젝트가 root 소유이면 애플리케이션을 root로 실행하지 않고 소유권 조정을 안내하며 중단한다.
+NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `ProtectHome=true`인 unit에서도 실행되도록
+`/opt/nubo/runtime/node`에 복사하고 unit은 이 안정 경로를 사용한다.
+
+기존 문서의 표준 PM2 이름 `nubo-web`, `nubo-api`만 자동 전환한다. 두 앱을 중지한 뒤 내부 포트가
+비었는지 확인하고 systemd와 readiness를 활성화한다. 실패하면 새 target을 중지하고 감지했던 PM2 앱을
+다시 시작한다. 성공하면 해당 PM2 앱을 삭제하고 `pm2 save`를 실행한다. 다른 이름이나 수동 프로세스가
+포트를 점유하면 쓰기 전에 중단하므로 운영자가 프로세스를 확인해야 한다. DB migration은 additive지만
+자동 rollback하지 않는다.
 
 ## install
 

@@ -14,6 +14,7 @@
     "lint": "eslint .",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "server:adopt": "node scripts/prepare-release.mjs adopt",
     "server:install": "node scripts/prepare-release.mjs install",
     "server:prepare": "node scripts/prepare-release.mjs prepare",
     "server:update": "node scripts/prepare-release.mjs update",

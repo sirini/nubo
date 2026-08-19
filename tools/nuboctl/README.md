@@ -9,6 +9,7 @@
 
 ```bash
 npm run server:install
+npm run server:adopt
 npm run server:update
 ```
 

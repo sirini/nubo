@@ -9,7 +9,7 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-현재 버전은 **v1.2.2**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
+현재 버전은 **v1.2.3**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -80,7 +80,7 @@ npm run server:prepare
 ```dotenv
 GOAPI_DOMAIN=https://example.com
 GOAPI_TITLE=My NUBO
-GOAPI_VERSION=1.2.2
+GOAPI_VERSION=1.2.3
 
 GOAPI_PORT=3006
 DB_HOST=localhost
@@ -186,6 +186,40 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 공식 릴리스의 기준 환경은 Ubuntu 22.04와 Node.js 22입니다. 이후 Ubuntu와 Node.js 버전에는 별도 상한을 두지 않으며 실제 `nuboctl doctor`와 readiness 결과로 실행 가능 여부를 확인합니다. GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다. 별도 libvips 설치는 필요 없으며 ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
 
 ## 업데이트
+
+### v1.2.0 이전 소스 설치를 새 체제로 전환
+
+기존에 프로젝트 디렉터리에서 Nuxt와 `goapi-linux`를 직접 빌드하고 PM2로 실행했다면, 먼저 DB와
+`upload` 디렉터리를 서버 밖에 백업한 뒤 다음 두 명령으로 전환할 수 있습니다.
+
+```bash
+git pull --ff-only
+npm run server:adopt -- --dry-run
+npm run server:adopt
+```
+
+dry-run은 다운로드한 공식 릴리스와 기존 `.env`를 검증하고 전체 계획만 보여줍니다. 실제 실행에서는
+백업을 완료했다는 뜻으로 `BACKUP`을 직접 입력해야 합니다. 명령은 다음 원칙으로 동작합니다.
+
+- 기존 프로젝트, `.env`, `upload`, 데이터베이스, Nginx/TLS 설정을 삭제하거나 이동하거나 덮어쓰지 않습니다.
+- 기존 `.env` 값을 새 `/etc/nubo/nubo.env` 형식으로 변환하며 원본 참고본도
+  `/var/lib/nubo/adoption/legacy.env`에 `0600` 권한으로 보관합니다.
+- 기존 프로젝트 소유 계정과 업로드 경로를 새 systemd 서비스에서도 그대로 사용합니다.
+- NVM처럼 Node.js가 사용자 홈 아래에 있으면 systemd가 읽을 수 있는 `/opt/nubo/runtime/node`에 현재
+  실행 파일을 복사하며, 시스템 경로의 Node.js는 그대로 사용합니다.
+- 표준 PM2 앱 이름인 `nubo-web`, `nubo-api`만 중지하고 systemd로 전환합니다. 새 서비스가 준비되지
+  않으면 기존 PM2 앱의 재시작을 시도합니다.
+- 기존 Nginx와 TLS는 이미 공개 트래픽을 처리하고 있으므로 생성, 수정, reload하지 않습니다.
+- DB에는 현재 릴리스의 additive migration을 적용합니다. 이 변경은 자동 rollback하지 않으므로 외부
+  백업 확인이 반드시 필요합니다.
+
+다른 PM2 이름이나 수동 실행 프로세스가 포트 `3000`/`3006`을 쓰고 있으면 명령은 새 서비스를 설치하기
+전에 중단합니다. 해당 프로세스를 운영자가 종료한 뒤 다시 실행하면 됩니다. adoption이 끝난 뒤부터는
+프로젝트 소스에서 빌드하지 않고 아래의 `server:update`를 사용합니다.
+프로젝트가 `root` 소유이면 애플리케이션을 root 권한으로 옮겨 실행하지 않고 안전하게 중단하므로, 먼저
+프로젝트와 업로드 디렉터리를 운영할 일반 계정의 소유권을 확인해야 합니다.
+
+### v1.2.2 이후 공식 서버 설치 업데이트
 
 공식 서버 설치는 DB와 업로드의 외부 백업을 마친 뒤 저장소의 릴리스 채널을 갱신하고 한 명령으로 업데이트합니다.
 

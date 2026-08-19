@@ -22,6 +22,11 @@ func activateNuboServices(options installOptions, runner commandRunner, readines
 	if output, err := runner.run("systemctl", "enable", "--now", "nubo.target"); err != nil {
 		return fmt.Errorf("NUBO 서비스 시작 실패: %s", compactOutput(output, err))
 	}
+	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {
+		if output, err := runner.run("systemctl", "is-active", "--quiet", service); err != nil {
+			return fmt.Errorf("%s가 실행되지 않았습니다: %s", service, compactOutput(output, err))
+		}
+	}
 	endpoint := "http://127.0.0.1:" + strconv.Itoa(options.webPort) + "/ready"
 	if err := readiness(endpoint); err != nil {
 		return fmt.Errorf("NUBO readiness 확인 실패: %w; systemctl status nubo-goapi.service nubo-web.service로 로그를 확인하세요", err)

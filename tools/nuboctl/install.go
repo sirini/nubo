@@ -130,8 +130,10 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	}
 
 	fmt.Println("\nNUBO 서비스 설치와 readiness 확인이 완료되었습니다.")
-	fmt.Printf("Nginx/TLS 활성화 후 관리자 로그인: https://%s/auth/login\n", options.domain)
-	fmt.Println("Nginx 설정은 아직 활성화하거나 reload하지 않았으며 TLS도 발급하지 않았습니다.")
+	if options.manageNginx {
+		fmt.Printf("Nginx/TLS 활성화 후 관리자 로그인: https://%s/auth/login\n", options.domain)
+		fmt.Println("Nginx 설정은 아직 활성화하거나 reload하지 않았으며 TLS도 발급하지 않았습니다.")
+	}
 	return nil
 }
 
@@ -158,5 +160,9 @@ func printInstallPlan(options installOptions, files []installFile, environmentEx
 		}
 	}
 	fmt.Println("- 실행: GOAPI DB 준비, systemd 활성화·시작, 로컬 readiness 확인")
-	fmt.Println("- 제외: Nginx enable/reload, TLS")
+	if options.manageNginx {
+		fmt.Println("- 제외: Nginx enable/reload, TLS")
+	} else {
+		fmt.Println("- 보존: 기존 Nginx/TLS 설정 (생성·수정·reload하지 않음)")
+	}
 }

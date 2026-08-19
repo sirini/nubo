@@ -23,7 +23,7 @@ func TestWaitForInstallReadinessAcceptsReadyResponse(t *testing.T) {
 // systemd 반영과 서비스 활성화 뒤 로컬 readiness를 확인한다.
 func TestActivateNuboServicesStartsTargetAndChecksReadiness(t *testing.T) {
 	options := installTestOptions(t)
-	calls := make([]string, 0, 2)
+	calls := make([]string, 0, 4)
 	checkedEndpoint := ""
 	runner := fakeRunner{
 		paths:   map[string]bool{"systemctl": true},
@@ -38,7 +38,8 @@ func TestActivateNuboServicesStartsTargetAndChecksReadiness(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Join(calls, "\n") != "systemctl daemon-reload\nsystemctl enable --now nubo.target" {
+	expected := "systemctl daemon-reload\nsystemctl enable --now nubo.target\nsystemctl is-active --quiet nubo-goapi.service\nsystemctl is-active --quiet nubo-web.service"
+	if strings.Join(calls, "\n") != expected {
 		t.Fatalf("systemd 명령 순서가 올바르지 않습니다: %v", calls)
 	}
 	if checkedEndpoint != "http://127.0.0.1:3000/ready" {

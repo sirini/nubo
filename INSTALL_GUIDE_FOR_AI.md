@@ -27,6 +27,30 @@ Ubuntu와 Node.js는 위 최소 버전만 검사하며 이후 버전에 별도 �
 6. 실패하면 먼저 오류 출력을 보존하고 `nuboctl doctor`로 현재 상태를 확인한다.
 7. Nginx 활성화 전에도 `activate-nginx --dry-run`을 먼저 성공시킨다.
 
+## 기존 소스 설치 adoption
+
+v1.2.0 이전 소스·PM2 설치를 전환해 달라는 요청에는 현재 checkout에서 먼저 계획만 확인한다.
+
+```bash
+npm run server:adopt -- --dry-run
+```
+
+출력에 표시된 기존 소스, `.env`, 업로드 경로, 도메인과 서비스 계정을 사용자에게 확인받는다. 서버 밖의
+DB dump와 업로드 백업을 사용자가 완료했다고 명시한 경우에만 실제 명령을 실행한다.
+
+```bash
+npm run server:adopt
+```
+
+대화형 명령의 `BACKUP`을 대신 입력하거나 `--backup-confirmed`를 추측으로 추가하지 않는다. 자동화가
+사용자의 백업 완료 확인을 이미 받은 경우에만 `--non-interactive --backup-confirmed`를 함께 전달한다.
+
+adoption은 기존 소스·`.env`·업로드·DB·Nginx/TLS를 삭제, 이동, 수정하거나 reload하지 않는다. 표준
+PM2 이름 `nubo-web`, `nubo-api`만 자동 중지하고 새 systemd 서비스의 readiness 실패 시 재시작을
+시도한다. 다른 프로세스가 포트를 점유했다는 오류가 나면 임의로 종료하지 말고 프로세스와 실행 방식을
+사용자에게 보고한다. 홈 디렉터리의 NVM Node는 systemd용 `/opt/nubo/runtime/node`에 자동 복사된다.
+DB migration은 자동 rollback되지 않는다.
+
 ## 새 설치 입력 파일
 
 `share/install-input.sample`을 운영자만 읽을 수 있는 임시 경로로 복사해 값을 채운다.

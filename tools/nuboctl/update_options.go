@@ -29,7 +29,7 @@ func parseUpdateOptions(args []string) (updateOptions, error) {
 		currentLink:   "/opt/nubo/current",
 		envFile:       environmentFilePath(),
 		stateDir:      "/var/lib/nubo",
-		serviceUser:   "nubo",
+		serviceUser:   "",
 		systemdDir:    "/etc/systemd/system",
 		osReleaseFile: "/etc/os-release",
 	}
@@ -58,7 +58,19 @@ func parseUpdateOptions(args []string) (updateOptions, error) {
 		}
 		*path = absolute
 	}
+	if options.serviceUser == "" {
+		options.serviceUser = installedServiceUser(options.systemdDir)
+	}
 	return options, nil
+}
+
+// adoption 설치처럼 전용 nubo 계정이 아닌 경우 unit의 실행 계정을 자동 재사용한다.
+func installedServiceUser(systemdDir string) string {
+	directives, err := readUnitDirectives(filepath.Join(systemdDir, "nubo-goapi.service"))
+	if err == nil && namePattern.MatchString(directives["User"]) {
+		return directives["User"]
+	}
+	return "nubo"
 }
 
 // 대화형 update는 빈 동의가 아니라 BACKUP이라는 명시 입력을 요구한다.
