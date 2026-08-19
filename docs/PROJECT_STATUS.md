@@ -46,6 +46,7 @@
 - `nuboctl skin apply`는 같은 공식 버전의 Web만 원자적으로 전환하고 readiness 실패 시 이전 Web을 복구하며 DB·GOAPI·환경은 바꾸지 않는다.
 - install·adopt·update는 `/usr/local/bin/nuboctl`이 `current/nuboctl`을 따르게 하되 기존 다른 파일이나 링크를 덮어쓰지 않는다.
 - 외부 스킨 카탈로그와 다운로드는 후속 범위로 두고, 현재는 사용자가 신뢰하는 로컬 스킨 소스만 다룬다.
+- 저사양 가상 CPU의 Vite 8 변환 교착을 피하도록 Nuxt 4.5.2는 유지하고 Vite 해석만 `rolldown-vite@7.3.1`로 임시 고정한다.
 
 ## Recent completion
 
@@ -77,6 +78,7 @@
 - 레거시 adoption을 새 clone·환경·업로드 복사·포트 종료 순서로 단순화하고, Nginx 업로드 경로와 커스텀 스킨 빌드/prebuilt 경계를 문서화했다.
 - 로컬 스킨의 첫 의존성 준비·typecheck·build·checksum·파생 릴리스 전환을 `npm run server:customize` 한 명령으로 연결했다.
 - v1.2.9 통합 asset과 SHA-256을 게시하고 install·adopt·update가 현재 `nuboctl`을 PATH에서 찾도록 연결했다.
+- 로컬 스킨 빌드가 저사양 가상 CPU에서도 진행되도록 호환 Rolldown-Vite를 lockfile에 고정했다.
 
 ## Open findings
 
@@ -92,6 +94,7 @@
 - v1.2.7까지 adoption한 서버는 대표 `nubo.service`를 원할 때 문서의 수동 절차로 추가한다.
 - 사이트 전용 스킨은 기본 스킨을 직접 수정하지 않고 별도 key로 복사해야 이후 `git pull` 충돌을 줄일 수 있다.
 - 공식 update 직후에는 공식 Web이 실행되며, 사이트 전용 스킨의 자동 재빌드는 아직 하지 않으므로 운영자가 `server:customize`를 다시 실행해야 한다.
+- Vite 8/Rolldown의 저사양 CPU 교착이 해결되면 임시 `rolldown-vite@7.3.1` override를 제거하고 Vite 8로 복귀해야 한다.
 
 ## Verification
 
@@ -126,6 +129,7 @@
 - 새 clone adoption·커스텀 스킨 경계 안내 변경은 관련 Vue ESLint, NUBO 15개 테스트, typecheck와 production build를 통과했다.
 - v1.2.9 로컬 스킨 후보: 파생 manifest/checksum, 공식 기반 일치, Web-only 전환, dry-run, readiness 실패 복구와 nuboctl PATH 링크의 Go/Node 단위 회귀 테스트를 통과했다.
 - v1.2.9 전달: 고정 GOAPI 커밋과 clean NUBO `7967275`로 통합 asset을 빌드해 nuboctl 0.9.6, 두 libvips 변형, 내부·외부 checksum, Ubuntu 24 재해제와 prebuilt smoke를 통과했다. GitHub 게시본도 다시 내려받아 SHA-256과 manifest를 확인했다.
+- Rolldown-Vite 호환 핀: Node 26.7.0의 깨끗한 `npm ci`, 17개 테스트, typecheck, audit 0건과 prebuilt smoke를 통과했다. CPU 2개 제한 production build는 4,839개 모듈을 변환해 23초에 완료했고 최대 RSS는 약 2.67GiB였다.
 
 ## Next action
 

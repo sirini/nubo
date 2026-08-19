@@ -315,6 +315,11 @@ npm run server:customize
 준비된 의존성을 재사용합니다. 전환 전에 계획만 확인하려면 `--dry-run`을 붙일 수 있습니다. 이 경우에도
 빌드와 파생 릴리스 검증은 수행하지만 실행 중인 서비스는 바꾸지 않습니다.
 
+저사양 가상 CPU에서 Vite 8의 변환 작업이 멈추는 문제를 피하기 위해 현재 lockfile은
+`rolldown-vite@7.3.1`을 호환 빌더로 고정합니다. 운영자가 Vite를 따로 설치하거나 `NODE_OPTIONS`를
+지정할 필요는 없습니다. 다만 빌드 중 메모리 부족으로 프로세스가 종료되는 서버라면 swap이나 약 3GB
+이상의 사용 가능한 메모리를 준비해야 합니다.
+
 ```bash
 npm run server:customize -- --dry-run
 ```

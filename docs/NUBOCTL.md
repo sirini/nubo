@@ -66,6 +66,11 @@ npm run server:customize
 `--dry-run`도 실제 빌드와 파생 릴리스 검증까지 수행하지만 current와 서비스는 변경하지 않는다. 공식
 릴리스 디렉터리를 직접 수정하면 checksum과 update 검증이 깨진다.
 
+현재 package lock은 저사양 가상 CPU에서 Vite 8의 변환이 멈추는 문제를 피하기 위해
+`rolldown-vite@7.3.1`을 호환 빌더로 고정한다. `server:customize`가 필요한 의존성을 자동 준비하므로
+운영자가 Vite를 따로 설치하거나 `NODE_OPTIONS`를 지정하지 않는다. 빌드 프로세스가 커널 OOM으로
+종료된다면 별도 문제이므로 swap이나 약 3GB 이상의 사용 가능한 메모리를 준비한다.
+
 공식 `server:update`는 로컬 소스를 임의로 빌드하지 않으며 업데이트 직후에는 공식 prebuilt Web으로
 전환한다. 사이트 전용 스킨을 계속 사용하려면 업데이트가 성공한 뒤 새 checkout 상태에서
 `npm run server:customize`를 다시 실행한다. 공식 업데이트 시 사이트 빌드를 자동 재생성하는 기능은
