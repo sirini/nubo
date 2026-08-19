@@ -39,10 +39,29 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install and build NUBO
+      - name: Install NUBO dependencies
+        run: npm ci
+
+      - name: Verify integrated API contract
+        env:
+          GOAPI_SOURCE_DIR: ${{ github.workspace }}/goapi
+        run: npm run test:release-contract
+
+      - name: Test, typecheck, and build NUBO
         run: |
-          npm ci
+          npm test
+          npm run typecheck
           npm run build
+
+      - name: Test and vet GOAPI in the official build environment
+        run: |
+          docker buildx build \
+            --file goapi/build/ubuntu22/Dockerfile \
+            --target build \
+            --tag nubo-goapi-ci \
+            --load \
+            goapi
+          docker run --rm nubo-goapi-ci bash -lc 'go test ./... && go vet ./...'
 
       - name: Build and verify integrated release
         env:

@@ -1,6 +1,7 @@
 import type { ReleaseManifestSummary } from "./releaseManifest"
+import apiContract from "../../deploy/api-contract.json"
 
-export const API_CONTRACT_VERSION = "1"
+export const API_CONTRACT_VERSION = apiContract.version
 
 export interface GoapiVersion {
   status: string

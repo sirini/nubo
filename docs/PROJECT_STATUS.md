@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S0-Q04를 완료했으며 다음 우선순위인 릴리스 CI 게이트를 필수 검증 단위로 좁혀 합의한다.
+- S2-Q04 릴리스 필수 검증 게이트를 보강했으며 남은 fresh-install smoke 범위를 다음 독립 단위로 검토한다.
 
 ## Current product boundary
 
@@ -13,6 +13,8 @@
 
 ## Decisions
 
+- API contract version은 NUBO JSON과 GOAPI embedded text를 각 저장소의 machine-readable source로 두고 릴리스 전에 반드시 일치시킨다.
+- 릴리스 CI는 전체 lint 부채와 분리해 NUBO test/typecheck/build, GOAPI 공식 빌드 환경의 test/vet, contract 일치를 게시 전 필수 게이트로 실행한다.
 - Nitro 시작 시 GOAPI contract를 확인하되 정상 부팅 중 연결 지연이나 불일치가 Web 기동 자체를 막지는 않으며, 구조화 경고와 지속 `/ready`·`/version` 진단으로 처리한다.
 - `nuboctl`은 범용 배포판 검증기가 아니라 NUBO의 최소 실행 환경을 준비하고 문제 해결 방법을 안내한다.
 - checksum에 기록된 파일의 손상과 위험한 경로는 검사하지만, 목록에 없는 추가 파일까지 거부하지 않는다.
@@ -58,6 +60,7 @@
 
 ## Recent completion
 
+- 릴리스 workflow가 NUBO test/typecheck/build, GOAPI test/vet와 양쪽 API contract 일치를 모두 통과해야 패키징·게시하도록 보강했다.
 - S0-Q04를 완료해 `/version`에 release build identity와 호환성 진단을 노출하고, 관리자 경고와 비차단 startup contract 확인을 연결했다.
 - 모든 Nuxt 공개 설정과 문서 제목이 prebuilt 실행 시 환경 파일에서 바뀌도록 런타임 계약을 바로잡았다.
 - `nuboctl` 구현과 테스트를 210줄 이하의 의미 단위 파일로 나누고 함수 주석을 짧은 한국어로 정리했다.
@@ -119,6 +122,7 @@
 
 ## Verification
 
+- S2-Q04 필수 게이트: NUBO 28개 테스트·typecheck·production build·prebuilt smoke, contract 일치/불일치 회귀, workflow YAML parse와 공식 Ubuntu 22/libvips Docker 환경의 GOAPI 전체 test/vet을 통과했다. GOAPI 호스트 test/vet도 통과했다(`fc430b8`).
 - S0-Q04: 일치·불일치·GOAPI 미준비 unit 경계, 관리자 경고 선별, 변경 파일 ESLint, NUBO 26개 테스트, typecheck, production build와 prebuilt `/version` smoke를 통과했다.
 - README의 설치·업데이트·소스 빌드 명령을 package scripts, Go module 요구 버전, govips의 플랫폼 요구사항과 대조했다.
 
@@ -166,4 +170,4 @@
 
 ## Next action
 
-- S2-Q04 릴리스 CI의 큰 범위 중 NUBO test/typecheck/build, GOAPI test/vet, contract 일치 검사만 첫 필수 게이트로 묶을지 합의한다.
+- S2-Q04의 남은 Ubuntu 22/24 fresh-install smoke를 현재 prebuilt 검증과 중복되지 않는 최소 범위로 설계할지 합의한다.

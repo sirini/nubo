@@ -863,14 +863,16 @@ nuboctl update
 
 - 우선순위: `P1`
 - 크기: `L`
+- 상태: `IN_PROGRESS`
 
 ### 파이프라인
 
 - [x] NUBO와 GOAPI exact ref checkout
-- [ ] NUBO lint/typecheck/test/build
-- [ ] GOAPI test/vet
+- [x] NUBO test/typecheck/build 필수 게이트
+- [ ] NUBO 전체 lint — 기존 358건 부채와 함께 별도 정리
+- [x] GOAPI test/vet
 - [x] Ubuntu 22.04 빌드 스크립트
-- [ ] contract version 일치 검사
+- [x] contract version 일치 검사
 - [x] 패키징
 - [ ] Ubuntu 22.04 fresh install smoke
 - [ ] Ubuntu 24.04 fresh install smoke

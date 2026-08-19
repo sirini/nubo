@@ -5,9 +5,11 @@ set -euo pipefail
 readonly NUBO_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly NUBO_GOAPI_ROOT="${GOAPI_SOURCE_DIR:-$(cd "${NUBO_PROJECT_ROOT}/../goapi.git" && pwd)}"
 readonly NUBO_RELEASE_SOURCES="${NUBO_PROJECT_ROOT}/deploy/release-sources.json"
+readonly NUBO_API_CONTRACT_SOURCE="${NUBO_PROJECT_ROOT}/deploy/api-contract.json"
 readonly NUBO_OUTPUT_ROOT="$(realpath -m "${1:-${NUBO_PROJECT_ROOT}/dist}")"
 readonly NUBO_VERSION="$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' "${NUBO_PROJECT_ROOT}/env.sample")"
 readonly NUBO_GOAPI_VERSION="$(awk -F= '$1 == "GOAPI_VERSION" { print $2; exit }' "${NUBO_PROJECT_ROOT}/env.sample")"
+readonly NUBO_API_CONTRACT="$(node -p "require('${NUBO_API_CONTRACT_SOURCE}').version")"
 readonly NUBO_RELEASE_NAME="nubo-${NUBO_VERSION}-linux-amd64"
 readonly NUBO_ARCHIVE_PATH="${NUBO_OUTPUT_ROOT}/${NUBO_RELEASE_NAME}.tar.gz"
 readonly NUBO_CHECKSUM_PATH="${NUBO_ARCHIVE_PATH}.sha256"
@@ -27,13 +29,18 @@ for NUBO_REQUIRED_FILE in \
   "${NUBO_PROJECT_ROOT}/deploy/README.md" \
   "${NUBO_PROJECT_ROOT}/env.sample" \
   "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" \
+  "${NUBO_PROJECT_ROOT}/scripts/verify-release-contract.mjs" \
+  "${NUBO_API_CONTRACT_SOURCE}" \
   "${NUBO_RELEASE_SOURCES}" \
+  "${NUBO_GOAPI_ROOT}/internal/handlers/api-contract-version.txt" \
   "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh"; do
   if [[ ! -f "${NUBO_REQUIRED_FILE}" ]]; then
     echo "Missing release input: ${NUBO_REQUIRED_FILE}" >&2
     exit 1
   fi
 done
+
+GOAPI_SOURCE_DIR="${NUBO_GOAPI_ROOT}" node "${NUBO_PROJECT_ROOT}/scripts/verify-release-contract.mjs"
 
 NUBO_EXPECTED_GOAPI_COMMIT="$(node -p "require('${NUBO_RELEASE_SOURCES}').goapi.commit")"
 NUBO_ACTUAL_GOAPI_COMMIT="$(git -C "${NUBO_GOAPI_ROOT}" rev-parse HEAD)"
@@ -74,7 +81,7 @@ writeFileSync(manifestPath, JSON.stringify({
   releaseVersion: "${NUBO_VERSION}",
   target: { os: "linux", arch: "amd64" },
   runtime: { node: ">=22" },
-  apiContract: "1",
+  apiContract: "${NUBO_API_CONTRACT}",
   nativeLibraries: {
     libvips: {
       version: "8.18.3",

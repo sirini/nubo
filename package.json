@@ -23,6 +23,7 @@
     "test:nuxt": "vitest run --project nuxt",
     "test:prebuilt": "node scripts/prebuilt-smoke.mjs",
     "test:prebuilt:ubuntu": "bash scripts/prebuilt-ubuntu-smoke.sh",
+    "test:release-contract": "node scripts/verify-release-contract.mjs",
     "test:unit": "vitest run --project unit",
     "test:watch": "vitest",
     "typecheck": "nuxt typecheck"
