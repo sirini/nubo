@@ -19,7 +19,7 @@ func activateNuboServices(options installOptions, runner commandRunner, readines
 	if output, err := runner.run("systemctl", "daemon-reload"); err != nil {
 		return fmt.Errorf("systemd 설정 반영 실패: %s", compactOutput(output, err))
 	}
-	if output, err := runner.run("systemctl", "enable", "--now", "nubo.target"); err != nil {
+	if output, err := runner.run("systemctl", "enable", "--now", "nubo.service"); err != nil {
 		return fmt.Errorf("NUBO 서비스 시작 실패: %s", compactOutput(output, err))
 	}
 	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {

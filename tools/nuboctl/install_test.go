@@ -37,6 +37,7 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 	}
 
 	for _, path := range []string{
+		filepath.Join(options.systemdDir, "nubo.service"),
 		filepath.Join(options.systemdDir, "nubo.target"),
 		filepath.Join(options.systemdDir, "nubo-goapi.service"),
 		filepath.Join(options.systemdDir, "nubo-web.service"),
@@ -57,6 +58,15 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 	webUnit, err := os.ReadFile(filepath.Join(options.systemdDir, "nubo-web.service"))
 	if err != nil || !strings.Contains(string(webUnit), options.currentLink+"/web/.output/server/index.mjs") {
 		t.Fatalf("웹 unit이 current 링크를 사용하지 않습니다: %v", err)
+	}
+	facade, err := os.ReadFile(filepath.Join(options.systemdDir, "nubo.service"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, directive := range []string{"Wants=nubo.target", "After=nubo.target", "PropagatesStopTo=nubo.target", "RemainAfterExit=yes"} {
+		if !strings.Contains(string(facade), directive) {
+			t.Fatalf("NUBO 대표 unit에 %s가 없습니다", directive)
+		}
 	}
 
 	if err := runInstall(options, systemRunner{}, false); err != nil {

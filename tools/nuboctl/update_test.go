@@ -142,6 +142,18 @@ func TestValidateCandidateTemplatesRejectsChange(t *testing.T) {
 	}
 }
 
+// 대표 service가 없던 기존 릴리스도 내부 운영 템플릿이 같으면 update할 수 있다.
+func TestValidateCandidateTemplatesAllowsNewFacadeService(t *testing.T) {
+	options, _ := updateTestSetup(t)
+	previous, _ := resolveCurrentRelease(options.currentLink)
+	if err := os.Remove(filepath.Join(previous, "share", "systemd", "nubo.service")); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCandidateTemplates(previous, options.candidateDir); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func updateTestSetup(t *testing.T) (updateOptions, fakeRunner) {
 	t.Helper()
 	install := installTestOptions(t)

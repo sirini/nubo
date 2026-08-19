@@ -72,6 +72,7 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 	install.nodeBinary = stagedNode
 	install.dryRun = false
 	if err := runInstall(install, runner, requireRoot); err != nil {
+		_, _ = runner.run("systemctl", "disable", "--now", "nubo.service")
 		_, _ = runner.run("systemctl", "disable", "--now", "nubo.target")
 		rollbackAdoptionFiles(adopt)
 		_, _ = runner.run("systemctl", "daemon-reload")
@@ -88,7 +89,7 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 
 func validateAdoptDestination(options adoptOptions) error {
 	paths := map[string]string{"새 환경 파일": options.envFile, "current 링크": options.currentLink}
-	for _, name := range []string{"nubo.target", "nubo-goapi.service", "nubo-web.service"} {
+	for _, name := range []string{"nubo.service", "nubo.target", "nubo-goapi.service", "nubo-web.service"} {
 		paths["systemd unit "+name] = filepath.Join(options.systemdDir, name)
 	}
 	for label, path := range paths {
@@ -108,6 +109,7 @@ func validateAdoptDestination(options adoptOptions) error {
 func rollbackAdoptionFiles(options adoptOptions) {
 	for _, path := range []string{
 		options.currentLink, options.envFile,
+		filepath.Join(options.systemdDir, "nubo.service"),
 		filepath.Join(options.systemdDir, "nubo.target"),
 		filepath.Join(options.systemdDir, "nubo-goapi.service"),
 		filepath.Join(options.systemdDir, "nubo-web.service"),

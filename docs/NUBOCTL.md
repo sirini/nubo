@@ -79,7 +79,7 @@ sudo ./nuboctl install \
 - 지정한 DB가 없으면 생성하고 기본 관리자·게시판과 최신 스키마 준비
 - `/opt/nubo/current`가 검증한 버전 디렉터리를 가리키도록 생성
 - systemd unit을 `/etc/systemd/system`에 렌더링
-- `nubo.target`을 enable/start하고 로컬 `/ready`가 정상일 때까지 확인
+- 대표 `nubo.service`를 enable/start해 내부 `nubo.target`의 GOAPI·Web을 함께 올리고 로컬 `/ready`가 정상일 때까지 확인
 - Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
 
 안전 규칙:

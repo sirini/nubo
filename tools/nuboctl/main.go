@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.9.4"
+const version = "0.9.5"
 
 type options struct {
 	releaseDir  string

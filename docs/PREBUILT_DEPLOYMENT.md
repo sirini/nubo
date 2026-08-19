@@ -52,7 +52,7 @@ NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi
 NUXT_PUBLIC_GOAPI_BASE=goapi
 NUXT_PUBLIC_DOMAIN=https://example.com
 NUXT_PUBLIC_TITLE=Example Community
-NUXT_PUBLIC_VERSION=1.2.7
+NUXT_PUBLIC_VERSION=1.2.8
 ```
 
 Point GOAPI at the file and pass the same file to Node:
@@ -117,6 +117,24 @@ and starts or reloads Nginx. TLS certificate issuance and Certbot stay under the
 services after database preparation. It leaves the generated Nginx site disabled until the separate
 `activate-nginx` step. Human operators use its Korean interactive flow; AI and automation follow the
 release-root `INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
+
+New installs expose `nubo.service` as the operator-facing lifecycle unit while retaining `nubo.target`
+as the internal GOAPI/Web grouping. Operators can therefore run `systemctl restart nubo`, and may still
+restart `nubo-goapi` or `nubo-web` independently when needed.
+
+An installation already adopted before this facade was introduced is intentionally not modified by an
+ordinary release update. After updating to a release that contains `share/systemd/nubo.service`, its
+operator may opt in manually without restarting the running application:
+
+```bash
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo.service /etc/systemd/system/nubo.service
+sudo systemctl daemon-reload
+sudo systemctl disable nubo.target
+sudo systemctl enable --now nubo.service
+```
+
+Afterward, `sudo systemctl restart nubo` stops and starts the internal target and both application services.
+The old target remains installed for compatibility and should not be deleted.
 
 The update boundary intentionally starts with an operator-staged release and a confirmed external backup.
 After checksum and compatibility validation, `nuboctl` runs only additive database migrations, atomically

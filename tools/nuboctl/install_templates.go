@@ -17,6 +17,7 @@ func renderInstallFiles(options installOptions, tokens map[string]string, enviro
 		destination string
 		label       string
 	}{
+		{"share/systemd/nubo.service", filepath.Join(options.systemdDir, "nubo.service"), "NUBO 대표 unit"},
 		{"share/systemd/nubo.target", filepath.Join(options.systemdDir, "nubo.target"), "systemd target"},
 		{"share/systemd/nubo-goapi.service.in", filepath.Join(options.systemdDir, "nubo-goapi.service"), "GOAPI unit"},
 		{"share/systemd/nubo-web.service.in", filepath.Join(options.systemdDir, "nubo-web.service"), "Nuxt unit"},

@@ -43,7 +43,7 @@ func TestActivateNuboServicesStartsTargetAndChecksReadiness(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := "systemctl daemon-reload\nsystemctl enable --now nubo.target\nsystemctl is-active --quiet nubo-goapi.service\nsystemctl is-active --quiet nubo-web.service"
+	expected := "systemctl daemon-reload\nsystemctl enable --now nubo.service\nsystemctl is-active --quiet nubo-goapi.service\nsystemctl is-active --quiet nubo-web.service"
 	if strings.Join(calls, "\n") != expected {
 		t.Fatalf("systemd 명령 순서가 올바르지 않습니다: %v", calls)
 	}

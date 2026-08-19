@@ -124,6 +124,7 @@ func createInstallTestReleaseVersion(t *testing.T, releaseDir, version string) {
 			"NITRO_HOST=127.0.0.1", "NITRO_PORT=3000", "NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi",
 			"NUXT_PUBLIC_GOAPI_BASE=goapi", "NUXT_PUBLIC_DOMAIN=http://localhost", "NUXT_PUBLIC_TITLE=NUBO", "NUXT_PUBLIC_ADMIN_ID=#adminid#",
 		}, "\n") + "\n",
+		"share/systemd/nubo.service":          "[Unit]\nWants=nubo.target\nAfter=nubo.target\nPropagatesStopTo=nubo.target\n[Service]\nType=oneshot\nExecStart=/bin/true\nRemainAfterExit=yes\n",
 		"share/systemd/nubo.target":           "[Unit]\nDescription=NUBO\n",
 		"share/systemd/nubo-goapi.service.in": "[Service]\nUser=@NUBO_USER@\nGroup=@NUBO_GROUP@\nWorkingDirectory=@NUBO_STATE_DIR@\nEnvironment=\"NUBO_ENV_FILE=@NUBO_ENV_FILE@\"\nExecStart=@NUBO_RELEASE_DIR@/bin/goapi\nReadWritePaths=@NUBO_UPLOAD_DIR@\n",
 		"share/systemd/nubo-web.service.in":   "[Service]\nUser=@NUBO_USER@\nGroup=@NUBO_GROUP@\nWorkingDirectory=@NUBO_RELEASE_DIR@/web\nExecStart=@NODE_BINARY@ --env-file=@NUBO_ENV_FILE@ @NUBO_RELEASE_DIR@/web/.output/server/index.mjs\n",

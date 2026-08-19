@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- Cafe24 서버에서 v1.2.7 adoption을 재실행해 prebuilt·systemd 전환을 마친다.
+- 새 설치에는 `systemctl restart nubo` 대표 진입점을 제공하고 기존 adoption 서버에는 수동 적용 가이드를 제공한다.
 
 ## Current product boundary
 
@@ -39,6 +39,8 @@
 - root-only VPS의 기존 운영을 차단하지 않으며 root 서비스에는 systemd 샌드박스 유지 경고를 표시한다.
 - 백업 안내 후 Enter는 진행, 다른 문자열은 취소로 처리한다.
 - 설치 readiness는 Nuxt의 `ok`와 GOAPI의 `ready` 상태를 모두 정상으로 인정한다.
+- `nubo.service`는 기존 `nubo.target`을 감싸며 GOAPI·Web의 독립 unit 구조를 바꾸지 않는다.
+- 이미 adoption한 서버의 systemd unit은 update가 자동 변경하지 않고 운영자가 선택적으로 대표 unit을 설치한다.
 
 ## Recent completion
 
@@ -64,6 +66,7 @@
 - root-only VPS의 기존 checkout을 경고와 systemd 샌드박스로 수용하는 v1.2.5를 게시했다.
 - DB bootstrap 검증 이름을 실제 `user_black_list` 스키마와 일치시키고 adoption 백업 확인을 Enter 방식으로 단순화한 v1.2.6을 게시했다.
 - Nuxt의 정상 `status: ok` 응답을 설치기가 거부하던 readiness 판정 오류를 수정한 v1.2.7을 게시했다.
+- 새 설치·adoption이 대표 `nubo.service`를 활성화해 전체 lifecycle 명령을 짧게 제공하도록 구성했다.
 
 ## Open findings
 
@@ -76,6 +79,7 @@
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
 - adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
+- v1.2.7까지 adoption한 서버는 대표 `nubo.service`를 원할 때 문서의 수동 절차로 추가한다.
 
 ## Verification
 
@@ -105,5 +109,5 @@
 
 ## Next action
 
-- 실패했던 Cafe24 checkout에서 v1.2.7을 pull한 뒤 adoption을 재실행한다.
+- 대표 service의 install/adoption·stop/restart 전달을 검증하고 다음 패치 릴리스로 게시한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.

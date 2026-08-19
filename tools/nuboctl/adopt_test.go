@@ -92,7 +92,7 @@ func TestRunAdoptDryRunPreservesServer(t *testing.T) {
 	if err := runAdopt(options, systemRunner{}, false); err != nil {
 		t.Fatal(err)
 	}
-	for _, path := range []string{options.envFile, options.currentLink, filepath.Join(options.systemdDir, "nubo.target")} {
+	for _, path := range []string{options.envFile, options.currentLink, filepath.Join(options.systemdDir, "nubo.service"), filepath.Join(options.systemdDir, "nubo.target")} {
 		if _, err := os.Lstat(path); !os.IsNotExist(err) {
 			t.Fatalf("dry-run이 경로를 만들었습니다: %s", path)
 		}

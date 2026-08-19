@@ -32,6 +32,22 @@ Nginx 사용자는 읽기와 상위 경로 통과 권한이 필요하다. 설치
 현재 지원하는 reverse proxy는 Nginx뿐이다. 새 서버에서는 설치 도구가 site 설정을 만들지만 아직
 enable이나 reload하지 않는다. 대상 도메인의 기존 설정이 있으면 수정·활성화·비활성화하지 않고 충돌 위치를 알린다.
 
-systemd unit은 journal에 로그를 남기고 `nubo.target`으로 묶인다. `nubo-web.service`는 GOAPI 뒤에
-시작하지만 두 프로세스는 각각 재시작할 수 있다. unit의 릴리스 경로는 버전 디렉터리가 아니라
+systemd unit은 journal에 로그를 남기고 내부 `nubo.target`으로 묶이며, 운영자는 대표
+`nubo.service`를 통해 `systemctl restart nubo`처럼 전체를 제어한다. `nubo-web.service`는 GOAPI 뒤에
+시작하지만 두 프로세스는 각각 재시작할 수도 있다. unit의 릴리스 경로는 버전 디렉터리가 아니라
 `/opt/nubo/current` 링크로 고정해 이후 원자적인 릴리스 전환이 가능해야 한다.
+
+### 기존 adoption 서버에서 대표 service 추가
+
+v1.2.7까지 adoption을 마친 서버는 일반 update만으로 systemd 구성을 자동 변경하지 않는다.
+v1.2.8 이상으로 update한 뒤 운영자가 원할 때 다음 절차를 한 번만 실행한다.
+
+```bash
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo.service /etc/systemd/system/nubo.service
+sudo systemctl daemon-reload
+sudo systemctl disable nubo.target
+sudo systemctl enable --now nubo.service
+```
+
+이 과정은 이미 실행 중인 GOAPI·Web을 재시작하지 않는다. 이후 전체 lifecycle은
+`sudo systemctl restart nubo`로 제어하며 내부 `nubo.target` 파일은 호환성을 위해 삭제하지 않는다.
