@@ -79,6 +79,7 @@
 - 로컬 스킨의 첫 의존성 준비·typecheck·build·checksum·파생 릴리스 전환을 `npm run server:customize` 한 명령으로 연결했다.
 - v1.2.9 통합 asset과 SHA-256을 게시하고 install·adopt·update가 현재 `nuboctl`을 PATH에서 찾도록 연결했다.
 - 로컬 스킨 빌드가 저사양 가상 CPU에서도 진행되도록 호환 Rolldown-Vite를 lockfile에 고정했다.
+- 파생 릴리스 복사 시 Nitro의 내부 상대 심볼릭 링크를 그대로 보존해 checksum 검증이 원본 checkout을 외부 경로로 오인하지 않게 했다.
 
 ## Open findings
 
@@ -130,6 +131,7 @@
 - v1.2.9 로컬 스킨 후보: 파생 manifest/checksum, 공식 기반 일치, Web-only 전환, dry-run, readiness 실패 복구와 nuboctl PATH 링크의 Go/Node 단위 회귀 테스트를 통과했다.
 - v1.2.9 전달: 고정 GOAPI 커밋과 clean NUBO `7967275`로 통합 asset을 빌드해 nuboctl 0.9.6, 두 libvips 변형, 내부·외부 checksum, Ubuntu 24 재해제와 prebuilt smoke를 통과했다. GitHub 게시본도 다시 내려받아 SHA-256과 manifest를 확인했다.
 - Rolldown-Vite 호환 핀: Node 26.7.0의 깨끗한 `npm ci`, 17개 테스트, typecheck, audit 0건과 prebuilt smoke를 통과했다. CPU 2개 제한 production build는 4,839개 모듈을 변환해 23초에 완료했고 최대 RSS는 약 2.67GiB였다.
+- 사이트 빌드 복사: Nitro 형태의 내부 상대 링크를 파생 디렉터리에 복사한 뒤 링크 문자열 보존과 `hashTree` 통과를 회귀 테스트로 확인했다.
 
 ## Next action
 

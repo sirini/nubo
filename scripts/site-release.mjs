@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto"
 import { createReadStream } from "node:fs"
-import { lstat, mkdir, readlink, readdir, readFile, realpath, writeFile } from "node:fs/promises"
+import { cp, lstat, mkdir, readlink, readdir, readFile, realpath, writeFile } from "node:fs/promises"
 import { dirname, join, relative, sep } from "node:path"
 import { pipeline } from "node:stream/promises"
 
@@ -65,6 +65,10 @@ export function createSiteManifest(base, { sourceCommit, skinsHash }) {
       skinsHash,
     },
   }
+}
+
+export async function copyTree(source, destination) {
+  await cp(source, destination, { recursive: true, verbatimSymlinks: true })
 }
 
 export async function writeChecksums(releaseRoot) {

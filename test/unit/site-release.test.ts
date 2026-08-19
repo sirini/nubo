@@ -1,9 +1,9 @@
-import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises"
+import { mkdtemp, mkdir, readlink, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
-import { createSiteManifest, hashTree, siteReleaseName } from "../../scripts/site-release.mjs"
+import { copyTree, createSiteManifest, hashTree, siteReleaseName } from "../../scripts/site-release.mjs"
 
 describe("local site release", () => {
   it("records the official base and local skin source", () => {
@@ -26,5 +26,20 @@ describe("local site release", () => {
     expect(await hashTree(root)).not.toBe(first)
     await symlink("/etc/passwd", join(root, "outside"))
     await expect(hashTree(root)).rejects.toThrow("사이트 빌드 밖")
+  })
+
+  it("preserves internal relative links when copying a Nitro output", async () => {
+    const root = await mkdtemp(join(tmpdir(), "nubo-site-copy-"))
+    const source = join(root, "source")
+    const destination = join(root, "destination")
+    await mkdir(join(source, "node_modules", ".nitro", "shared"), { recursive: true })
+    await mkdir(join(source, "node_modules", "package"), { recursive: true })
+    await writeFile(join(source, "node_modules", ".nitro", "shared", "index.mjs"), "export {}")
+    await symlink("../.nitro/shared", join(source, "node_modules", "package", "shared"))
+
+    await copyTree(source, destination)
+
+    expect(await readlink(join(destination, "node_modules", "package", "shared"))).toBe("../.nitro/shared")
+    await expect(hashTree(destination)).resolves.toMatch(/^[a-f0-9]{64}$/)
   })
 })

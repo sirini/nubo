@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto"
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises"
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import { spawnSync } from "node:child_process"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -13,7 +13,7 @@ import {
   runReleaseCommand,
   stageSystemRelease,
 } from "./release-download.mjs"
-import { createSiteManifest, hashTree, siteReleaseName, writeChecksums, writeDependencyStamp } from "./site-release.mjs"
+import { copyTree, createSiteManifest, hashTree, siteReleaseName, writeChecksums, writeDependencyStamp } from "./site-release.mjs"
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const buildRoot = join(projectRoot, ".nubo", "site-build")
@@ -71,9 +71,9 @@ async function main() {
   const candidate = join(buildRoot, "releases", name)
   await rm(candidate, { recursive: true, force: true })
   await mkdir(dirname(candidate), { recursive: true })
-  await cp(official, candidate, { recursive: true })
+  await copyTree(official, candidate)
   await rm(join(candidate, "web", ".output"), { recursive: true, force: true })
-  await cp(join(projectRoot, ".output"), join(candidate, "web", ".output"), { recursive: true })
+  await copyTree(join(projectRoot, ".output"), join(candidate, "web", ".output"))
 
   const baseManifest = JSON.parse(await readFile(join(official, "manifest.json"), "utf8"))
   const sourceCommit = run("git", ["rev-parse", "HEAD"], { capture: true })
