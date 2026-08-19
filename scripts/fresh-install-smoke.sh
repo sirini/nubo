@@ -61,8 +61,10 @@ for NUBO_UNUSED_PATH in /opt/nubo/current /etc/nubo/nubo.env /etc/systemd/system
 done
 trap diagnose EXIT
 
-run_root apt-get update -qq
-run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ca-certificates curl nginx >/dev/null
+echo "[fresh-install] apt metadata 준비"
+run_root timeout --foreground 5m apt-get update -qq
+echo "[fresh-install] 기본 패키지 설치"
+run_root timeout --foreground 5m env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ca-certificates curl nginx >/dev/null
 if systemctl list-unit-files mysql.service --no-legend 2>/dev/null | grep -q '^mysql.service'; then
   NUBO_DATABASE_SERVICE="mysql.service"
   NUBO_DATABASE_CLIENT="mysql"
@@ -70,14 +72,17 @@ elif systemctl list-unit-files mariadb.service --no-legend 2>/dev/null | grep -q
   NUBO_DATABASE_SERVICE="mariadb.service"
   NUBO_DATABASE_CLIENT="mariadb"
 else
-  run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mariadb-server >/dev/null
+  echo "[fresh-install] MariaDB 설치"
+  run_root timeout --foreground 5m env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mariadb-server >/dev/null
   NUBO_DATABASE_SERVICE="mariadb.service"
   NUBO_DATABASE_CLIENT="mariadb"
 fi
 readonly NUBO_DATABASE_SERVICE NUBO_DATABASE_CLIENT
-run_root systemctl enable --now "${NUBO_DATABASE_SERVICE}"
+echo "[fresh-install] ${NUBO_DATABASE_SERVICE} 시작"
+run_root timeout --foreground 2m systemctl enable --now "${NUBO_DATABASE_SERVICE}"
 
-run_root "${NUBO_DATABASE_CLIENT}" <<'SQL'
+echo "[fresh-install] smoke database 준비"
+run_root timeout --foreground 1m "${NUBO_DATABASE_CLIENT}" <<'SQL'
 CREATE DATABASE nubo_smoke CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'nubo_smoke'@'127.0.0.1' IDENTIFIED BY 'nubo-smoke-db-password';
 GRANT ALL PRIVILEGES ON nubo_smoke.* TO 'nubo_smoke'@'127.0.0.1';
@@ -113,13 +118,15 @@ ADMIN_PW=nubo-smoke-admin-password
 NUXT_PUBLIC_ADMIN_ID=admin@fresh-install.invalid
 EOF
 
-run_root "${NUBO_RELEASE_DIR}/nuboctl" install \
+echo "[fresh-install] nuboctl install 실행"
+run_root timeout --foreground 5m "${NUBO_RELEASE_DIR}/nuboctl" install \
   --non-interactive \
   --domain fresh-install.invalid \
   --release "${NUBO_RELEASE_DIR}" \
   --env-input "${NUBO_INPUT_FILE}" \
   --node "${NUBO_NODE_BINARY}"
 
+echo "[fresh-install] readiness와 version 검증"
 curl --fail --silent --show-error http://127.0.0.1:3000/ready >"${NUBO_READY_FILE}"
 curl --fail --silent --show-error http://127.0.0.1:3000/version >"${NUBO_VERSION_FILE}"
 node - "${NUBO_RELEASE_DIR}/manifest.json" "${NUBO_READY_FILE}" "${NUBO_VERSION_FILE}" <<'NODE'

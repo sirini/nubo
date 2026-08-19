@@ -81,6 +81,7 @@ jobs:
 
   fresh-install:
     needs: build-release
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:

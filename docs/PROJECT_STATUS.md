@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 필수 안정화 변경을 v1.2.12로 묶어 새 릴리스 파이프라인으로 게시한다.
+- fresh-install CI의 장시간 무출력 실행을 제한·진단 가능하게 보강하고 v1.2.13으로 게시한다.
 
 ## Current product boundary
 
@@ -16,6 +16,7 @@
 - API contract version은 NUBO JSON과 GOAPI embedded text를 각 저장소의 machine-readable source로 두고 릴리스 전에 반드시 일치시킨다.
 - 릴리스 CI는 전체 lint 부채와 분리해 NUBO test/typecheck/build, GOAPI 공식 빌드 환경의 test/vet, contract 일치를 게시 전 필수 게이트로 실행한다.
 - 전체 ESLint 오류는 게시 전에 차단하고, 기존 의미 판단 경고 50건을 상한으로 고정해 새 경고가 늘어나지 않게 한다.
+- fresh-install CI는 단계별 진행을 출력하고 외부 명령과 job 전체에 제한 시간을 둬 정지한 runner가 게시를 무기한 막지 않게 한다.
 - optional prop·sanitize된 HTML lint 경고 50건은 현재 동작을 바꿀 필수 사유가 없어 보류하고 새 경고 증가만 막는다.
 - 운영자 백업은 SFTP와 `mysqldump`/`mariadb-dump` 등 표준 도구에 맡기며 별도 백업·복구 제품이나 상세 자동화를 만들지 않는다.
 - 정식 릴리스 채널 체계나 compatibility matrix 대신 필요한 patch를 게시하고 `git pull --ff-only` 후 `nuboctl update`로 빠르게 적용한다.
@@ -130,7 +131,7 @@
 
 ## Verification
 
-- v1.2.12 후보: NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, typecheck, production build, API contract, 공식 GOAPI Ubuntu 22 build/test/vet, libvips 변형·qemu 호환, prebuilt smoke와 통합 release asset 생성을 통과했다.
+- v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.
 - lint 정리: 전체 ESLint 오류 0건·경고 50건 상한, NUBO 28개 테스트, typecheck, production build와 diff whitespace 검사를 통과했다.
 - fresh-install smoke: 현재 v1.2.11 후보를 Node.js 22.23.2와 격리된 Ubuntu 22.04/24.04 systemd 환경에 각각 설치해 MariaDB bootstrap, GOAPI·Web 기동, `/ready`와 build/contract를 포함한 `/version` 검증을 통과했다.
 - S2-Q04 필수 게이트: NUBO 28개 테스트·typecheck·production build·prebuilt smoke, contract 일치/불일치 회귀, workflow YAML parse와 공식 Ubuntu 22/libvips Docker 환경의 GOAPI 전체 test/vet을 통과했다. GOAPI 호스트 test/vet도 통과했다(`fc430b8`).
@@ -181,4 +182,4 @@
 
 ## Next action
 
-- v1.2.12 후보를 전체 릴리스 게이트로 검증·게시하고 운영 update 확인 범위를 결정한다.
+- v1.2.13 후보를 전체 릴리스 게이트로 재검증·게시하고 운영 update 확인 범위를 결정한다.
