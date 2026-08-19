@@ -3,7 +3,7 @@
 > 저장 경로: `docs/NUBO_COMMUNITY_OS_ROADMAP.md`  
 > 문서 성격: 장기 전략 + 구현 로드맵 + Codex 작업 지침  
 > 기준 시점: 2026-08-17  
-> 기준 버전: NUBO v1.2.1 / GOAPI main  
+> 기준 버전: NUBO v1.2.2 / GOAPI main
 > 상태: 살아 있는 문서(Living Document)
 
 ---
@@ -628,7 +628,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 ```text
 /opt/nubo/
 ├── releases/
-│   ├── 1.2.1/
+│   ├── 1.2.2/
 │   └── 1.3.0/
 ├── current -> /opt/nubo/releases/1.3.0
 └── bin/nuboctl

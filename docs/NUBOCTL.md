@@ -18,7 +18,7 @@ sudo ./nuboctl install
 ```bash
 sudo ./nuboctl install \
   --domain community.example.com \
-  --release /opt/nubo/releases/1.2.1 \
+  --release /opt/nubo/releases/1.2.2 \
   --upload /var/www/community.example.com/upload \
   --dry-run
 ```
