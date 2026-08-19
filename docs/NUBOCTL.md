@@ -1,7 +1,7 @@
 # nuboctl 설치 준비와 진단
 
 현재 `nuboctl` MVP는 기존 소스 설치를 전환하는 `adopt`, 한국어 대화형 설치를 하는 `install`, 공개 프록시를 연결하는
-`activate-nginx`, 배치된 릴리스를 전환하는 `update`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
+`activate-nginx`, 배치된 릴리스를 전환하는 `update`, 로컬 파생 Web을 전환하는 `skin apply`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
 최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
 ## adopt
@@ -51,12 +51,25 @@ NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `Prote
 기존 프로세스를 자동 재시작하지 않으며 이전 실행 방식으로 직접 시작하도록 안내한다. DB migration은
 additive지만 자동 rollback하지 않는다.
 
-`app/skins`의 Vue 스킨은 빌드 시점에 등록된다. 소스/커스텀 빌드 운영에서는 새 clone의 같은 위치에
-스킨을 복사한 뒤 `npm ci`, `npm run typecheck`, `npm run build`를 실행해야 관리 화면에 나타난다.
-그러나 `server:adopt`는 이 로컬 `.output`이 아니라 `/opt/nubo/current`의 공식 prebuilt를 실행하므로
-커스텀 스킨은 adoption 결과에 포함되지 않는다. 커스텀 스킨 사이트는 공식 스킨만 사용해 prebuilt로
-전환하거나, 새 clone의 `.output`을 실행하는 별도 소스/커스텀 배포를 유지해야 한다. 공식 릴리스
-디렉터리를 직접 수정하면 checksum과 update 검증이 깨진다.
+`app/skins`의 Vue 스킨은 빌드 시점에 등록된다. 기본 스킨을 직접 수정하기보다 별도 key의 폴더로
+복사해 사이트 전용 스킨으로 관리한다. adoption 뒤에는 `npm run server:customize`가 필요할 때만
+`npm ci`를 실행하고 typecheck·production build를 거쳐 공식 기반과 로컬 Web을 결합한 파생 릴리스를
+만든다. 하위 `nuboctl skin apply`는 같은 공식 버전과 GOAPI/nuboctl/libvips 출처, checksum, 설치 환경과
+systemd 계약을 검증한 뒤 current 링크와 Web만 전환한다. readiness가 실패하면 이전 링크와 Web을
+복원한다. DB migration, 환경 버전 변경, GOAPI 재시작은 수행하지 않는다.
+
+```bash
+npm run server:customize -- --dry-run
+npm run server:customize
+```
+
+`--dry-run`도 실제 빌드와 파생 릴리스 검증까지 수행하지만 current와 서비스는 변경하지 않는다. 공식
+릴리스 디렉터리를 직접 수정하면 checksum과 update 검증이 깨진다.
+
+공식 `server:update`는 로컬 소스를 임의로 빌드하지 않으며 업데이트 직후에는 공식 prebuilt Web으로
+전환한다. 사이트 전용 스킨을 계속 사용하려면 업데이트가 성공한 뒤 새 checkout 상태에서
+`npm run server:customize`를 다시 실행한다. 공식 업데이트 시 사이트 빌드를 자동 재생성하는 기능은
+후속 범위다.
 
 ## install
 
@@ -102,6 +115,7 @@ sudo ./nuboctl install \
 - `/opt/nubo/current`가 검증한 버전 디렉터리를 가리키도록 생성
 - systemd unit을 `/etc/systemd/system`에 렌더링
 - 대표 `nubo.service`를 enable/start해 내부 `nubo.target`의 GOAPI·Web을 함께 올리고 로컬 `/ready`가 정상일 때까지 확인
+- `/usr/local/bin/nuboctl`이 `/opt/nubo/current/nuboctl`을 가리키게 해 버전 전환 뒤에도 짧은 명령을 유지
 - Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
 
 안전 규칙:
@@ -225,3 +239,6 @@ sudo /opt/nubo/current/nuboctl status
 - `2`: 잘못된 명령이나 옵션
 
 `start`, `stop`, `restart`, `logs`, `rollback`은 아직 구현되지 않았다.
+
+설치·adoption·update는 `/usr/local/bin/nuboctl` 링크가 없으면 만들고, 이미 올바른 링크면 보존한다.
+일반 파일이나 다른 대상을 가리키는 링크가 있으면 덮어쓰지 않고 중단한다.

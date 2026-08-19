@@ -55,6 +55,10 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 	if err != nil || currentTarget != options.releaseDir {
 		t.Fatalf("current 링크 = %s, %v", currentTarget, err)
 	}
+	commandTarget, err := os.Readlink(options.commandLink)
+	if err != nil || commandTarget != filepath.Join(options.currentLink, "nuboctl") {
+		t.Fatalf("nuboctl 명령 링크 = %s, %v", commandTarget, err)
+	}
 	webUnit, err := os.ReadFile(filepath.Join(options.systemdDir, "nubo-web.service"))
 	if err != nil || !strings.Contains(string(webUnit), options.currentLink+"/web/.output/server/index.mjs") {
 		t.Fatalf("웹 unit이 current 링크를 사용하지 않습니다: %v", err)
@@ -89,6 +93,9 @@ func TestInstallDryRunDoesNotCreateFiles(t *testing.T) {
 	}
 	if _, err := os.Lstat(options.currentLink); !os.IsNotExist(err) {
 		t.Fatal("dry-run이 current 링크를 생성했습니다")
+	}
+	if _, err := os.Lstat(options.commandLink); !os.IsNotExist(err) {
+		t.Fatal("dry-run이 nuboctl 명령 링크를 생성했습니다")
 	}
 }
 

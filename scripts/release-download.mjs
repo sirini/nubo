@@ -213,6 +213,10 @@ export function runNuboctl(command, releaseDirectory, args) {
   runPrivileged(join(releaseDirectory, "nuboctl"), [command, "--release", releaseDirectory, ...args])
 }
 
+export function runReleaseCommand(releaseDirectory, args) {
+  runPrivileged(join(releaseDirectory, "nuboctl"), args)
+}
+
 export function assertSupportedRuntime() {
   const major = Number.parseInt(process.versions.node.split(".")[0], 10)
   if (major < 22) throw new Error(`Node.js 22 이상이 필요합니다: ${process.version}`)

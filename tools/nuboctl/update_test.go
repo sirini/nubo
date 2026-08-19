@@ -173,7 +173,8 @@ func updateTestSetup(t *testing.T) (updateOptions, fakeRunner) {
 	}
 	options := updateOptions{
 		candidateDir: candidate, currentLink: install.currentLink, envFile: install.envFile,
-		stateDir: install.stateDir, serviceUser: install.serviceUser, systemdDir: install.systemdDir,
+		commandLink: install.commandLink,
+		stateDir:    install.stateDir, serviceUser: install.serviceUser, systemdDir: install.systemdDir,
 		osReleaseFile: install.osReleaseFile, backupConfirmed: true,
 	}
 	return options, runner

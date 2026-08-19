@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.9.5"
+const version = "0.9.6"
 
 type options struct {
 	releaseDir  string
@@ -112,6 +112,24 @@ func run(args []string) int {
 			return 1
 		}
 		return 0
+	case "skin":
+		if len(args) < 2 || args[1] != "apply" {
+			fmt.Fprintln(os.Stderr, "사용법: nuboctl skin apply [옵션]")
+			return 2
+		}
+		options, err := parseSiteApplyOptions(args[2:])
+		if err != nil {
+			if err == flag.ErrHelp {
+				return 0
+			}
+			fmt.Fprintln(os.Stderr, err)
+			return 2
+		}
+		if err := runSiteApply(options, systemRunner{}, waitForInstallReadiness, true); err != nil {
+			fmt.Fprintln(os.Stderr, "스킨 적용 실패:", err)
+			return 1
+		}
+		return 0
 	case "doctor":
 		options, err := parseOptions("doctor", args[1:])
 		if err != nil {
@@ -206,5 +224,5 @@ func resolveExecutable(executable string) string {
 
 // 현재 제공하는 명령의 짧은 사용법을 표준 오류에 출력한다.
 func printUsage() {
-	fmt.Fprintln(os.Stderr, "사용법: nuboctl <adopt|install|activate-nginx|update|doctor|status|version> [옵션]")
+	fmt.Fprintln(os.Stderr, "사용법: nuboctl <adopt|install|activate-nginx|update|skin|doctor|status|version> [옵션]")
 }

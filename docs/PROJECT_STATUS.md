@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- v1.2.8 통합 배포 이후 실제 Ubuntu 서버 QA를 진행한다.
+- 로컬 Vue 스킨을 한 명령으로 빌드·검증·전환하는 v1.2.9 후보를 완성하고 실제 Ubuntu에서 QA한다.
 
 ## Current product boundary
 
@@ -24,7 +24,7 @@
 - update는 외부 백업을 전제로 additive migration→원자적 링크 전환→restart/readiness 순서로 수행한다.
 - readiness 실패 시 이전 링크와 프로세스는 복원하지만 DB migration은 되돌리지 않는다.
 - update는 같은 releases 디렉터리의 더 높은 정식 버전과 동일 운영 템플릿만 자동 전환한다.
-- 설정과 업로드는 릴리스 밖에 보존하며, 운영 서버에서는 `npm install`이나 Nuxt 빌드를 하지 않는다.
+- 설정과 업로드는 릴리스 밖에 보존하며, Standard Mode는 운영 서버에서 npm 설치나 Nuxt 빌드를 하지 않는다.
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
 - Git에는 실행 바이너리와 통합 압축본을 넣지 않고, 고정된 GOAPI commit으로 만든 GitHub Release asset 하나를 사용한다.
 - `npm run server:prepare`, `server:install`, `server:update`는 같은 asset과 외부 SHA-256을 검증해 사용한다.
@@ -42,7 +42,10 @@
 - `nubo.service`는 기존 `nubo.target`을 감싸며 GOAPI·Web의 독립 unit 구조를 바꾸지 않는다.
 - 이미 adoption한 서버의 systemd unit은 update가 자동 변경하지 않고 운영자가 선택적으로 대표 unit을 설치한다.
 - v1.2.0 이전 소스 설치의 adoption은 기존 checkout을 갱신하지 않고 옆 경로의 깨끗한 clone에 환경과 업로드를 복사한 뒤 진행한다.
-- 커스텀 Vue 스킨은 빌드 시점 자산이며 공식 prebuilt adoption에 포함되지 않는다. custom artifact 지원 전에는 공식 스킨 전환 또는 별도 소스 빌드 운영이 필요하다.
+- 커스텀 Vue 스킨은 빌드 시점 자산이며 `server:customize`가 공식 기반과 로컬 Web을 별도 불변 파생 릴리스로 결합한다.
+- `nuboctl skin apply`는 같은 공식 버전의 Web만 원자적으로 전환하고 readiness 실패 시 이전 Web을 복구하며 DB·GOAPI·환경은 바꾸지 않는다.
+- install·adopt·update는 `/usr/local/bin/nuboctl`이 `current/nuboctl`을 따르게 하되 기존 다른 파일이나 링크를 덮어쓰지 않는다.
+- 외부 스킨 카탈로그와 다운로드는 후속 범위로 두고, 현재는 사용자가 신뢰하는 로컬 스킨 소스만 다룬다.
 
 ## Recent completion
 
@@ -72,6 +75,7 @@
 - README와 AI/nuboctl 가이드를 현재 prebuilt 설치·adoption·update·Enter 백업 확인·`systemctl restart nubo` 흐름에 맞췄다.
 - NUBO와 GOAPI README에서 Ubuntu 22.04+ x86-64의 통합 prebuilt 운영 경로를 우선 안내하고, macOS·다른 Linux·Windows/WSL2의 소스 시험 경계를 정리했다.
 - 레거시 adoption을 새 clone·환경·업로드 복사·포트 종료 순서로 단순화하고, Nginx 업로드 경로와 커스텀 스킨 빌드/prebuilt 경계를 문서화했다.
+- 로컬 스킨의 첫 의존성 준비·typecheck·build·checksum·파생 릴리스 전환을 `npm run server:customize` 한 명령으로 연결했다.
 
 ## Open findings
 
@@ -85,6 +89,8 @@
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
 - adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
 - v1.2.7까지 adoption한 서버는 대표 `nubo.service`를 원할 때 문서의 수동 절차로 추가한다.
+- 사이트 전용 스킨은 기본 스킨을 직접 수정하지 않고 별도 key로 복사해야 이후 `git pull` 충돌을 줄일 수 있다.
+- 공식 update 직후에는 공식 Web이 실행되며, 사이트 전용 스킨의 자동 재빌드는 아직 하지 않으므로 운영자가 `server:customize`를 다시 실행해야 한다.
 
 ## Verification
 
@@ -117,8 +123,9 @@
 - v1.2.8 전달: 통합 asset·SHA-256·prebuilt smoke를 통과하고 새 shallow clone의 원격 `server:prepare`에서 nuboctl 0.9.5와 대표 unit을 확인했다.
 - Ubuntu 24.04의 systemd 255 컨테이너에서 `nubo.service`와 `nubo.target` unit 구문 검증을 통과했다.
 - 새 clone adoption·커스텀 스킨 경계 안내 변경은 관련 Vue ESLint, NUBO 15개 테스트, typecheck와 production build를 통과했다.
+- v1.2.9 로컬 스킨 후보: 파생 manifest/checksum, 공식 기반 일치, Web-only 전환, dry-run, readiness 실패 복구와 nuboctl PATH 링크의 Go/Node 단위 회귀 테스트를 통과했다.
 
 ## Next action
 
-- 기존 Cafe24 서버를 v1.2.8로 update한 뒤 문서의 수동 절차로 대표 service lifecycle을 확인한다.
+- v1.2.9 통합 asset을 빌드하고 실제 Ubuntu 설치에서 layout/home 수정→`server:customize`→관리 화면 선택→재수정 흐름을 확인한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.

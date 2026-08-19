@@ -23,6 +23,10 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	if err != nil {
 		return err
 	}
+	commandExists, err := validateNuboctlCommandLink(options.commandLink, options.currentLink)
+	if err != nil {
+		return err
+	}
 
 	nodeBinary, err := resolveNodeBinary(options.nodeBinary, runner)
 	if err != nil {
@@ -74,7 +78,7 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 		return err
 	}
 
-	printInstallPlan(options, files, environmentExists, currentExists, nodeBinary)
+	printInstallPlan(options, files, environmentExists, currentExists, commandExists, nodeBinary)
 	if options.dryRun {
 		fmt.Println("\nDRY-RUN 완료: 서버의 파일과 서비스를 변경하지 않았습니다.")
 		return nil
@@ -123,6 +127,9 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	if err := ensureCurrentRelease(options.releaseDir, options.currentLink); err != nil {
 		return err
 	}
+	if err := ensureNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
+		return err
+	}
 	if options.activateServices {
 		if err := activateNuboServices(options, runner, waitForInstallReadiness); err != nil {
 			return err
@@ -138,13 +145,18 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 }
 
 // 생성·보존할 경로와 이번 단계에서 하지 않는 작업을 실행 전에 보여준다.
-func printInstallPlan(options installOptions, files []installFile, environmentExists, currentExists bool, nodeBinary string) {
+func printInstallPlan(options installOptions, files []installFile, environmentExists, currentExists, commandExists bool, nodeBinary string) {
 	fmt.Printf("NUBO 설치 준비 계획 (%s)\n", options.domain)
 	fmt.Printf("- 릴리스 원본: %s\n", options.releaseDir)
 	if currentExists {
 		fmt.Printf("- current 링크 유지: %s\n", options.currentLink)
 	} else {
 		fmt.Printf("- current 링크 생성: %s -> %s\n", options.currentLink, options.releaseDir)
+	}
+	if commandExists {
+		fmt.Printf("- nuboctl 명령 유지: %s\n", options.commandLink)
+	} else {
+		fmt.Printf("- nuboctl 명령 생성: %s -> %s/nuboctl\n", options.commandLink, options.currentLink)
 	}
 	fmt.Printf("- Node.js: %s\n", nodeBinary)
 	fmt.Printf("- 상태/업로드: %s / %s\n", options.stateDir, options.uploadDir)

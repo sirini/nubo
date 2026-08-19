@@ -88,6 +88,7 @@ func installTestOptions(t *testing.T) installOptions {
 		domain:        "community.example.com",
 		serviceGroup:  current.group,
 		currentLink:   filepath.Join(root, "opt", "nubo", "current"),
+		commandLink:   filepath.Join(root, "usr", "local", "bin", "nuboctl"),
 		uploadDir:     filepath.Join(root, "var", "lib", "nubo", "upload"),
 		nodeBinary:    nodeBinary,
 		webPort:       3000,
@@ -109,8 +110,9 @@ func createInstallTestRelease(t *testing.T, releaseDir string) {
 func createInstallTestReleaseVersion(t *testing.T, releaseDir, version string) {
 	t.Helper()
 	files := map[string]string{
-		"manifest.json":             fmt.Sprintf(`{"schemaVersion":2,"releaseVersion":%q,"target":{"os":%q,"arch":%q},"components":{},"nativeLibraries":{"libvips":{"version":"8.18.3","selection":"glibc-hwcaps","variants":{"x86-64":{"path":"lib/libvips-cpp.so.8.18.3","source":"test"},"x86-64-v2":{"path":"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3","source":"test"}}}}}`, version, runtime.GOOS, runtime.GOARCH) + "\n",
+		"manifest.json":             fmt.Sprintf(`{"schemaVersion":2,"releaseVersion":%q,"target":{"os":%q,"arch":%q},"components":{"goapi":{"version":%q,"commit":"test-goapi","dirty":false},"nuboctl":{"version":"test","commit":"test-nuboctl","dirty":false}},"nativeLibraries":{"libvips":{"version":"8.18.3","selection":"glibc-hwcaps","variants":{"x86-64":{"path":"lib/libvips-cpp.so.8.18.3","source":"test"},"x86-64-v2":{"path":"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3","source":"test"}}}}}`, version, runtime.GOOS, runtime.GOARCH, version) + "\n",
 		"bin/goapi":                 "#!/bin/sh\nexit 0\n",
+		"nuboctl":                   "#!/bin/sh\nexit 0\n",
 		"lib/libvips-cpp.so.8.18.3": "library\n",
 		"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3": "optimized library\n",
 		"web/.output/server/index.mjs":                     "export default {}\n",
@@ -140,6 +142,14 @@ func createInstallTestReleaseVersion(t *testing.T, releaseDir, version string) {
 		}
 	}
 
+	rewriteTestChecksums(t, releaseDir)
+}
+
+func rewriteTestChecksums(t *testing.T, releaseDir string) {
+	t.Helper()
+	if err := os.Remove(filepath.Join(releaseDir, "checksums.txt")); err != nil && !os.IsNotExist(err) {
+		t.Fatal(err)
+	}
 	var checksumLines []string
 	if err := filepath.WalkDir(releaseDir, func(path string, entry os.DirEntry, err error) error {
 		if err != nil || entry.IsDir() {

@@ -59,7 +59,8 @@ func TestRunAdoptRejectsOccupiedPortBeforeWriting(t *testing.T) {
 	}
 	options := adoptOptions{
 		releaseDir: install.releaseDir, sourceDir: source, currentLink: install.currentLink,
-		envFile: install.envFile, stateDir: install.stateDir, systemdDir: install.systemdDir,
+		commandLink: install.commandLink,
+		envFile:     install.envFile, stateDir: install.stateDir, systemdDir: install.systemdDir,
 		osReleaseFile: install.osReleaseFile, nodeBinary: install.nodeBinary,
 		nonInteractive: true, backupConfirmed: true,
 	}
@@ -86,7 +87,8 @@ func TestRunAdoptDryRunPreservesServer(t *testing.T) {
 	}
 	options := adoptOptions{
 		releaseDir: install.releaseDir, sourceDir: source, currentLink: install.currentLink,
-		envFile: install.envFile, stateDir: install.stateDir, systemdDir: install.systemdDir,
+		commandLink: install.commandLink,
+		envFile:     install.envFile, stateDir: install.stateDir, systemdDir: install.systemdDir,
 		osReleaseFile: install.osReleaseFile, nodeBinary: install.nodeBinary, dryRun: true,
 	}
 	if err := runAdopt(options, systemRunner{}, false); err != nil {

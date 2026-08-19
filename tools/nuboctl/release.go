@@ -27,6 +27,13 @@ type releaseManifest struct {
 		Dirty   bool   `json:"dirty"`
 	} `json:"components"`
 	NativeLibraries map[string]nativeLibrary `json:"nativeLibraries"`
+	SiteBuild       *siteBuildManifest       `json:"siteBuild,omitempty"`
+}
+
+type siteBuildManifest struct {
+	BaseVersion  string `json:"baseVersion"`
+	SourceCommit string `json:"sourceCommit"`
+	SkinsHash    string `json:"skinsHash"`
 }
 
 type nativeLibrary struct {
@@ -72,6 +79,13 @@ func checkRelease(releaseDir string, verifyChecksums bool) []checkResult {
 		return []checkResult{fail("릴리스 manifest", err.Error())}
 	}
 	results := []checkResult{pass("릴리스 manifest", "NUBO "+manifest.ReleaseVersion)}
+	if manifest.SiteBuild != nil {
+		detail := manifest.SiteBuild.SkinsHash
+		if len(detail) > 12 {
+			detail = detail[:12]
+		}
+		results = append(results, pass("로컬 스킨 빌드", manifest.SiteBuild.BaseVersion+" · "+detail))
+	}
 	if manifest.Target.OS != runtime.GOOS || manifest.Target.Arch != runtime.GOARCH {
 		results = append(results, fail("릴리스 대상", fmt.Sprintf("%s/%s 릴리스는 현재 %s/%s와 호환되지 않습니다", manifest.Target.OS, manifest.Target.Arch, runtime.GOOS, runtime.GOARCH)))
 	} else {

@@ -27,9 +27,13 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 	if err != nil {
 		return err
 	}
+	commandLinkExisted, err := validateNuboctlCommandLink(adopt.commandLink, adopt.currentLink)
+	if err != nil {
+		return err
+	}
 	install := installOptions{
 		options: options{releaseDir: adopt.releaseDir, envFile: adopt.envFile, stateDir: adopt.stateDir, serviceUser: serviceUser},
-		domain:  domain, serviceGroup: serviceGroup, currentLink: adopt.currentLink,
+		domain:  domain, serviceGroup: serviceGroup, currentLink: adopt.currentLink, commandLink: adopt.commandLink,
 		uploadDir: uploadDir, nodeBinary: adopt.nodeBinary, webPort: 3000, goapiPort: 3006,
 		goapiPath: "goapi", maxBodySize: "100m", systemdDir: adopt.systemdDir,
 		nginxDir:      "/etc/nginx/sites-available",
@@ -74,7 +78,7 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 	if err := runInstall(install, runner, requireRoot); err != nil {
 		_, _ = runner.run("systemctl", "disable", "--now", "nubo.service")
 		_, _ = runner.run("systemctl", "disable", "--now", "nubo.target")
-		rollbackAdoptionFiles(adopt)
+		rollbackAdoptionFiles(adopt, commandLinkExisted)
 		_, _ = runner.run("systemctl", "daemon-reload")
 		removeStagedAdoptionNode(stagedNode, nodeCreated)
 		return fmt.Errorf("새 서비스 전환 실패: %w; 기존 프로세스는 자동으로 재시작하지 않았으므로 필요하면 이전 실행 방식으로 직접 시작하세요", err)
@@ -106,7 +110,7 @@ func validateAdoptDestination(options adoptOptions) error {
 	return nil
 }
 
-func rollbackAdoptionFiles(options adoptOptions) {
+func rollbackAdoptionFiles(options adoptOptions, commandLinkExisted bool) {
 	for _, path := range []string{
 		options.currentLink, options.envFile,
 		filepath.Join(options.systemdDir, "nubo.service"),
@@ -115,6 +119,9 @@ func rollbackAdoptionFiles(options adoptOptions) {
 		filepath.Join(options.systemdDir, "nubo-web.service"),
 	} {
 		_ = os.Remove(path)
+	}
+	if !commandLinkExisted {
+		_ = os.Remove(options.commandLink)
 	}
 }
 

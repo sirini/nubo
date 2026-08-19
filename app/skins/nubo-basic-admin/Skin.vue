@@ -51,17 +51,14 @@
       </h2>
 
       <CommonVCollapsible title="스킨은 어디서 받을 수 있나요?">
-        NUBO용 스킨은
-        <a href="https://nubohub.org" target="_blank"><CommonVCode>nubohub.org</CommonVCode></a>
-        에서 내려받을 수 있습니다. 설치한 스킨 가운데 <CommonVCode>skin.json</CommonVCode>의 형식,
-        폴더 이름, 지원 NUBO 버전 검사를 통과한 스킨만 위 선택 목록에 표시됩니다.
+        향후 <a href="https://nubohub.org" target="_blank"><CommonVCode>nubohub.org</CommonVCode></a>에서
+        스킨을 찾고 설치하는 기능을 제공할 예정입니다. 현재는 직접 만든 스킨이나 신뢰할 수 있는 곳에서
+        받은 스킨 폴더를 NUBO 소스의 <CommonVCode>app/skins/</CommonVCode> 아래에 배치합니다. 설치한
+        스킨 가운데 <CommonVCode>skin.json</CommonVCode>의 형식, 폴더 이름, 지원 NUBO 버전 검사를
+        통과한 스킨만 위 선택 목록에 표시됩니다.
       </CommonVCollapsible>
       <Separator />
       <CommonVCollapsible title="다운로드한 스킨은 어떻게 설치하고 적용하나요?">
-        이 절차는 NUBO 소스를 직접 빌드해 운영하는 사이트에만 적용됩니다. 공식 prebuilt 설치는
-        <CommonVCode>/opt/nubo/current</CommonVCode>의 검증된 빌드를 실행하므로 서버의 소스 clone에
-        스킨을 추가해도 반영되지 않습니다.
-
         아래에서는 게시판 스킨 <CommonVCode>nubo-awesome-board</CommonVCode>를 설치한다고
         가정합니다.
 
@@ -76,14 +73,13 @@
             같은지, 안내된 최소 NUBO 버전을 충족하는지 확인합니다.
           </li>
           <li>
-            새 clone이라면 NUBO 프로젝트 루트에서 먼저 <CommonVCode>npm ci</CommonVCode>를 실행한 뒤
-            <CommonVCode>npm run build</CommonVCode>를 실행합니다. 새 스킨 파일은 빌드할 때 등록되므로
-            빌드 단계는 생략할 수 없습니다.
+            NUBO 프로젝트 루트에서 <CommonVCode>npm run server:customize</CommonVCode>를 실행합니다.
+            첫 실행에 필요한 의존성 설치, typecheck, production build와 안전한 서비스 전환은 명령이
+            자동으로 수행합니다.
           </li>
           <li>
-            실행 중인 프론트엔드 프로세스를 재시작해 새 빌드를 반영합니다. 직접 실행 중이면
-            <CommonVCode>node .output/server/index.mjs</CommonVCode>를, PM2를 사용 중이면 기존 PM2
-            프로세스의 재시작 명령을 사용합니다.
+            readiness 검사가 성공하면 새 스킨 빌드가 즉시 적용됩니다. 실패하면 이전 Web 빌드로
+            자동 복구되므로 systemd를 직접 재시작할 필요가 없습니다.
           </li>
           <li>
             게시판 스킨은 게시판 관리에서 게시판별로 선택합니다. 레이아웃·홈·관리자·로그인·프로필
@@ -91,8 +87,7 @@
           </li>
         </ul>
         목록에 스킨이 나타나지 않으면 이 화면 상단의 manifest 오류 안내를 먼저 확인하세요.
-        공식 prebuilt에 커스텀 스킨을 포함하는 custom artifact 흐름은 아직 지원하지 않으며, 공식 릴리스
-        디렉터리에 파일을 직접 복사하면 checksum과 업데이트 검증이 깨집니다.
+        공식 릴리스 디렉터리에 파일을 직접 복사하면 checksum과 업데이트 검증이 깨지므로 수정하지 마세요.
       </CommonVCollapsible>
       <Separator />
       <CommonVCollapsible title="기존 스킨을 복사해서 수정하려면 어떻게 하나요?">
@@ -116,7 +111,7 @@
           </li>
           <li>
             완성한 폴더를 서버의 <CommonVCode>app/skins/</CommonVCode> 아래에 배치한 후
-            <CommonVCode>npm run build</CommonVCode>를 실행하고 프론트엔드 프로세스를 재시작합니다.
+            <CommonVCode>npm run server:customize</CommonVCode>로 검증·빌드·적용합니다.
           </li>
           <li>
             manifest 검증 오류가 없는지 확인하고, 게시판 관리 또는 이 화면에서 새 스킨을 선택해

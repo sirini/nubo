@@ -9,7 +9,7 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-현재 버전은 **v1.2.8**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
+현재 버전은 **v1.2.9**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -90,7 +90,7 @@ npm run server:prepare
 ```dotenv
 GOAPI_DOMAIN=https://example.com
 GOAPI_TITLE=My NUBO
-GOAPI_VERSION=1.2.8
+GOAPI_VERSION=1.2.9
 
 GOAPI_PORT=3006
 DB_HOST=localhost
@@ -294,29 +294,34 @@ sudo systemctl status nubo nubo-goapi nubo-web
 #### 커스텀 Vue 스킨을 사용하던 사이트
 
 `app/skins` 아래의 Vue 스킨과 `skin.json`은 런타임 플러그인이 아니라 Nuxt 빌드에 포함되는 소스입니다.
-따라서 소스 빌드 방식으로 계속 운영한다면 커스텀 스킨 폴더를 새 clone의 같은 위치에 복사한 뒤 다음
-명령으로 새 `.output`을 만들어야 관리 화면의 스킨 목록에 표시됩니다.
+커스텀 스킨 폴더는 새 clone의 같은 위치에 복사합니다.
 
 ```bash
 cp -a /var/www/nubo-old/app/skins/my-custom-skin /var/www/nubo-new/app/skins/
 cd /var/www/nubo-new
-npm ci
-npm run typecheck
-npm run build
 ```
 
-다만 현재 `server:adopt`와 `server:update`가 설치하는 공식 prebuilt에는 NUBO 공식 스킨만 들어갑니다.
-위에서 만든 `/var/www/nubo-new/.output`은 `/opt/nubo/current/web/.output`을 실행하는 공식 systemd
-서비스에 자동으로 반영되지 않습니다. 그러므로 커스텀 Vue 스킨 사이트는 로컬 빌드가 adoption에
-포함된다고 가정하면 안 됩니다. 현재 선택지는 다음 두 가지입니다.
+adoption을 마친 뒤에는 아래의 `server:customize`로 로컬 스킨을 공식 릴리스와 결합할 수 있습니다.
+명령이 의존성 설치, typecheck, production build, 파생 릴리스 checksum 생성, Web 재시작과 readiness
+검사를 수행합니다. 실패하면 이전 Web 빌드로 자동 복구하며 GOAPI, DB, 업로드, 환경 파일과 Nginx는
+변경하지 않습니다.
 
-- 공식 prebuilt로 전환하고 공식 번들에 포함된 스킨만 사용합니다.
-- 커스텀 스킨을 유지해야 한다면 소스/커스텀 빌드 운영을 유지하고, 새 clone의 `.output`을 실행하는
-  별도 배포 절차를 사용합니다. 이 경우 공식 `server:update`의 원자적 전환 대상은 아닙니다.
+```bash
+cd /var/www/nubo-new
+npm run server:customize
+```
 
-사이트별 스킨을 포함한 custom artifact 설치·업데이트는 아직 공식 지원하지 않습니다. 공식 prebuilt
-디렉터리에 스킨이나 빌드 결과를 직접 복사하면 checksum 검증과 이후 업데이트를 깨뜨리므로 수정하지
-마세요.
+첫 실행이나 `package-lock.json`이 바뀐 경우에만 `npm ci`를 자동 실행하고, 이후 문구·스타일 수정에는
+준비된 의존성을 재사용합니다. 전환 전에 계획만 확인하려면 `--dry-run`을 붙일 수 있습니다. 이 경우에도
+빌드와 파생 릴리스 검증은 수행하지만 실행 중인 서비스는 바꾸지 않습니다.
+
+```bash
+npm run server:customize -- --dry-run
+```
+
+공식 prebuilt 디렉터리는 여전히 직접 수정하면 안 됩니다. 커스텀 결과는
+`/opt/nubo/releases/<버전>-site-<해시>`라는 별도 불변 릴리스로 배치되고 `current` 링크만 원자적으로
+전환됩니다.
 
 ### v1.2.2 이후 공식 서버 설치 업데이트
 
@@ -331,6 +336,11 @@ npm run server:update
 명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 `nuboctl update`의 백업 확인, additive migration,
 원자적 `current` 전환, 재시작과 readiness 검사를 그대로 수행합니다. 소스 개발 환경에서 GOAPI만
 갱신하려면 `npm run server:prepare`를 다시 실행합니다.
+
+사이트 전용 로컬 스킨을 사용 중이라면 공식 업데이트 직후에는 기본 prebuilt Web이 실행됩니다.
+현재 버전에서는 로컬 스킨을 자동으로 다시 빌드하지 않으므로, 업데이트가 정상 완료된 뒤 새 소스와의
+호환성을 확인하며 `npm run server:customize`를 한 번 더 실행합니다. 이 명령은 방금 설치한 공식 버전을
+기반으로 사이트 전용 Web을 다시 만들고 Web만 전환합니다.
 
 v1.2.7까지 adoption을 마친 서버는 v1.2.8로 update해도 systemd 구성을 자동 변경하지 않습니다.
 짧은 대표 명령을 원할 때만 다음 절차를 한 번 실행합니다. 실행 중인 GOAPI와 Web은 이 과정에서
@@ -387,7 +397,27 @@ Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS�
 - 기본 스킨은 `/app/skins` 아래에 기능별로 나뉘어 있습니다.
 - 공통 UI는 Vue 3, Tailwind CSS, shadcn-vue 구성요소를 사용합니다.
 - 복잡한 데이터 처리는 composable/provider에 두고 스킨에서는 필요한 상태와 동작만 가져오는 구조를 지향합니다.
-- 새 스킨을 만들 때 기본 스킨을 복사한 뒤 이름과 스타일을 바꾸는 방식으로 시작할 수 있습니다.
+- 새 스킨을 만들 때 기본 스킨을 직접 수정하지 말고 폴더를 복사한 뒤 `skin.json`의 `key`, 이름과 버전을
+  새 폴더에 맞게 바꾸는 방식을 권장합니다. 그래야 `git pull`과 공식 스킨 업데이트가 사이트 수정을
+  덮어쓰지 않습니다.
+- 설치된 서버에서는 수정 후 `npm run server:customize` 한 명령으로 빌드·검증·적용합니다.
+
+예를 들어 사이트 전용 레이아웃과 홈을 만들려면 기본 폴더를 새 key로 복사합니다.
+
+```bash
+cp -a app/skins/nubo-basic-layout app/skins/my-site-layout
+cp -a app/skins/nubo-basic-home app/skins/my-site-home
+```
+
+각 폴더의 `skin.json`에서 `key`를 각각 `my-site-layout`, `my-site-home`으로 바꾸고 이름·버전·제작자
+정보를 수정합니다. Vue 파일의 문구·구조·버튼 스타일을 사이트에 맞게 편집한 뒤 적용합니다.
+
+```bash
+npm run server:customize
+```
+
+빌드가 적용되면 관리 화면의 레이아웃과 홈 선택 목록에서 새 스킨을 골라 **적용하기**를 누릅니다.
+이미 선택한 사이트 전용 스킨을 다시 수정한 경우에는 같은 명령만 재실행하면 됩니다.
 
 ## 문제를 확인할 때
 

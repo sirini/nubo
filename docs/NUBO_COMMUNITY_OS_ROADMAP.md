@@ -3,7 +3,7 @@
 > 저장 경로: `docs/NUBO_COMMUNITY_OS_ROADMAP.md`  
 > 문서 성격: 장기 전략 + 구현 로드맵 + Codex 작업 지침  
 > 기준 시점: 2026-08-17  
-> 기준 버전: NUBO v1.2.8 / GOAPI main
+> 기준 버전: NUBO v1.2.9 candidate / GOAPI main
 > 상태: 살아 있는 문서(Living Document)
 
 ---
@@ -917,6 +917,15 @@ nuboctl rollback
 
 - 우선순위: `P1`
 - 크기: `L`
+- 상태: `IN_PROGRESS`
+
+### 완료된 기반
+
+- [x] 로컬 스킨 변경을 typecheck·production build하고 공식 기반과 별도 파생 릴리스로 결합
+- [x] 같은 버전의 Web만 원자적으로 전환하고 readiness 실패 시 이전 Web으로 복구
+- [x] 설치·전환 뒤 PATH에서 현재 버전의 `nuboctl`을 실행하는 보호된 링크
+- [ ] 사이트 Layer를 core checkout과 분리해 공식 update 때 자동 재빌드
+- [ ] 런타임 Theme Mode와 외부 스킨 카탈로그
 
 공식 prebuilt가 모든 사이트별 Vue 코드를 포함할 수는 없다. 따라서 사용 모드를 세 단계로 분리한다.
 

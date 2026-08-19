@@ -10,6 +10,7 @@ import (
 type updateOptions struct {
 	candidateDir    string
 	currentLink     string
+	commandLink     string
 	envFile         string
 	stateDir        string
 	serviceUser     string
@@ -27,6 +28,7 @@ func parseUpdateOptions(args []string) (updateOptions, error) {
 	options := updateOptions{
 		candidateDir:  detectReleaseDir(),
 		currentLink:   "/opt/nubo/current",
+		commandLink:   "/usr/local/bin/nuboctl",
 		envFile:       environmentFilePath(),
 		stateDir:      "/var/lib/nubo",
 		serviceUser:   "",
@@ -37,6 +39,7 @@ func parseUpdateOptions(args []string) (updateOptions, error) {
 	flags.SetOutput(os.Stderr)
 	flags.StringVar(&options.candidateDir, "release", options.candidateDir, "미리 배치하고 압축을 푼 새 릴리스")
 	flags.StringVar(&options.currentLink, "current", options.currentLink, "현재 서비스 릴리스 링크")
+	flags.StringVar(&options.commandLink, "command-link", options.commandLink, "PATH에서 사용할 nuboctl 심볼릭 링크")
 	flags.StringVar(&options.envFile, "env", options.envFile, "설치된 nubo.env 파일")
 	flags.StringVar(&options.stateDir, "state", options.stateDir, "상태 데이터 디렉터리")
 	flags.StringVar(&options.serviceUser, "user", options.serviceUser, "서비스 실행 사용자")
@@ -51,7 +54,7 @@ func parseUpdateOptions(args []string) (updateOptions, error) {
 	if flags.NArg() != 0 {
 		return updateOptions{}, fmt.Errorf("예상하지 못한 인자: %s", flags.Arg(0))
 	}
-	for _, path := range []*string{&options.candidateDir, &options.currentLink, &options.envFile, &options.stateDir, &options.systemdDir, &options.osReleaseFile} {
+	for _, path := range []*string{&options.candidateDir, &options.currentLink, &options.commandLink, &options.envFile, &options.stateDir, &options.systemdDir, &options.osReleaseFile} {
 		absolute, err := filepath.Abs(*path)
 		if err != nil {
 			return updateOptions{}, err

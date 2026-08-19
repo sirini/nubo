@@ -60,6 +60,9 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 		}
 		return fmt.Errorf("migration은 완료됐지만 릴리스 전환 실패: %w", err)
 	}
+	if err := ensureNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
+		return recoverPreviousRelease(options, preflight, environment, runner, readiness, fmt.Errorf("nuboctl 명령 등록 실패: %w", err))
+	}
 	if err := restartNuboServices(runner); err != nil {
 		return recoverPreviousRelease(options, preflight, environment, runner, readiness, err)
 	}
@@ -77,6 +80,7 @@ func printUpdatePlan(options updateOptions, preflight updatePreflight) {
 	fmt.Printf("- 현재: %s\n", preflight.previousDir)
 	fmt.Printf("- 후보: %s\n", preflight.candidateDir)
 	fmt.Printf("- 전환: %s\n", options.currentLink)
+	fmt.Printf("- 명령: %s -> %s/nuboctl\n", options.commandLink, options.currentLink)
 	fmt.Println("- 실행: additive DB migration, 런타임 버전 갱신, 원자적 링크 전환, 서비스 restart, readiness 확인")
 	fmt.Println("- 실패 복구: 이전 환경·링크와 서비스 복원 (DB migration은 유지)")
 	fmt.Println("- 제외: 릴리스 다운로드·압축 해제, DB·업로드 백업과 복원")

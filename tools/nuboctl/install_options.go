@@ -17,6 +17,7 @@ type installOptions struct {
 	domain            string
 	serviceGroup      string
 	currentLink       string
+	commandLink       string
 	uploadDir         string
 	nodeBinary        string
 	webPort           int
@@ -62,6 +63,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 		},
 		serviceGroup:     "nubo",
 		currentLink:      "/opt/nubo/current",
+		commandLink:      "/usr/local/bin/nuboctl",
 		webPort:          3000,
 		goapiPort:        3006,
 		goapiPath:        "goapi",
@@ -83,6 +85,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 	flags.StringVar(&defaults.serviceUser, "user", defaults.serviceUser, "서비스 실행 사용자")
 	flags.StringVar(&defaults.serviceGroup, "group", defaults.serviceGroup, "서비스 실행 그룹")
 	flags.StringVar(&defaults.currentLink, "current", defaults.currentLink, "서비스가 참조할 current 릴리스 링크")
+	flags.StringVar(&defaults.commandLink, "command-link", defaults.commandLink, "PATH에서 사용할 nuboctl 심볼릭 링크")
 	flags.StringVar(&defaults.nodeBinary, "node", "", "Node.js 실행 파일")
 	flags.IntVar(&defaults.webPort, "web-port", defaults.webPort, "Nuxt 내부 포트")
 	flags.IntVar(&defaults.goapiPort, "goapi-port", defaults.goapiPort, "GOAPI 내부 포트")
@@ -100,7 +103,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 		return installOptions{}, fmt.Errorf("예상하지 못한 인자: %s", flags.Arg(0))
 	}
 
-	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir, &defaults.currentLink, &defaults.systemdDir, &defaults.nginxDir} {
+	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir, &defaults.currentLink, &defaults.commandLink, &defaults.systemdDir, &defaults.nginxDir} {
 		absolute, err := filepath.Abs(*item)
 		if err != nil {
 			return installOptions{}, err
@@ -146,7 +149,7 @@ func validateInstallOptions(options installOptions) error {
 	}
 	for label, path := range map[string]string{
 		"릴리스": options.releaseDir, "환경 파일": options.envFile, "상태": options.stateDir,
-		"current": options.currentLink, "업로드": options.uploadDir, "systemd": options.systemdDir, "Nginx": options.nginxDir,
+		"current": options.currentLink, "nuboctl 명령": options.commandLink, "업로드": options.uploadDir, "systemd": options.systemdDir, "Nginx": options.nginxDir,
 	} {
 		if !filepath.IsAbs(path) {
 			return fmt.Errorf("%s 경로는 절대 경로여야 합니다: %s", label, path)
