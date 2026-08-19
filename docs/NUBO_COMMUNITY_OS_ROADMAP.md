@@ -475,7 +475,7 @@ npm run build
 - [x] `/health`: 프로세스 생존
 - [x] `/ready`: DB 등 필수 의존성 준비
 - [x] `/version`: NUBO, GOAPI, API contract
-- [ ] release manifest에서 build commit 확인
+- [x] release manifest에서 build commit 확인
 - [ ] 관리자 대시보드에서 버전 불일치 경고
 - [ ] Nitro 시작 시 GOAPI contract 호환성 확인
 

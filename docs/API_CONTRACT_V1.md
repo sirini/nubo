@@ -1,7 +1,7 @@
 # NUBO API contract v1
 
 기준일: 2026-08-19  
-기준 구현: NUBO `main`, GOAPI `4b80741`
+기준 구현: NUBO `main`, GOAPI `667bd00`
 
 이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
 호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두
@@ -13,6 +13,8 @@
 - Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
 - 현재 Nitro proxy는 method 기준 100개이며 GOAPI 115개 중 아래 15개를 제외하고 모두 대응한다.
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
+- NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
+  실행 중인 버전·API contract가 manifest와 다르면 `status="degraded"`와 machine-readable `issues`를 반환한다.
 - OAuth request/callback 6개, Android Google OAuth, RSS, `/sync`, `/board/tag/recent`, `/home/nubo`,
   단일 알림 확인은 GOAPI 직접 노출 또는 현재 UI 비사용 경로다.
 
@@ -119,6 +121,8 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 - 공통 envelope와 code: GOAPI `pkg/models`, NUBO `app/types/common.ts`, 이 문서의 JSON Schema
 - cookie 이름: `nubo-auth-token`, `nubo-refresh-token`
 - contract version: GOAPI와 NUBO `/version`의 `apiContract="1"`
+- build identity: NUBO `/version`의 `build.components.{nubo,goapi}`; source 실행처럼 manifest를 찾을 수 없으면
+  `build=null`, `issues`에 `release_manifest_unavailable`을 포함한다.
 
 Go 모델에는 query, JSON, multipart form이 혼재하고 기존 TypeScript 타입도 화면별 view model을 포함한다.
 따라서 현재 전 모델 자동 생성은 오히려 잘못된 결합을 만들 가능성이 높다. 먼저 프런트가 실제 소비하는

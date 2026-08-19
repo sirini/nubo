@@ -1,15 +1,7 @@
-interface GoapiVersion {
-  status: string
-  service: string
-  version: string
-  apiContract: string
-}
-
-const API_CONTRACT_VERSION = "1"
-
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
-  let goapi: GoapiVersion | { status: "unavailable" }
+  const manifest = await loadReleaseManifest()
+  let goapi: GoapiVersion | null
   try {
     goapi = await $fetch<GoapiVersion>(`${config.apiBaseInternal}/version`, {
       retry: 0,
@@ -17,14 +9,18 @@ export default defineEventHandler(async (event) => {
     })
   }
   catch {
-    goapi = { status: "unavailable" }
+    goapi = null
   }
 
+  const issues = versionIssues(config.public.version, goapi, manifest)
+
   return {
-    status: goapi.status === "ok" ? "ok" : "degraded",
+    status: issues.length === 0 ? "ok" : "degraded",
     service: "nubo",
     version: config.public.version,
     apiContract: API_CONTRACT_VERSION,
-    goapi,
+    build: manifest,
+    issues,
+    goapi: goapi ?? { status: "unavailable" },
   }
 })

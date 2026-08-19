@@ -24,6 +24,9 @@ const runtimeFileSizeLimit = "905000"
 const runtimeAccessHours = "906"
 const runtimeRefreshDays = "907"
 const runtimeAdminId = "runtime-admin@prebuilt.example"
+const runtimeNuboCommit = "prebuilt-nubo-commit"
+const runtimeGoapiCommit = "prebuilt-goapi-commit"
+let runtimeGoapiContract = "1"
 let webProcess
 
 // 지정한 시간 뒤 다음 smoke 단계로 진행한다.
@@ -102,7 +105,7 @@ const mockGoapi = createServer((request, response) => {
     }
     if (request.url === `/${runtimeGoapiBase}/version`) {
       response.end(
-        JSON.stringify({ status: "ok", service: "goapi", version: "mock-runtime", apiContract: "1" }),
+        JSON.stringify({ status: "ok", service: "goapi", version: "mock-runtime", apiContract: runtimeGoapiContract }),
       )
       return
     }
@@ -130,6 +133,15 @@ try {
   assert.deepEqual(await readdir(deploymentDirectory), [".output"])
   assert.equal((await readdir(deployedOutput)).includes("server"), true)
   assert.equal((await readdir(deployedOutput)).includes("public"), true)
+
+  await writeFile(join(deploymentDirectory, "manifest.json"), JSON.stringify({
+    releaseVersion: runtimeVersion,
+    apiContract: "1",
+    components: {
+      nubo: { version: runtimeVersion, commit: runtimeNuboCommit, dirty: false },
+      goapi: { version: "mock-runtime", commit: runtimeGoapiCommit, dirty: false },
+    },
+  }))
 
   const goapiPort = await listen(mockGoapi)
   const webPort = await reservePort()
@@ -203,8 +215,17 @@ try {
 
   const version = await requestJson(`${baseUrl}/version`)
   assert.equal(version.response.status, 200)
+  assert.equal(version.body.status, "ok")
   assert.equal(version.body.version, runtimeVersion)
+  assert.equal(version.body.build.components.nubo.commit, runtimeNuboCommit)
+  assert.equal(version.body.build.components.goapi.commit, runtimeGoapiCommit)
+  assert.deepEqual(version.body.issues, [])
   assert.equal(version.body.goapi.version, "mock-runtime")
+
+  runtimeGoapiContract = "2"
+  const incompatibleVersion = await requestJson(`${baseUrl}/version`)
+  assert.equal(incompatibleVersion.body.status, "degraded")
+  assert.deepEqual(incompatibleVersion.body.issues, ["api_contract_mismatch"])
 
   const ssrResponse = await fetch(`${baseUrl}/privacy`)
   const ssrHtml = await ssrResponse.text()
