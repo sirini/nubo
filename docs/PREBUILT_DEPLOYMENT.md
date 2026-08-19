@@ -120,20 +120,28 @@ release-root `INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
 
 New installs expose `nubo.service` as the operator-facing lifecycle unit while retaining `nubo.target`
 as the internal GOAPI/Web grouping. Operators can therefore run `systemctl restart nubo`, and may still
-restart `nubo-goapi` or `nubo-web` independently when needed.
+restart `nubo-goapi` or `nubo-web` independently when needed. Each application service receives a
+`nubo-lifecycle.conf` drop-in with `PartOf=nubo.service`; this direct relationship is required because
+`PropagatesStopTo=` alone does not propagate a restart of the oneshot facade.
 
-An installation already adopted before this facade was introduced is intentionally not modified by an
-ordinary release update. After updating to a release that contains `share/systemd/nubo.service`, its
-operator may opt in manually without restarting the running application:
+An installation adopted before the facade was introduced receives the additive application-service
+drop-ins during an update, but the update does not install the missing facade itself. After updating to a
+release that contains `share/systemd/nubo.service`, its operator may opt in manually without restarting the
+running application. Reinstalling identical drop-ins is idempotent:
 
 ```bash
 sudo install -m 0644 /opt/nubo/current/share/systemd/nubo.service /etc/systemd/system/nubo.service
+sudo install -d -m 0755 /etc/systemd/system/nubo-goapi.service.d /etc/systemd/system/nubo-web.service.d
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo-lifecycle.conf /etc/systemd/system/nubo-goapi.service.d/nubo-lifecycle.conf
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo-lifecycle.conf /etc/systemd/system/nubo-web.service.d/nubo-lifecycle.conf
 sudo systemctl daemon-reload
 sudo systemctl disable nubo.target
 sudo systemctl enable --now nubo.service
 ```
 
-Afterward, `sudo systemctl restart nubo` stops and starts the internal target and both application services.
+Afterward, `sudo systemctl restart nubo` directly restarts both application services through their `PartOf=`
+relationship. Updates that contain the lifecycle drop-in add it automatically when no conflicting operator
+file exists, without replacing the rendered base units.
 The old target remains installed for compatibility and should not be deleted.
 
 The update boundary intentionally starts with an operator-staged release and a confirmed external backup.

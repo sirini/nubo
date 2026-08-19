@@ -62,6 +62,13 @@ func preflightUpdate(options updateOptions, runner commandRunner, readiness func
 	if err := validateUpdateUnits(options, runner); err != nil {
 		return updatePreflight{}, err
 	}
+	lifecycle, err := lifecycleDropInFiles(candidateDir, options.systemdDir)
+	if err != nil {
+		return updatePreflight{}, err
+	}
+	if err := preflightInstallFiles(lifecycle); err != nil {
+		return updatePreflight{}, fmt.Errorf("NUBO lifecycle 설정 확인 실패: %w", err)
+	}
 	if _, err := validateNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
 		return updatePreflight{}, err
 	}

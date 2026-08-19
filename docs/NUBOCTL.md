@@ -136,6 +136,7 @@ sudo ./nuboctl install \
 - `/opt/nubo/current`가 검증한 버전 디렉터리를 가리키도록 생성
 - systemd unit을 `/etc/systemd/system`에 렌더링
 - 대표 `nubo.service`를 enable/start해 내부 `nubo.target`의 GOAPI·Web을 함께 올리고 로컬 `/ready`가 정상일 때까지 확인
+- GOAPI·Web에 `PartOf=nubo.service` lifecycle drop-in을 설치해 `systemctl restart nubo`를 두 프로세스에 직접 전파
 - `/usr/local/bin/nuboctl`이 `/opt/nubo/current/nuboctl`을 가리키게 해 버전 전환 뒤에도 짧은 명령을 유지
 - Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
 

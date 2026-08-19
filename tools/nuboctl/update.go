@@ -39,6 +39,16 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 		printWarning("업데이트를 취소했습니다. DB와 실행 중인 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
+	lifecycle, err := lifecycleDropInFiles(preflight.candidateDir, options.systemdDir)
+	if err != nil {
+		return err
+	}
+	if err := installLifecycleDropIns(lifecycle); err != nil {
+		return fmt.Errorf("NUBO lifecycle 설정 설치 실패: %w", err)
+	}
+	if output, reloadErr := runner.run("systemctl", "daemon-reload"); reloadErr != nil {
+		return fmt.Errorf("NUBO lifecycle 설정 반영 실패: %s", compactOutput(output, reloadErr))
+	}
 	if err := installDatabaseRelease(preflight.candidateDir, options.envFile, options.serviceUser, runner); err != nil {
 		return fmt.Errorf("후보 릴리스 migration: %w", err)
 	}
@@ -79,7 +89,7 @@ func printUpdatePlan(options updateOptions, preflight updatePreflight) {
 	printHeading("업데이트 계획  %s → %s", preflight.previousVersion, preflight.candidateVersion)
 	printItem("현재", "%s", preflight.previousDir)
 	printItem("새 버전", "%s", preflight.candidateDir)
-	printItem("바꿀 것", "DB 구조 갱신, 버전 전환, 서비스 재시작, 정상 동작 확인")
+	printItem("바꿀 것", "서비스 lifecycle 연결, DB 구조 갱신, 버전 전환, 서비스 재시작, 정상 동작 확인")
 	printItem("실패하면", "이전 버전과 서비스를 복구합니다. DB 구조 갱신은 유지됩니다")
 	printItem("직접 확인", "DB와 업로드 파일의 외부 백업")
 }

@@ -41,6 +41,8 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 		filepath.Join(options.systemdDir, "nubo.target"),
 		filepath.Join(options.systemdDir, "nubo-goapi.service"),
 		filepath.Join(options.systemdDir, "nubo-web.service"),
+		filepath.Join(options.systemdDir, "nubo-goapi.service.d", lifecycleDropInName),
+		filepath.Join(options.systemdDir, "nubo-web.service.d", lifecycleDropInName),
 		filepath.Join(options.nginxDir, "nubo-community.example.com.conf"),
 	} {
 		contents, err := os.ReadFile(path)
@@ -49,6 +51,12 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 		}
 		if strings.Contains(string(contents), "@NUBO_") || strings.Contains(string(contents), "@NODE_BINARY@") {
 			t.Fatalf("치환되지 않은 토큰이 있습니다: %s", path)
+		}
+	}
+	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {
+		dropIn, err := os.ReadFile(filepath.Join(options.systemdDir, service+".d", lifecycleDropInName))
+		if err != nil || !strings.Contains(string(dropIn), "PartOf=nubo.service") {
+			t.Fatalf("%s가 대표 unit의 lifecycle에 연결되지 않았습니다: %v", service, err)
 		}
 	}
 	currentTarget, err := filepath.EvalSymlinks(options.currentLink)

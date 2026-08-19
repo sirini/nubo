@@ -80,10 +80,13 @@ nuboctl activate-nginx
 사용하지 않습니다. `update`와 `customize`는 NUBO 프로젝트 폴더에서 실행해야 합니다.
 
 설치가 끝나면 GOAPI와 Web은 systemd의 `nubo.service`로 함께 관리합니다.
+GOAPI와 Web에는 `PartOf=nubo.service` drop-in이 설치되므로 대표 unit의 restart가 두 프로세스에
+직접 전파됩니다. `RESEND_*`처럼 GOAPI만 사용하는 설정은 해당 서비스만 재시작해도 됩니다.
 
 ```bash
 sudo systemctl status nubo nubo-goapi nubo-web
 sudo systemctl restart nubo
+sudo systemctl restart nubo-goapi.service
 sudo journalctl -u nubo-goapi -u nubo-web -f
 ```
 

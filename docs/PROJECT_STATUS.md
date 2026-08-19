@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 게시한 v1.2.10을 실제 Ubuntu 서버에서 update하고 nuboctl 도움말·진단·스킨 적용 흐름을 QA한다.
+- 게시한 v1.2.10을 실제 Ubuntu 서버에서 QA하고, 대표 `nubo.service` restart가 GOAPI·Web에 전파되지 않는 lifecycle 오류를 수정한다.
 
 ## Current product boundary
 
@@ -40,7 +40,7 @@
 - 백업 안내 후 Enter는 진행, 다른 문자열은 취소로 처리한다.
 - 설치 readiness는 Nuxt의 `ok`와 GOAPI의 `ready` 상태를 모두 정상으로 인정한다.
 - `nubo.service`는 기존 `nubo.target`을 감싸며 GOAPI·Web의 독립 unit 구조를 바꾸지 않는다.
-- 이미 adoption한 서버의 systemd unit은 update가 자동 변경하지 않고 운영자가 선택적으로 대표 unit을 설치한다.
+- update는 기존 base systemd unit을 자동 변경하지 않지만 대표 restart를 바로잡는 동일 내용의 additive lifecycle drop-in은 충돌이 없을 때 설치한다. 대표 unit 자체가 없는 과거 adoption 서버에서는 운영자가 선택적으로 설치한다.
 - v1.2.0 이전 소스 설치의 adoption은 기존 checkout을 갱신하지 않고 옆 경로의 깨끗한 clone에 환경과 업로드를 복사한 뒤 진행한다.
 - 커스텀 Vue 스킨은 빌드 시점 자산이며 `nuboctl customize`가 공식 기반과 로컬 Web을 별도 불변 파생 릴리스로 결합한다.
 - `nuboctl skin apply`는 같은 공식 버전의 Web만 원자적으로 전환하고 readiness 실패 시 이전 Web을 복구하며 DB·GOAPI·환경은 바꾸지 않는다.
@@ -50,6 +50,7 @@
 - 최초 install·adopt만 npm bootstrap을 사용하고 설치 후 공개 명령은 `nuboctl`의 status·doctor·update·customize·activate-nginx로 통일한다.
 - CLI 색상은 TTY에서만 사용하고 `NO_COLOR`와 `TERM=dumb`에서는 평문을 유지한다.
 - 인자 없는 `nuboctl`, `help [명령]`과 `<명령> --help`는 같은 한국어 입문·명령별 안내를 제공한다.
+- 대표 `nubo.service`의 restart는 GOAPI·Web에 직접 `PartOf=` 관계를 추가하고 기존 base unit을 덮어쓰지 않는 drop-in으로 보장한다.
 
 ## Recent completion
 
@@ -87,6 +88,7 @@
 - nuboctl의 명령별 도움말을 보강하고 doctor/status가 adoption 서버의 실제 systemd 서비스 계정으로 업로드 쓰기 권한을 검사하게 했다.
 - v1.2.10으로 버전을 올려 CLI 사용성·진단과 실서버 스킨 QA 수정사항을 하나의 패치 릴리스로 묶었다.
 - v1.2.10 통합 asset과 SHA-256을 정식 GitHub Release로 게시했다.
+- 새 install과 update가 GOAPI·Web lifecycle drop-in을 설치해 `systemctl restart nubo`를 실제 프로세스에 전파하도록 바로잡았다.
 
 ## Open findings
 
@@ -142,8 +144,9 @@
 - CLI 통합·출력: 공개 update/customize source routing, 잘못된 작업 폴더 안내, 내부 `--release` 분기와 캡처 출력의 무색상 보존을 Go 회귀 테스트로 확인했다.
 - CLI 도움말·업로드 진단: 공개 명령별 도움말 완전성과 인자 없는 성공 출력을 검사하고, systemd `User=` 자동 감지와 명시적 `--user` 우선 적용을 테스트했다.
 - v1.2.10 전달: clean NUBO `4ad1595`와 고정 GOAPI `c7e2cf9`로 nuboctl 0.10.0·두 libvips 변형·Nuxt prebuilt를 묶어 Ubuntu 검증과 내부·외부 SHA-256을 통과했다. 게시 asset을 다시 내려받아 manifest를 확인하고 새 shallow clone의 원격 `server:prepare`도 통과했다.
+- systemd lifecycle 수정: fresh install과 기존 drop-in 없는 update의 추가, 기존 다른 drop-in 충돌 보호를 회귀 테스트로 확인했다. systemd 259 사용자 manager에서 대표 unit restart 전후 GOAPI·Web 시험 프로세스 PID가 모두 바뀌는 것도 검증했다.
 
 ## Next action
 
-- 실제 Ubuntu의 v1.2.9 설치는 마지막으로 npm wrapper를 사용해 v1.2.10으로 올린 뒤 `nuboctl help/status/doctor/update/customize` 흐름을 확인한다.
+- 실제 Ubuntu에서 lifecycle drop-in 적용 전후의 GOAPI·Web PID를 비교해 `systemctl restart nubo` 전파를 확인한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.

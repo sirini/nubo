@@ -45,6 +45,11 @@ func renderInstallFiles(options installOptions, tokens map[string]string, enviro
 		}
 		files = append(files, installFile{path: source.destination, content: []byte(rendered), mode: 0o644, label: source.label})
 	}
+	lifecycle, err := lifecycleDropInFiles(options.releaseDir, options.systemdDir)
+	if err != nil {
+		return nil, err
+	}
+	files = append(files, lifecycle...)
 	return files, nil
 }
 

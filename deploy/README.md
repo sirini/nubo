@@ -36,14 +36,21 @@ systemd unit은 journal에 로그를 남기고 내부 `nubo.target`으로 묶이
 `nubo.service`를 통해 `systemctl restart nubo`처럼 전체를 제어한다. `nubo-web.service`는 GOAPI 뒤에
 시작하지만 두 프로세스는 각각 재시작할 수도 있다. unit의 릴리스 경로는 버전 디렉터리가 아니라
 `/opt/nubo/current` 링크로 고정해 이후 원자적인 릴리스 전환이 가능해야 한다.
+설치기는 두 애플리케이션 unit에 `nubo-lifecycle.conf` drop-in을 추가해 `PartOf=nubo.service`를
+직접 설정한다. `PropagatesStopTo=`만으로는 대표 unit의 restart가 이미 실행 중인 하위 서비스에
+전파되지 않으므로 이 drop-in을 제거하지 않는다.
 
 ### 기존 adoption 서버에서 대표 service 추가
 
-v1.2.7까지 adoption을 마친 서버는 일반 update만으로 systemd 구성을 자동 변경하지 않는다.
-v1.2.8 이상으로 update한 뒤 운영자가 원할 때 다음 절차를 한 번만 실행한다.
+대표 `nubo.service`가 없는 과거 adoption 서버는 새 lifecycle 릴리스로 update하면 GOAPI·Web drop-in은
+자동으로 추가되지만 대표 unit 자체는 설치하지 않는다. 운영자가 대표 명령을 사용하려면 update 뒤
+다음 절차를 한 번만 실행한다. drop-in 재설치는 같은 내용일 때 멱등적이다.
 
 ```bash
 sudo install -m 0644 /opt/nubo/current/share/systemd/nubo.service /etc/systemd/system/nubo.service
+sudo install -d -m 0755 /etc/systemd/system/nubo-goapi.service.d /etc/systemd/system/nubo-web.service.d
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo-lifecycle.conf /etc/systemd/system/nubo-goapi.service.d/nubo-lifecycle.conf
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo-lifecycle.conf /etc/systemd/system/nubo-web.service.d/nubo-lifecycle.conf
 sudo systemctl daemon-reload
 sudo systemctl disable nubo.target
 sudo systemctl enable --now nubo.service
@@ -51,3 +58,5 @@ sudo systemctl enable --now nubo.service
 
 이 과정은 이미 실행 중인 GOAPI·Web을 재시작하지 않는다. 이후 전체 lifecycle은
 `sudo systemctl restart nubo`로 제어하며 내부 `nubo.target` 파일은 호환성을 위해 삭제하지 않는다.
+새 lifecycle drop-in을 포함한 릴리스로 update할 때는 `nuboctl`이 같은 파일을 기존 unit을
+덮어쓰지 않고 자동으로 추가한다.

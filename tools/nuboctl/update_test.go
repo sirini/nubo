@@ -30,7 +30,53 @@ func TestRunUpdateSwitchesToReadyCandidate(t *testing.T) {
 	if !strings.Contains(joined, "systemctl restart nubo-goapi.service nubo-web.service") {
 		t.Fatalf("서비스 restart 명령이 없습니다: %s", joined)
 	}
+	if !strings.Contains(joined, "systemctl daemon-reload") {
+		t.Fatalf("lifecycle drop-in을 systemd에 반영하지 않았습니다: %s", joined)
+	}
+	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {
+		dropIn := filepath.Join(options.systemdDir, service+".d", lifecycleDropInName)
+		contents, err := os.ReadFile(dropIn)
+		if err != nil || !strings.Contains(string(contents), "PartOf=nubo.service") {
+			t.Fatalf("update가 %s lifecycle drop-in을 설치하지 않았습니다: %v", service, err)
+		}
+	}
 	assertEnvironmentVersion(t, options.envFile, "1.3.0")
+}
+
+// 기존 설치에 drop-in이 없어도 update가 대표 restart 관계를 안전하게 추가한다.
+func TestRunUpdateAddsLifecycleDropInsToLegacyInstall(t *testing.T) {
+	options, runner := updateTestSetup(t)
+	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {
+		if err := os.RemoveAll(filepath.Join(options.systemdDir, service+".d")); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := runUpdate(options, runner, func(string) error { return nil }, false); err != nil {
+		t.Fatal(err)
+	}
+	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {
+		dropIn := filepath.Join(options.systemdDir, service+".d", lifecycleDropInName)
+		contents, err := os.ReadFile(dropIn)
+		if err != nil || !strings.Contains(string(contents), "PartOf=nubo.service") {
+			t.Fatalf("legacy update가 %s lifecycle drop-in을 설치하지 않았습니다: %v", service, err)
+		}
+	}
+}
+
+// 같은 이름의 운영자 drop-in이 있으면 update 전에 중단한다.
+func TestPreflightUpdateProtectsExistingLifecycleDropIn(t *testing.T) {
+	options, runner := updateTestSetup(t)
+	path := filepath.Join(options.systemdDir, "nubo-goapi.service.d", lifecycleDropInName)
+	if err := os.WriteFile(path, []byte("[Unit]\nPartOf=custom.service\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	err := runUpdate(options, runner, func(string) error { return nil }, false)
+	if err == nil || !strings.Contains(err.Error(), "기존 파일을 덮어쓰지 않습니다") {
+		t.Fatalf("기존 lifecycle drop-in 보호 결과 = %v", err)
+	}
+	if strings.Contains(strings.Join(*runner.calls, "\n"), " install") {
+		t.Fatal("drop-in 충돌 뒤 migration을 실행했습니다")
+	}
 }
 
 // 새 릴리스 readiness 실패 시 이전 링크와 프로세스를 복구한다.

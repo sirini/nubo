@@ -116,6 +116,9 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	if err := ensureInstallDirectory(options.uploadDir, 0o755, uid, gid); err != nil {
 		return err
 	}
+	if err := installLifecycleDropIns(filterLifecycleDropIns(files)); err != nil {
+		return err
+	}
 	for _, file := range files {
 		if err := installFileIfNeeded(file); err != nil {
 			return err

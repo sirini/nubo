@@ -105,6 +105,7 @@ sudo ./nuboctl install \
 systemd 서비스를 활성화하고 로컬 readiness까지 확인하지만 Nginx site는 비활성 상태로 만든다.
 새 설치와 adoption은 대표 `nubo.service`로 내부 GOAPI·Web 서비스를 함께 관리한다. 운영자는
 `systemctl restart nubo`를 사용하며 필요할 때만 `nubo-goapi`와 `nubo-web`을 개별 관리한다.
+설치된 lifecycle drop-in의 `PartOf=nubo.service` 관계가 대표 restart를 두 프로세스에 직접 전파한다.
 
 `doctor`와 설치가 성공한 뒤 설치기가 만든 site만 별도 활성화한다.
 
