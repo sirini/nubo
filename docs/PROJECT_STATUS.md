@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 게시한 v1.2.9의 로컬 Vue 스킨 한 명령 전환을 실제 Ubuntu 설치에서 QA한다.
+- nuboctl 명령 통합·친절한 출력·업로드 진단 수정과 저사양 스킨 빌드 보완을 v1.2.10 통합 릴리스로 전달한다.
 
 ## Current product boundary
 
@@ -85,6 +85,7 @@
 - 파생 릴리스 복사 시 Nitro의 내부 상대 심볼릭 링크를 그대로 보존해 checksum 검증이 원본 checkout을 외부 경로로 오인하지 않게 했다.
 - 설치 후 업데이트와 사이트 꾸미기를 `nuboctl update`, `nuboctl customize`로 통일하고 단계·성공·주의·실패 출력을 읽기 쉽게 구분했다.
 - nuboctl의 명령별 도움말을 보강하고 doctor/status가 adoption 서버의 실제 systemd 서비스 계정으로 업로드 쓰기 권한을 검사하게 했다.
+- v1.2.10으로 버전을 올려 CLI 사용성·진단과 실서버 스킨 QA 수정사항을 하나의 패치 릴리스로 묶었다.
 
 ## Open findings
 
