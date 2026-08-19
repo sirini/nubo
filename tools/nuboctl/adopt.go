@@ -125,9 +125,6 @@ func sourceIdentity(path string) (string, string, error) {
 	if !ok {
 		return "", "", fmt.Errorf("기존 소스 소유자를 확인할 수 없습니다")
 	}
-	if stat.Uid == 0 {
-		return "", "", fmt.Errorf("기존 프로젝트가 root 소유이므로 애플리케이션을 root로 실행하지 않습니다; 프로젝트와 업로드를 운영할 일반 계정의 소유로 조정한 뒤 다시 실행하세요")
-	}
 	account, err := user.LookupId(strconv.FormatUint(uint64(stat.Uid), 10))
 	if err != nil {
 		return "", "", err
@@ -144,6 +141,9 @@ func printAdoptionIntroduction(adopt adoptOptions, install installOptions, warni
 	fmt.Println("- 그대로 둠: 기존 프로젝트, .env, 업로드 파일, 데이터베이스, Nginx/TLS")
 	fmt.Println("- 새로 만듦: 검증된 공식 릴리스, /etc 환경 파일, current 링크, systemd 서비스")
 	fmt.Printf("- 서비스 계정: 기존 프로젝트 소유자 %s:%s\n", install.serviceUser, install.serviceGroup)
+	if warning := adoptionIdentityWarning(install.serviceUser); warning != "" {
+		fmt.Printf("- 주의: %s\n", warning)
+	}
 	fmt.Printf("- 업로드 위치 유지: %s\n", install.uploadDir)
 	fmt.Println("- 프로세스 관리 방식(PM2, tmux, systemd 등)을 추측하거나 실행 중인 프로세스를 자동 종료하지 않습니다.")
 	if len(occupiedPorts) > 0 {
@@ -159,6 +159,13 @@ func printAdoptionIntroduction(adopt adoptOptions, install installOptions, warni
 	if nodeNeedsStaging(install.nodeBinary) {
 		fmt.Println("- Node.js가 홈 디렉터리에 있어 systemd용 안정 경로 /opt/nubo/runtime/node로 복사합니다.")
 	}
+}
+
+func adoptionIdentityWarning(username string) string {
+	if username == "root" {
+		return "기존 운영 방식에 맞춰 root로 실행합니다. systemd 파일시스템 보호와 쓰기 경로 제한은 유지됩니다."
+	}
+	return ""
 }
 
 func occupiedAdoptionPorts(ports ...int) []int {

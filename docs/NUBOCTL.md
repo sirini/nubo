@@ -23,7 +23,9 @@ wrapper는 현재 공식 통합 릴리스를 내려받아 checksum을 검증하�
 `${KEY}` 참조를 풀어 현재 sample 형식의 `/etc/nubo/nubo.env`를 만들고, 기존 소스 소유자를 systemd
 서비스 사용자로 사용한다. 환경 원본 참고본은 `/var/lib/nubo/adoption/legacy.env`에 `0600`으로 보관한다.
 레거시 Gmail 설정은 현재의 Resend 계약으로 자동 변환할 수 없어 경고하며 복사하지 않는다.
-기존 프로젝트가 root 소유이면 애플리케이션을 root로 실행하지 않고 소유권 조정을 안내하며 중단한다.
+기존 프로젝트가 root 소유인 root-only VPS도 차단하지 않는다. 이 경우 실행 계획에 root 서비스 경고를
+표시하되 systemd의 `NoNewPrivileges`, `ProtectHome`, `ProtectSystem=strict`와 업로드 외 쓰기 경로 제한은
+그대로 적용한다. 일반 계정 사용은 권장이지만 adoption의 필수 조건은 아니다.
 NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `ProtectHome=true`인 unit에서도 실행되도록
 `/opt/nubo/runtime/node`에 복사하고 unit은 이 안정 경로를 사용한다.
 

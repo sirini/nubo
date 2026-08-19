@@ -36,6 +36,7 @@
 - adoption은 기존 소스·환경·업로드·DB·Nginx를 제자리 보존하고 새 릴리스·환경 사본·systemd만 추가한다.
 - 기존 프로젝트 소유 계정을 서비스 계정으로 재사용하며 이후 update는 설치된 unit에서 계정을 자동 감지한다.
 - adoption은 프로세스 관리 방식을 추측하지 않고 포트 점유만 안내·차단하며 종료와 재시작은 운영자에게 맡긴다.
+- root-only VPS의 기존 운영을 차단하지 않으며 root 서비스에는 systemd 샌드박스 유지 경고를 표시한다.
 
 ## Recent completion
 
@@ -70,6 +71,7 @@
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
 - adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
+- Cafe24처럼 기본 운영 계정이 root뿐인 서버에서 root 소유 checkout을 허용해야 한다.
 
 ## Verification
 
@@ -90,6 +92,7 @@
 - v1.2.3 전달: 고정 GOAPI commit으로 통합 asset을 빌드해 내부·외부 checksum과 prebuilt smoke를 통과했고, 정식 Release와 새 shallow clone의 원격 `server:prepare`·manifest를 확인했다.
 - v1.2.4 후보: PM2 자동 제어 제거, 점유 포트 dry-run 안내와 실제 운영 전환 전 차단 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
 - v1.2.4 전달: 고정 GOAPI·두 libvips 변형으로 통합 asset과 SHA-256을 게시하고 새 shallow clone에서 원격 `server:prepare`, nuboctl 0.9.1 manifest와 PM2 옵션 제거를 확인했다.
+- v1.2.5 후보: root 소유 checkout 허용·샌드박스 경고 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
 
 ## Next action
 

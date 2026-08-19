@@ -28,6 +28,15 @@ func TestOccupiedAdoptionPortsFindsOnlyListeningPort(t *testing.T) {
 	}
 }
 
+func TestAdoptionIdentityWarningAllowsRootWithSandboxNotice(t *testing.T) {
+	if warning := adoptionIdentityWarning("root"); !strings.Contains(warning, "root로 실행") || !strings.Contains(warning, "쓰기 경로 제한") {
+		t.Fatalf("root 서비스 경고 = %q", warning)
+	}
+	if warning := adoptionIdentityWarning("nubo"); warning != "" {
+		t.Fatalf("일반 계정 경고 = %q", warning)
+	}
+}
+
 // 실제 adoption은 점유 포트를 발견하면 어떤 운영 파일도 만들기 전에 중단한다.
 func TestRunAdoptRejectsOccupiedPortBeforeWriting(t *testing.T) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")

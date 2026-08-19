@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "channel": {
-    "version": "1.2.4",
-    "tag": "v1.2.4"
+    "version": "1.2.5",
+    "tag": "v1.2.5"
   },
   "goapi": {
     "repository": "sirini/goapi",
