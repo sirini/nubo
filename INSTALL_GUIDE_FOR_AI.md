@@ -42,8 +42,9 @@ DB dump와 업로드 백업을 사용자가 완료했다고 명시한 경우에�
 npm run server:adopt
 ```
 
-대화형 명령의 `BACKUP`을 대신 입력하거나 `--backup-confirmed`를 추측으로 추가하지 않는다. 자동화가
-사용자의 백업 완료 확인을 이미 받은 경우에만 `--non-interactive --backup-confirmed`를 함께 전달한다.
+대화형 명령은 백업 완료 시 빈 입력(Enter)으로 진행하고 다른 문자열로 취소한다. AI가 사용자 대신 Enter를
+입력하거나 `--backup-confirmed`를 추측으로 추가하지 않는다. 자동화가 사용자의 백업 완료 확인을 이미 받은
+경우에만 `--non-interactive --backup-confirmed`를 함께 전달한다.
 
 adoption은 기존 소스·`.env`·업로드·DB·Nginx/TLS를 삭제, 이동, 수정하거나 reload하지 않는다. PM2,
 tmux, systemd 등 기존 프로세스 관리 방식을 추측하거나 프로세스를 자동 종료·재시작하지 않는다.
@@ -102,6 +103,8 @@ sudo ./nuboctl install \
 
 `install`은 서비스 계정, 환경 파일, 상태·업로드 경로와 DB의 기본 관리자·게시판·최신 스키마를 준비한다.
 systemd 서비스를 활성화하고 로컬 readiness까지 확인하지만 Nginx site는 비활성 상태로 만든다.
+새 설치와 adoption은 대표 `nubo.service`로 내부 GOAPI·Web 서비스를 함께 관리한다. 운영자는
+`systemctl restart nubo`를 사용하며 필요할 때만 `nubo-goapi`와 `nubo-web`을 개별 관리한다.
 
 `doctor`와 설치가 성공한 뒤 설치기가 만든 site만 별도 활성화한다.
 

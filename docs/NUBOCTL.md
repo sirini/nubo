@@ -16,8 +16,9 @@ npm run server:adopt
 ```
 
 wrapper는 현재 공식 통합 릴리스를 내려받아 checksum을 검증하고 `/opt/nubo/releases`에 배치한 뒤,
-현재 프로젝트 경로를 `--source`로 전달한다. 실제 전환 전에는 외부 DB·업로드 백업을 완료했다는 의미로
-`BACKUP`을 입력해야 한다. 자동화는 `--non-interactive --backup-confirmed`를 함께 사용한다.
+현재 프로젝트 경로를 `--source`로 전달한다. 실제 전환 전에는 외부 DB·업로드 백업을 완료했다면 빈
+입력(Enter)으로 진행하며 다른 문자열은 취소로 처리한다. 자동화는 사용자의 확인을 받은 경우에만
+`--non-interactive --backup-confirmed`를 함께 사용한다.
 
 전환 시 기존 소스, `.env`, 업로드, DB와 Nginx/TLS는 원래 위치에 그대로 둔다. `.env`의 단순
 `${KEY}` 참조를 풀어 현재 sample 형식의 `/etc/nubo/nubo.env`를 만들고, 기존 소스 소유자를 systemd
@@ -129,7 +130,8 @@ sudo /opt/nubo/releases/1.3.0/nuboctl update \
   --release /opt/nubo/releases/1.3.0
 ```
 
-실제 실행에서는 계획 출력 후 외부 DB·업로드 백업을 완료했다는 의미로 `BACKUP`을 직접 입력해야 한다.
+실제 실행에서는 계획 출력 후 외부 DB·업로드 백업을 완료했다면 빈 입력(Enter)으로 진행한다.
+다른 문자열은 취소로 처리한다.
 AI·자동화는 질문 대신 두 플래그를 모두 명시한다.
 
 ```bash

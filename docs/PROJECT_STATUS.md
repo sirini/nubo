@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 기존 Cafe24 adoption 서버에서 v1.2.8 update와 선택적 `nubo.service` 수동 적용을 QA한다.
+- v1.2.8 운영 문서와 누적 release note를 정리하고 다음 세션으로 인계한다.
 
 ## Current product boundary
 
@@ -67,6 +67,7 @@
 - DB bootstrap 검증 이름을 실제 `user_black_list` 스키마와 일치시키고 adoption 백업 확인을 Enter 방식으로 단순화한 v1.2.6을 게시했다.
 - Nuxt의 정상 `status: ok` 응답을 설치기가 거부하던 readiness 판정 오류를 수정한 v1.2.7을 게시했다.
 - 새 설치·adoption이 대표 `nubo.service`를 활성화해 전체 lifecycle 명령을 짧게 제공하는 v1.2.8을 게시했다.
+- README와 AI/nuboctl 가이드를 현재 prebuilt 설치·adoption·update·Enter 백업 확인·`systemctl restart nubo` 흐름에 맞췄다.
 
 ## Open findings
 
@@ -108,6 +109,7 @@
 - v1.2.7 전달: 통합 asset·SHA-256·prebuilt smoke를 통과하고 새 shallow clone의 원격 `server:prepare`에서 nuboctl 0.9.4와 manifest를 확인했다.
 - v1.2.8 후보: systemd unit 정적 검증, 대표 service 렌더링·활성화·기존 릴리스 update 호환 테스트, nuboctl test/race/vet와 NUBO test/typecheck/build를 통과했다.
 - v1.2.8 전달: 통합 asset·SHA-256·prebuilt smoke를 통과하고 새 shallow clone의 원격 `server:prepare`에서 nuboctl 0.9.5와 대표 unit을 확인했다.
+- Ubuntu 24.04의 systemd 255 컨테이너에서 `nubo.service`와 `nubo.target` unit 구문 검증을 통과했다.
 
 ## Next action
 

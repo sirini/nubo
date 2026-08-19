@@ -58,6 +58,14 @@ sudo /opt/nubo/current/nuboctl activate-nginx
 `/opt/nubo/releases`에 배치한 뒤 그 안의 `nuboctl install`을 실행합니다. sharp-libvips 기반 라이브러리와
 이미지 코덱도 같은 압축본에 있으므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
 
+설치가 끝나면 GOAPI와 Web은 systemd의 `nubo.service`로 함께 관리합니다.
+
+```bash
+sudo systemctl status nubo nubo-goapi nubo-web
+sudo systemctl restart nubo
+sudo journalctl -u nubo-goapi -u nubo-web -f
+```
+
 ### 2. 소스 개발
 
 화면과 GOAPI를 수정할 때만 npm 의존성을 설치합니다. MySQL/MariaDB를 먼저 실행하고 GOAPI를 준비합니다.
@@ -113,7 +121,10 @@ npm run build
 
 `npm test`는 빠른 Node 단위 테스트와 Nuxt 런타임 테스트를 모두 실행합니다. 브라우저 E2E와 테스트 DB는 다음 테스트 하네스 단계에서 별도로 추가합니다.
 
-### 4. 운영 빌드
+### 4. 직접 빌드 실행
+
+아래 방식은 NUBO 또는 GOAPI 자체를 수정하는 개발·커스텀 운영 환경을 위한 것입니다. 일반 운영 서버는
+앞의 `server:install`을 사용하며 서버에서 Nuxt를 다시 빌드하지 않습니다.
 
 ```bash
 npm run build
@@ -123,15 +134,8 @@ node .output/server/index.mjs
 빌드 서버에서 만든 `.output`만 운영 서버로 옮기는 no-build 배포 PoC와 런타임 환경 변수
 계약은 [Prebuilt Nuxt deployment PoC](./docs/PREBUILT_DEPLOYMENT.md)를 참고하세요.
 
-소스 개발 환경에서 PM2로 직접 실행할 수도 있지만 공식 서버 설치는 `nuboctl`이 만든 systemd unit을 사용합니다.
-
-```bash
-pm2 start .output/server/index.mjs --name nubo-web
-pm2 start ./goapi-linux --name nubo-api
-pm2 save
-```
-
-프런트엔드만 PM2 클러스터 모드로 늘릴 수 있습니다. GOAPI는 단일 프로세스로도 여러 요청을 동시에 처리하므로 특별한 이유가 없다면 하나만 실행하는 것을 권장합니다.
+공식 설치에서는 PM2나 tmux로 별도 프로세스를 중복 실행하지 않습니다. 개발 중에는 `./goapi-linux`와
+`npm run dev`를 각각 실행하고, 운영에서는 `systemctl restart nubo`로 두 서비스를 함께 관리합니다.
 
 ## 메일과 회원가입 설정
 
@@ -199,7 +203,8 @@ npm run server:adopt
 ```
 
 dry-run은 다운로드한 공식 릴리스와 기존 `.env`를 검증하고 전체 계획만 보여줍니다. 실제 실행에서는
-백업을 완료했다는 뜻으로 `BACKUP`을 직접 입력해야 합니다. 명령은 다음 원칙으로 동작합니다.
+외부 백업을 완료했다면 안내 문구에서 아무것도 입력하지 않고 Enter를 누릅니다. 다른 문자열을 입력하면
+변경 없이 취소합니다. 명령은 다음 원칙으로 동작합니다.
 
 - 기존 프로젝트, `.env`, `upload`, 데이터베이스, Nginx/TLS 설정을 삭제하거나 이동하거나 덮어쓰지 않습니다.
 - 기존 `.env` 값을 새 `/etc/nubo/nubo.env` 형식으로 변환하며 원본 참고본도
@@ -223,18 +228,37 @@ Cafe24처럼 root 계정만 사용하는 기존 서버에서는 root 소유 프�
 권한 상승 차단과 업로드 외 쓰기 경로 제한은 그대로 유지합니다. 일반 계정 운영이 가능하면 해당 계정을
 사용하는 편을 권장하지만 필수 조건은 아닙니다.
 
+전환이 끝나면 전체 서비스는 다음처럼 관리합니다.
+
+```bash
+sudo systemctl restart nubo
+sudo systemctl status nubo nubo-goapi nubo-web
+```
+
 ### v1.2.2 이후 공식 서버 설치 업데이트
 
 공식 서버 설치는 DB와 업로드의 외부 백업을 마친 뒤 저장소의 릴리스 채널을 갱신하고 한 명령으로 업데이트합니다.
 
 ```bash
 git pull --ff-only
+npm run server:update -- --dry-run
 npm run server:update
 ```
 
 명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 `nuboctl update`의 백업 확인, additive migration,
 원자적 `current` 전환, 재시작과 readiness 검사를 그대로 수행합니다. 소스 개발 환경에서 GOAPI만
 갱신하려면 `npm run server:prepare`를 다시 실행합니다.
+
+v1.2.7까지 adoption을 마친 서버는 v1.2.8로 update해도 systemd 구성을 자동 변경하지 않습니다.
+짧은 대표 명령을 원할 때만 다음 절차를 한 번 실행합니다. 실행 중인 GOAPI와 Web은 이 과정에서
+재시작되지 않으며 내부 `nubo.target` 파일은 삭제하지 않습니다.
+
+```bash
+sudo install -m 0644 /opt/nubo/current/share/systemd/nubo.service /etc/systemd/system/nubo.service
+sudo systemctl daemon-reload
+sudo systemctl disable nubo.target
+sudo systemctl enable --now nubo.service
+```
 
 ## Nginx 예시
 
