@@ -6,7 +6,7 @@
 
 ## adopt
 
-`adopt`는 v1.2.0 이전의 소스·PM2 설치를 v1.2.2 이후의 prebuilt·systemd 운영 체제로 한 번만
+`adopt`는 v1.2.0 이전의 소스 설치를 v1.2.2 이후의 prebuilt·systemd 운영 체제로 한 번만
 전환한다. 일반 사용자는 하위 바이너리를 직접 실행하지 않고 저장소 wrapper를 사용한다.
 
 ```bash
@@ -27,11 +27,12 @@ wrapper는 현재 공식 통합 릴리스를 내려받아 checksum을 검증하�
 NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `ProtectHome=true`인 unit에서도 실행되도록
 `/opt/nubo/runtime/node`에 복사하고 unit은 이 안정 경로를 사용한다.
 
-기존 문서의 표준 PM2 이름 `nubo-web`, `nubo-api`만 자동 전환한다. 두 앱을 중지한 뒤 내부 포트가
-비었는지 확인하고 systemd와 readiness를 활성화한다. 실패하면 새 target을 중지하고 감지했던 PM2 앱을
-다시 시작한다. 성공하면 해당 PM2 앱을 삭제하고 `pm2 save`를 실행한다. 다른 이름이나 수동 프로세스가
-포트를 점유하면 쓰기 전에 중단하므로 운영자가 프로세스를 확인해야 한다. DB migration은 additive지만
-자동 rollback하지 않는다.
+프로세스가 PM2, tmux, 기존 systemd 또는 수동 실행 중 어느 방식인지 추측하거나 프로세스를 종료하지
+않는다. dry-run은 내부 포트 `3000`·`3006`의 점유 여부와 종료 필요성을 안내하면서 나머지 계획을
+검증한다. 실제 실행은 두 포트 중 하나라도 점유되어 있으면 백업 확인이나 파일 생성 전에 중단한다.
+운영자가 기존 프론트엔드와 백엔드를 직접 종료한 뒤 같은 명령을 다시 실행해야 한다. 전환 실패 시에도
+기존 프로세스를 자동 재시작하지 않으며 이전 실행 방식으로 직접 시작하도록 안내한다. DB migration은
+additive지만 자동 rollback하지 않는다.
 
 ## install
 

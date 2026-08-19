@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { join } from "node:path"
-import { spawnSync } from "node:child_process"
 import {
   assertSupportedRuntime,
   currentRelease,
@@ -35,8 +34,6 @@ async function main() {
       throw new Error("--source 경로는 현재 NUBO 프로젝트로 자동 지정됩니다")
     }
     commandArgs = ["--source", process.cwd(), "--node", process.execPath]
-    const pm2 = spawnSync("which", ["pm2"], { encoding: "utf8" })
-    if (pm2.status === 0 && pm2.stdout.trim()) commandArgs.push("--pm2", pm2.stdout.trim())
     commandArgs.push(...args)
   }
   runNuboctl(command, systemRelease, commandArgs)

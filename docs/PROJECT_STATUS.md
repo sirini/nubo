@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- v1.2.0 이전 소스·PM2 설치를 한 명령으로 prebuilt·systemd 체제에 안전하게 adoption한다.
+- v1.2.0 이전 소스 설치를 한 명령으로 prebuilt·systemd 체제에 안전하게 adoption한다.
 
 ## Current product boundary
 
@@ -35,7 +35,7 @@
 - 호환성을 깨지 않는 통합 배포 구조 개편은 1.2 라인을 유지하고 정식 버전 v1.2.2로 배포한다.
 - adoption은 기존 소스·환경·업로드·DB·Nginx를 제자리 보존하고 새 릴리스·환경 사본·systemd만 추가한다.
 - 기존 프로젝트 소유 계정을 서비스 계정으로 재사용하며 이후 update는 설치된 unit에서 계정을 자동 감지한다.
-- 표준 PM2 이름만 자동 전환하고, readiness 실패 시 감지한 앱을 재시작하며 DB migration은 되돌리지 않는다.
+- adoption은 프로세스 관리 방식을 추측하지 않고 포트 점유만 안내·차단하며 종료와 재시작은 운영자에게 맡긴다.
 
 ## Recent completion
 
@@ -68,7 +68,7 @@
 - 전체 NUBO ESLint에는 완료된 작업 밖의 기존 358건이 남아 있다.
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
-- adoption은 표준 PM2 이름이 아닌 프로세스를 임의 종료하지 않으며 포트 점유를 안내하고 중단한다.
+- adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
 
 ## Verification
 
@@ -84,11 +84,12 @@
 - 원격 전달: node_modules 없는 shallow clone(약 3.1 MiB Git metadata)에서 prerelease 다운로드와 GOAPI 준비를 통과했고, `/opt` 배치본이 root 소유임을 확인했다.
 - Git 정리: 전체 브랜치·태그에서 과거 바이너리 경로가 0건이며 새 full clone의 `.git`은 약 11 MiB이다. 새 RC commit으로 asset과 SHA-256도 다시 게시했다.
 - v1.2.2: Node 22/npm 10 깨끗한 설치·빌드, Ubuntu 22 GOAPI, libvips 호환판·x86-64-v2판, `nuboctl`, prebuilt smoke, 내부·외부 checksum과 원격 `server:prepare`를 통과했다.
-- adoption: v1.2.0 환경 참조·경로 변환, 버전값 교체, dry-run 무변경, 기존 관리 설치 거부, 사용자별 PM2·NVM Node 경로와 서비스 활성 상태 확인 테스트를 통과했다.
+- adoption: v1.2.0 환경 참조·경로 변환, 버전값 교체, dry-run 무변경, 기존 관리 설치 거부, 포트 점유 감지·NVM Node 경로와 서비스 활성 상태 확인 테스트를 통과했다.
 - v1.2.3 후보: nuboctl test/race/vet, Node 15개 테스트, typecheck와 Vite 8 production build를 통과했다.
 - v1.2.3 전달: 고정 GOAPI commit으로 통합 asset을 빌드해 내부·외부 checksum과 prebuilt smoke를 통과했고, 정식 Release와 새 shallow clone의 원격 `server:prepare`·manifest를 확인했다.
+- v1.2.4 후보: PM2 자동 제어 제거, 점유 포트 dry-run 안내와 실제 실행 무변경 차단 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
 
 ## Next action
 
-- adoption 지원 릴리스를 만들고 실제 v1.2.0 설치 복제본에서 PM2→systemd 전환과 실패 복구를 통합 검증한다.
+- 실제 v1.2.0 설치 복제본에서 운영자 프로세스 종료→systemd 전환과 실패 시 수동 복구 안내를 통합 검증한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.

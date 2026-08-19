@@ -16,7 +16,6 @@ type adoptOptions struct {
 	systemdDir      string
 	osReleaseFile   string
 	nodeBinary      string
-	pm2Binary       string
 	dryRun          bool
 	nonInteractive  bool
 	backupConfirmed bool
@@ -40,7 +39,6 @@ func parseAdoptOptions(args []string) (adoptOptions, error) {
 	flags.StringVar(&options.systemdDir, "systemd-dir", options.systemdDir, "systemd unit 디렉터리")
 	flags.StringVar(&options.osReleaseFile, "os-release", options.osReleaseFile, "운영체제 정보 파일")
 	flags.StringVar(&options.nodeBinary, "node", "", "Node.js 실행 파일")
-	flags.StringVar(&options.pm2Binary, "pm2", "", "기존 사용자 환경에서 찾은 PM2 실행 파일")
 	flags.BoolVar(&options.dryRun, "dry-run", false, "변경 없이 전환 계획만 출력")
 	flags.BoolVar(&options.nonInteractive, "non-interactive", false, "질문 없이 명시 옵션만 사용")
 	flags.BoolVar(&options.backupConfirmed, "backup-confirmed", false, "외부 백업 완료를 명시적으로 확인")
@@ -56,13 +54,6 @@ func parseAdoptOptions(args []string) (adoptOptions, error) {
 			return adoptOptions{}, err
 		}
 		*path = absolute
-	}
-	if options.pm2Binary != "" {
-		absolute, err := filepath.Abs(options.pm2Binary)
-		if err != nil {
-			return adoptOptions{}, err
-		}
-		options.pm2Binary = absolute
 	}
 	return options, nil
 }

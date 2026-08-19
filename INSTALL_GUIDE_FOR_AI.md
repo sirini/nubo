@@ -45,10 +45,10 @@ npm run server:adopt
 대화형 명령의 `BACKUP`을 대신 입력하거나 `--backup-confirmed`를 추측으로 추가하지 않는다. 자동화가
 사용자의 백업 완료 확인을 이미 받은 경우에만 `--non-interactive --backup-confirmed`를 함께 전달한다.
 
-adoption은 기존 소스·`.env`·업로드·DB·Nginx/TLS를 삭제, 이동, 수정하거나 reload하지 않는다. 표준
-PM2 이름 `nubo-web`, `nubo-api`만 자동 중지하고 새 systemd 서비스의 readiness 실패 시 재시작을
-시도한다. 다른 프로세스가 포트를 점유했다는 오류가 나면 임의로 종료하지 말고 프로세스와 실행 방식을
-사용자에게 보고한다. 홈 디렉터리의 NVM Node는 systemd용 `/opt/nubo/runtime/node`에 자동 복사된다.
+adoption은 기존 소스·`.env`·업로드·DB·Nginx/TLS를 삭제, 이동, 수정하거나 reload하지 않는다. PM2,
+tmux, systemd 등 기존 프로세스 관리 방식을 추측하거나 프로세스를 자동 종료·재시작하지 않는다.
+포트 `3000`·`3006` 점유 안내가 나오면 사용자가 기존 프론트엔드와 백엔드를 직접 종료하도록 안내한 뒤
+같은 명령을 다시 실행한다. 홈 디렉터리의 NVM Node는 systemd용 `/opt/nubo/runtime/node`에 자동 복사된다.
 DB migration은 자동 rollback되지 않는다.
 
 ## 새 설치 입력 파일

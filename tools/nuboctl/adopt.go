@@ -11,8 +11,6 @@ import (
 	"syscall"
 )
 
-var legacyPM2Names = []string{"nubo-web", "nubo-api"}
-
 // 기존 소스 설치를 보존하면서 공식 릴리스와 systemd 운영 체제로 전환한다.
 func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error {
 	if requireRoot && !adopt.dryRun && currentEUID() != 0 {
@@ -42,12 +40,16 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 	if err != nil {
 		return err
 	}
-	printAdoptionIntroduction(adopt, install, warnings)
+	occupiedPorts := occupiedAdoptionPorts(install.webPort, install.goapiPort)
+	printAdoptionIntroduction(adopt, install, warnings, occupiedPorts)
 	if err := runInstall(install, runner, requireRoot); err != nil {
 		return err
 	}
 	if adopt.dryRun {
 		return nil
+	}
+	if len(occupiedPorts) > 0 {
+		return fmt.Errorf("포트 %s을 사용 중인 프로세스가 있습니다; 기존 NUBO 프론트엔드·백엔드를 직접 종료한 뒤 다시 실행하세요", formatPorts(occupiedPorts))
 	}
 	if adopt.nonInteractive && !adopt.backupConfirmed {
 		return fmt.Errorf("비대화형 adoption에는 --backup-confirmed가 필요합니다")
@@ -68,29 +70,17 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 		return err
 	}
 	install.nodeBinary = stagedNode
-	apps := detectLegacyPM2Apps(serviceUser, adopt.pm2Binary, runner)
-	if err := stopLegacyPM2Apps(serviceUser, adopt.pm2Binary, apps, runner); err != nil {
-		removeStagedAdoptionNode(stagedNode, nodeCreated)
-		return err
-	}
-	if err := requireAvailablePorts(install.webPort, install.goapiPort); err != nil {
-		restartLegacyPM2Apps(serviceUser, adopt.pm2Binary, apps, runner)
-		removeStagedAdoptionNode(stagedNode, nodeCreated)
-		return err
-	}
 	install.dryRun = false
 	if err := runInstall(install, runner, requireRoot); err != nil {
 		_, _ = runner.run("systemctl", "disable", "--now", "nubo.target")
 		rollbackAdoptionFiles(adopt)
 		_, _ = runner.run("systemctl", "daemon-reload")
-		restartLegacyPM2Apps(serviceUser, adopt.pm2Binary, apps, runner)
 		removeStagedAdoptionNode(stagedNode, nodeCreated)
-		return fmt.Errorf("새 서비스 전환 실패(기존 PM2 재시작 시도 완료): %w", err)
+		return fmt.Errorf("새 서비스 전환 실패: %w; 기존 프로세스는 자동으로 재시작하지 않았으므로 필요하면 이전 실행 방식으로 직접 시작하세요", err)
 	}
 	if err := backupLegacyEnvironment(adopt.sourceDir, adopt.stateDir); err != nil {
 		fmt.Printf("경고: 기존 환경 참고본을 만들지 못했습니다: %v (원본 .env는 그대로 유지됩니다)\n", err)
 	}
-	removeLegacyPM2Apps(serviceUser, adopt.pm2Binary, apps, runner)
 	fmt.Println("\nadoption 완료: 이제 npm run server:update로 다음 버전을 적용할 수 있습니다.")
 	fmt.Printf("기존 소스·.env·업로드·DB·Nginx는 삭제하거나 이동하지 않았습니다. 환경 참고본: %s\n", filepath.Join(adopt.stateDir, "adoption", "legacy.env"))
 	return nil
@@ -149,13 +139,18 @@ func sourceIdentity(path string) (string, string, error) {
 	return account.Username, group.Name, nil
 }
 
-func printAdoptionIntroduction(adopt adoptOptions, install installOptions, warnings []string) {
+func printAdoptionIntroduction(adopt adoptOptions, install installOptions, warnings []string, occupiedPorts []int) {
 	fmt.Println("NUBO v1.2.2 이후 운영 체제로 전환합니다.")
 	fmt.Println("- 그대로 둠: 기존 프로젝트, .env, 업로드 파일, 데이터베이스, Nginx/TLS")
 	fmt.Println("- 새로 만듦: 검증된 공식 릴리스, /etc 환경 파일, current 링크, systemd 서비스")
 	fmt.Printf("- 서비스 계정: 기존 프로젝트 소유자 %s:%s\n", install.serviceUser, install.serviceGroup)
 	fmt.Printf("- 업로드 위치 유지: %s\n", install.uploadDir)
-	fmt.Println("- 전환 순간에만 PM2의 nubo-web/nubo-api를 멈추며 실패하면 재시작을 시도합니다.")
+	fmt.Println("- 프로세스 관리 방식(PM2, tmux, systemd 등)을 추측하거나 실행 중인 프로세스를 자동 종료하지 않습니다.")
+	if len(occupiedPorts) > 0 {
+		fmt.Printf("- 먼저 종료 필요: 포트 %s을 사용 중입니다. 기존 NUBO 프론트엔드·백엔드를 직접 종료하세요.\n", formatPorts(occupiedPorts))
+	} else {
+		fmt.Printf("- 포트 확인 완료: %d, %d을 사용할 수 있습니다.\n", install.webPort, install.goapiPort)
+	}
 	fmt.Println("- DB migration은 additive이며 자동 rollback 대상이 아니므로 외부 DB·업로드 백업이 필요합니다.")
 	if len(warnings) > 0 {
 		fmt.Printf("- 주의: 현재 체제에서 사용하지 않는 기존 메일 설정은 옮기지 않습니다: %s (Resend 설정을 확인하세요)\n", strings.Join(warnings, ", "))
@@ -166,13 +161,23 @@ func printAdoptionIntroduction(adopt adoptOptions, install installOptions, warni
 	}
 }
 
-func requireAvailablePorts(ports ...int) error {
+func occupiedAdoptionPorts(ports ...int) []int {
+	occupied := make([]int, 0, len(ports))
 	for _, port := range ports {
 		listener, err := net.Listen("tcp", "127.0.0.1:"+strconv.Itoa(port))
 		if err != nil {
-			return fmt.Errorf("포트 %d을 다른 프로세스가 사용 중입니다; 기존 NUBO 프로세스를 확인한 뒤 다시 실행하세요", port)
+			occupied = append(occupied, port)
+			continue
 		}
 		_ = listener.Close()
 	}
-	return nil
+	return occupied
+}
+
+func formatPorts(ports []int) string {
+	values := make([]string, 0, len(ports))
+	for _, port := range ports {
+		values = append(values, strconv.Itoa(port))
+	}
+	return strings.Join(values, ", ")
 }
