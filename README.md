@@ -29,7 +29,7 @@ NUBO는 두 프로세스로 실행됩니다.
 | Nuxt/Nitro | `3000` | 화면 렌더링, 브라우저 API 중계, 인증 쿠키 관리 |
 | GOAPI | `3006` | 데이터베이스, 회원·게시물·메일·파일 처리 |
 
-소스 설치에서는 두 프로세스가 같은 프로젝트 디렉터리의 `.env` 설정을 사용합니다. 저장소에 포함된 `goapi-linux`를 처음 실행하면 `env.sample`을 바탕으로 `.env`와 데이터베이스를 생성합니다. Prebuilt 배포에서는 같은 형식의 파일을 `/etc/nubo/nubo.env`처럼 릴리스 밖에 두고 GOAPI에는 `NUBO_ENV_FILE`로, Node에는 `--env-file`로 명시합니다.
+소스 개발에서는 두 프로세스가 같은 프로젝트 디렉터리의 `.env` 설정을 사용합니다. `npm run goapi:prepare`가 공식 통합 릴리스에서 GOAPI와 libvips를 함께 내려받고 기존 `./goapi-linux` 실행 경로를 준비합니다. Prebuilt 배포에서는 같은 형식의 파일을 `/etc/nubo/nubo.env`처럼 릴리스 밖에 두고 GOAPI에는 `NUBO_ENV_FILE`로, Node에는 `--env-file`로 명시합니다.
 Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관리자까지 준비하므로 운영 서버에서 npm 설치나 Nuxt 빌드를 반복하지 않습니다.
 
 > `.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 외부에 공개하지 마세요.
@@ -41,29 +41,30 @@ Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관
 - Ubuntu 22.04 이상 x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
 - Node.js 22 이상과 npm
 - MySQL 8 또는 MariaDB
-- 소스에서 GOAPI를 직접 빌드할 때만 이미지 처리를 위한 `libvips-dev`
+- GOAPI 소스를 직접 수정하고 빌드할 때만 이미지 처리를 위한 `libvips-dev`
 - 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
 - 기본 포트 `3000`, `3006`을 사용할 수 있는 환경
 
-Ubuntu 계열의 예시는 다음과 같습니다.
+공식 no-build 서버 설치에는 저장소의 npm 패키지를 설치할 필요가 없습니다.
 
 ```bash
-sudo apt update
-sudo apt install libvips-dev
-git clone https://github.com/sirini/nubo.git
+git clone --depth=1 https://github.com/sirini/nubo.git
 cd nubo
-npm install
+npm run server:install
+sudo /opt/nubo/current/nuboctl activate-nginx
 ```
 
-위 `libvips-dev` 설치는 소스 개발 환경에만 해당합니다. `nuboctl`을 포함한 공식 Linux 릴리스는
-sharp-libvips 기반 라이브러리와 이미지 코덱을 내장하므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
+`server:install`은 현재 릴리스 후보의 통합 압축본과 SHA-256을 GitHub Releases에서 받아 검증하고,
+`/opt/nubo/releases`에 배치한 뒤 그 안의 `nuboctl install`을 실행합니다. sharp-libvips 기반 라이브러리와
+이미지 코덱도 같은 압축본에 있으므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
 
-### 2. 최초 설치와 `.env` 생성
+### 2. 소스 개발
 
-MySQL/MariaDB를 먼저 실행하고, NUBO 디렉터리에서 GOAPI를 실행합니다.
+화면과 GOAPI를 수정할 때만 npm 의존성을 설치합니다. MySQL/MariaDB를 먼저 실행하고 GOAPI를 준비합니다.
 
 ```bash
-chmod +x ./goapi-linux
+npm install
+npm run goapi:prepare
 ./goapi-linux
 ```
 
@@ -122,7 +123,7 @@ node .output/server/index.mjs
 빌드 서버에서 만든 `.output`만 운영 서버로 옮기는 no-build 배포 PoC와 런타임 환경 변수
 계약은 [Prebuilt Nuxt deployment PoC](./docs/PREBUILT_DEPLOYMENT.md)를 참고하세요.
 
-장기 운영 시 systemd 또는 PM2로 두 프로세스를 관리할 수 있습니다.
+소스 개발 환경에서 PM2로 직접 실행할 수도 있지만 공식 서버 설치는 `nuboctl`이 만든 systemd unit을 사용합니다.
 
 ```bash
 pm2 start .output/server/index.mjs --name nubo-web
@@ -186,16 +187,16 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 
 ## 업데이트
 
-업데이트 전에는 `.env`, 데이터베이스, `upload` 디렉터리를 백업하세요.
+공식 서버 설치는 DB와 업로드의 외부 백업을 마친 뒤 저장소의 릴리스 채널을 갱신하고 한 명령으로 업데이트합니다.
 
 ```bash
 git pull --ff-only
-npm install
-./goapi-linux install
-npm run build
+npm run server:update
 ```
 
-`./goapi-linux install`은 새 테이블과 컬럼을 반복 실행해도 안전하게 반영하는 명령입니다. 업데이트 후에는 Nuxt와 GOAPI 프로세스를 모두 다시 시작하세요.
+명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 `nuboctl update`의 백업 확인, additive migration,
+원자적 `current` 전환, 재시작과 readiness 검사를 그대로 수행합니다. 소스 개발 환경에서 GOAPI만
+갱신하려면 `npm run goapi:prepare`를 다시 실행합니다.
 
 ## Nginx 예시
 
@@ -248,7 +249,7 @@ Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS�
 - 화면이 API에 연결되지 않으면 Nuxt와 GOAPI가 모두 실행 중인지, `.env`의 포트와 `GOAPI_BASE`가 일치하는지 확인합니다.
 - 이미지가 보이지 않으면 `upload` 경로의 권한과 Nginx `alias`를 확인합니다.
 - 메일이 오지 않으면 관리자 이메일 설정 화면, Resend 도메인 상태, 발신 주소의 도메인을 차례로 확인합니다.
-- 기존 설치를 업데이트한 뒤 DB 오류가 나면 `./goapi-linux install`을 실행합니다.
+- 공식 설치를 업데이트한 뒤 DB 오류가 나면 `/opt/nubo/current/nuboctl status`와 `doctor` 결과를 확인합니다.
 - 추가 도움이 필요하면 [nubohub.org](https://nubohub.org)에서 문의해 주세요.
 
 ## 관련 프로젝트

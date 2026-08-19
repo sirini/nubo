@@ -1,0 +1,61 @@
+name: Publish Linux release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out NUBO
+        uses: actions/checkout@v4
+
+      - name: Read release sources
+        id: sources
+        run: |
+          echo "goapi_repository=$(jq -r .goapi.repository deploy/release-sources.json)" >> "$GITHUB_OUTPUT"
+          echo "goapi_commit=$(jq -r .goapi.commit deploy/release-sources.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Check out pinned GOAPI
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.sources.outputs.goapi_repository }}
+          ref: ${{ steps.sources.outputs.goapi_commit }}
+          path: goapi
+
+      - name: Verify release version
+        run: |
+          version=$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' env.sample)
+          test "$GITHUB_REF_NAME" = "v${version}"
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install and build NUBO
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build and verify integrated release
+        env:
+          GOAPI_SOURCE_DIR: ${{ github.workspace }}/goapi
+        run: npm run build:release
+
+      - name: Publish immutable release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          dist/nubo-*-linux-amd64.tar.gz
+          dist/nubo-*-linux-amd64.tar.gz.sha256
+          --verify-tag
+          --generate-notes
+          --title "$GITHUB_REF_NAME"

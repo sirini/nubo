@@ -115,7 +115,8 @@ sudo /opt/nubo/releases/1.3.0/nuboctl update \
 6. 실패하면 이전 환경·링크를 복원하고 이전 서비스를 다시 시작해 readiness 재확인
 
 DB migration은 되돌리지 않는다. 따라서 새 migration은 직전 릴리스와 호환되는 additive 변경이어야 한다.
-릴리스 다운로드·압축 해제와 데이터 백업은 `nuboctl update`의 책임에 포함하지 않는다. 동시 update는
+릴리스 다운로드·압축 해제는 소스 저장소의 `npm run server:update`가 담당하고, 하위 `nuboctl update`는
+검증되어 배치된 릴리스부터 처리한다. 데이터 백업은 자동 수행하지 않는다. 동시 update는
 설치별 잠금으로 차단한다. 현재 자동 update는 설치된 unit이 `current`를 참조하고 두 릴리스의 systemd/Nginx
 템플릿이 같을 때만 허용한다. 운영 템플릿 변경이 필요한 릴리스는 별도 전환 지원이 추가되기 전까지 거부한다.
 

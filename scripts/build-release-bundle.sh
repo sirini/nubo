@@ -4,11 +4,13 @@ set -euo pipefail
 
 readonly NUBO_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly NUBO_GOAPI_ROOT="${GOAPI_SOURCE_DIR:-$(cd "${NUBO_PROJECT_ROOT}/../goapi.git" && pwd)}"
+readonly NUBO_RELEASE_SOURCES="${NUBO_PROJECT_ROOT}/deploy/release-sources.json"
 readonly NUBO_OUTPUT_ROOT="$(realpath -m "${1:-${NUBO_PROJECT_ROOT}/dist}")"
 readonly NUBO_VERSION="$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' "${NUBO_PROJECT_ROOT}/env.sample")"
 readonly NUBO_GOAPI_VERSION="$(awk -F= '$1 == "GOAPI_VERSION" { print $2; exit }' "${NUBO_PROJECT_ROOT}/env.sample")"
 readonly NUBO_RELEASE_NAME="nubo-${NUBO_VERSION}-linux-amd64"
-readonly NUBO_ARCHIVE_PATH="${NUBO_OUTPUT_ROOT}/${NUBO_RELEASE_NAME}.tar.zst"
+readonly NUBO_ARCHIVE_PATH="${NUBO_OUTPUT_ROOT}/${NUBO_RELEASE_NAME}.tar.gz"
+readonly NUBO_CHECKSUM_PATH="${NUBO_ARCHIVE_PATH}.sha256"
 readonly NUBO_TEMP_ROOT="$(mktemp -d)"
 readonly NUBO_STAGE_ROOT="${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}"
 readonly NUBO_VERIFY_ROOT="${NUBO_TEMP_ROOT}/verify"
@@ -25,12 +27,20 @@ for NUBO_REQUIRED_FILE in \
   "${NUBO_PROJECT_ROOT}/deploy/README.md" \
   "${NUBO_PROJECT_ROOT}/env.sample" \
   "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" \
+  "${NUBO_RELEASE_SOURCES}" \
   "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh"; do
   if [[ ! -f "${NUBO_REQUIRED_FILE}" ]]; then
     echo "Missing release input: ${NUBO_REQUIRED_FILE}" >&2
     exit 1
   fi
 done
+
+NUBO_EXPECTED_GOAPI_COMMIT="$(node -p "require('${NUBO_RELEASE_SOURCES}').goapi.commit")"
+NUBO_ACTUAL_GOAPI_COMMIT="$(git -C "${NUBO_GOAPI_ROOT}" rev-parse HEAD)"
+if [[ "${NUBO_ACTUAL_GOAPI_COMMIT}" != "${NUBO_EXPECTED_GOAPI_COMMIT}" ]]; then
+  echo "GOAPI checkout must match deploy/release-sources.json: expected ${NUBO_EXPECTED_GOAPI_COMMIT}, got ${NUBO_ACTUAL_GOAPI_COMMIT}" >&2
+  exit 1
+fi
 
 if [[ -z "${NUBO_VERSION}" || -z "${NUBO_GOAPI_VERSION}" ]]; then
   echo "Missing NUBO or GOAPI version in ${NUBO_PROJECT_ROOT}/env.sample" >&2
@@ -104,13 +114,13 @@ tar -C "${NUBO_TEMP_ROOT}" -cf "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar" "${N
 docker run --rm \
   --volume "${NUBO_TEMP_ROOT}:/work" \
   ubuntu:22.04 \
-  bash -lc "apt-get update -qq && apt-get install -y -qq zstd >/dev/null && zstd -q /work/${NUBO_RELEASE_NAME}.tar -o /work/${NUBO_RELEASE_NAME}.tar.zst && chown $(id -u):$(id -g) /work/${NUBO_RELEASE_NAME}.tar.zst"
+  bash -lc "gzip -n -9 /work/${NUBO_RELEASE_NAME}.tar && chown $(id -u):$(id -g) /work/${NUBO_RELEASE_NAME}.tar.gz"
 
 docker run --rm \
-  --volume "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar.zst:/release.tar.zst:ro" \
+  --volume "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar.gz:/release.tar.gz:ro" \
   --volume "${NUBO_VERIFY_ROOT}:/verify" \
   ubuntu:24.04 \
-  bash -lc "apt-get update -qq && apt-get install -y -qq zstd >/dev/null && tar --zstd -xf /release.tar.zst -C /verify && chown -R $(id -u):$(id -g) /verify"
+  bash -lc "tar -xzf /release.tar.gz -C /verify && chown -R $(id -u):$(id -g) /verify"
 
 (
   cd "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}"
@@ -131,6 +141,10 @@ docker run --rm \
   ./nuboctl version
 )
 node "${NUBO_PROJECT_ROOT}/scripts/prebuilt-smoke.mjs" "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}/web/.output"
-mv "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar.zst" "${NUBO_ARCHIVE_PATH}"
+mv "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar.gz" "${NUBO_ARCHIVE_PATH}"
+(
+  cd "${NUBO_OUTPUT_ROOT}"
+  sha256sum "$(basename "${NUBO_ARCHIVE_PATH}")" > "$(basename "${NUBO_CHECKSUM_PATH}")"
+)
 
-echo "Built and verified ${NUBO_ARCHIVE_PATH}"
+echo "Built and verified ${NUBO_ARCHIVE_PATH} and ${NUBO_CHECKSUM_PATH}"

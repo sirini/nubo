@@ -26,6 +26,8 @@
 - update는 같은 releases 디렉터리의 더 높은 정식 버전과 동일 운영 템플릿만 자동 전환한다.
 - 설정과 업로드는 릴리스 밖에 보존하며, 운영 서버에서는 `npm install`이나 Nuxt 빌드를 하지 않는다.
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
+- Git에는 실행 바이너리와 통합 압축본을 넣지 않고, 고정된 GOAPI commit으로 만든 GitHub Release asset 하나를 사용한다.
+- `npm run goapi:prepare`, `server:install`, `server:update`는 같은 asset과 외부 SHA-256을 검증해 사용한다.
 - x86-64 호환판을 기본 경로에, sharp 공식 x86-64-v2판을 glibc-hwcaps 경로에 함께 둔다.
 - CPU 판별과 선택은 glibc에 맡기며 `nuboctl`은 SSE4.2가 없다는 이유로 설치를 거부하지 않는다.
 - Ubuntu와 Node.js는 각각 22.04와 22라는 최소 기준만 두고 이후 버전에 별도 상한이나 허용 목록을 두지 않는다.
@@ -45,11 +47,12 @@
 - install이 검증·DB 준비용 버전 디렉터리와 서비스용 `current` 링크를 분리하도록 바로잡았다.
 - update가 checksum·환경·unit·readiness를 preflight하고 migration·버전 환경·current를 전환하며 실패 시 복구한다.
 - 설치 정책을 Ubuntu 22.04 이상과 Node.js 22 이상이라는 두 하한선으로 단순화했다.
+- 추적하던 `goapi-linux`를 제거하고 통합 릴리스 다운로드·검증·배치 명령과 태그 기반 게시 workflow를 추가했다.
 
 ## Open findings
 
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
-- update는 릴리스 다운로드·압축 해제, 데이터 백업·복원을 수행하지 않는다.
+- 하위 `nuboctl update`는 데이터 백업·복원을 수행하지 않으며 npm wrapper도 외부 백업 확인을 유지한다.
 - 실제 MySQL/MariaDB를 사용한 fresh DB·기존 DB 통합 검증은 서버 QA 때 확인해야 한다.
 - 새 설치 흐름은 실제 깨끗한 Ubuntu 서버에서 운영자 관점의 QA가 필요하다.
 - Cafe24의 실제 `cpu64-rhel6` 가상 CPU에서 호환판 이미지 처리 최종 QA가 필요하다.
@@ -65,6 +68,7 @@
 - NUBO: Node.js 22.23.2에서 11개 테스트, typecheck, production build 통과.
 - GOAPI: Ubuntu 22.04/24.04에서 최적화판, QEMU `qemu64`에서 호환판 JPEG→WebP 변환 통과.
 - prebuilt: Node.js 22.23.2에서 런타임 설정·health/readiness·SSR·프록시 smoke test를 통과했고, 두 libvips 변형·출처·checksum·x86-64-v2 자동 선택과 통합 릴리스도 검증했다.
+- 릴리스 전달: `.tar.gz`·외부 SHA-256 생성과 Ubuntu 24 재해제, 로컬 HTTP 다운로드·캐시·GOAPI 상대 RPATH, 깨끗한 Ubuntu 22/Node 22의 `server:install --dry-run`을 검증했다.
 
 ## Next action
 

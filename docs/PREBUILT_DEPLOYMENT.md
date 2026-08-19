@@ -123,8 +123,9 @@ After checksum and compatibility validation, `nuboctl` runs only additive databa
 updates the two runtime version values, switches `current`, restarts the services, and checks readiness. A
 readiness failure restores the previous environment, link, and processes, but does not reverse database
 migrations; every migration must therefore remain compatible with the immediately previous release.
-Downloading, extracting, backup, and restore remain operator concerns. The first update implementation also
-requires both releases to carry identical systemd and Nginx templates because it does not rewrite live service
+The core `nuboctl update` command still starts at a staged release and leaves backup and restore under operator
+control. The source checkout's `npm run server:update` wrapper downloads, verifies, extracts, and stages the
+configured release before invoking that boundary. The first update implementation also requires both releases to carry identical systemd and Nginx templates because it does not rewrite live service
 configuration during a release transition.
 
 ## Minimal integrated bundle
@@ -136,7 +137,8 @@ npm run build:release
 ```
 
 It rebuilds GOAPI through its required Ubuntu 22.04 build script, records both repository commits in
-`manifest.json`, generates SHA-256 checksums, creates `dist/nubo-<version>-linux-amd64.tar.zst`, and
+`manifest.json`, generates SHA-256 checksums, creates `dist/nubo-<version>-linux-amd64.tar.gz` plus a
+`.sha256` sidecar, and
 extracts it again on Ubuntu 24.04 before running the prebuilt web smoke suite. A dirty source state is
 recorded in the manifest so a development artifact cannot be mistaken for a clean official release.
 The verified output replaces an existing archive with the same version, so `dist/` only needs the
@@ -147,3 +149,8 @@ license records under `licenses/sharp-libvips/`. glibc selects the compatible va
 so runtime servers do not install a system libvips package. It also includes the static Linux `nuboctl` binary
 with safe `install`, `activate-nginx`, and operator-staged `update` flows, read-only `doctor` and `status`
 commands, and the unprivileged service and proxy templates used by the installer.
+
+The official archive is attached to an immutable GitHub Release. `deploy/release-sources.json` pins the GOAPI
+commit used by both local and CI release builds and selects the release or prerelease tag consumed by source
+checkouts. `npm run goapi:prepare`, `server:install`, and `server:update` all reuse this single archive; none of
+them runs `npm install` or builds application code on the target machine.

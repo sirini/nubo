@@ -89,7 +89,9 @@ sudo ./nuboctl activate-nginx
 
 ## update
 
-새 릴리스는 현재 릴리스와 같은 `/opt/nubo/releases` 아래에 먼저 압축 해제한다. DB와 업로드의 외부
+NUBO 소스 checkout을 관리 중이면 `git pull --ff-only && npm run server:update`가 새 릴리스의 다운로드,
+SHA-256 검증과 `/opt/nubo/releases` 배치를 수행한다. 직접 배치할 때는 새 릴리스를 현재 릴리스와 같은
+`/opt/nubo/releases` 아래에 먼저 압축 해제한다. DB와 업로드의 외부
 백업 완료를 사용자에게 확인받고 후보 릴리스의 `nuboctl`로 dry-run을 먼저 실행한다.
 
 ```bash
