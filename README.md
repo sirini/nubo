@@ -36,16 +36,17 @@ Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관
 
 ## 빠른 설치
 
-### 1. 준비물
+### 1. Ubuntu 서버에 설치
 
-- Ubuntu 22.04 이상 x86-64 Linux 서버(WSL2 포함). 다른 아키텍처는 GOAPI를 직접 빌드해야 합니다.
+- Ubuntu 22.04 이상 x86-64 Linux 서버
 - Node.js 22 이상과 npm
 - MySQL 8 또는 MariaDB
-- GOAPI 소스를 직접 수정하고 빌드할 때만 이미지 처리를 위한 `libvips-dev`
 - 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
 - 기본 포트 `3000`, `3006`을 사용할 수 있는 환경
 
-공식 no-build 서버 설치에는 저장소의 npm 패키지를 설치할 필요가 없습니다.
+이 환경에서는 GOAPI 저장소를 따로 clone하거나 Go·컴파일러·libvips를 설치할 필요가 없습니다.
+NUBO 저장소의 공식 no-build 설치가 Nuxt와 GOAPI, 이미지 처리 라이브러리, `nuboctl`, systemd unit을
+하나의 검증된 릴리스로 내려받습니다. 저장소의 npm 패키지를 설치하거나 서버에서 소스를 빌드하지도 않습니다.
 
 ```bash
 git clone --depth=1 https://github.com/sirini/nubo.git
@@ -54,7 +55,7 @@ npm run server:install
 sudo /opt/nubo/current/nuboctl activate-nginx
 ```
 
-`server:install`은 현재 릴리스 후보의 통합 압축본과 SHA-256을 GitHub Releases에서 받아 검증하고,
+`server:install`은 현재 정식 릴리스의 통합 압축본과 SHA-256을 GitHub Releases에서 받아 검증하고,
 `/opt/nubo/releases`에 배치한 뒤 그 안의 `nuboctl install`을 실행합니다. sharp-libvips 기반 라이브러리와
 이미지 코덱도 같은 압축본에 있으므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
 
@@ -68,7 +69,8 @@ sudo journalctl -u nubo-goapi -u nubo-web -f
 
 ### 2. 소스 개발
 
-화면과 GOAPI를 수정할 때만 npm 의존성을 설치합니다. MySQL/MariaDB를 먼저 실행하고 GOAPI를 준비합니다.
+화면이나 GOAPI 자체를 수정할 때만 소스 개발 환경을 준비합니다. Ubuntu 22.04 이상 x86-64에서는
+MySQL/MariaDB를 먼저 실행한 뒤 공식 GOAPI 런타임을 개발 디렉터리에 받을 수 있습니다.
 
 ```bash
 npm install
@@ -98,6 +100,31 @@ DB_TABLE_PREFIX=nubo_
 ```
 
 `GOAPI_DOMAIN`은 사용자가 접속하는 공개 주소입니다. 운영 서버에서는 `http://localhost`를 그대로 두지 말고 `https://`가 포함된 실제 주소로 변경하세요.
+
+macOS, ARM Linux, Ubuntu가 아닌 Linux에서 개발하려면 `server:prepare`로 받는 Linux x86-64 바이너리 대신
+GOAPI를 해당 컴퓨터에서 빌드합니다. Go 1.25 이상, CGO용 C/C++ 컴파일러, pkg-config, libvips 8.14 이상이
+필요합니다. macOS에서는 Homebrew로 의존성을 준비할 수 있습니다.
+
+```bash
+brew install go pkg-config vips node@22 mysql
+export PATH="$(brew --prefix node@22)/bin:$PATH"
+brew services start mysql
+npm install
+git clone https://github.com/sirini/goapi.git ../goapi
+cd ../goapi
+export CGO_CFLAGS_ALLOW="-Xpreprocessor"
+go test ./...
+go build -trimpath -o ../nubo/goapi-local ./cmd
+cd ../nubo
+./goapi-local
+```
+
+다른 Linux 배포판도 같은 순서로 빌드하되 패키지 이름은 배포판에 맞게 바꿉니다. Windows에서는 네이티브
+GOAPI 빌드보다 WSL2의 Ubuntu 22.04 이상 환경을 권장합니다. WSL2 안에서는 Ubuntu 설치 또는 소스 개발
+절차를 그대로 사용하고 Windows 브라우저에서 `http://localhost:3000`에 접속할 수 있습니다. 네이티브
+Windows 빌드는 upstream govips가 정기적으로 검증하지 않아 NUBO도 공식 지원하지 않습니다.
+
+플랫폼별 GOAPI 소스 빌드와 실행 방법은 [GOAPI README](https://github.com/sirini/goapi#readme)를 참고하세요.
 
 ### 3. 개발 서버에서 확인
 
@@ -187,7 +214,12 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 
 전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
 
-공식 릴리스의 기준 환경은 Ubuntu 22.04와 Node.js 22입니다. 이후 Ubuntu와 Node.js 버전에는 별도 상한을 두지 않으며 실제 `nuboctl doctor`와 readiness 결과로 실행 가능 여부를 확인합니다. GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다. SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다. 별도 libvips 설치는 필요 없으며 ARM 서버나 다른 Linux 계열은 현재 지원 범위가 아닙니다.
+공식 prebuilt 운영 환경은 Ubuntu 22.04 이상 x86-64와 Node.js 22 이상입니다. 이후 Ubuntu와 Node.js
+버전에는 별도 상한을 두지 않으며 실제 `nuboctl doctor`와 readiness 결과로 실행 가능 여부를 확인합니다.
+GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다.
+SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다.
+별도 libvips 설치는 필요 없습니다. ARM 서버, 다른 Linux 배포판, macOS, 네이티브 Windows는 공식
+prebuilt 운영 범위가 아니지만 공개 소스를 해당 환경에서 빌드해 개발·시험할 수 있습니다.
 
 ## 업데이트
 

@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- v1.2.8 운영 문서와 누적 release note를 정리하고 다음 세션으로 인계한다.
+- v1.2.8 통합 배포 이후 실제 Ubuntu 서버 QA를 진행한다.
 
 ## Current product boundary
 
@@ -68,6 +68,7 @@
 - Nuxt의 정상 `status: ok` 응답을 설치기가 거부하던 readiness 판정 오류를 수정한 v1.2.7을 게시했다.
 - 새 설치·adoption이 대표 `nubo.service`를 활성화해 전체 lifecycle 명령을 짧게 제공하는 v1.2.8을 게시했다.
 - README와 AI/nuboctl 가이드를 현재 prebuilt 설치·adoption·update·Enter 백업 확인·`systemctl restart nubo` 흐름에 맞췄다.
+- NUBO와 GOAPI README에서 Ubuntu 22.04+ x86-64의 통합 prebuilt 운영 경로를 우선 안내하고, macOS·다른 Linux·Windows/WSL2의 소스 시험 경계를 정리했다.
 
 ## Open findings
 
@@ -83,6 +84,8 @@
 - v1.2.7까지 adoption한 서버는 대표 `nubo.service`를 원할 때 문서의 수동 절차로 추가한다.
 
 ## Verification
+
+- README의 설치·업데이트·소스 빌드 명령을 package scripts, Go module 요구 버전, govips의 플랫폼 요구사항과 대조했다.
 
 - `nuboctl`: 테스트, race, vet 통과; systemd 명령 순서와 readiness 응답, SSE4.2 없는 CPU 안내를 확인했다.
 - Nginx 활성화: 실행/정지 서비스 분기, 재실행 멱등성, 충돌 보호, 설정 실패 시 새 링크 rollback 테스트 통과.
