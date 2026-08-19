@@ -21,6 +21,9 @@ func runDoctor(options options, runner commandRunner) []checkResult {
 	results = append(results, environmentResults...)
 	results = append(results, checkNode(runner), checkSystemd(runner), checkNginx(runner))
 	if values != nil {
+		if !options.userSet {
+			options.serviceUser = runningServiceUser(options.serviceUser, runner)
+		}
 		results = append(results, checkUpload(options, values, runner))
 	}
 	return results
@@ -36,6 +39,9 @@ func runStatus(options options, runner commandRunner) []checkResult {
 	}
 	results = append(results, checkService(runner, "nginx.service"))
 	if values != nil {
+		if !options.userSet {
+			options.serviceUser = runningServiceUser(options.serviceUser, runner)
+		}
 		results = append(results, checkUpload(options, values, runner))
 		baseURL := webBaseURL(options, values)
 		for _, endpoint := range []string{"/health", "/ready", "/version"} {
@@ -43,6 +49,19 @@ func runStatus(options options, runner commandRunner) []checkResult {
 		}
 	}
 	return results
+}
+
+// drop-in을 포함해 systemd가 실제 서비스에 적용한 실행 계정을 우선한다.
+func runningServiceUser(fallback string, runner commandRunner) string {
+	if !commandExists(runner, "systemctl") {
+		return fallback
+	}
+	output, err := runner.run("systemctl", "show", "--property=User", "--value", "nubo-goapi.service")
+	name := strings.TrimSpace(output)
+	if err == nil && namePattern.MatchString(name) {
+		return name
+	}
+	return fallback
 }
 
 // 현재 CPU와 운영체제가 공식 지원 범위인지 진단한다.

@@ -62,3 +62,20 @@ func TestCheckHTTPRequiresHealthyJSON(t *testing.T) {
 		t.Fatalf("readiness result = %+v", result)
 	}
 }
+
+func TestRunningServiceUserPrefersSystemdValue(t *testing.T) {
+	runner := fakeRunner{
+		paths: map[string]bool{"systemctl": true},
+		outputs: map[string]string{
+			"systemctl show --property=User --value nubo-goapi.service": "actual-owner\n",
+		},
+		errors: map[string]error{},
+	}
+	if user := runningServiceUser("configured-owner", runner); user != "actual-owner" {
+		t.Fatalf("실행 서비스 사용자 = %q", user)
+	}
+	runner.outputs["systemctl show --property=User --value nubo-goapi.service"] = "invalid user\n"
+	if user := runningServiceUser("configured-owner", runner); user != "configured-owner" {
+		t.Fatalf("fallback 서비스 사용자 = %q", user)
+	}
+}

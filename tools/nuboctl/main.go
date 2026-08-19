@@ -14,6 +14,8 @@ type options struct {
 	envFile     string
 	stateDir    string
 	serviceUser string
+	userSet     bool
+	systemdDir  string
 	webURL      string
 }
 
@@ -25,8 +27,13 @@ func main() {
 // 하위 명령을 해석하고 사용자 오류와 검사 실패를 구분해 종료 코드를 반환한다.
 func run(args []string) int {
 	if len(args) == 0 {
-		printUsage()
-		return 2
+		printHelp("")
+		return 0
+	}
+	if args[0] != "help" && len(args) > 1 && requestsHelp(args[1:]) {
+		if printHelp(args[0]) {
+			return 0
+		}
 	}
 
 	switch args[0] {
@@ -93,10 +100,6 @@ func run(args []string) int {
 		return 0
 	case "update":
 		if !hasReleaseOption(args[1:]) {
-			if requestsHelp(args[1:]) {
-				printUpdateUsage()
-				return 0
-			}
 			if err := runSourceWorkflow("update", args[1:]); err != nil {
 				printFailure("업데이트 실패: %v", err)
 				return 1
@@ -124,10 +127,6 @@ func run(args []string) int {
 		}
 		return 0
 	case "customize":
-		if requestsHelp(args[1:]) {
-			printCustomizeUsage()
-			return 0
-		}
 		if err := runSourceWorkflow("customize", args[1:]); err != nil {
 			printFailure("사이트 꾸미기 적용 실패: %v", err)
 			return 1
@@ -168,8 +167,23 @@ func run(args []string) int {
 	case "version", "--version", "-v":
 		fmt.Printf("nuboctl %s\n", version)
 		return 0
-	case "help", "--help", "-h":
-		printUsage()
+	case "help":
+		if len(args) > 2 {
+			printFailure("사용법: nuboctl help [명령]")
+			return 2
+		}
+		topic := ""
+		if len(args) == 2 && args[1] != "--help" && args[1] != "-h" {
+			topic = args[1]
+		}
+		if !printHelp(topic) {
+			printFailure("도움말을 찾을 수 없는 명령입니다: %s", topic)
+			printHelp("")
+			return 2
+		}
+		return 0
+	case "--help", "-h":
+		printHelp("")
 		return 0
 	default:
 		printFailure("알 수 없는 명령: %s", args[0])
@@ -184,7 +198,8 @@ func parseOptions(command string, args []string) (options, error) {
 		releaseDir:  detectReleaseDir(),
 		envFile:     environmentFilePath(),
 		stateDir:    "/var/lib/nubo",
-		serviceUser: "nubo",
+		serviceUser: "",
+		systemdDir:  "/etc/systemd/system",
 	}
 
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
@@ -193,6 +208,7 @@ func parseOptions(command string, args []string) (options, error) {
 	flags.StringVar(&defaults.envFile, "env", defaults.envFile, "검사할 nubo.env 파일")
 	flags.StringVar(&defaults.stateDir, "state", defaults.stateDir, "상태 데이터 디렉터리")
 	flags.StringVar(&defaults.serviceUser, "user", defaults.serviceUser, "서비스 실행 사용자")
+	flags.StringVar(&defaults.systemdDir, "systemd-dir", defaults.systemdDir, "설치된 systemd unit 디렉터리")
 	flags.StringVar(&defaults.webURL, "web-url", "", "상태 엔드포인트 기본 URL")
 	if err := flags.Parse(args); err != nil {
 		return options{}, err
@@ -200,11 +216,19 @@ func parseOptions(command string, args []string) (options, error) {
 	if flags.NArg() != 0 {
 		return options{}, fmt.Errorf("예상하지 못한 인자: %s", flags.Arg(0))
 	}
+	flags.Visit(func(item *flag.Flag) {
+		if item.Name == "user" {
+			defaults.userSet = true
+		}
+	})
 
-	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir} {
+	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir, &defaults.systemdDir} {
 		if absolute, err := filepath.Abs(*item); err == nil {
 			*item = absolute
 		}
+	}
+	if defaults.serviceUser == "" {
+		defaults.serviceUser = installedServiceUser(defaults.systemdDir)
 	}
 	return defaults, nil
 }
@@ -243,35 +267,7 @@ func resolveExecutable(executable string) string {
 	return ""
 }
 
-// 현재 제공하는 명령의 짧은 사용법을 표준 오류에 출력한다.
+// 알 수 없는 명령 뒤에도 입문 도움말을 다시 보여준다.
 func printUsage() {
-	fmt.Fprintln(os.Stderr, `NUBO 서버 관리
-
-사용법: nuboctl <명령> [옵션]
-
-자주 쓰는 명령:
-  status          현재 서비스 상태 확인
-  doctor          설치와 설정 문제 점검
-  update          새 공식 버전으로 업데이트
-  customize       로컬 스킨 수정본 빌드·적용
-  activate-nginx  HTTP 공개 설정 활성화
-
-기타: install, adopt, skin apply, version
-도움말: nuboctl <명령> --help`)
-}
-
-func printUpdateUsage() {
-	fmt.Fprintln(os.Stderr, `NUBO를 새 공식 버전으로 업데이트합니다.
-
-NUBO 프로젝트 폴더에서 실행하세요.
-  nuboctl update --dry-run   변경 없이 계획 확인
-  nuboctl update             다운로드·검증·전환`)
-}
-
-func printCustomizeUsage() {
-	fmt.Fprintln(os.Stderr, `로컬 스킨 수정본을 빌드하고 사이트에 적용합니다.
-
-NUBO 프로젝트 폴더에서 실행하세요.
-  nuboctl customize --dry-run   빌드하되 서비스는 유지
-  nuboctl customize             빌드·검증·Web 전환`)
+	printHelp("")
 }

@@ -64,12 +64,17 @@ nuboctl activate-nginx
 다음 명령만 기억하면 됩니다.
 
 ```bash
+nuboctl help
 nuboctl status
 nuboctl doctor
 nuboctl update
 nuboctl customize
 nuboctl activate-nginx
 ```
+
+`nuboctl help customize`처럼 명령 이름을 붙이거나 `nuboctl customize --help`를 실행하면 해당 작업이
+무엇을 바꾸는지와 미리보기 방법을 한국어로 확인할 수 있습니다. 아무 인자 없이 `nuboctl`만 실행해도
+같은 입문 안내가 나옵니다.
 
 기존 `npm run server:update`, `npm run server:customize`는 자동화 호환을 위해 남아 있지만 새 안내에서는
 사용하지 않습니다. `update`와 `customize`는 NUBO 프로젝트 폴더에서 실행해야 합니다.

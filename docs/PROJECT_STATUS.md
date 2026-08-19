@@ -15,7 +15,7 @@
 
 - `nuboctl`은 범용 배포판 검증기가 아니라 NUBO의 최소 실행 환경을 준비하고 문제 해결 방법을 안내한다.
 - checksum에 기록된 파일의 손상과 위험한 경로는 검사하지만, 목록에 없는 추가 파일까지 거부하지 않는다.
-- 새 업로드 경로는 서비스 계정 소유로 만들고, 기존 경로는 변경하지 않은 채 실제 쓰기 권한을 사전 검사한다.
+- 새 업로드 경로는 서비스 계정 소유로 만들고, 기존 경로는 변경하지 않은 채 systemd가 실제 적용한 서비스 계정의 쓰기 권한을 검사한다.
 - 기존 환경·systemd·Nginx 파일은 보존하고 예상 내용과 다르면 덮어쓰지 않는다.
 - 사람용 `install`은 한국어 대화형을 기본으로 하고, 비대화형 모드는 비밀값을 CLI 인자가 아닌 제한된 입력 파일로 받는다.
 - DB bootstrap과 systemd readiness는 `install`에 연결하고 Nginx reload와 TLS는 별도 단계로 둔다.
@@ -49,6 +49,7 @@
 - 저사양 가상 CPU의 Vite 8 변환 교착을 피하도록 Nuxt 4.5.2는 유지하고 Vite 해석만 `rolldown-vite@7.3.1`로 임시 고정한다.
 - 최초 install·adopt만 npm bootstrap을 사용하고 설치 후 공개 명령은 `nuboctl`의 status·doctor·update·customize·activate-nginx로 통일한다.
 - CLI 색상은 TTY에서만 사용하고 `NO_COLOR`와 `TERM=dumb`에서는 평문을 유지한다.
+- 인자 없는 `nuboctl`, `help [명령]`과 `<명령> --help`는 같은 한국어 입문·명령별 안내를 제공한다.
 
 ## Recent completion
 
@@ -83,6 +84,7 @@
 - 로컬 스킨 빌드가 저사양 가상 CPU에서도 진행되도록 호환 Rolldown-Vite를 lockfile에 고정했다.
 - 파생 릴리스 복사 시 Nitro의 내부 상대 심볼릭 링크를 그대로 보존해 checksum 검증이 원본 checkout을 외부 경로로 오인하지 않게 했다.
 - 설치 후 업데이트와 사이트 꾸미기를 `nuboctl update`, `nuboctl customize`로 통일하고 단계·성공·주의·실패 출력을 읽기 쉽게 구분했다.
+- nuboctl의 명령별 도움말을 보강하고 doctor/status가 adoption 서버의 실제 systemd 서비스 계정으로 업로드 쓰기 권한을 검사하게 했다.
 
 ## Open findings
 
@@ -136,6 +138,7 @@
 - Rolldown-Vite 호환 핀: Node 26.7.0의 깨끗한 `npm ci`, 17개 테스트, typecheck, audit 0건과 prebuilt smoke를 통과했다. CPU 2개 제한 production build는 4,839개 모듈을 변환해 23초에 완료했고 최대 RSS는 약 2.67GiB였다.
 - 사이트 빌드 복사: Nitro 형태의 내부 상대 링크를 파생 디렉터리에 복사한 뒤 링크 문자열 보존과 `hashTree` 통과를 회귀 테스트로 확인했다.
 - CLI 통합·출력: 공개 update/customize source routing, 잘못된 작업 폴더 안내, 내부 `--release` 분기와 캡처 출력의 무색상 보존을 Go 회귀 테스트로 확인했다.
+- CLI 도움말·업로드 진단: 공개 명령별 도움말 완전성과 인자 없는 성공 출력을 검사하고, systemd `User=` 자동 감지와 명시적 `--user` 우선 적용을 테스트했다.
 
 ## Next action
 

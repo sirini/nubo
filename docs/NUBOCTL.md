@@ -9,6 +9,17 @@
 TTY에서는 단계, 성공, 주의와 실패를 색과 기호로 구분한다. 로그 파일이나 파이프 출력은 자동으로
 평문이 되며, 색을 원하지 않으면 `NO_COLOR=1 nuboctl ...`처럼 실행한다.
 
+```bash
+nuboctl
+nuboctl help
+nuboctl help update
+nuboctl customize --help
+```
+
+`status`와 `doctor`의 업로드 쓰기 검사는 고정된 `nubo` 계정을 가정하지 않고 systemd가
+`nubo-goapi.service`에 실제 적용한 `User`를 사용한다. 실행 상태를 읽지 못하면 설치된 unit의
+`User=`를 사용하며, 그것도 확인할 수 없을 때만 `--user` 또는 기본 `nubo`로 돌아간다.
+
 ## adopt
 
 `adopt`는 v1.2.0 이전의 소스 설치를 v1.2.2 이후의 prebuilt·systemd 운영 체제로 한 번만
