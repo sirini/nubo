@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 로컬 Vue 스킨을 한 명령으로 빌드·검증·전환하는 v1.2.9 후보를 완성하고 실제 Ubuntu에서 QA한다.
+- 게시한 v1.2.9의 로컬 Vue 스킨 한 명령 전환을 실제 Ubuntu 설치에서 QA한다.
 
 ## Current product boundary
 
@@ -76,6 +76,7 @@
 - NUBO와 GOAPI README에서 Ubuntu 22.04+ x86-64의 통합 prebuilt 운영 경로를 우선 안내하고, macOS·다른 Linux·Windows/WSL2의 소스 시험 경계를 정리했다.
 - 레거시 adoption을 새 clone·환경·업로드 복사·포트 종료 순서로 단순화하고, Nginx 업로드 경로와 커스텀 스킨 빌드/prebuilt 경계를 문서화했다.
 - 로컬 스킨의 첫 의존성 준비·typecheck·build·checksum·파생 릴리스 전환을 `npm run server:customize` 한 명령으로 연결했다.
+- v1.2.9 통합 asset과 SHA-256을 게시하고 install·adopt·update가 현재 `nuboctl`을 PATH에서 찾도록 연결했다.
 
 ## Open findings
 
@@ -124,6 +125,7 @@
 - Ubuntu 24.04의 systemd 255 컨테이너에서 `nubo.service`와 `nubo.target` unit 구문 검증을 통과했다.
 - 새 clone adoption·커스텀 스킨 경계 안내 변경은 관련 Vue ESLint, NUBO 15개 테스트, typecheck와 production build를 통과했다.
 - v1.2.9 로컬 스킨 후보: 파생 manifest/checksum, 공식 기반 일치, Web-only 전환, dry-run, readiness 실패 복구와 nuboctl PATH 링크의 Go/Node 단위 회귀 테스트를 통과했다.
+- v1.2.9 전달: 고정 GOAPI 커밋과 clean NUBO `7967275`로 통합 asset을 빌드해 nuboctl 0.9.6, 두 libvips 변형, 내부·외부 checksum, Ubuntu 24 재해제와 prebuilt smoke를 통과했다. GitHub 게시본도 다시 내려받아 SHA-256과 manifest를 확인했다.
 
 ## Next action
 
