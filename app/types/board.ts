@@ -73,6 +73,8 @@ export type BoardFile = {
 
 // 게시글 이동에 필요한 게시판 목록 타입 정의
 export type BoardItem = Pair & {
+  id: string
+  type: Board
   info: string
 }
 
@@ -266,6 +268,7 @@ export type BoardViewResult = {
   nextPostUid: number
   writerPosts: BoardWriterLatestPost[]
   writerComments: BoardWriterLatestComment[]
+  isAdmin: boolean
 }
 
 // 게시글 보기 반환 기본값 정의
@@ -279,6 +282,7 @@ export const BOARD_VIEW_RESULT: BoardViewResult = {
   nextPostUid: 0,
   writerPosts: [] as BoardWriterLatestPost[],
   writerComments: [] as BoardWriterLatestComment[],
+  isAdmin: false,
 }
 
 // 게시글에 좋아요 남기기 시 필요한 파라미터 정의
@@ -286,6 +290,13 @@ export type BoardViewLikeParam = {
   boardUid: number
   postUid: number
   liked: boolean
+}
+
+// 게시글 이동 파라미터 정의
+export type BoardMovePostParam = {
+  boardUid: number
+  targetBoardUid: number
+  postUid: number
 }
 
 // 게시글 작성자 타입 정의

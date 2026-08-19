@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S0-Q04에서 release manifest의 build commit 노출과 NUBO–GOAPI contract 불일치 감지를 현재 배포 구조에 맞게 좁혀 검토한다.
+- 기본 게시판·갤러리의 게시글 이동 기능을 게시판·그룹·전체 관리자 권한 경계에 맞게 제공하고 운영 QA를 준비한다.
 
 ## Current product boundary
 
@@ -53,6 +53,7 @@
 - 대표 `nubo.service`의 restart는 GOAPI·Web에 직접 `PartOf=` 관계를 추가하고 기존 base unit을 덮어쓰지 않는 drop-in으로 보장한다.
 - 자동 테스트는 인증·권한·데이터 손실·동시성·배포처럼 실패 비용이 큰 경계를 우선하며, 구현 세부를 반복하는 테스트는 늘리지 않는다.
 - API contract v1은 기존 application 오류의 HTTP 200 + code 응답을 유지하며, HTTP status 의미 전환은 contract version을 올리는 단일 migration으로만 수행한다.
+- 게시글 이동은 출발지와 목적지 양쪽의 게시판·그룹·전체 관리자 권한을 요구하고 거래 게시판은 범용 이동 대상에서 제외한다.
 
 ## Recent completion
 
@@ -95,6 +96,7 @@
 - GOAPI 115개와 Nitro proxy 100개·직접/대체 경로 15개를 대조하고, 공통 응답·오류 code·HTTP status 예외를 API contract v1 문서와 JSON Schema로 고정했다.
 - 누락된 그룹 관리자 변경 proxy를 추가하고, 게시글 이동의 PUT/POST 불일치를 바로잡았으며, 구현·호출부가 없는 dashboard latest proxy를 제거했다.
 - 프런트의 명시적 `Resp<T>` 소비 지점을 GO result와 대조하고 응답을 성공/실패 discriminated union으로 고쳤으며, 게시판 설정의 누락된 `levelWrite` request 필드와 오래된 dashboard latest 상태 타입을 정리했다.
+- 기본 게시판·갤러리 공통 보기 화면에 권한 기반 게시글 이동 UI를 연결하고 게시판별 관리자 판정을 목록·보기·쓰기 화면에 일관되게 적용했다.
 
 ## Open findings
 
@@ -152,7 +154,8 @@
 - v1.2.10을 Cafe24 가상서버 호스팅에서 설치·update하고 실제 MySQL/MariaDB, Nginx/TLS, 기본 이미지 처리와 운영 명령을 확인해 현재 실서버 QA를 완료했다.
 - GOAPI 인증 경계: repository·service·HTTP middleware/handler의 선별 테스트와 `go test ./...`, `go test -race ./...`, `go vet ./...`를 통과했다(GOAPI `4b80741`).
 - API contract v1: Nitro/GOAPI route 대조에서 누락·초과 0건을 확인했고, request/result 타입 대조 뒤 변경 파일 ESLint, NUBO 18개 테스트, typecheck와 production build를 통과했다.
+- 게시글 이동: 목적지 목록 권한 필터와 양쪽 관리자 권한을 GOAPI 회귀 테스트로 확인했고, 전체 Go 테스트·vet와 NUBO 18개 테스트·변경 파일 ESLint·typecheck·production build를 통과했다.
 
 ## Next action
 
-- S0-Q04의 남은 항목 중 release manifest build commit과 contract 불일치 감지를 실제 설치·update 흐름에 중복 없이 연결할 방법을 확인한다.
+- 기본 게시판↔갤러리 이동을 게시판 관리자·그룹 관리자·UID 1 계정으로 운영 QA한 뒤 로드맵의 다음 항목으로 돌아간다.

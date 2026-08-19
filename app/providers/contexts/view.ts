@@ -1,4 +1,4 @@
-import type { BoardConfig, BoardViewResult, TableOfContent } from "~/types/board"
+import type { BoardConfig, BoardItem, BoardViewResult, TableOfContent } from "~/types/board"
 import type { CommentResult } from "~/types/comment"
 
 // [게시판 글보기] 화면에서 필요한 변수 & 함수들 정의
@@ -9,6 +9,11 @@ export interface NuboViewContext {
   isAdmin: ComputedRef<boolean>
   isConfirmRemoveCommentDialog: WritableComputedRef<boolean>
   isConfirmRemovePostDialog: WritableComputedRef<boolean>
+  isMovePostDialog: WritableComputedRef<boolean>
+  isLoadingMoveTargets: ComputedRef<boolean>
+  isMovingPost: ComputedRef<boolean>
+  moveTargets: ComputedRef<BoardItem[]>
+  moveTargetUid: WritableComputedRef<number>
   isLoggedIn: ComputedRef<boolean>
   isWriter: ComputedRef<boolean>
   imgIdx: WritableComputedRef<number>
@@ -18,6 +23,7 @@ export interface NuboViewContext {
   likeComment: (commentUid: number, liked: boolean) => Promise<void>
   confirmRemoveComment: (commentUid: number) => void
   confirmRemovePost: (postUid: number) => void
+  openMovePostDialog: () => Promise<void>
   removeComment: () => Promise<void>
   setModifyComment: (commentUid: number, content: string) => void
   setReplyComment: (commentUid: number, content: string) => void
@@ -30,6 +36,7 @@ export interface NuboViewContext {
   updateReadingProgress: (element: string) => void
   clearReadingProgress: () => void
   remove: (boardUid: number, postUid: number) => void
+  move: () => Promise<void>
 }
 
 export const nuboViewKey: InjectionKey<NuboViewContext> = Symbol("nuboViewContext")

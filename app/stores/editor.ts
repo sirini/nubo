@@ -57,6 +57,7 @@ export const useEditorStore = defineStore("editor", () => {
   const isConfirmDialog = ref<boolean>(false)
   const isDragging = ref<boolean>(false)
   const isImageUploadDialog = ref<boolean>(false)
+  const isAdmin = ref<boolean>(false)
   const isNotice = ref<boolean>(false)
   const isPopOver = ref<Record<string, boolean>>({})
   const isSearchingTags = ref<boolean>(false)
@@ -135,6 +136,7 @@ export const useEditorStore = defineStore("editor", () => {
 
   // 게시판 설정값 가져오기
   const loadBoardConfig = async (id: string) => {
+    isAdmin.value = false
     try {
       const response = await getBoardConfig(id)
       if (!response.success) {
@@ -142,6 +144,7 @@ export const useEditorStore = defineStore("editor", () => {
         return
       }
       config.value = response.result.config
+      isAdmin.value = response.result.isAdmin
       categories.value = response.result.categories
     } catch (e) {
       toast(`❌ 게시판 설정값들을 가져오지 못했습니다: ${e}`)
@@ -721,6 +724,7 @@ export const useEditorStore = defineStore("editor", () => {
     isDragging,
     isLoadDraft,
     isImageUploadDialog,
+    isAdmin,
     isNotice,
     isPopOver,
     isSearchingTags,

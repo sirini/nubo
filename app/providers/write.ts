@@ -16,7 +16,7 @@ export const useWriteProvider = (): NuboWriteContext => {
       set: (val: boolean) => (edit.isDragging = val),
     }),
     isPopOver: computed(() => edit.isPopOver),
-    isAdmin: computed(() => auth.isAdmin),
+    isAdmin: computed(() => edit.isAdmin),
     isNotice: computed({ get: () => edit.isNotice, set: (val: boolean) => (edit.isNotice = val) }),
     isSecret: computed({ get: () => edit.isSecret, set: (val: boolean) => (edit.isSecret = val) }),
     categoryUid: computed({

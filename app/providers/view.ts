@@ -21,7 +21,20 @@ export const useViewProvider = (): NuboViewContext => {
       get: () => board.isConfirmDialog,
       set: (val) => (board.isConfirmDialog = val),
     }),
-    isAdmin: computed(() => auth.user.admin),
+    isMovePostDialog: computed({
+      get: () => board.isMovePostDialog,
+      set: (val) => {
+        if (!board.isMovingPost || val) board.isMovePostDialog = val
+      },
+    }),
+    isLoadingMoveTargets: computed(() => board.isLoadingMoveTargets),
+    isMovingPost: computed(() => board.isMovingPost),
+    moveTargets: computed(() => board.moveTargets),
+    moveTargetUid: computed({
+      get: () => board.moveTargetUid,
+      set: (val: number) => (board.moveTargetUid = val),
+    }),
+    isAdmin: computed(() => board.view.isAdmin),
     isLoggedIn: computed(() => auth.isLoggedIn),
     isWriter: computed(() => auth.user.uid === board.view.post.writer.uid),
     imgIdx: computed({
@@ -55,6 +68,7 @@ export const useViewProvider = (): NuboViewContext => {
       board.removeTargetUid = postUid
       board.isConfirmDialog = true
     },
+    openMovePostDialog: () => board.openMovePostDialog(),
     removeComment: async () => {
       await comment.removeComment({
         boardUid: board.view.config.uid,
@@ -117,5 +131,6 @@ export const useViewProvider = (): NuboViewContext => {
     updateReadingProgress: (element: string) => board.updateReadingProgress(element),
     clearReadingProgress: () => board.clearReadingProgress(),
     remove: (boardUid: number, postUid: number) => board.remove(boardUid, postUid),
+    move: () => board.move(),
   }
 }

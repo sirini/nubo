@@ -5,6 +5,7 @@ import {
   BOARD_VIEW_RESULT,
   SEARCH,
   type BoardListResult,
+  type BoardItem,
   type BoardViewResult,
   type Search,
   type TableOfContent,
@@ -14,12 +15,25 @@ import type { TradeListResult, TradeViewResult } from "~/types/trade"
 import { HomeSearchOptions } from "~/types/home"
 
 export const useBoardStore = defineStore("board", () => {
-  const { loadInitBoardView, loadInitBoardList, like, download, removePost } = useBoard()
+  const {
+    loadInitBoardView,
+    loadInitBoardList,
+    loadMoveTargets,
+    movePost,
+    like,
+    download,
+    removePost,
+  } = useBoard()
   const trade = useTradeStore()
   const error = ref<unknown>(null)
   const latestLimit = ref<number>(5)
   const isLoading = ref<boolean>(false)
   const isConfirmDialog = ref<boolean>(false)
+  const isMovePostDialog = ref<boolean>(false)
+  const isLoadingMoveTargets = ref<boolean>(false)
+  const isMovingPost = ref<boolean>(false)
+  const moveTargets = ref<BoardItem[]>([])
+  const moveTargetUid = ref<number>(0)
   const view = ref<BoardViewResult>(BOARD_VIEW_RESULT)
   const list = ref<BoardListResult>(BOARD_LIST_RESULT)
   const imgIdx = ref<number>(0)
@@ -236,11 +250,66 @@ export const useBoardStore = defineStore("board", () => {
     }
   }
 
+  // 이동 가능한 게시판을 불러오고 선택창 열기
+  const openMovePostDialog = async () => {
+    isMovePostDialog.value = true
+    isLoadingMoveTargets.value = true
+    moveTargets.value = []
+    moveTargetUid.value = 0
+    try {
+      const response = await loadMoveTargets(view.value.config.uid)
+      if (!response.success) {
+        toast(`❌ 이동할 게시판 목록을 가져오지 못했습니다: ${response.error}`)
+        isMovePostDialog.value = false
+        return
+      }
+      moveTargets.value = response.result
+    } catch (e) {
+      toast(`❌ 이동할 게시판 목록을 가져오지 못했습니다: ${e}`)
+      isMovePostDialog.value = false
+    } finally {
+      isLoadingMoveTargets.value = false
+    }
+  }
+
+  // 선택한 게시판으로 게시글 이동하기
+  const move = async () => {
+    if (moveTargetUid.value < 1 || isMovingPost.value) return
+
+    const target = moveTargets.value.find((board) => board.uid === moveTargetUid.value)
+    if (!target) return
+
+    isMovingPost.value = true
+    try {
+      const response = await movePost({
+        boardUid: view.value.config.uid,
+        targetBoardUid: target.uid,
+        postUid: view.value.post.uid,
+      })
+      if (!response.success) {
+        toast(`❌ 게시글을 이동하지 못했습니다: ${response.error}`)
+        return
+      }
+      isMovePostDialog.value = false
+      toast(`✅ 게시글을 '${recoverChars(target.name)}' 게시판으로 이동했습니다`)
+      await navigateTo(`/board/${target.id}/${view.value.post.uid}`)
+    } catch (e) {
+      toast(`❌ 게시글을 이동하지 못했습니다: ${e}`)
+    } finally {
+      isMovingPost.value = false
+    }
+  }
+
   return {
     error,
     latestLimit,
     isLoading,
     isConfirmDialog,
+    isMovePostDialog,
+    isLoadingMoveTargets,
+    isMovingPost,
+    moveTargets,
+    moveTargetUid,
     view,
     list,
     imgIdx,
@@ -261,5 +330,7 @@ export const useBoardStore = defineStore("board", () => {
     updateReadingProgress,
     clearReadingProgress,
     remove,
+    openMovePostDialog,
+    move,
   }
 })

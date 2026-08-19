@@ -1,8 +1,10 @@
 import type {
+  BoardItem,
   BoardListParam,
   BoardListResult,
   BoardViewDownloadResult,
   BoardViewLikeParam,
+  BoardMovePostParam,
   BoardViewParam,
   BoardViewResult,
   BoardWriterLatestContent,
@@ -77,12 +79,37 @@ export const useBoard = () => {
     })
   }
 
+  // 게시글을 이동할 수 있는 게시판 목록 가져오기
+  const loadMoveTargets = async (boardUid: number) => {
+    return await $fetch<Resp<BoardItem[]>>("/board/move/list", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: { boardUid },
+    })
+  }
+
+  // 게시글 이동하기
+  const movePost = async (param: BoardMovePostParam) => {
+    const body = new URLSearchParams({
+      boardUid: param.boardUid.toString(),
+      targetBoardUid: param.targetBoardUid.toString(),
+      postUid: param.postUid.toString(),
+    })
+    return await $fetch<Resp<null>>("/board/move/apply", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body,
+    })
+  }
+
   return {
     download,
     loadInitBoardView,
     loadInitBoardList,
     loadInitUserLatestContent,
     like,
+    loadMoveTargets,
+    movePost,
     removePost,
   }
 }

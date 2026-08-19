@@ -10,7 +10,7 @@ export const useListProvider = (): NuboListContext => {
     posts: computed(() => board.list.posts),
     userBlackList: computed(() => board.list.blackList),
     config: computed(() => board.list.config),
-    isAdmin: computed(() => auth.isAdmin),
+    isAdmin: computed(() => board.list.isAdmin),
     isLoggedIn: computed(() => auth.isLoggedIn),
     page: computed(() => board.page),
     totalPostCount: computed(() => board.list.totalPostCount),

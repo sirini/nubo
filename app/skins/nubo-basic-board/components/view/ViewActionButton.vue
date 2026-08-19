@@ -7,17 +7,25 @@
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuItem
-        @click="navigateTo(`/board/${view.config.id}/${view.post.uid}/edit`)"
         class="cursor-pointer flex items-center gap-3"
         :disabled="!isWriter && !isAdmin"
+        @click="navigateTo(`/board/${view.config.id}/${view.post.uid}/edit`)"
       >
         <EraserIcon class="w-4 h-4" />
         수정
       </DropdownMenuItem>
       <DropdownMenuItem
-        @click="confirmRemovePost(view.post.uid)"
+        v-if="isAdmin && view.config.type !== BOARD.TRADE"
+        class="cursor-pointer flex items-center gap-3"
+        @click="openMovePostDialog"
+      >
+        <ArrowRightLeftIcon class="w-4 h-4" />
+        이동
+      </DropdownMenuItem>
+      <DropdownMenuItem
         class="cursor-pointer text-destructive focus:text-destructive flex items-center gap-3"
         :disabled="!isWriter && !isAdmin"
+        @click="confirmRemovePost(view.post.uid)"
       >
         <ShredderIcon class="w-4 h-4" />
         삭제
@@ -34,11 +42,14 @@
     variant="destructive"
     @confirm="remove(view.config.uid, view.post.uid)"
   />
+  <ViewMovePostDialog />
 </template>
 
 <script setup lang="ts">
-import { EllipsisVerticalIcon, EraserIcon, ShredderIcon } from "lucide-vue-next"
+import { ArrowRightLeftIcon, EllipsisVerticalIcon, EraserIcon, ShredderIcon } from "lucide-vue-next"
 import { useNuboViewContext } from "~/providers/contexts/view"
+import { BOARD } from "~/types/board"
+import ViewMovePostDialog from "./ViewMovePostDialog.vue"
 
 const {
   isLoggedIn,
@@ -47,6 +58,7 @@ const {
   isConfirmRemovePostDialog,
   view,
   confirmRemovePost,
+  openMovePostDialog,
   remove,
 } = useNuboViewContext()
 </script>
