@@ -874,8 +874,8 @@ nuboctl update
 - [x] Ubuntu 22.04 빌드 스크립트
 - [x] contract version 일치 검사
 - [x] 패키징
-- [ ] Ubuntu 22.04 fresh install smoke
-- [ ] Ubuntu 24.04 fresh install smoke
+- [x] Ubuntu 22.04 fresh install smoke
+- [x] Ubuntu 24.04 fresh install smoke
 - [x] checksums
 - [x] GitHub Release 업로드
 

@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  publish:
+  build-release:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out NUBO
@@ -67,6 +67,53 @@ jobs:
         env:
           GOAPI_SOURCE_DIR: ${{ github.workspace }}/goapi
         run: npm run build:release
+
+      - name: Upload release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: nubo-linux-amd64
+          path: |
+            dist/nubo-*-linux-amd64.tar.gz
+            dist/nubo-*-linux-amd64.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
+
+  fresh-install:
+    needs: build-release
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - ubuntu-22.04
+          - ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out NUBO
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Download release candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: nubo-linux-amd64
+          path: dist
+
+      - name: Fresh install and verify services
+        run: bash scripts/fresh-install-smoke.sh dist/nubo-*-linux-amd64.tar.gz
+
+  publish:
+    needs: fresh-install
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download verified release candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: nubo-linux-amd64
+          path: dist
 
       - name: Publish immutable release assets
         env:
