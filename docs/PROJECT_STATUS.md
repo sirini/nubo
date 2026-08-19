@@ -57,6 +57,7 @@
 - 모든 원격 브랜치와 태그를 보존하면서 과거 `goapi-linux`·`goapi-linux-x86` 객체를 Git 이력에서 제거했다.
 - 통합 배포 구조 개편을 정식 v1.2.2로 표기하고 통합 asset과 SHA-256을 게시했다.
 - 기존 v1.2.0 소스·PM2 설치를 보존형 prebuilt·systemd 체제로 옮기는 `npm run server:adopt`를 v1.2.3으로 게시했다.
+- adoption이 기존 프로세스를 조작하지 않고 포트 점유만 안내·차단하도록 단순화한 v1.2.4를 게시했다.
 
 ## Open findings
 
@@ -88,6 +89,7 @@
 - v1.2.3 후보: nuboctl test/race/vet, Node 15개 테스트, typecheck와 Vite 8 production build를 통과했다.
 - v1.2.3 전달: 고정 GOAPI commit으로 통합 asset을 빌드해 내부·외부 checksum과 prebuilt smoke를 통과했고, 정식 Release와 새 shallow clone의 원격 `server:prepare`·manifest를 확인했다.
 - v1.2.4 후보: PM2 자동 제어 제거, 점유 포트 dry-run 안내와 실제 실행 무변경 차단 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
+- v1.2.4 전달: 고정 GOAPI·두 libvips 변형으로 통합 asset과 SHA-256을 게시하고 새 shallow clone에서 원격 `server:prepare`, nuboctl 0.9.1 manifest와 PM2 옵션 제거를 확인했다.
 
 ## Next action
 
