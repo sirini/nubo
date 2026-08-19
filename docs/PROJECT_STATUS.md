@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- v1.2.11로 전달한 게시글 이동 기능을 운영 서버에서 관리자 권한별로 QA한다.
+- v1.2.11 운영 QA를 마쳤으며 다음 세션에서 장기 로드맵과 현재 제품 상태를 대조해 다음 작업 범위를 정한다.
 
 ## Current product boundary
 
@@ -99,6 +99,7 @@
 - 기본 게시판·갤러리 공통 보기 화면에 권한 기반 게시글 이동 UI를 연결하고 게시판별 관리자 판정을 목록·보기·쓰기 화면에 일관되게 적용했다.
 - 게시글 이동과 API contract·인증 회귀 보강을 NUBO `283beae`·GOAPI `667bd00` 기반 v1.2.11 통합 릴리스로 게시했다.
 - npm 10에서도 깨끗한 설치가 가능하도록 누락된 선택적 의존성을 lockfile에 반영해 자동 릴리스 경로를 복구했다.
+- v1.2.11을 운영 서버에 update하고 기본 게시판·갤러리의 게시글 이동이 정상 동작하는 것을 확인했다.
 
 ## Open findings
 
@@ -158,7 +159,8 @@
 - API contract v1: Nitro/GOAPI route 대조에서 누락·초과 0건을 확인했고, request/result 타입 대조 뒤 변경 파일 ESLint, NUBO 18개 테스트, typecheck와 production build를 통과했다.
 - 게시글 이동: 목적지 목록 권한 필터와 양쪽 관리자 권한을 GOAPI 회귀 테스트로 확인했고, 전체 Go 테스트·vet와 NUBO 18개 테스트·변경 파일 ESLint·typecheck·production build를 통과했다.
 - v1.2.11 전달: Ubuntu 22/24, qemu64 이미지 처리, 두 libvips 변형, 내부·외부 checksum, prebuilt health·readiness·SSR·proxy smoke를 통과한 asset과 SHA-256을 게시했다.
+- v1.2.11 운영 QA: `nuboctl update` 후 게시글 이동 UI, 목적지 선택, 이동 처리와 새 게시판 주소 진입이 정상임을 확인했다.
 
 ## Next action
 
-- 운영 서버에서 `git pull --ff-only` 후 `nuboctl update`하고 기본 게시판↔갤러리 이동을 게시판 관리자·그룹 관리자·UID 1 계정으로 확인한다.
+- `docs/NUBO_COMMUNITY_OS_ROADMAP.md`의 남은 항목을 현재 구현·운영 검증 상태와 대조하고, 건너뛸 항목과 보강할 항목을 나눈 뒤 다음의 작은 작업 단위를 선택한다.
