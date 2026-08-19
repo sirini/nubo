@@ -52,6 +52,7 @@
 - `v1.2.1-rc.1` 통합 asset과 SHA-256을 GitHub prerelease로 게시해 새 전달 경로를 활성화했다.
 - 로컬 GOAPI 준비 명령도 서버 전달 명명 규칙에 맞춰 `npm run server:prepare`로 통일했다.
 - 모든 원격 브랜치와 태그를 보존하면서 과거 `goapi-linux`·`goapi-linux-x86` 객체를 Git 이력에서 제거했다.
+- 통합 배포 구조 개편을 정식 v1.2.2로 표기하고 통합 asset과 SHA-256을 게시했다.
 
 ## Open findings
 
@@ -62,6 +63,7 @@
 - Cafe24의 실제 `cpu64-rhel6` 가상 CPU에서 호환판 이미지 처리 최종 QA가 필요하다.
 - 전체 NUBO ESLint에는 완료된 작업 밖의 기존 358건이 남아 있다.
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
+- GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
 
 ## Verification
 
@@ -76,6 +78,7 @@
 - 릴리스 전달: `.tar.gz`·외부 SHA-256 생성과 Ubuntu 24 재해제, 로컬 HTTP 다운로드·캐시·GOAPI 상대 RPATH, 깨끗한 Ubuntu 22/Node 22의 `server:install --dry-run`을 검증했다.
 - 원격 전달: node_modules 없는 shallow clone(약 3.1 MiB Git metadata)에서 prerelease 다운로드와 GOAPI 준비를 통과했고, `/opt` 배치본이 root 소유임을 확인했다.
 - Git 정리: 전체 브랜치·태그에서 과거 바이너리 경로가 0건이며 새 full clone의 `.git`은 약 11 MiB이다. 새 RC commit으로 asset과 SHA-256도 다시 게시했다.
+- v1.2.2: Node 22/npm 10 깨끗한 설치·빌드, Ubuntu 22 GOAPI, libvips 호환판·x86-64-v2판, `nuboctl`, prebuilt smoke, 내부·외부 checksum과 원격 `server:prepare`를 통과했다.
 
 ## Next action
 
