@@ -1,0 +1,135 @@
+# NUBO API contract v1
+
+기준일: 2026-08-19  
+기준 구현: NUBO `main`, GOAPI `4b80741`
+
+이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
+호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두
+저장소를 함께 검증한다.
+
+## 전송 경로
+
+- 브라우저와 SSR은 원칙적으로 NUBO의 `/api/*`를 호출한다.
+- Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
+- 현재 Nitro proxy는 method 기준 100개이며 GOAPI 115개 중 아래 15개를 제외하고 모두 대응한다.
+- `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
+- OAuth request/callback 6개, Android Google OAuth, RSS, `/sync`, `/board/tag/recent`, `/home/nubo`,
+  단일 알림 확인은 GOAPI 직접 노출 또는 현재 UI 비사용 경로다.
+
+## 공통 JSON 응답
+
+일반 handler의 응답은 다음 네 필드를 항상 가진다. 최소 machine-readable 정의는
+[`contracts/api-response-v1.schema.json`](contracts/api-response-v1.schema.json)이다.
+
+```ts
+type Resp<T> = {
+  success: boolean
+  error: string
+  code: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+  result: T | null
+}
+```
+
+- 성공: `success=true`, `error=""`, `code=0`, `result=T | null`
+- 실패: `success=false`, `error`는 비어 있지 않은 메시지, `code=1..12`, `result=null`
+- 파일 다운로드, RSS, OAuth redirect, health/readiness/version과 framework 404는 이 envelope의 예외다.
+- `error`는 화면 표시용 영구 식별자가 아니다. 분기는 `code`와 HTTP status를 사용한다.
+
+### 오류 code
+
+| code | 이름 | 현재 의미 |
+|---:|---|---|
+| 0 | `SUCCESS` | 성공 |
+| 1 | `NOT_ADMIN` | 로그인했지만 최고 관리자 아님 |
+| 2 | `INVALID_TOKEN` | 외부/OAuth 토큰이 유효하지 않음 |
+| 3 | `INVALID_PARAM` | 요청 형식 또는 필드 검증 실패 |
+| 4 | `FAILED_OPERATION` | 작업 실패 또는 현재 분류되지 않은 오류 |
+| 5 | `DUPLICATED_VALUE` | 중복 값 또는 상태 충돌 |
+| 6 | `NO_PERMISSION` | 작업 권한 없음 |
+| 7 | `EXCEED_SIZE` | 업로드 제한 초과 |
+| 8 | `EXPIRED` | Nitro가 refresh 실패 후 확정한 세션 만료 |
+| 9 | `MAIL_NOT_CONFIGURED` | 메일 제공자 미설정 |
+| 10 | `RATE_LIMITED` | 메일 등 요청 속도 제한 |
+| 11 | `SIGNUP_DISABLED` | 신규 가입 비활성화 |
+| 12 | `INVALID_INVITE` | 초대가 없거나 유효하지 않음 |
+
+## HTTP status 규칙
+
+v1은 과거 클라이언트 호환성을 위해 application 오류를 대부분 HTTP 200 + `success=false`로 전달한다.
+일부 handler만 status를 바꾸는 부분 전환은 같은 code의 처리 방식을 불안정하게 하므로 하지 않는다.
+
+| 상황 | v1 status / code | 비고 |
+|---|---|---|
+| 요청 성공 | `200 / 0` | 다운로드 등 비 JSON 성공은 별도 |
+| 로그인 없음·access token 무효·정지 계정 | GOAPI `401` | GOAPI middleware의 body는 envelope가 아님 |
+| refresh까지 실패한 브라우저 세션 | Nitro `401 / 8` | Nitro가 표준 envelope로 정규화 |
+| 최고 관리자 아님 | `200 / 1` | v2 후보는 403 |
+| 일반 작업 권한 없음 | `200 / 6` | v2 후보는 403 |
+| 요청/필드 검증 실패 | `200 / 3` | v2 후보는 400 또는 422 |
+| 중복·상태 충돌 | `200 / 5` | v2 후보는 409 |
+| 업로드 제한 초과 | `200 / 7` | v2 후보는 413 |
+| 속도 제한 | `200 / 10` | v2 후보는 429 |
+| 일회 다운로드 token 무효 | `403`, text | binary endpoint 예외 |
+| readiness 의존성 실패 | `503`, status JSON | 운영 endpoint 예외 |
+| 존재하지 않는 route | `404` | framework 응답 |
+
+HTTP 의미를 전면 정리할 때는 contract version을 올리고, GOAPI middleware와 `utils.Err`, Nitro refresh,
+프런트 오류 분기를 하나의 변경 단위로 마이그레이션한다.
+
+## GOAPI endpoint 목록
+
+`Public`은 로그인 없이 호출 가능, `JWT`는 활성 계정, `Admin`은 활성 UID 1을 요구한다. `Direct`는
+Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중괄호는 같은 method의 path suffix다.
+
+| 영역 | 권한 | method와 path |
+|---|---|---|
+| 상태 | Public · Direct | `GET /health`, `/ready`, `/version` |
+| 공개 설정 | Public | `GET /skin/settings` |
+| 관리자 게시판 | Admin | `GET /admin/board/{load,candidates}`; `POST /admin/board/{create,modify}`; `DELETE /admin/board/remove` |
+| 관리자 대시보드 | Admin | `GET /admin/dashboard/{usage,item,statistic}` |
+| 관리자 그룹 | Admin | `GET /admin/group/{load,candidates,boardids,list,groupids}`; `POST /admin/group/{create,update,admin}`; `DELETE /admin/group/remove` |
+| 관리자 최신글 | Admin | `GET /admin/latest/{comments,posts}`; `DELETE /admin/latest/{comment,post}` |
+| 관리자 메일 | Admin | `GET /admin/mail/{deliveries,campaigns,campaign/:uid}`; `POST /admin/mail/{preview,campaign,campaign/:uid/test,campaign/:uid/prepare,campaign/:uid/send}` |
+| 관리자 신고 | Admin | `GET /admin/report/reports`; `PUT /admin/report/resolve` |
+| 관리자 스킨·시스템 | Admin | `PUT /admin/skin/setting`; `GET /admin/system/mail` |
+| 관리자 회원 | Admin | `GET /admin/user/{list,load,invites}`; `POST /admin/user/{create,modify,invite}`; `DELETE /admin/user/{remove,invite/:uid}` |
+| 인증 공개 | Public | `POST /auth/{signin,signup,reset-password,refresh,checkemail,checkname,verify,logout}`; `GET /auth/signup/status` |
+| 인증 계정 | JWT | `GET /auth/load`; `PATCH /auth/update` |
+| 사용자 공개 | Public | `GET /auth/user/info`; `POST /auth/user/change-password` |
+| 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}` |
+| OAuth | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/google` |
+| 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer}` |
+| 게시판 보호 | JWT | `GET /board/{download,move/list}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
+| 최근 태그 | Public · Direct | `GET /board/tag/recent` |
+| RSS | Public · Direct | `GET /rss/:id` |
+| 쪽지 | JWT | `GET /chat/{list,history}`; `POST /chat/save` |
+| 댓글 공개 | Public | `GET /comment/list` |
+| 댓글 보호 | JWT | `PATCH /comment/{like,modify}`; `DELETE /comment/remove`; `POST /comment/{reply,write}` |
+| 에디터 공개 | Public | `GET /editor/config` |
+| 에디터 보호 | JWT | `GET /editor/{load/thumbnail,load/images,load/post,suggestion/title,suggestion/tag}`; `PATCH /editor/modify`; `DELETE /editor/{remove/attached,remove/image}`; `POST /editor/{upload/images,write}` |
+| 홈 공개 | Public | `GET /home/{visit,latest,latest/:id,sidebar/links}` |
+| 홈 버전 | Public · Direct | `GET /home/nubo` |
+| 알림 | JWT | `GET /home/noti/load`; `PATCH /home/noti/checked` |
+| 단일 알림 | JWT · Direct | `PATCH /home/noti/checked/:notiUid` |
+| 거래 공개 | Public | `GET /trade/{list,view}` |
+| 거래 보호 | JWT | `GET /trade/load`; `PATCH /trade/{modify,status}`; `POST /trade/write` |
+| 동기화 | Secret · Direct | `GET /sync` (`SYNC_SECRET_KEY`) |
+
+## 요청·응답 타입의 현재 source of truth
+
+- GOAPI request/result 구조: `goapi/pkg/models`와 각 handler의 query/form binding
+- 프런트가 실제 소비하는 result 구조: `app/types`와 `app/composables`
+- 공통 envelope와 code: GOAPI `pkg/models`, NUBO `app/types/common.ts`, 이 문서의 JSON Schema
+- cookie 이름: `nubo-auth-token`, `nubo-refresh-token`
+- contract version: GOAPI와 NUBO `/version`의 `apiContract="1"`
+
+Go 모델에는 query, JSON, multipart form이 혼재하고 기존 TypeScript 타입도 화면별 view model을 포함한다.
+따라서 현재 전 모델 자동 생성은 오히려 잘못된 결합을 만들 가능성이 높다. 먼저 프런트가 실제 소비하는
+endpoint의 request/result를 목록화한 뒤, 안정된 JSON 모델부터 OpenAPI 또는 생성 타입 대상으로 옮긴다.
+
+## 이번 대조에서 정리한 불일치
+
+- `/admin/group/admin`: 실제 프런트 호출과 GOAPI route 사이에 빠져 있던 Nitro proxy 추가
+- `/board/move/apply`: Nitro `PUT`을 GOAPI와 같은 `POST`로 정정
+- `/admin/dashboard/latest`: GOAPI route와 프런트 호출부가 없는 잔존 Nitro proxy 제거
+

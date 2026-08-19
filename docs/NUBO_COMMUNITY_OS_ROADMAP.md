@@ -431,18 +431,22 @@ npm run build
 
 - 우선순위: `P0`
 - 크기: `L`
-- 상태: `READY`
+- 상태: `IN_PROGRESS`
 - 선행: S0-Q01 핵심 안정화
 
 ### 작업
 
-- [ ] 현재 Nitro `/api` 엔드포인트와 GOAPI 엔드포인트 목록 생성
-- [ ] 요청/응답 타입과 HTTP status 사용 방식 정리
-- [ ] `Resp<T>`와 오류 응답의 필수 필드 정의
-- [ ] 인증 만료, 권한 부족, 검증 실패, 충돌의 status/code 규칙 정의
-- [ ] 프런트와 백엔드가 공유할 contract version 도입
-- [ ] OpenAPI 생성 또는 최소한의 machine-readable schema 도입
-- [ ] TypeScript 타입 자동 생성 가능성 검토
+- [x] 현재 Nitro `/api` 100개와 GOAPI 115개 엔드포인트 목록 생성
+- [ ] 프런트가 실제 소비하는 endpoint별 request/result 타입 대조
+- [x] `Resp<T>`와 오류 응답의 필수 필드 정의
+- [x] 인증 만료, 권한 부족, 검증 실패, 충돌의 v1 status/code 규칙 정의
+- [x] 프런트와 백엔드가 공유할 contract version 도입
+- [x] 공통 응답의 최소 machine-readable JSON Schema 도입
+- [x] TypeScript 타입 자동 생성 가능성 검토 — 안정된 JSON 모델부터 후속 도입
+
+현재 계약과 endpoint 목록은 `docs/API_CONTRACT_V1.md`, 공통 응답 schema는
+`docs/contracts/api-response-v1.schema.json`을 기준으로 한다. v1은 기존 클라이언트 호환을 위해 application
+오류의 HTTP 200 응답을 유지하며, HTTP 의미 전환은 contract version을 올리는 단일 migration으로 수행한다.
 
 ### 권장 오류 분류
 
@@ -504,7 +508,7 @@ npm run build
 
 - [x] 선택한 핵심 인증·권한 경계가 회귀 테스트와 함께 완료됨
 - [x] 프런트 단위·Nuxt runtime·prebuilt SSR smoke 기반이 있음
-- [ ] API 오류 규칙이 문서화됨
+- [x] API 오류 규칙이 문서화됨
 - [x] `/health`, `/ready`, `/version`이 있음
 - [ ] 실제 성능 작업 전 비교 가능한 최소 기준값을 저장함
 

@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S0-Q03의 현재 Nitro·GOAPI 계약을 목록화하고, 실제 불일치 위험이 있는 오류·HTTP status 규칙부터 작은 범위로 정리한다.
+- S0-Q03에서 프런트가 실제 소비하는 endpoint의 request/result 타입을 대조하고, 불일치 위험이 큰 모델만 추린다.
 
 ## Current product boundary
 
@@ -52,6 +52,7 @@
 - 인자 없는 `nuboctl`, `help [명령]`과 `<명령> --help`는 같은 한국어 입문·명령별 안내를 제공한다.
 - 대표 `nubo.service`의 restart는 GOAPI·Web에 직접 `PartOf=` 관계를 추가하고 기존 base unit을 덮어쓰지 않는 drop-in으로 보장한다.
 - 자동 테스트는 인증·권한·데이터 손실·동시성·배포처럼 실패 비용이 큰 경계를 우선하며, 구현 세부를 반복하는 테스트는 늘리지 않는다.
+- API contract v1은 기존 application 오류의 HTTP 200 + code 응답을 유지하며, HTTP status 의미 전환은 contract version을 올리는 단일 migration으로만 수행한다.
 
 ## Recent completion
 
@@ -91,6 +92,8 @@
 - v1.2.10 통합 asset과 SHA-256을 정식 GitHub Release로 게시했다.
 - 새 install과 update가 GOAPI·Web lifecycle drop-in을 설치해 `systemctl restart nubo`를 실제 프로세스에 전파하도록 바로잡았다.
 - 인증 코드의 이메일 결합·일회 소비, refresh token 원자적 회전, legacy SHA-256 로그인 시 bcrypt 전환, 활성 UID 1 최고관리자 경계를 최소 회귀 테스트로 고정했다.
+- GOAPI 115개와 Nitro proxy 100개·직접/대체 경로 15개를 대조하고, 공통 응답·오류 code·HTTP status 예외를 API contract v1 문서와 JSON Schema로 고정했다.
+- 누락된 그룹 관리자 변경 proxy를 추가하고, 게시글 이동의 PUT/POST 불일치를 바로잡았으며, 구현·호출부가 없는 dashboard latest proxy를 제거했다.
 
 ## Open findings
 
@@ -104,6 +107,7 @@
 - 사이트 전용 스킨은 기본 스킨을 직접 수정하지 않고 별도 key로 복사해야 이후 `git pull` 충돌을 줄일 수 있다.
 - 공식 update 직후에는 공식 Web이 실행되며, 사이트 전용 스킨의 자동 재빌드는 아직 하지 않으므로 운영자가 `nuboctl customize`를 다시 실행해야 한다.
 - Vite 8/Rolldown의 저사양 CPU 교착이 해결되면 임시 `rolldown-vite@7.3.1` override를 제거하고 Vite 8로 복귀해야 한다.
+- API contract v1의 application 오류는 대부분 HTTP 200 + `success=false`이며, 표준 HTTP status 전환은 v2 호환 작업으로 남아 있다.
 
 ## Verification
 
@@ -146,7 +150,8 @@
 - systemd lifecycle 수정: fresh install과 기존 drop-in 없는 update의 추가, 기존 다른 drop-in 충돌 보호를 회귀 테스트로 확인했다. systemd 259 사용자 manager에서 대표 unit restart 전후 GOAPI·Web 시험 프로세스 PID가 모두 바뀌는 것도 검증했다.
 - v1.2.10을 Cafe24 가상서버 호스팅에서 설치·update하고 실제 MySQL/MariaDB, Nginx/TLS, 기본 이미지 처리와 운영 명령을 확인해 현재 실서버 QA를 완료했다.
 - GOAPI 인증 경계: repository·service·HTTP middleware/handler의 선별 테스트와 `go test ./...`, `go test -race ./...`, `go vet ./...`를 통과했다(GOAPI `4b80741`).
+- API contract v1: Nitro/GOAPI route 대조에서 누락·초과 0건을 확인했고, 변경 파일 ESLint, NUBO 18개 테스트, typecheck와 production build를 통과했다.
 
 ## Next action
 
-- S0-Q03에서 현재 Nitro `/api`와 GOAPI endpoint·응답 형식을 먼저 목록화하고, 프런트가 실제로 의존하는 계약 불일치만 추린다.
+- 프런트가 실제 소비하는 endpoint부터 TypeScript result와 GO model을 대조하고, 자동 생성 전에 고쳐야 할 이름·nullability·transport 불일치만 목록화한다.
