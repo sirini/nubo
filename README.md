@@ -29,7 +29,7 @@ NUBO는 두 프로세스로 실행됩니다.
 | Nuxt/Nitro | `3000` | 화면 렌더링, 브라우저 API 중계, 인증 쿠키 관리 |
 | GOAPI | `3006` | 데이터베이스, 회원·게시물·메일·파일 처리 |
 
-소스 개발에서는 두 프로세스가 같은 프로젝트 디렉터리의 `.env` 설정을 사용합니다. `npm run goapi:prepare`가 공식 통합 릴리스에서 GOAPI와 libvips를 함께 내려받고 기존 `./goapi-linux` 실행 경로를 준비합니다. Prebuilt 배포에서는 같은 형식의 파일을 `/etc/nubo/nubo.env`처럼 릴리스 밖에 두고 GOAPI에는 `NUBO_ENV_FILE`로, Node에는 `--env-file`로 명시합니다.
+소스 개발에서는 두 프로세스가 같은 프로젝트 디렉터리의 `.env` 설정을 사용합니다. `npm run server:prepare`가 공식 통합 릴리스에서 GOAPI와 libvips를 함께 내려받고 기존 `./goapi-linux` 실행 경로를 준비합니다. Prebuilt 배포에서는 같은 형식의 파일을 `/etc/nubo/nubo.env`처럼 릴리스 밖에 두고 GOAPI에는 `NUBO_ENV_FILE`로, Node에는 `--env-file`로 명시합니다.
 Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관리자까지 준비하므로 운영 서버에서 npm 설치나 Nuxt 빌드를 반복하지 않습니다.
 
 > `.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 외부에 공개하지 마세요.
@@ -64,7 +64,7 @@ sudo /opt/nubo/current/nuboctl activate-nginx
 
 ```bash
 npm install
-npm run goapi:prepare
+npm run server:prepare
 ./goapi-linux
 ```
 
@@ -196,7 +196,7 @@ npm run server:update
 
 명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 `nuboctl update`의 백업 확인, additive migration,
 원자적 `current` 전환, 재시작과 readiness 검사를 그대로 수행합니다. 소스 개발 환경에서 GOAPI만
-갱신하려면 `npm run goapi:prepare`를 다시 실행합니다.
+갱신하려면 `npm run server:prepare`를 다시 실행합니다.
 
 ## Nginx 예시
 

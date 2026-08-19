@@ -27,7 +27,7 @@
 - 설정과 업로드는 릴리스 밖에 보존하며, 운영 서버에서는 `npm install`이나 Nuxt 빌드를 하지 않는다.
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
 - Git에는 실행 바이너리와 통합 압축본을 넣지 않고, 고정된 GOAPI commit으로 만든 GitHub Release asset 하나를 사용한다.
-- `npm run goapi:prepare`, `server:install`, `server:update`는 같은 asset과 외부 SHA-256을 검증해 사용한다.
+- `npm run server:prepare`, `server:install`, `server:update`는 같은 asset과 외부 SHA-256을 검증해 사용한다.
 - x86-64 호환판을 기본 경로에, sharp 공식 x86-64-v2판을 glibc-hwcaps 경로에 함께 둔다.
 - CPU 판별과 선택은 glibc에 맡기며 `nuboctl`은 SSE4.2가 없다는 이유로 설치를 거부하지 않는다.
 - Ubuntu와 Node.js는 각각 22.04와 22라는 최소 기준만 두고 이후 버전에 별도 상한이나 허용 목록을 두지 않는다.
@@ -49,6 +49,7 @@
 - 설치 정책을 Ubuntu 22.04 이상과 Node.js 22 이상이라는 두 하한선으로 단순화했다.
 - 추적하던 `goapi-linux`를 제거하고 통합 릴리스 다운로드·검증·배치 명령과 태그 기반 게시 workflow를 추가했다.
 - `v1.2.1-rc.1` 통합 asset과 SHA-256을 GitHub prerelease로 게시해 새 전달 경로를 활성화했다.
+- 로컬 GOAPI 준비 명령도 서버 전달 명명 규칙에 맞춰 `npm run server:prepare`로 통일했다.
 
 ## Open findings
 

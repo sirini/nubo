@@ -12,8 +12,8 @@ import {
 } from "./release-download.mjs"
 
 async function main() {
-  const [command = "goapi", ...args] = process.argv.slice(2)
-  if (!["goapi", "install", "update"].includes(command)) {
+  const [command = "prepare", ...args] = process.argv.slice(2)
+  if (!["prepare", "install", "update"].includes(command)) {
     throw new Error(`알 수 없는 릴리스 준비 명령입니다: ${command}`)
   }
   assertSupportedRuntime()
@@ -21,9 +21,9 @@ async function main() {
   const archive = await fetchRelease(descriptor)
   const localRelease = await extractRelease(descriptor, archive, join(process.cwd(), ".nubo", "releases"))
 
-  if (command === "goapi") {
+  if (command === "prepare") {
     const link = await prepareGoapi(localRelease)
-    console.log(`GOAPI ${descriptor.version} 준비 완료: ${link}`)
+    console.log(`NUBO 서버 런타임 ${descriptor.version} 준비 완료 (GOAPI: ${link})`)
     return
   }
 

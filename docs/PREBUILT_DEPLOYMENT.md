@@ -152,5 +152,5 @@ commands, and the unprivileged service and proxy templates used by the installer
 
 The official archive is attached to an immutable GitHub Release. `deploy/release-sources.json` pins the GOAPI
 commit used by both local and CI release builds and selects the release or prerelease tag consumed by source
-checkouts. `npm run goapi:prepare`, `server:install`, and `server:update` all reuse this single archive; none of
+checkouts. `npm run server:prepare`, `server:install`, and `server:update` all reuse this single archive; none of
 them runs `npm install` or builds application code on the target machine.
