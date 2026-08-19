@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 게시글 이동 기능과 API contract·인증 회귀 보강을 v1.2.11 통합 릴리스로 전달하고 운영 QA를 준비한다.
+- v1.2.11로 전달한 게시글 이동 기능을 운영 서버에서 관리자 권한별로 QA한다.
 
 ## Current product boundary
 
@@ -97,6 +97,8 @@
 - 누락된 그룹 관리자 변경 proxy를 추가하고, 게시글 이동의 PUT/POST 불일치를 바로잡았으며, 구현·호출부가 없는 dashboard latest proxy를 제거했다.
 - 프런트의 명시적 `Resp<T>` 소비 지점을 GO result와 대조하고 응답을 성공/실패 discriminated union으로 고쳤으며, 게시판 설정의 누락된 `levelWrite` request 필드와 오래된 dashboard latest 상태 타입을 정리했다.
 - 기본 게시판·갤러리 공통 보기 화면에 권한 기반 게시글 이동 UI를 연결하고 게시판별 관리자 판정을 목록·보기·쓰기 화면에 일관되게 적용했다.
+- 게시글 이동과 API contract·인증 회귀 보강을 NUBO `283beae`·GOAPI `667bd00` 기반 v1.2.11 통합 릴리스로 게시했다.
+- npm 10에서도 깨끗한 설치가 가능하도록 누락된 선택적 의존성을 lockfile에 반영해 자동 릴리스 경로를 복구했다.
 
 ## Open findings
 
@@ -155,7 +157,8 @@
 - GOAPI 인증 경계: repository·service·HTTP middleware/handler의 선별 테스트와 `go test ./...`, `go test -race ./...`, `go vet ./...`를 통과했다(GOAPI `4b80741`).
 - API contract v1: Nitro/GOAPI route 대조에서 누락·초과 0건을 확인했고, request/result 타입 대조 뒤 변경 파일 ESLint, NUBO 18개 테스트, typecheck와 production build를 통과했다.
 - 게시글 이동: 목적지 목록 권한 필터와 양쪽 관리자 권한을 GOAPI 회귀 테스트로 확인했고, 전체 Go 테스트·vet와 NUBO 18개 테스트·변경 파일 ESLint·typecheck·production build를 통과했다.
+- v1.2.11 전달: Ubuntu 22/24, qemu64 이미지 처리, 두 libvips 변형, 내부·외부 checksum, prebuilt health·readiness·SSR·proxy smoke를 통과한 asset과 SHA-256을 게시했다.
 
 ## Next action
 
-- 고정 GOAPI `667bd00`과 현재 NUBO로 v1.2.11 통합 asset을 게시·재검증한 뒤 운영 서버를 update한다.
+- 운영 서버에서 `git pull --ff-only` 후 `nuboctl update`하고 기본 게시판↔갤러리 이동을 게시판 관리자·그룹 관리자·UID 1 계정으로 확인한다.
