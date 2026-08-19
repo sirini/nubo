@@ -59,9 +59,10 @@
 <script setup lang="ts">
 import { CircleCheckBigIcon, Settings2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
+import type { AdminReportItem } from "~/types/admin"
 
 const { latestReports } = useNuboAdminContext()
-const props = defineProps<{
-  changeStatus: Function
+defineProps<{
+  changeStatus: (status: "solved" | "wait" | "edit", report?: AdminReportItem | null) => Promise<void>
 }>()
 </script>

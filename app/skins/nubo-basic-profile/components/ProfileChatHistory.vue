@@ -40,19 +40,19 @@
           <Input
             v-model="chatMessage"
             :placeholder="isLoggedIn ? '메시지를 입력해 주세요' : '로그인이 필요합니다'"
-            @keyup.enter="sendChatMessage"
             class="flex-1"
+            @keyup.enter="sendChatMessage"
           />
         </CommonVTooltip>
 
         <CommonVTooltip content="상대방에게 메시지를 남깁니다">
           <Button
-            @click="sendChatMessage"
             class="text-foreground flex items-center gap-2 cursor-pointer"
             :disabled="!isLoggedIn"
+            @click="sendChatMessage"
           >
             <Spinner v-if="isLoading" />
-            <SendIcon class="w-4 h-4" v-else />
+            <SendIcon v-else class="w-4 h-4" />
             전송</Button
           >
         </CommonVTooltip>

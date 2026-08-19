@@ -27,6 +27,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       )
     "
   >
-    <slot />
+    <slot ></slot>
   </NavigationMenuLink>
 </template>

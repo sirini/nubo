@@ -1,7 +1,7 @@
 <template>
   <Dialog v-if="isDesktop" v-model:open="isOpenReportForm">
     <DialogTrigger as-child>
-      <slot />
+      <slot ></slot>
     </DialogTrigger>
     <DialogContent class="sm:max-w-100">
       <DialogHeader>
@@ -14,7 +14,7 @@
 
   <Drawer v-else v-model:open="isOpenReportForm">
     <DrawerTrigger as-child>
-      <slot />
+      <slot ></slot>
     </DrawerTrigger>
     <DrawerContent>
       <div class="mx-auto w-full max-w-sm">

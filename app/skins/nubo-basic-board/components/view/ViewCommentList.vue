@@ -3,8 +3,8 @@
     <div v-for="co in comments" :key="co.uid" class="group border-t border-border/60 first:border-t-0">
       <div class="flex gap-3 py-5 sm:gap-4" :class="co.uid !== co.replyUid ? 'pl-4 sm:pl-8' : ''">
         <CornerDownRightIcon
-          class="mt-3 size-4 shrink-0 text-muted-foreground"
           v-if="co.uid !== co.replyUid"
+          class="mt-3 size-4 shrink-0 text-muted-foreground"
         />
 
         <Avatar class="size-9 shrink-0 cursor-pointer border border-border/70">
@@ -33,17 +33,17 @@
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  @click="setModifyComment(co.uid, co.content)"
                   class="cursor-pointer flex items-center gap-3"
                   :disabled="!checkPermissionComment(co.writer.uid)"
+                  @click="setModifyComment(co.uid, co.content)"
                 >
                   <EraserIcon class="w-4 h-4" />
                   수정</DropdownMenuItem
                 >
                 <DropdownMenuItem
                   class="text-destructive focus:text-destructive cursor-pointer flex items-center gap-3"
-                  @click="confirmRemoveComment(co.uid)"
                   :disabled="co.content === '(deleted)' || !checkPermissionComment(co.writer.uid)"
+                  @click="confirmRemoveComment(co.uid)"
                 >
                   <ShredderIcon class="w-4 h-4" />
                   삭제</DropdownMenuItem
@@ -60,10 +60,10 @@
           <div class="flex items-center gap-2 pt-3">
             <CommonVTooltip content="이 댓글에 나의 답글을 달아봅니다">
               <Button
+                v-if="co.uid === co.replyUid"
                 variant="outline"
                 size="sm"
                 class="text-muted-foreground hover:text-foreground cursor-pointer"
-                v-if="co.uid === co.replyUid"
                 :disabled="!isLoggedIn"
                 @click="setReplyComment(co.uid, co.content)"
               >

@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   nameKey?: string
   labelKey?: string
   labelFormatter?: (d: number | Date) => string
-  payload?: Record<string, any>
+  payload?: Record<string, string | number | Date | undefined>
   config?: ChartConfig
   class?: HTMLAttributes["class"]
   color?: string
@@ -29,7 +29,7 @@ const payload = computed(() => {
   return Object.entries(props.payload).map(([key, value]) => {
     // const key = `${props.nameKey || item.name || item.dataKey || "value"}`
     const itemConfig = props.config[key]
-    const indicatorColor = props.config[key]?.color ?? props.payload.fill
+    const indicatorColor = props.config[key]?.color ?? (typeof props.payload.fill === "string" ? props.payload.fill : undefined)
 
     return { key, value, itemConfig, indicatorColor }
   }).filter(i => i.itemConfig)
@@ -82,7 +82,7 @@ const tooltipLabel = computed(() => {
                 '--color-bg': indicatorColor,
                 '--color-border': indicatorColor,
               }"
-            />
+            ></div>
           </template>
 
           <div :class="cn('flex flex-1 justify-between leading-none', nestLabel ? 'items-end' : 'items-center')">

@@ -79,6 +79,8 @@ import ReportEdit from "./components/ReportEdit.vue"
 import ReportList from "./components/ReportList.vue"
 import ReportListFooter from "./components/ReportListFooter.vue"
 
+defineOptions({ name: "NuboAdminReport" })
+
 type Status = "solved" | "wait" | "edit"
 const selectedReport = ref<AdminReportItem>({
   uid: 0,

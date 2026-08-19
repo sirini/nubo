@@ -5,28 +5,28 @@
       <Button size="sm" :variant="isBlocked ? 'secondary' : 'ghost'" @click="changeBlocked(true)">차단 사용자</Button>
     </div>
     <Pagination
+      v-slot="{ page: currentPage, pageCount }"
       :items-per-page="limit"
       :total="userList.total"
       :sibling-count="1"
       show-edges
       :page="page"
       :default-page="page"
-      v-slot="{ page, pageCount }"
     >
       <PaginationContent v-slot="{ items }">
-        <PaginationFirst class="cursor-pointer" @click="paging(1)" v-show="page > 1">
+        <PaginationFirst v-show="currentPage > 1" class="cursor-pointer" @click="paging(1)">
           <ChevronFirstIcon class="w-10 h-10" />
         </PaginationFirst>
 
-        <Button variant="ghost" size="icon" v-show="page <= 1">
+        <Button v-show="currentPage <= 1" variant="ghost" size="icon">
           <ChevronFirstIcon class="w-10 h-10 text-muted" />
         </Button>
 
-        <PaginationPrevious class="cursor-pointer mr-2" @click="paging(page - 1)" v-show="page > 1">
+        <PaginationPrevious v-show="currentPage > 1" class="cursor-pointer mr-2" @click="paging(currentPage - 1)">
           <ChevronLeftIcon class="w-10 h-10" />
         </PaginationPrevious>
 
-        <Button variant="ghost" size="icon" v-show="page <= 1" class="mr-2">
+        <Button v-show="currentPage <= 1" variant="ghost" size="icon" class="mr-2">
           <ChevronLeftIcon class="w-10 h-10 text-muted" />
         </Button>
 
@@ -34,7 +34,7 @@
           <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
             <Button
               class="w-10 h-10 text-foreground cursor-pointer"
-              :variant="item.value === page ? 'default' : 'outline'"
+              :variant="item.value === currentPage ? 'default' : 'outline'"
               @click="paging(item.value)"
             >
               {{ item.value }}
@@ -45,22 +45,22 @@
         </template>
 
         <PaginationNext
+          v-show="currentPage < pageCount"
           class="cursor-pointer ml-2"
-          @click="paging(page + 1)"
-          v-show="page < pageCount"
+          @click="paging(currentPage + 1)"
         >
           <ChevronRightIcon class="w-10 h-10" />
         </PaginationNext>
 
-        <Button variant="ghost" size="icon" v-show="page >= pageCount" class="ml-2">
+        <Button v-show="currentPage >= pageCount" variant="ghost" size="icon" class="ml-2">
           <ChevronRightIcon class="w-10 h-10 text-muted" />
         </Button>
 
-        <PaginationLast class="cursor-pointer" v-show="page < pageCount" @click="paging(pageCount)">
+        <PaginationLast v-show="currentPage < pageCount" class="cursor-pointer" @click="paging(pageCount)">
           <ChevronLastIcon class="w-10 h-10" />
         </PaginationLast>
 
-        <Button variant="ghost" size="icon" v-show="page >= pageCount">
+        <Button v-show="currentPage >= pageCount" variant="ghost" size="icon">
           <ChevronLastIcon class="w-10 h-10 text-muted" />
         </Button>
       </PaginationContent>
@@ -78,9 +78,9 @@
         </SelectContent>
       </Select>
       <Input
+        v-model="keyword"
         type="text"
         placeholder="사용자 검색"
-        v-model="keyword"
         @keyup.enter="search"
       />
       <Button

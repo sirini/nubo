@@ -3,13 +3,13 @@
     class="flex flex-wrap gap-2 p-3 border rounded-md bg-background min-h-12 items-center focus-within:ring-1 focus-within:ring-ring"
   >
     <Badge
-      v-for="(tag, index) in tags"
+      v-for="(existingTag, index) in tags"
       :key="index"
       variant="secondary"
       class="pl-2 pr-2 py-1 text-sm flex items-center gap-1 cursor-pointer"
       @click="removeTag(index)"
     >
-      {{ tag }}
+      {{ existingTag }}
     </Badge>
 
     <div class="relative flex-1 min-w-30">
@@ -20,7 +20,7 @@
           placeholder="태그입력 (엔터)"
           @keydown.enter.prevent="addTag"
           @keydown.tab.prevent="addTag"
-          @keydown.comma.prevent="addTag"
+          @keydown="handleKeydown"
           @keydown.space.prevent="addTag"
         />
       </CommonVTooltip>
@@ -47,4 +47,10 @@
 import { useNuboWriteContext } from "~/providers/contexts/write"
 
 const { tag, tags, tagSuggestions, addTag, removeTag, selectSuggestedTag } = useNuboWriteContext()
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key !== ",") return
+  event.preventDefault()
+  addTag()
+}
 </script>

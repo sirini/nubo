@@ -26,7 +26,7 @@ const content = computed(() => {
     data-slot="field-error"
     :class="cn('text-destructive text-sm font-normal', props.class)"
   >
-    <slot v-if="$slots.default" />
+    <slot v-if="$slots.default" ></slot>
 
     <template v-else-if="typeof content === 'string'">
       {{ content }}

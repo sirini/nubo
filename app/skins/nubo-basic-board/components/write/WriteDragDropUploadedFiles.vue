@@ -25,7 +25,7 @@
             </CommonVTooltip>
           </div>
         </PopoverTrigger>
-        <PopoverContent class="w-auto p-0" v-if="getUploadedThumbnail(file.uid).length > 0">
+        <PopoverContent v-if="getUploadedThumbnail(file.uid).length > 0" class="w-auto p-0">
           <img
             :src="getUploadedThumbnail(file.uid)"
             class="w-50 h-50 lg:w-75 lg:h-75 object-cover rounded-lg shadow-lg"

@@ -5,7 +5,7 @@
       <ChevronsUpDownIcon class="w-4 h-4" />
     </CollapsibleTrigger>
     <CollapsibleContent class="text-muted-foreground">
-      <slot />
+      <slot ></slot>
     </CollapsibleContent>
   </Collapsible>
 </template>

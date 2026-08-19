@@ -12,6 +12,6 @@ const props = defineProps<{
     data-slot="table-header"
     :class="cn('[&_tr]:border-b', props.class)"
   >
-    <slot />
+    <slot ></slot>
   </thead>
 </template>

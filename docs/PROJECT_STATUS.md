@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S2-Q04 릴리스 게시 전에 Ubuntu 22.04/24.04 fresh-install smoke까지 통과시키며, 남은 전체 lint 부채를 다음 독립 단위로 검토한다.
+- S2-Q04 릴리스 파이프라인을 완료했으며, lint 의미 판단 경고 50건을 다음 독립 단위로 남긴다.
 
 ## Current product boundary
 
@@ -15,6 +15,7 @@
 
 - API contract version은 NUBO JSON과 GOAPI embedded text를 각 저장소의 machine-readable source로 두고 릴리스 전에 반드시 일치시킨다.
 - 릴리스 CI는 전체 lint 부채와 분리해 NUBO test/typecheck/build, GOAPI 공식 빌드 환경의 test/vet, contract 일치를 게시 전 필수 게이트로 실행한다.
+- 전체 ESLint 오류는 게시 전에 차단하고, 기존 의미 판단 경고 50건을 상한으로 고정해 새 경고가 늘어나지 않게 한다.
 - fresh-install smoke는 일회용 Ubuntu 22.04/24.04 runner에서 로컬 MySQL/MariaDB를 준비하고 릴리스 설치·systemd 기동·`/ready`·`/version`만 검증하며 Nginx 활성화, TLS, 메일, 외부 DB와 update는 제외한다.
 - Nitro 시작 시 GOAPI contract를 확인하되 정상 부팅 중 연결 지연이나 불일치가 Web 기동 자체를 막지는 않으며, 구조화 경고와 지속 `/ready`·`/version` 진단으로 처리한다.
 - `nuboctl`은 범용 배포판 검증기가 아니라 NUBO의 최소 실행 환경을 준비하고 문제 해결 방법을 안내한다.
@@ -61,6 +62,7 @@
 
 ## Recent completion
 
+- ESLint 자동 수정 264건과 실제 오류 38건을 정리해 오류 0건으로 만들고, 전체 lint를 릴리스 게시 필수 게이트에 추가했다.
 - 패키징 후보를 Ubuntu 22.04/24.04 별도 runner에 전달해 fresh install과 서비스 정상 상태를 확인한 뒤에만 GitHub Release를 게시하도록 연결했다.
 - 릴리스 workflow가 NUBO test/typecheck/build, GOAPI test/vet와 양쪽 API contract 일치를 모두 통과해야 패키징·게시하도록 보강했다.
 - S0-Q04를 완료해 `/version`에 release build identity와 호환성 진단을 노출하고, 관리자 경고와 비차단 startup contract 확인을 연결했다.
@@ -112,7 +114,7 @@
 
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
 - 내부 `nuboctl update --release`는 데이터 백업·복원을 수행하지 않으며 공개 `nuboctl update`도 외부 백업 확인을 유지한다.
-- 전체 NUBO ESLint에는 완료된 작업 밖의 기존 358건이 남아 있다.
+- 전체 NUBO ESLint에는 기본값을 추가하면 런타임 의미가 달라질 수 있는 optional prop 경고 46건과 검토가 필요한 `v-html` 경고 4건이 남아 있다.
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
 - adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
@@ -124,6 +126,7 @@
 
 ## Verification
 
+- lint 정리: 전체 ESLint 오류 0건·경고 50건 상한, NUBO 28개 테스트, typecheck, production build와 diff whitespace 검사를 통과했다.
 - fresh-install smoke: 현재 v1.2.11 후보를 Node.js 22.23.2와 격리된 Ubuntu 22.04/24.04 systemd 환경에 각각 설치해 MariaDB bootstrap, GOAPI·Web 기동, `/ready`와 build/contract를 포함한 `/version` 검증을 통과했다.
 - S2-Q04 필수 게이트: NUBO 28개 테스트·typecheck·production build·prebuilt smoke, contract 일치/불일치 회귀, workflow YAML parse와 공식 Ubuntu 22/libvips Docker 환경의 GOAPI 전체 test/vet을 통과했다. GOAPI 호스트 test/vet도 통과했다(`fc430b8`).
 - S0-Q04: 일치·불일치·GOAPI 미준비 unit 경계, 관리자 경고 선별, 변경 파일 ESLint, NUBO 26개 테스트, typecheck, production build와 prebuilt `/version` smoke를 통과했다.
@@ -173,4 +176,4 @@
 
 ## Next action
 
-- S2-Q04에 남은 NUBO 전체 lint 358건을 한 번에 다루지 않고, 실행 오류 위험이 높은 규칙과 자동 수정 가능한 항목부터 별도 범위로 좁힐지 합의한다.
+- 남은 lint 경고는 optional prop 46건의 기본값 정책과 sanitize된 HTML 4건의 안전성 근거를 각각 작은 범위로 합의해 줄인다.

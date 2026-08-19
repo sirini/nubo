@@ -10,6 +10,6 @@ const props = defineProps<DrawerCloseProps>()
     data-slot="drawer-close"
     v-bind="props"
   >
-    <slot />
+    <slot ></slot>
   </DrawerClose>
 </template>

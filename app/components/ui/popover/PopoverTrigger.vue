@@ -10,6 +10,6 @@ const props = defineProps<PopoverTriggerProps>()
     data-slot="popover-trigger"
     v-bind="props"
   >
-    <slot />
+    <slot></slot>
   </PopoverTrigger>
 </template>

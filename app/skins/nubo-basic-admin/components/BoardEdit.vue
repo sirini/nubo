@@ -62,7 +62,7 @@ const { groupInfo, getBoardConfig, modifyBoard, openBoardRemoveConfirmDialog } =
   useNuboAdminContext()
 const props = defineProps<{
   selectedBoardId: string
-  changePanel: Function
+  changePanel: (panel: "list" | "new" | "edit", boardId?: string) => Promise<void>
 }>()
 const cfg = ref<AdminBoardResult>({ config: BOARD_CONFIG, groups: [] })
 const setting = await getBoardConfig(props.selectedBoardId)
@@ -107,7 +107,7 @@ const onSubmit = handleSubmit(
       props.changePanel("list")
     }
   },
-  ({ errors, values, results }) => {
+  ({ errors }) => {
     toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
   },
 )

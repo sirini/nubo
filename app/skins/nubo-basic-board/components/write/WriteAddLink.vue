@@ -10,11 +10,11 @@
 
       <Card class="p-0">
         <CardContent class="flex p-3 max-w-sm items-center gap-2">
-          <Input type="url" v-model="url" placeholder="https://example.com/sample/url" />
-          <Button type="button" @click="setLink(url)" variant="secondary" v-if="url.length > 0"
+          <Input v-model="url" type="url" placeholder="https://example.com/sample/url" />
+          <Button v-if="url.length > 0" type="button" variant="secondary" @click="setLink(url)"
             >추가</Button
           >
-          <Button type="button" @click="setLink(url)" variant="destructive" v-else>제거</Button>
+          <Button v-else type="button" variant="destructive" @click="setLink(url)">제거</Button>
         </CardContent>
       </Card>
 

@@ -23,7 +23,7 @@
         <UserRoundPlusIcon class="w-4 h-4" />
       </ProfileSimpleInfoBox>
 
-      <ProfileSimpleInfoBox title="포인트" :content="num(myPoint)" v-if="isMe">
+      <ProfileSimpleInfoBox v-if="isMe" title="포인트" :content="num(myPoint)">
         <CoinsIcon class="w-4 h-4" />
       </ProfileSimpleInfoBox>
     </div>
@@ -41,6 +41,8 @@ import ProfileLatestPosts from "./components/ProfileLatestPosts.vue"
 import ProfileMain from "./components/ProfileMain.vue"
 import ProfileSimpleInfoBox from "./components/ProfileSimpleInfoBox.vue"
 import ProfileUserReportDialog from "./components/ProfileUserReportDialog.vue"
+
+defineOptions({ name: "NuboProfilePage" })
 
 const { profileUser, myPoint, isMe, isOpenReportForm } = useNuboProfileContext()
 </script>

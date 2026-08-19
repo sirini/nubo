@@ -21,3 +21,7 @@
     </Card>
   </section>
 </template>
+
+<script setup lang="ts">
+defineOptions({ name: "NuboLogoutPage" })
+</script>

@@ -30,6 +30,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
     v-bind="forwarded"
     :class="cn(toggleVariants({ variant, size }), props.class)"
   >
-    <slot v-bind="slotProps" />
+    <slot v-bind="slotProps" ></slot>
   </Toggle>
 </template>

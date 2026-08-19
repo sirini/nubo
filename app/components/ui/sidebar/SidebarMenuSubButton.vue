@@ -38,6 +38,6 @@ const props = withDefaults(
       )
     "
   >
-    <slot />
+    <slot ></slot>
   </Primitive>
 </template>

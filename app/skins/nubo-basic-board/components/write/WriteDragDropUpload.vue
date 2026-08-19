@@ -1,16 +1,16 @@
 <template>
   <div
-    @click="triggerAttach"
-    @dragover.prevent="isDragging = true"
-    @dragenter.prevent="isDragging = true"
-    @dragleave.prevent="isDragging = false"
-    @drop.prevent="dropAttaches"
     class="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center text-muted-foreground hover:bg-accent/50 hover:border-accent cursor-pointer transition-all"
     :class="[
       isDragging
         ? 'border-primary bg-primary/10 text-primary'
         : 'border-border text-muted-foreground hover:bg-accent/50 hover:border-accent',
     ]"
+    @click="triggerAttach"
+    @dragover.prevent="isDragging = true"
+    @dragenter.prevent="isDragging = true"
+    @dragleave.prevent="isDragging = false"
+    @drop.prevent="dropAttaches"
   >
     <UploadCloudIcon class="w-8 h-8 mb-2 opacity-70" />
     <p class="text-sm font-medium">클릭하여 파일을 선택하세요</p>
@@ -36,15 +36,15 @@
               <Button
                 variant="ghost"
                 size="icon"
-                @click="removeFromList(index)"
                 class="cursor-pointer"
+                @click="removeFromList(index)"
               >
                 <XIcon class="w-4 h-4" />
               </Button>
             </CommonVTooltip>
           </div>
         </PopoverTrigger>
-        <PopoverContent class="w-auto p-0" v-if="getPreviewThumbnail(attach.name).length > 0">
+        <PopoverContent v-if="getPreviewThumbnail(attach.name).length > 0" class="w-auto p-0">
           <img
             :src="getPreviewThumbnail(attach.name)"
             alt="Preview"

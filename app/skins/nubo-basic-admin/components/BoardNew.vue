@@ -57,7 +57,9 @@ import { useBoardFormSchema } from "./boardFormSchema"
 
 const schema = useBoardFormSchema()
 const { groupInfo, createBoard } = useNuboAdminContext()
-const props = defineProps<{ changePanel: Function }>()
+const props = defineProps<{
+  changePanel: (panel: "list" | "new" | "edit", boardId?: string) => Promise<void>
+}>()
 
 // 스키마 지정 및 초기값 설정
 const { handleSubmit, resetForm } = useForm({
@@ -92,7 +94,7 @@ const onSubmit = handleSubmit(
       props.changePanel("list")
     }
   },
-  ({ errors, values, results }) => {
+  ({ errors }) => {
     toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
   },
 )

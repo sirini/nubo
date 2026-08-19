@@ -59,7 +59,7 @@ import { useReportFormSchema } from "./reportFormSchema"
 import UserPermissionFieldGroup from "./UserPermissionFieldGroup.vue"
 
 const props = defineProps<{
-  changeStatus: Function
+  changeStatus: (status: "solved" | "wait" | "edit", report?: AdminReportItem | null) => Promise<void>
   selectedReport: AdminReportItem
 }>()
 const schema = useReportFormSchema()
@@ -74,15 +74,10 @@ const { handleSubmit } = useForm({
 })
 
 // 조치사항 전송
-const onSubmit = handleSubmit(
-  async (data) => {
-    const param = data as UserPermissionManageParam
-    await changeUserPermission(param)
-    await $fetch("/admin/report/resolve", { baseURL: config.public.apiBase, method: "PUT", body: { reportUid: props.selectedReport.uid, response: data.response } })
-    props.changeStatus("solved")
-  },
-  ({ errors, values, results }) => {
-    // toast(`⚠️ 검증 오류: ${JSON.stringify(errors)}`)
-  },
-)
+const onSubmit = handleSubmit(async (data) => {
+  const param = data as UserPermissionManageParam
+  await changeUserPermission(param)
+  await $fetch("/admin/report/resolve", { baseURL: config.public.apiBase, method: "PUT", body: { reportUid: props.selectedReport.uid, response: data.response } })
+  await props.changeStatus("solved")
+})
 </script>

@@ -2,7 +2,7 @@
   <Sheet>
     <CommonVTooltip content="내 프로필을 수정합니다">
       <SheetTrigger as-child>
-        <slot />
+        <slot ></slot>
       </SheetTrigger>
     </CommonVTooltip>
 
@@ -20,8 +20,8 @@
           </Avatar>
 
           <input
-            type="file"
             ref="fileInputRef"
+            type="file"
             class="hidden"
             accept="image/*"
             @change="changeProfileImage"
@@ -30,8 +30,8 @@
             type="button"
             variant="secondary"
             size="sm"
-            @click="selectProfileImage"
             class="cursor-pointer"
+            @click="selectProfileImage"
             >사진 변경</Button
           >
         </div>

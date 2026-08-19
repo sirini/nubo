@@ -90,7 +90,7 @@ provideSidebarContext({
       "
       v-bind="$attrs"
     >
-      <slot />
+      <slot ></slot>
     </div>
   </TooltipProvider>
 </template>

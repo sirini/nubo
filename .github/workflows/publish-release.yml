@@ -47,9 +47,10 @@ jobs:
           GOAPI_SOURCE_DIR: ${{ github.workspace }}/goapi
         run: npm run test:release-contract
 
-      - name: Test, typecheck, and build NUBO
+      - name: Test, lint, typecheck, and build NUBO
         run: |
           npm test
+          npm run lint
           npm run typecheck
           npm run build
 

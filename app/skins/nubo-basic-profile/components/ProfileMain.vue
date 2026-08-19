@@ -9,7 +9,7 @@
     <div class="text-center">
       <div class="flex items-center justify-center gap-4 mb-2">
         <h2 class="text-3xl font-bold tracking-tight" v-html="sanitize(profileUser.name)"></h2>
-        <CommonVTooltip content="사이트의 관리자입니다" v-if="profileUser.admin">
+        <CommonVTooltip v-if="profileUser.admin" content="사이트의 관리자입니다">
           <Badge
             variant="outline"
             class="text-foreground inline-flex items-center gap-2 border-foreground/30"
@@ -20,7 +20,7 @@
       <div class="text-muted-foreground max-w-sm" v-html="sanitize(profileUser.signature)"></div>
     </div>
 
-    <div class="mt-8 flex gap-2" v-if="isMe">
+    <div v-if="isMe" class="mt-8 flex gap-2">
       <CommonVTooltip content="내 프로필 이미지, 닉네임, 서명을 수정합니다">
         <ProfileEditSheet>
           <Button variant="outline" class="flex items-center gap-2 cursor-pointer">
@@ -39,13 +39,13 @@
       >
     </div>
 
-    <div class="mt-8 flex gap-2" v-else>
+    <div v-else class="mt-8 flex gap-2">
       <CommonVTooltip content="이 사용자를 관리자에게 신고합니다">
         <Button
           variant="destructive"
           class="flex items-center gap-2 cursor-pointer"
-          @click="openReportForm(profileUser.uid)"
           :disabled="profileUser.admin"
+          @click="openReportForm(profileUser.uid)"
         >
           <SirenIcon class="w-4 h-4" />신고하기
         </Button>
@@ -59,6 +59,6 @@ import { LogOutIcon, ShieldCheckIcon, SirenIcon, UserRoundPenIcon } from "lucide
 import { useNuboProfileContext } from "~/providers/contexts/profile"
 import ProfileEditSheet from "./ProfileEditSheet.vue"
 
-const { isLoggedIn, isMe, profileUser, openReportForm } = useNuboProfileContext()
+const { isMe, profileUser, openReportForm } = useNuboProfileContext()
 const { sanitize } = useSanitize()
 </script>

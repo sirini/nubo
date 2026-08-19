@@ -1,7 +1,7 @@
 <template>
   <Card class="md:col-span-1 md:row-span-1 overflow-hidden">
     <CardHeader class="border-b">
-      <CardTitle class="flex items-center gap-2 font-medium"><slot /> {{ title }}</CardTitle>
+      <CardTitle class="flex items-center gap-2 font-medium"><slot ></slot> {{ title }}</CardTitle>
     </CardHeader>
     <CardContent class="flex items-center justify-center h-20 text-2xl font-mono mb-2">
       {{ content }}

@@ -44,6 +44,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
     v-bind="forwarded"
     :class="cn('group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs', props.class)"
   >
-    <slot v-bind="slotProps" />
+    <slot v-bind="slotProps" ></slot>
   </ToggleGroupRoot>
 </template>

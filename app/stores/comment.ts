@@ -1,5 +1,5 @@
 import { toast } from "vue-sonner"
-import { type BoardViewResult } from "~/types/board"
+import type { BoardViewResult } from "~/types/board"
 import {
   COMMENT_RESULT,
   type CommentLikeParam,

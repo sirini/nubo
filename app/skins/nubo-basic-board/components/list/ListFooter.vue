@@ -1,13 +1,13 @@
 <template>
   <footer class="mt-10 flex flex-col items-center gap-8">
     <Pagination
+      v-slot="{ page: currentPage, pageCount }"
       :items-per-page="config.rowCount"
       :total="totalPostCount"
       :sibling-count="1"
       show-edges
       :page="page"
       :default-page="page"
-      v-slot="{ page: currentPage, pageCount }"
     >
       <PaginationContent v-slot="{ items }" class="flex-wrap justify-center gap-1">
         <NuxtLink

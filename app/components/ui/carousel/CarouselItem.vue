@@ -21,6 +21,6 @@ const { orientation } = useCarousel()
       )
     "
   >
-    <slot />
+    <slot ></slot>
   </div>
 </template>

@@ -13,6 +13,6 @@ const props = defineProps<{
     data-slot="item-group"
     :class="cn('group/item-group flex flex-col', props.class)"
   >
-    <slot />
+    <slot ></slot>
   </div>
 </template>

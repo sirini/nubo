@@ -1,8 +1,8 @@
 <template>
   <div class="relative mx-auto min-h-screen px-4 py-8 sm:px-6 sm:py-12" :style="`max-width: ${config.width}px`">
     <div
-      class="fixed left-0 top-0 z-50 h-0.5 w-full origin-left bg-primary"
       id="reading-progress"
+      class="fixed left-0 top-0 z-50 h-0.5 w-full origin-left bg-primary"
     ></div>
 
     <ViewBreadcrumb />

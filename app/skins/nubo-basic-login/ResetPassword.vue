@@ -7,14 +7,14 @@
       </CardHeader>
       <CardContent>
         <div class="grid gap-2">
-          <FormField name="requestedReset" v-if="isRequestedReset">
+          <FormField v-if="isRequestedReset" name="requestedReset">
             <FormItem class="py-6">
               <p>비밀번호 초기화 안내 메일을 발송하였습니다</p>
               <p>메일함을 확인하세요!</p>
             </FormItem>
           </FormField>
 
-          <FormField name="resetPassword" v-else>
+          <FormField v-else name="resetPassword">
             <FormItem>
               <FormLabel class="text-muted">아이디</FormLabel>
               <FormControl>

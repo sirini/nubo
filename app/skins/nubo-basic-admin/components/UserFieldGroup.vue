@@ -7,8 +7,8 @@
       </Avatar>
 
       <input
-        type="file"
         ref="fileInputRef"
+        type="file"
         class="hidden"
         accept="image/*"
         @change="changeProfileImage"
@@ -17,8 +17,8 @@
         type="button"
         variant="secondary"
         size="sm"
-        @click="selectProfileImage"
         class="cursor-pointer"
+        @click="selectProfileImage"
         >사진 변경</Button
       >
     </div>
@@ -72,7 +72,7 @@ const isModifying = computed(() => values.value.userUid > 1)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 // 레벨 제한 목록
-let levels = []
+const levels = []
 for (let lv = 1; lv < 11; lv++) {
   levels.push({ name: `Lv. ${lv}`, value: lv })
 }

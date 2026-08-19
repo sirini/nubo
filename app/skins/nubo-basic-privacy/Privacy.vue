@@ -124,6 +124,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: "NuboPrivacyPage" })
+
 const config = useRuntimeConfig()
 const title = computed(() => config.public.title)
 const admin = computed(() => config.public.adminId)

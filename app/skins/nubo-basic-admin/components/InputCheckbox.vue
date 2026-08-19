@@ -1,5 +1,5 @@
 <template>
-  <Field v-slot="{ field, handleChange, errors }" :name="name" orientation="horizontal">
+  <Field v-slot="{ field, handleChange }" :name="name" orientation="horizontal">
     <div class="flex flex-wrap items-center gap-3 sm:gap-4">
       <FieldLabel :for="name" :class="[labelWidth, 'justify-start text-muted-foreground sm:justify-end']">
         {{ label }}

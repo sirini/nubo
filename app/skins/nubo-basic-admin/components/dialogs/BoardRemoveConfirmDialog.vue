@@ -31,8 +31,8 @@
         <Button
           variant="outline"
           type="button"
-          @click="closeBoardRemoveConfirmDialog"
           class="cursor-pointer"
+          @click="closeBoardRemoveConfirmDialog"
           >취소</Button
         >
 
@@ -58,7 +58,9 @@
 import { Trash2Icon } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 
-const props = defineProps<{ changePanel: Function }>()
+const props = defineProps<{
+  changePanel: (panel: "list" | "new" | "edit", boardId?: string) => Promise<void>
+}>()
 const { isBoardRemoveConfirmDialog, targetBoard, closeBoardRemoveConfirmDialog, removeBoard } =
   useNuboAdminContext()
 
@@ -73,6 +75,6 @@ const handleOpenChange = (open: boolean) => {
 const remove = async () => {
   await removeBoard()
   closeBoardRemoveConfirmDialog()
-  props.changePanel("list")
+  await props.changePanel("list")
 }
 </script>

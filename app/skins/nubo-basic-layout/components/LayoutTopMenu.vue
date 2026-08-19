@@ -75,7 +75,7 @@
               <ShieldCheckIcon class="w-4 h-4" /> 개인정보 보호정책</NuxtLink
             >
           </DropdownMenuItem>
-          <DropdownMenuItem as-child class="w-full cursor-pointer" v-if="isAdmin">
+          <DropdownMenuItem v-if="isAdmin" as-child class="w-full cursor-pointer">
             <NuxtLink to="/admin" class="inline-flex gap-3 items-center">
               <CogIcon class="w-4 h-4" /> 관리화면
             </NuxtLink>

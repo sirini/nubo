@@ -15,9 +15,9 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
     <Card
-      class="overflow-hidden rounded-2xl pt-0 shadow-none"
       v-for="(post, index) in posts"
       :key="index"
+      class="overflow-hidden rounded-2xl pt-0 shadow-none"
     >
       <NuxtLink :to="`/board/${post.id}/${post.uid}`">
         <div v-if="post.cover">
@@ -67,12 +67,12 @@
     </Card>
   </div>
 
-  <CommonVTooltip content="이전 게시글들을 더 불러옵니다" v-if="!isLastPost">
+  <CommonVTooltip v-if="!isLastPost" content="이전 게시글들을 더 불러옵니다">
     <Button
-      @click="loadMorePosts"
       class="text-foreground w-full mt-4 cursor-pointer"
       variant="outline"
       size="lg"
+      @click="loadMorePosts"
     >
       <ArrowDownFromLineIcon />
       더 불러오기</Button
@@ -80,8 +80,8 @@
   >
 
   <div
-    class="mt-8 flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-card/60 p-3 text-muted-foreground"
     v-if="isLastPost"
+    class="mt-8 flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-card/60 p-3 text-muted-foreground"
   >
     <CheckCircle2Icon class="w-4 h-4" />
     모든 게시글을 가져왔습니다

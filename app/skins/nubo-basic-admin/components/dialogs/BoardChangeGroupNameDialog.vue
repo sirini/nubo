@@ -32,8 +32,8 @@
         <Button
           variant="outline"
           type="button"
-          @click="closeChangeGroupIdDialog"
           class="cursor-pointer"
+          @click="closeChangeGroupIdDialog"
           >취소</Button
         >
         <Button

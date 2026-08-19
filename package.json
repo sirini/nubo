@@ -11,7 +11,7 @@
     "build:release": "bash scripts/build-release-bundle.sh",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 50",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "server:adopt": "node scripts/prepare-release.mjs adopt",

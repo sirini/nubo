@@ -12,9 +12,9 @@
       <AlertDialogFooter>
         <AlertDialogCancel class="cursor-pointer">{{ cancelText || "취소" }}</AlertDialogCancel>
         <AlertDialogAction
-          @click="emit('confirm')"
           :class="variant === 'destructive' ? 'bg-red-500 hover:bg-red-700' : ''"
           class="text-foreground cursor-pointer"
+          @click="emit('confirm')"
         >
           {{ confirmText || "확인" }}
         </AlertDialogAction>

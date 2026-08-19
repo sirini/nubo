@@ -36,6 +36,6 @@ const props = withDefaults(
     :as="as"
     :as-child="asChild"
   >
-    <slot />
+    <slot ></slot>
   </Primitive>
 </template>

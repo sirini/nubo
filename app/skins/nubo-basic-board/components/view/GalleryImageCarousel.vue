@@ -1,8 +1,8 @@
 <template>
   <Carousel
     v-if="view.images.length > 0"
-    @init-api="setApi"
     class="relative flex h-full w-full flex-col justify-center"
+    @init-api="setApi"
   >
     <CarouselContent class="h-full">
       <CarouselItem
@@ -38,8 +38,8 @@
         <DotIcon
           class="size-6 cursor-pointer text-white/40 transition-colors duration-300"
           :class="idx === imgIdx ? 'text-white' : ''"
-          @click="api?.scrollTo(idx)"
           :aria-label="`${idx + 1}번째 이미지`"
+          @click="api?.scrollTo(idx)"
       /></CommonVTooltip>
     </div>
   </Carousel>

@@ -114,7 +114,7 @@
           <ChartCrosshair
             :template="
               componentToString(chartConfig, ChartTooltipContent, {
-                labelFormatter: (d) => {
+                labelFormatter: (d: number | Date) => {
                   if (typeof d === 'number') {
                     return date(d)
                   } else {
@@ -167,13 +167,6 @@ const chartConfig = {
   post: { label: "게시글", color: "var(--chart-1)" },
 }
 
-// 상단 헤더에 표시할 합계 데이터
-const totalCounts = computed(() => ({
-  visit: statVisit.value?.total || 0,
-  post: statPost.value?.total || 0,
-  comment: statReply.value?.total || 0,
-}))
-
 // 백엔드 데이터를 차트용 포맷으로 변환
 const nuboData = computed(() => {
   const visitHist = statVisit.value?.history || []
@@ -223,11 +216,4 @@ const yMax = computed(() => {
   return max + max * 0.2
 })
 
-// SVG 그라데이션 정의
-const svgDefs = `
-  <linearGradient id="fillVisit" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="5%" stop-color="var(--chart-3)" stop-opacity="0.3"/>
-    <stop offset="95%" stop-color="var(--chart-3)" stop-opacity="0"/>
-  </linearGradient>
-`
 </script>

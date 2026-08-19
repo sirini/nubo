@@ -1,4 +1,5 @@
 import type { ChartConfig } from "."
+import type { Component } from "vue"
 import { isClient } from "@vueuse/core"
 import { useId } from "reka-ui"
 import { h, render } from "vue"
@@ -7,20 +8,14 @@ import { h, render } from "vue"
 const cache = new Map<string, string>()
 
 // Convert object to a consistent string key
-function serializeKey(key: Record<string, any>): string {
-  return JSON.stringify(key, Object.keys(key).sort())
-}
-
-interface Constructor<P = any> {
-  __isFragment?: never
-  __isTeleport?: never
-  __isSuspense?: never
-  new (...args: any[]): {
-    $props: P
+function serializeKey(key: unknown): string {
+  if (typeof key === "object" && key !== null && !Array.isArray(key)) {
+    return JSON.stringify(key, Object.keys(key).sort())
   }
+  return JSON.stringify(key) ?? String(key)
 }
 
-export function componentToString<P>(config: ChartConfig, component: Constructor<P>, props?: P) {
+export function componentToString(config: ChartConfig, component: Component, props?: Record<string, unknown>) {
   if (!isClient)
     return
 
@@ -28,8 +23,8 @@ export function componentToString<P>(config: ChartConfig, component: Constructor
   const id = useId()
 
   // https://unovis.dev/docs/auxiliary/Crosshair#component-props
-  return (_data: any, x: number | Date) => {
-    const data = "data" in _data ? _data.data : _data
+  return (_data: unknown, x: number | Date) => {
+    const data = typeof _data === "object" && _data !== null && "data" in _data ? _data.data : _data
     const serializedKey = `${id}-${serializeKey(data)}`
     const cachedContent = cache.get(serializedKey)
     if (cachedContent)

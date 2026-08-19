@@ -64,6 +64,6 @@ function onKeyDown(event: KeyboardEvent) {
       :orientation
       :scroll-next
       :scroll-prev
-    />
+    ></slot>
   </div>
 </template>

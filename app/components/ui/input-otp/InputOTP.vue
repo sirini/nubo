@@ -23,6 +23,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
     data-slot="input-otp"
     class="disabled:cursor-not-allowed"
   >
-    <slot v-bind="slotProps" />
+    <slot v-bind="slotProps" ></slot>
   </OTPInput>
 </template>

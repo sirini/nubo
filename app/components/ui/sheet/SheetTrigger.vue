@@ -9,6 +9,6 @@ const props = defineProps<DialogTriggerProps>()
     data-slot="sheet-trigger"
     v-bind="props"
   >
-    <slot />
+    <slot ></slot>
   </DialogTrigger>
 </template>

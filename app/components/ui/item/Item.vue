@@ -27,6 +27,6 @@ const props = withDefaults(
     :as-child="asChild"
     :class="cn(itemVariants({ variant, size }), props.class)"
   >
-    <slot />
+    <slot ></slot>
   </Primitive>
 </template>

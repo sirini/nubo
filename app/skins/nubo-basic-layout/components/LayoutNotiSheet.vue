@@ -29,8 +29,8 @@
 
       <div class="flex flex-col gap-2 p-3">
         <div
-          class="flex items-center justify-center gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
           v-if="notifications.length === 0"
+          class="flex items-center justify-center gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
         >
           <InfoIcon class="w-4 h-4" />
           나에게 온 알림이 없습니다
@@ -38,10 +38,10 @@
 
         <div
           v-for="noti in notifications"
+          v-else
           :key="noti.uid"
           class="flex items-center gap-3 p-3 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
           :class="{ 'bg-accent/55': !noti.checked }"
-          v-else
         >
           <div
             class="mt-2 w-2 h-2 rounded-full shrink-0"

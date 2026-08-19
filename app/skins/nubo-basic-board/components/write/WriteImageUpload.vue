@@ -16,9 +16,9 @@
           <TabsTrigger value="upload" class="cursor-pointer"> 업로드 </TabsTrigger>
           <TabsTrigger
             value="db"
-            @click="loadInsertedImages({ reset: true })"
             class="cursor-pointer"
             :disabled="!isLoggedIn"
+            @click="loadInsertedImages({ reset: true })"
             >이전 업로드들</TabsTrigger
           >
           <TabsTrigger value="link" class="cursor-pointer"> URL 추가 </TabsTrigger>
@@ -29,23 +29,23 @@
             <CardContent class="flex p-3 max-w-sm items-center gap-2">
               <Input
                 type="file"
-                @change="changeSelectedImages"
                 accept="image/*"
                 multiple
                 :disabled="!isLoggedIn"
+                @change="changeSelectedImages"
               />
               <Button
                 type="button"
-                @click="uploadingImages"
                 :variant="previewInsertImages.length > 0 ? 'default' : 'outline'"
                 :disabled="isUploading || !isLoggedIn"
                 class="text-foreground cursor-pointer flex items-center gap-2"
+                @click="uploadingImages"
               >
                 <Spinner v-if="isUploading" />
                 업로드
               </Button>
             </CardContent>
-            <CardContent class="grid grid-cols-3 p-3 gap-2" v-show="previewInsertImages.length > 0">
+            <CardContent v-show="previewInsertImages.length > 0" class="grid grid-cols-3 p-3 gap-2">
               <div v-for="(url, index) in previewInsertImages" :key="index">
                 <img
                   :src="url"
@@ -59,7 +59,7 @@
 
         <TabsContent value="db">
           <Card class="p-0">
-            <CardContent class="grid grid-cols-3 p-3 gap-2" v-if="insertedImages.length > 0">
+            <CardContent v-if="insertedImages.length > 0" class="grid grid-cols-3 p-3 gap-2">
               <div
                 v-for="(url, index) in insertedImages"
                 :key="index"
@@ -77,15 +77,15 @@
                   content="클릭하시면 이 사진을 삭제합니다 : (주의) 기존 게시글에 삽입된 이미지들은 더 이상 표시되지 않습니다"
                 >
                   <Trash2Icon
-                    @click.stop="deleteInsertedImage(url.uid)"
                     class="w-5 h-5 absolute right-2 top-2 cursor-pointer text-red-400 z-10"
+                    @click.stop="deleteInsertedImage(url.uid)"
                   />
                 </CommonVTooltip>
               </div>
             </CardContent>
             <CardContent
-              class="flex flex-col items-center justify-center py-6 text-muted-foreground text-sm"
               v-else
+              class="flex flex-col items-center justify-center py-6 text-muted-foreground text-sm"
             >
               <ImageOffIcon class="w-8 h-8 mb-2 opacity-70" />
               <p>올려둔 이미지들이 없습니다</p>
@@ -103,15 +103,15 @@
           <Card class="p-0">
             <CardContent class="flex p-3 max-w-sm items-center gap-2">
               <Input
-                type="text"
                 v-model="imageUrl"
+                type="text"
                 placeholder="https://example.com/path/image.jpg"
               />
               <Button
                 type="button"
-                @click="insertImageToEditor(imageUrl)"
                 class="text-foreground cursor-pointer"
                 :disabled="!isLoggedIn"
+                @click="insertImageToEditor(imageUrl)"
                 >추가</Button
               >
             </CardContent>

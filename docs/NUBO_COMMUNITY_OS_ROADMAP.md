@@ -863,13 +863,13 @@ nuboctl update
 
 - 우선순위: `P1`
 - 크기: `L`
-- 상태: `IN_PROGRESS`
+- 상태: `DONE`
 
 ### 파이프라인
 
 - [x] NUBO와 GOAPI exact ref checkout
 - [x] NUBO test/typecheck/build 필수 게이트
-- [ ] NUBO 전체 lint — 기존 358건 부채와 함께 별도 정리
+- [x] NUBO 전체 lint 게시 게이트 — 오류 0건, 기존 의미 판단 경고 50건 상한 고정
 - [x] GOAPI test/vet
 - [x] Ubuntu 22.04 빌드 스크립트
 - [x] contract version 일치 검사

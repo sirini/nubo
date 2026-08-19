@@ -16,11 +16,13 @@
 </template>
 
 <script setup lang="ts">
-const model = defineModel<any>()
+type SelectValue = string | number
+
+const model = defineModel<SelectValue>()
 
 interface Option {
   label: string
-  value: any
+  value: SelectValue
 }
 
 defineProps<{

@@ -1,13 +1,13 @@
 <template>
   <CommonVTooltip v-if="view.post.liked" content="이 게시글에 좋아요를 취소합니다">
-    <Button variant="outline" class="cursor-pointer gap-2" @click="likePost(false)" :disabled="!isLoggedIn">
+    <Button variant="outline" class="cursor-pointer gap-2" :disabled="!isLoggedIn" @click="likePost(false)">
       <HeartIcon class="fill-current text-primary" />
       {{ num(view.post.like) }}
     </Button>
   </CommonVTooltip>
 
-  <CommonVTooltip content="이 게시글에 좋아요를 남깁니다" v-else>
-    <Button variant="outline" class="cursor-pointer gap-2" @click="likePost(true)" :disabled="!isLoggedIn">
+  <CommonVTooltip v-else content="이 게시글에 좋아요를 남깁니다">
+    <Button variant="outline" class="cursor-pointer gap-2" :disabled="!isLoggedIn" @click="likePost(true)">
       <HeartIcon />
       {{ view.post.like > 0 ? num(view.post.like) : "좋아요" }}
     </Button>
