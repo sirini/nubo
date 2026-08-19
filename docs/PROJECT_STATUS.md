@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S0-Q04를 작은 단위로 마무리하며 다음으로 관리자 대시보드의 버전·API contract 불일치 경고를 연결한다.
+- S0-Q04의 마지막 항목인 Nitro 시작 시 GOAPI contract 호환성 확인의 실패 정책과 최소 구현 범위를 정한다.
 
 ## Current product boundary
 
@@ -57,6 +57,7 @@
 
 ## Recent completion
 
+- 관리자 대시보드가 Web·GOAPI runtime과 release manifest의 버전·API contract 불일치를 구체적인 값과 복구 행동으로 경고한다.
 - release manifest의 NUBO·GOAPI build commit과 버전을 `/version`에 노출하고 실행 조합·API contract 불일치를 `degraded` 진단으로 고정했다.
 - 모든 Nuxt 공개 설정과 문서 제목이 prebuilt 실행 시 환경 파일에서 바뀌도록 런타임 계약을 바로잡았다.
 - `nuboctl` 구현과 테스트를 210줄 이하의 의미 단위 파일로 나누고 함수 주석을 짧은 한국어로 정리했다.
@@ -118,6 +119,7 @@
 
 ## Verification
 
+- S0-Q04 관리자 경고: 알려진 호환성 issue만 고르는 unit test, 변경 파일 ESLint, NUBO 23개 테스트, typecheck와 production build를 통과했다.
 - S0-Q04 build identity: NUBO 21개 테스트, 변경 파일 ESLint, typecheck, production build와 실제 prebuilt `/version` 일치·불일치 smoke를 통과했다.
 - README의 설치·업데이트·소스 빌드 명령을 package scripts, Go module 요구 버전, govips의 플랫폼 요구사항과 대조했다.
 
@@ -165,4 +167,4 @@
 
 ## Next action
 
-- S0-Q04의 다음 단위로 관리자 대시보드의 버전·API contract 불일치 경고 범위와 표시 위치를 확인한다.
+- Nitro 시작 시 GOAPI가 아직 준비되지 않은 정상 부팅과 실제 contract 불일치를 구분하는 정책을 정하고 S0-Q04 완료 범위를 확정한다.

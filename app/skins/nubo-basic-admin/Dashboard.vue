@@ -2,6 +2,30 @@
   <div>
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8 auto-rows-[minmax(180px,auto)] p-6">
       <div
+        v-if="compatibilityMessages.length"
+        class="md:col-span-12 rounded-xl border border-warning/30 bg-warning/10 p-5"
+        role="alert"
+      >
+        <div class="flex gap-3">
+          <TriangleAlertIcon class="mt-0.5 size-5 shrink-0 text-warning" />
+          <div class="min-w-0">
+            <p class="font-semibold">NUBO 실행 버전 확인이 필요합니다</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+              <li v-for="message in compatibilityMessages" :key="message">{{ message }}</li>
+            </ul>
+            <div v-if="runtimeVersion?.build" class="mt-3 grid gap-x-6 gap-y-1 text-xs text-muted-foreground sm:grid-cols-3">
+              <p>Web: <code>{{ runtimeVersion.version }}</code> / manifest <code>{{ runtimeVersion.build.components.nubo.version }}</code></p>
+              <p>GOAPI: <code>{{ goapiVersion }}</code> / manifest <code>{{ runtimeVersion.build.components.goapi.version }}</code></p>
+              <p>API contract: Web <code>{{ runtimeVersion.apiContract }}</code> / GOAPI <code>{{ goapiContract }}</code></p>
+            </div>
+            <p class="mt-3 text-sm text-muted-foreground">
+              실행 중인 Web과 GOAPI가 같은 공식 릴리스 조합인지 확인하고, 필요하면
+              <code>nuboctl update</code>로 릴리스를 다시 전환하세요.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
         v-if="mailStatusLoaded && !mailStatus.configured"
         class="md:col-span-12 flex flex-col gap-4 rounded-xl border border-primary/25 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between"
         role="status"
@@ -328,10 +352,13 @@ import {
   InfoIcon,
   MailWarningIcon,
   MessageCircleIcon,
+  TriangleAlertIcon,
   User2Icon,
 } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import type { AdminMailStatus } from "~/types/admin"
+import type { RuntimeVersionStatus } from "~/types/system"
+import { versionCompatibilityMessages } from "~/utils/runtimeVersion"
 import DashboardGraph from "./components/DashboardGraph.vue"
 
 defineOptions({ name: "NuboAdminDashboard" })
@@ -353,6 +380,10 @@ const {
   loadInitPostList,
 } = useNuboAdminContext()
 const isLoading = ref<boolean>(false)
+const runtimeVersion = ref<RuntimeVersionStatus | null>(null)
+const compatibilityMessages = computed(() => versionCompatibilityMessages(runtimeVersion.value?.issues ?? []))
+const goapiVersion = computed(() => runtimeVersion.value?.goapi.status === "unavailable" ? "unavailable" : runtimeVersion.value?.goapi.version)
+const goapiContract = computed(() => runtimeVersion.value?.goapi.status === "unavailable" ? "unavailable" : runtimeVersion.value?.goapi.apiContract)
 const mailStatusLoaded = ref(false)
 const mailStatus = ref<AdminMailStatus>({
   configured: false,
@@ -375,12 +406,14 @@ const maxVisit = computed(() => {
 
 onMounted(async () => {
   try {
-    const [, , , statusResponse] = await Promise.all([
+    const [, , , statusResponse, versionResponse] = await Promise.all([
       loadInitReportList(false, 3),
       loadInitCommentList(5),
       loadInitPostList(5),
       loadMailStatus().catch(() => null),
+      $fetch<RuntimeVersionStatus>("/version").catch(() => null),
     ])
+    runtimeVersion.value = versionResponse
     if (statusResponse?.success && statusResponse.result) {
       mailStatus.value = statusResponse.result
       mailStatusLoaded.value = true
