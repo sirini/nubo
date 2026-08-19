@@ -117,6 +117,9 @@
 
 ## Open findings
 
+- v1.2.14 태그의 릴리스 workflow run `32279749883`이 진행 중이다. 세션 종료 후에도 GitHub에서 계속 실행되며 모든 gate가 통과해야 Release가 생성된다.
+- 릴리스 CI는 GOAPI 공식 검증과 통합 자산 빌드에서 공식 빌드를 반복해 실행 시간이 길다. 현재 차단 문제는 아니므로 최적화는 보류한다.
+- GitHub Actions의 v4 JavaScript action에 Node 20 사용 중단 안내가 표시된다. 현재 실행을 막지 않으므로 action major 갱신은 별도 호환성 확인 전까지 보류한다.
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
 - 내부 `nuboctl update --release`는 데이터 백업·복원을 수행하지 않으며 공개 `nuboctl update`도 외부 백업 확인을 유지한다.
 - 전체 NUBO ESLint에는 기본값을 추가하면 런타임 의미가 달라질 수 있는 optional prop 경고 46건과 검토가 필요한 `v-html` 경고 4건이 남아 있다.
@@ -131,6 +134,7 @@
 
 ## Verification
 
+- v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서는 NUBO test/lint/typecheck/build와 API contract 검증을 통과하고 GOAPI 공식 환경 검증을 진행 중이다.
 - v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.
 - v1.2.13 후보: build-release는 통과했고 fresh-install 정지 위치를 확인했다. Ubuntu 24의 불필요한 apt metadata 갱신은 5분 timeout, Ubuntu 22의 사전 설치 MySQL은 root 인증 차이로 실패해 공개 Release는 만들지 않았다. 사전 설치 패키지 재사용과 MySQL 인증 감지를 v1.2.14에 추가한다.
 - lint 정리: 전체 ESLint 오류 0건·경고 50건 상한, NUBO 28개 테스트, typecheck, production build와 diff whitespace 검사를 통과했다.
@@ -183,4 +187,7 @@
 
 ## Next action
 
-- v1.2.14 후보를 전체 릴리스 게이트로 재검증·게시하고 운영 update 확인 범위를 결정한다.
+- 먼저 GitHub Actions run `32279749883`의 최종 결과와 v1.2.14 Release 생성을 확인한다.
+- 성공하면 게시 asset의 SHA-256·manifest 버전을 확인하고 상태 문서를 released로 갱신한다. 실패하면 태그를 이동하지 말고 실패 단계만 고쳐 다음 patch 버전으로 재시도한다.
+- 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
+- optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
