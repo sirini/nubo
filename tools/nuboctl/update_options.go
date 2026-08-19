@@ -73,13 +73,13 @@ func installedServiceUser(systemdDir string) string {
 	return "nubo"
 }
 
-// 대화형 update는 빈 동의가 아니라 BACKUP이라는 명시 입력을 요구한다.
+// 대화형 update는 백업 완료 후 Enter로 진행하고 다른 입력은 취소한다.
 func promptUpdateBackup(prompt terminalPrompter) func() (bool, error) {
 	return func() (bool, error) {
-		value, err := prompt.ask("외부 DB·업로드 백업을 완료했다면 BACKUP 입력", "")
+		value, err := prompt.ask("외부 DB·업로드 백업 완료: Enter로 진행 / 아무 문자열로 취소", "")
 		if err != nil {
 			return false, err
 		}
-		return value == "BACKUP", nil
+		return value == "", nil
 	}
 }

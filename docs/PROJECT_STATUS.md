@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- v1.2.0 이전 소스 설치를 한 명령으로 prebuilt·systemd 체제에 안전하게 adoption한다.
+- 실제 Cafe24 adoption에서 발견된 DB 테이블 검증 오타와 백업 확인 UX를 v1.2.6으로 바로잡는다.
 
 ## Current product boundary
 
@@ -37,6 +37,7 @@
 - 기존 프로젝트 소유 계정을 서비스 계정으로 재사용하며 이후 update는 설치된 unit에서 계정을 자동 감지한다.
 - adoption은 프로세스 관리 방식을 추측하지 않고 포트 점유만 안내·차단하며 종료와 재시작은 운영자에게 맡긴다.
 - root-only VPS의 기존 운영을 차단하지 않으며 root 서비스에는 systemd 샌드박스 유지 경고를 표시한다.
+- 백업 안내 후 Enter는 진행, 다른 문자열은 취소로 처리한다.
 
 ## Recent completion
 
@@ -60,6 +61,7 @@
 - 기존 v1.2.0 소스·PM2 설치를 보존형 prebuilt·systemd 체제로 옮기는 `npm run server:adopt`를 v1.2.3으로 게시했다.
 - adoption이 기존 프로세스를 조작하지 않고 포트 점유만 안내·차단하도록 단순화한 v1.2.4를 게시했다.
 - root-only VPS의 기존 checkout을 경고와 systemd 샌드박스로 수용하는 v1.2.5를 게시했다.
+- DB bootstrap 검증 이름을 실제 `user_black_list` 스키마와 일치시키고 adoption 백업 확인을 Enter 방식으로 단순화했다.
 
 ## Open findings
 
@@ -72,7 +74,7 @@
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
 - adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
-- Cafe24처럼 기본 운영 계정이 root뿐인 서버에서 root 소유 checkout을 허용해야 한다.
+- v1.2.5 adoption은 실제 테이블 `tsb_user_black_list`를 `tsb_user_blacklist`로 잘못 검증해 DB 준비 뒤 중단된다.
 
 ## Verification
 
@@ -95,8 +97,9 @@
 - v1.2.4 전달: 고정 GOAPI·두 libvips 변형으로 통합 asset과 SHA-256을 게시하고 새 shallow clone에서 원격 `server:prepare`, nuboctl 0.9.1 manifest와 PM2 옵션 제거를 확인했다.
 - v1.2.5 후보: root 소유 checkout 허용·샌드박스 경고 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
 - v1.2.5 전달: 통합 asset·SHA-256·prebuilt smoke를 통과하고 새 shallow clone에서 원격 `server:prepare`와 nuboctl 0.9.2 manifest를 확인했다.
+- v1.2.6 후보: 실제 스키마 이름 회귀 테스트와 Enter 진행·문자열 취소 백업 입력 테스트를 통과했다.
 
 ## Next action
 
-- 실제 v1.2.0 설치 복제본에서 운영자 프로세스 종료→systemd 전환과 실패 시 수동 복구 안내를 통합 검증한다.
+- 고정 GOAPI 수정 커밋으로 v1.2.6 통합 asset을 게시하고 실패했던 Cafe24 adoption을 재실행한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.
