@@ -2,8 +2,8 @@
 
 > 저장 경로: `docs/NUBO_COMMUNITY_OS_ROADMAP.md`  
 > 문서 성격: 장기 전략 + 구현 로드맵 + Codex 작업 지침  
-> 기준 시점: 2026-08-17  
-> 기준 버전: NUBO v1.2.9 candidate / GOAPI main
+> 기준 시점: 2026-08-19
+> 기준 버전: NUBO v1.2.10 released + main / GOAPI main
 > 상태: 살아 있는 문서(Living Document)
 
 ---
@@ -34,6 +34,7 @@ NUBO가 먼저 달성해야 할 목표를 **“사진·전자기기·게임·취
 - 큰 퀘스트는 독립적으로 검증 가능한 작은 변경으로 나누고, 필요가 확인된 만큼만 구현한다.
 - 로드맵에 있다는 이유만으로 추상 계층, 상시 프로세스, 외부 인프라를 미리 만들지 않는다.
 - 안정화와 제품 차별화는 한쪽을 장기간 미루지 않고, 위험과 효과가 분명한 작은 단위로 번갈아 진행할 수 있다.
+- 테스트는 인증·권한·데이터 손실·동시성·배포처럼 실패 비용이 큰 경계를 우선한다. 구현 세부를 반복하거나 실질적인 회귀를 잡지 못하는 테스트는 수량을 위해 추가하지 않는다.
 - 이 문서의 장기 항목은 아이디어 지도이며 현재 구현 의무가 아니다. 실제 작업은 `docs/PROJECT_STATUS.md`의 작은 목표를 우선한다.
 
 ## 0.2 현재 제품 범위
@@ -360,24 +361,27 @@ Codex가 코드를 작성했다고 퀘스트가 끝난 것이 아니다.
 
 - 우선순위: `P0`
 - 크기: `L`
-- 상태: `READY`
+- 상태: `IN_PROGRESS`
 - 저장소: NUBO + GOAPI
 
 ### 작업
 
 - [x] 게시판 ID와 게시글·댓글·첨부파일 ID를 교차 조작하는 핵심 서비스 테스트 추가
-- [ ] 게시글·댓글·첨부파일·신고·회원 관리 권한 검증
-- [ ] 가입 인증 코드 재사용·만료·다른 이메일 사용 차단
-- [ ] 비밀번호 초기화 코드 재사용·경쟁 요청 검증
-- [ ] refresh token 동시 요청과 재발급 정책 검증
-- [ ] 다운로드 토큰 동시 사용과 대상 파일 일치 검증
+- [ ] 대표 게시글·댓글·첨부파일·신고·회원 관리 작업의 서버 권한 검증
+- [ ] 가입·비밀번호 초기화가 공유하는 인증 코드의 재사용·만료·다른 이메일 사용 차단
+- [ ] refresh token 동시 요청에서 이전 토큰이 한 번만 회전되는지 검증
+- [x] 다운로드 토큰의 만료와 동시 1회 소비 검증
 - [ ] legacy password 최초 로그인 재해시 검증
-- [ ] 차단 관계가 글·댓글·알림·채팅에 일관되게 적용되는지 검증
-- [ ] 실패한 공격 패턴을 모두 회귀 테스트로 남김
+- [x] 정지·삭제된 계정이 기존 access token으로 인증되지 않는지 검증
+- [ ] 실제로 수정한 보안 결함은 같은 경계의 회귀 테스트로 남김
+
+사용자 간 차단 관계가 글·댓글·알림·채팅에 미치는 정책은 S3에서 동작을 먼저 확정한 뒤 검증한다.
+모든 handler 조합을 반복 테스트하지 않고, repository의 원자성·service 권한·대표 HTTP 경계 중
+실패를 가장 빨리 드러내는 한 계층을 선택한다.
 
 ### 완료 조건
 
-- 중요 자원별 권한 테스트 표가 존재한다.
+- 중요 자원별 권한 경계가 짧은 표 또는 테스트 이름으로 식별된다.
 - 관련 테스트가 자동 실행된다.
 - 잘못된 요청을 허용하기 위해 권한 검증을 약화하지 않는다.
 - 프런트에서 숨기는 것과 별개로 GOAPI가 최종 권한을 판단한다.
@@ -386,7 +390,7 @@ Codex가 코드를 작성했다고 퀘스트가 끝난 것이 아니다.
 
 - 우선순위: `P0`
 - 크기: `M`
-- 상태: `IN_PROGRESS`
+- 상태: `DONE`
 - 저장소: NUBO
 
 ### 권장 구성
@@ -394,42 +398,34 @@ Codex가 코드를 작성했다고 퀘스트가 끝난 것이 아니다.
 - [x] Vitest
 - [x] `@nuxt/test-utils`
 - [x] Vue Test Utils
-- [ ] Playwright
-- [ ] 테스트 전용 환경 변수와 DB
-- [ ] 최소 smoke seed
+- [ ] Playwright — 핵심 브라우저 여정이 실제 회귀 위험이 될 때 도입
+- [ ] 테스트 전용 DB와 최소 seed — DB 통합 경계가 필요한 시점에 함께 도입
 
 ### 단계적 진행
 
 - [x] Phase 1: Node 단위 테스트와 Nuxt 런타임 테스트를 분리하고, 콘텐츠 유틸리티와 기본 스킨 registry를 검증
 - [x] Phase 2: Nitro 인증 프록시의 refresh·cookie·본문 재전송 회귀 테스트
-- [ ] Phase 3: 공개 SSR smoke와 테스트 DB/seed
-- [ ] Phase 4: Playwright 핵심 사용자 여정
+- [x] Phase 3: prebuilt runtime의 공개 SSR·정적 자산·GOAPI proxy smoke
+- [ ] Phase 4: Playwright 핵심 사용자 여정 — 현재 범위에서는 보류
 
-### 첫 테스트 대상
+### 브라우저 하네스 도입 시 첫 대상
 
-- [ ] 공개 홈 SSR
-- [ ] 게시판 목록 SSR
-- [ ] 게시글 본문 SSR
-- [ ] 로그인 성공·실패
-- [ ] access token 만료 후 refresh
-- [ ] refresh 실패 후 초안 보존과 로그인 이동
-- [ ] multipart 업로드
-- [ ] 글 작성
-- [ ] 관리자 접근 차단
-- [ ] 스킨 fallback
-- [ ] 모바일 주요 navigation
+- 공개 홈·게시판·게시글 SSR
+- 로그인과 access token refresh
+- 글 작성과 대표 이미지 업로드
+
+관리자·모바일·스킨 조합은 실제 변경이나 회귀가 생길 때 추가한다.
 
 ### 완료 조건
 
 ```bash
 npm run test
-npm run test:e2e
-npm run lint
 npm run typecheck
 npm run build
 ```
 
-위 명령 체계가 문서화되고 CI에서 재현 가능하다.
+위 명령 체계가 문서화되고 재현 가능하다. `test:e2e`는 Playwright 도입 뒤에만 필수 게이트로 추가하며,
+기존 전체 lint 부채는 변경 파일의 정확성을 흐리는 일괄 선행 조건으로 사용하지 않는다.
 
 ## S0-Q03. API 계약 목록과 응답 표준화
 
@@ -487,39 +483,30 @@ npm run build
 
 - 우선순위: `P1`
 - 크기: `M`
-- 상태: `READY`
+- 상태: `DEFERRED`
 
-### 대표 시나리오
+### 시작 조건
 
-- [ ] 홈
-- [ ] 게시판 목록
-- [ ] 게시글 본문
-- [ ] 검색
-- [ ] 로그인
-- [ ] 댓글 작성
-- [ ] 다중 이미지 업로드
-- [ ] 관리자 신고 목록
+- 실제 운영에서 응답 지연·메모리·업로드 병목이 관찰됨
+- 미디어 파이프라인이나 검색 구조를 크게 변경함
+- 단일 서버의 목표 동시 사용자 수를 정할 운영 데이터가 생김
 
 ### 기록
 
-- p50 / p95 / p99
-- CPU
-- Nitro RSS
-- GOAPI RSS
-- DB 쿼리 수
-- 응답 크기
-- cold/warm cache
-- 1/10/100 동시 사용자
+- 홈·게시판 목록·게시글 본문의 p50/p95
+- Nitro·GOAPI RSS와 CPU
+- 다중 이미지 업로드 시간과 실패율
+- 관찰된 실제 부하에 가까운 동시 사용자 수
 
 목표는 경쟁 제품을 이겼다고 홍보하는 것이 아니라, 이후 변경으로 성능이 얼마나 나빠졌는지 알 수 있게 하는 것이다.
 
 ## S0 보스 조건
 
-- [ ] 현재 AGENTS 안정화 항목이 회귀 테스트와 함께 완료됨
-- [ ] 프런트 smoke/E2E 기반이 있음
+- [ ] 선택한 핵심 인증·권한 경계가 회귀 테스트와 함께 완료됨
+- [x] 프런트 단위·Nuxt runtime·prebuilt SSR smoke 기반이 있음
 - [ ] API 오류 규칙이 문서화됨
-- [ ] `/healthz`, `/readyz`, `/version`이 있음
-- [ ] 기본 성능 기준값이 저장됨
+- [x] `/health`, `/ready`, `/version`이 있음
+- [ ] 실제 성능 작업 전 비교 가능한 최소 기준값을 저장함
 
 ### 해금
 
@@ -612,6 +599,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 - 우선순위: `P0`
 - 크기: `XL`
+- 상태: `DONE`
 
 ### 핵심 원칙
 
@@ -652,21 +640,21 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 ### 검사 항목
 
-- [ ] OS/CPU 아키텍처
+- [x] OS/CPU 아키텍처
 - [ ] 메모리·디스크
-- [ ] Node 또는 번들 Node
+- [x] Node 또는 번들 Node
 - [x] 릴리스에 포함된 x86-64 호환·x86-64-v2 최적화 libvips 자동 선택
 - [ ] MySQL/MariaDB 연결
 - [ ] DB charset와 권한
 - [ ] 포트 충돌
-- [ ] upload 쓰기 권한
+- [x] upload 쓰기 권한
 - [ ] 도메인·HTTPS
 - [ ] Nginx proxy header
 - [ ] NUBO–GOAPI 버전 호환
 - [ ] 메일 provider 설정
 - [ ] 운영자 백업·복구 문서와 데이터 경로 안내
 - [ ] 최근 실패한 migration
-- [ ] health/readiness
+- [x] health/readiness
 
 출력은 `PASS`, `WARN`, `FAIL`로 나누고 바로 실행할 수정 명령을 제공한다.
 
@@ -761,7 +749,7 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 - 우선순위: `P0`
 - 크기: `L`
-- 상태: `IN_PROGRESS`
+- 상태: `DONE`
 
 ### 완료된 기반
 
@@ -803,6 +791,7 @@ glibc가 CPU에 맞게 자동 선택하며 운영 서버에는 libvips 패키지
 
 - 우선순위: `P0`
 - 크기: `XL`
+- 상태: `DONE`
 
 ### 완료된 기반
 
@@ -831,17 +820,14 @@ nuboctl status
 
 ```bash
 nuboctl install
-nuboctl start
-nuboctl stop
-nuboctl restart
-nuboctl logs
+systemctl restart nubo
+journalctl -u nubo-goapi -u nubo-web
 ```
 
 ### Phase 3 — 릴리스 전환
 
 ```bash
 nuboctl update
-nuboctl rollback
 ```
 
 백업과 복구는 `nuboctl`의 책임이 아니다. 업데이트는 운영자가 외부 도구로 백업했음을 확인하고, 데이터 경로와 복구 문서를 안내한다.
@@ -862,7 +848,7 @@ nuboctl rollback
 
 1. [x] 현재 상태와 checksum 검사
 2. [x] 운영자 외부 백업 확인과 호환성 경고
-3. [ ] 새 릴리스 다운로드와 압축 해제 — 현재는 운영자 책임
+3. [x] 공개 update의 새 릴리스 다운로드·checksum 검증·압축 해제·배치
 4. [x] 같은 releases 디렉터리의 더 높은 버전과 운영 템플릿 호환성 확인
 5. [x] DB additive migration
 6. [x] 런타임 버전과 current symlink 원자적 전환
@@ -876,16 +862,16 @@ nuboctl rollback
 
 ### 파이프라인
 
-- [ ] NUBO와 GOAPI exact ref checkout
+- [x] NUBO와 GOAPI exact ref checkout
 - [ ] NUBO lint/typecheck/test/build
 - [ ] GOAPI test/vet
-- [ ] Ubuntu 22.04 빌드 스크립트
+- [x] Ubuntu 22.04 빌드 스크립트
 - [ ] contract version 일치 검사
-- [ ] 패키징
+- [x] 패키징
 - [ ] Ubuntu 22.04 fresh install smoke
 - [ ] Ubuntu 24.04 fresh install smoke
-- [ ] checksums
-- [ ] GitHub Release 업로드
+- [x] checksums
+- [x] GitHub Release 업로드
 
 ### 태그 전략
 
@@ -917,15 +903,15 @@ nuboctl rollback
 
 - 우선순위: `P1`
 - 크기: `L`
-- 상태: `IN_PROGRESS`
+- 상태: `DONE`
 
 ### 완료된 기반
 
 - [x] 로컬 스킨 변경을 typecheck·production build하고 공식 기반과 별도 파생 릴리스로 결합
 - [x] 같은 버전의 Web만 원자적으로 전환하고 readiness 실패 시 이전 Web으로 복구
 - [x] 설치·전환 뒤 PATH에서 현재 버전의 `nuboctl`을 실행하는 보호된 링크
-- [ ] 사이트 Layer를 core checkout과 분리해 공식 update 때 자동 재빌드
-- [ ] 런타임 Theme Mode와 외부 스킨 카탈로그
+- [ ] 사이트 Layer 자동 재빌드 — 실제 다수 사이트의 반복 수요가 생길 때 검토
+- [ ] 런타임 Theme Mode와 외부 스킨 카탈로그 — 현재 범위에서 보류
 
 공식 prebuilt가 모든 사이트별 Vue 코드를 포함할 수는 없다. 따라서 사용 모드를 세 단계로 분리한다.
 
@@ -982,12 +968,15 @@ nubo-site/
 
 ## S2 보스 조건
 
-- [ ] 운영 서버에서 소스 빌드 없이 설치 가능
-- [ ] fresh Ubuntu에서 문서 없이도 `nuboctl install`로 첫 로그인 가능
-- [ ] update와 rollback 동작
-- [ ] Standard Mode 사용자는 코어 파일을 수정하지 않음
-- [ ] Developer Mode가 공식 업데이트와 충돌을 최소화함
-- [ ] 릴리스 산출물의 checksum과 버전 조합을 확인할 수 있음
+- [x] 운영 서버에서 소스 빌드 없이 설치 가능
+- [x] fresh Ubuntu와 Cafe24 가상서버에서 설치·update·기본 이미지 처리 확인
+- [x] update와 readiness 실패 시 이전 앱 릴리스 자동 복구 동작
+- [x] Standard Mode 사용자는 코어 파일을 수정하지 않음
+- [x] Developer Mode가 별도 파생 릴리스로 공식 기반과 분리됨
+- [x] 릴리스 산출물의 checksum과 버전 조합을 확인할 수 있음
+
+독립 `rollback` 명령과 범용 프로세스 제어 명령은 현재 완료 조건이 아니다. 앱 전환 중 실패는 자동
+복구하고, 정상 실행 중 운영은 systemd를 사용하며, DB 복구는 운영자 백업 책임으로 유지한다.
 
 ---
 

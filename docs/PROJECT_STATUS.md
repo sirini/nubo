@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 게시한 v1.2.10을 실제 Ubuntu 서버에서 QA하고, 대표 `nubo.service` restart가 GOAPI·Web에 전파되지 않는 lifecycle 오류를 수정한다.
+- 로드맵을 v1.2.10 실서버 검증 결과에 맞추고, 실패 비용이 큰 인증·권한 경계의 필수 회귀 테스트만 보강한다.
 
 ## Current product boundary
 
@@ -94,9 +94,6 @@
 
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
 - 내부 `nuboctl update --release`는 데이터 백업·복원을 수행하지 않으며 공개 `nuboctl update`도 외부 백업 확인을 유지한다.
-- 실제 MySQL/MariaDB를 사용한 fresh DB·기존 DB 통합 검증은 서버 QA 때 확인해야 한다.
-- 새 설치 흐름은 실제 깨끗한 Ubuntu 서버에서 운영자 관점의 QA가 필요하다.
-- Cafe24의 실제 `cpu64-rhel6` 가상 CPU에서 호환판 이미지 처리 최종 QA가 필요하다.
 - 전체 NUBO ESLint에는 완료된 작업 밖의 기존 358건이 남아 있다.
 - 바이너리 제거 전 clone은 재작성된 원격 이력과 섞지 말고 새로 clone해야 한다.
 - GitHub hosted Ubuntu 22 러너의 Vite 8 클라이언트 변환이 진행되지 않아 v1.2.2는 같은 태그·스크립트를 사용한 로컬 Node 22 깨끗한 clone에서 검증·게시했다.
@@ -145,8 +142,8 @@
 - CLI 도움말·업로드 진단: 공개 명령별 도움말 완전성과 인자 없는 성공 출력을 검사하고, systemd `User=` 자동 감지와 명시적 `--user` 우선 적용을 테스트했다.
 - v1.2.10 전달: clean NUBO `4ad1595`와 고정 GOAPI `c7e2cf9`로 nuboctl 0.10.0·두 libvips 변형·Nuxt prebuilt를 묶어 Ubuntu 검증과 내부·외부 SHA-256을 통과했다. 게시 asset을 다시 내려받아 manifest를 확인하고 새 shallow clone의 원격 `server:prepare`도 통과했다.
 - systemd lifecycle 수정: fresh install과 기존 drop-in 없는 update의 추가, 기존 다른 drop-in 충돌 보호를 회귀 테스트로 확인했다. systemd 259 사용자 manager에서 대표 unit restart 전후 GOAPI·Web 시험 프로세스 PID가 모두 바뀌는 것도 검증했다.
+- v1.2.10을 Cafe24 가상서버 호스팅에서 설치·update하고 실제 MySQL/MariaDB, Nginx/TLS, 기본 이미지 처리와 운영 명령을 확인해 현재 실서버 QA를 완료했다.
 
 ## Next action
 
-- 실제 Ubuntu에서 lifecycle drop-in 적용 전후의 GOAPI·Web PID를 비교해 `systemctl restart nubo` 전파를 확인한다.
-- 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.
+- 인증 코드 1회 소비, refresh token 회전, legacy password migration과 대표 권한 경계 중 구현만으로 보장하기 어려운 부분을 최소 회귀 테스트로 고정한다.
