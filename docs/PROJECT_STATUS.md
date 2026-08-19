@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S2-Q04 릴리스 파이프라인을 완료했으며, lint 의미 판단 경고 50건을 다음 독립 단위로 남긴다.
+- 필수 안정화 변경을 v1.2.12로 묶어 새 릴리스 파이프라인으로 게시한다.
 
 ## Current product boundary
 
@@ -16,6 +16,10 @@
 - API contract version은 NUBO JSON과 GOAPI embedded text를 각 저장소의 machine-readable source로 두고 릴리스 전에 반드시 일치시킨다.
 - 릴리스 CI는 전체 lint 부채와 분리해 NUBO test/typecheck/build, GOAPI 공식 빌드 환경의 test/vet, contract 일치를 게시 전 필수 게이트로 실행한다.
 - 전체 ESLint 오류는 게시 전에 차단하고, 기존 의미 판단 경고 50건을 상한으로 고정해 새 경고가 늘어나지 않게 한다.
+- optional prop·sanitize된 HTML lint 경고 50건은 현재 동작을 바꿀 필수 사유가 없어 보류하고 새 경고 증가만 막는다.
+- 운영자 백업은 SFTP와 `mysqldump`/`mariadb-dump` 등 표준 도구에 맡기며 별도 백업·복구 제품이나 상세 자동화를 만들지 않는다.
+- 정식 릴리스 채널 체계나 compatibility matrix 대신 필요한 patch를 게시하고 `git pull --ff-only` 후 `nuboctl update`로 빠르게 적용한다.
+- `nuboctl doctor`는 현재의 실행 환경·릴리스·권한·readiness 진단을 완료 범위로 두고 도메인·SSL·Nginx·메일은 AI와 운영 가이드에 맡긴다.
 - fresh-install smoke는 일회용 Ubuntu 22.04/24.04 runner에서 로컬 MySQL/MariaDB를 준비하고 릴리스 설치·systemd 기동·`/ready`·`/version`만 검증하며 Nginx 활성화, TLS, 메일, 외부 DB와 update는 제외한다.
 - Nitro 시작 시 GOAPI contract를 확인하되 정상 부팅 중 연결 지연이나 불일치가 Web 기동 자체를 막지는 않으며, 구조화 경고와 지속 `/ready`·`/version` 진단으로 처리한다.
 - `nuboctl`은 범용 배포판 검증기가 아니라 NUBO의 최소 실행 환경을 준비하고 문제 해결 방법을 안내한다.
@@ -126,6 +130,7 @@
 
 ## Verification
 
+- v1.2.12 후보: NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, typecheck, production build, API contract, 공식 GOAPI Ubuntu 22 build/test/vet, libvips 변형·qemu 호환, prebuilt smoke와 통합 release asset 생성을 통과했다.
 - lint 정리: 전체 ESLint 오류 0건·경고 50건 상한, NUBO 28개 테스트, typecheck, production build와 diff whitespace 검사를 통과했다.
 - fresh-install smoke: 현재 v1.2.11 후보를 Node.js 22.23.2와 격리된 Ubuntu 22.04/24.04 systemd 환경에 각각 설치해 MariaDB bootstrap, GOAPI·Web 기동, `/ready`와 build/contract를 포함한 `/version` 검증을 통과했다.
 - S2-Q04 필수 게이트: NUBO 28개 테스트·typecheck·production build·prebuilt smoke, contract 일치/불일치 회귀, workflow YAML parse와 공식 Ubuntu 22/libvips Docker 환경의 GOAPI 전체 test/vet을 통과했다. GOAPI 호스트 test/vet도 통과했다(`fc430b8`).
@@ -176,4 +181,4 @@
 
 ## Next action
 
-- 남은 lint 경고는 optional prop 46건의 기본값 정책과 sanitize된 HTML 4건의 안전성 근거를 각각 작은 범위로 합의해 줄인다.
+- v1.2.12 후보를 전체 릴리스 게이트로 검증·게시하고 운영 update 확인 범위를 결정한다.

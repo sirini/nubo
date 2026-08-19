@@ -9,7 +9,7 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-현재 버전은 **v1.2.11**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
+현재 버전은 **v1.2.12**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -113,7 +113,7 @@ npm run server:prepare
 ```dotenv
 GOAPI_DOMAIN=https://example.com
 GOAPI_TITLE=My NUBO
-GOAPI_VERSION=1.2.11
+GOAPI_VERSION=1.2.12
 
 GOAPI_PORT=3006
 DB_HOST=localhost

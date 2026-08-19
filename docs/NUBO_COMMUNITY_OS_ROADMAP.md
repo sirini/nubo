@@ -575,6 +575,11 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 - 우선순위: `P1`
 - 크기: `S`
+- 상태: `DEFERRED`
+
+현재 단일 서버 운영자는 SFTP와 `mysqldump`/`mariadb-dump` 같은 표준 도구로 백업한다. NUBO는
+설정·업로드·릴리스 경계를 기존 설치/update 안내에 유지하되 별도 백업 제품이나 상세 복구 자동화를
+만들지 않는다. 실제 복구 지원 사례가 반복될 때 필요한 문서 범위만 다시 정한다.
 
 ### 책임 경계
 
@@ -641,6 +646,11 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 - 우선순위: `P1`
 - 크기: `M`
+- 상태: `DONE`
+
+현재 제품 범위의 필수 진단은 OS/CPU, Node, 릴리스 무결성·native library, 업로드 권한과
+health/readiness로 한정한다. 도메인·HTTPS·Nginx·메일처럼 배포 환경마다 다른 설정은 설치 안내와
+AI 문제 해결 가이드로 다루며, DB 상세 권한·migration 이력까지 범용 진단기로 확장하지 않는다.
 
 ### 검사 항목
 
@@ -666,6 +676,11 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 
 - 우선순위: `P1`
 - 크기: `S`
+- 상태: `DROPPED`
+
+별도 채널·compatibility matrix 운영은 현재 프로젝트 규모에 맞지 않는다. 필요한 변경을 patch
+버전으로 빠르게 게시하고 사용자는 `git pull --ff-only` 후 `nuboctl update`로 적용한다. 현재의 exact
+GOAPI commit, release manifest, contract 검사와 자동 게시 게이트만 유지한다.
 
 ### 버전
 
@@ -693,8 +708,8 @@ Nitro가 생성한 request ID를 GOAPI까지 전달하고, 양쪽 로그를 한 
 - [ ] 요청을 양쪽 프로세스에서 추적할 수 있음
 - [ ] 운영자가 보존해야 할 데이터와 일반 복구 절차가 문서화됨
 - [ ] 업데이트 실패 시 이전 버전으로 돌아갈 수 있음
-- [ ] `nuboctl doctor`가 대표 설치 오류를 발견함
-- [ ] 버전과 호환 정책이 문서화됨
+- [x] `nuboctl doctor`가 현재 지원 범위의 대표 설치 오류를 발견함
+- [x] patch 릴리스와 `nuboctl update` 중심의 최소 버전 흐름을 사용함
 
 ---
 
