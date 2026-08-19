@@ -52,12 +52,15 @@ func waitForInstallReadiness(endpoint string) error {
 		}
 		decodeErr := json.NewDecoder(response.Body).Decode(&payload)
 		_ = response.Body.Close()
-		if response.StatusCode == http.StatusOK && decodeErr == nil && payload.Status == "ready" {
+		if response.StatusCode == http.StatusOK && decodeErr == nil &&
+			(payload.Status == "ok" || payload.Status == "ready") {
 			return nil
 		}
 		detail := strings.TrimSpace(response.Status)
 		if decodeErr != nil {
 			detail += ", JSON 응답 오류"
+		} else {
+			detail += fmt.Sprintf(", status=%q", payload.Status)
 		}
 		lastError = fmt.Errorf("%s (%s)", endpoint, detail)
 	}

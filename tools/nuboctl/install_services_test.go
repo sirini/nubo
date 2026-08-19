@@ -2,21 +2,26 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
 
-// HTTP 200과 ready JSON을 모두 만족할 때 준비 완료로 판정한다.
-func TestWaitForInstallReadinessAcceptsReadyResponse(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, _ *http.Request) {
-		response.Header().Set("Content-Type", "application/json")
-		_, _ = response.Write([]byte(`{"status":"ready"}`))
-	}))
-	defer server.Close()
-	if err := waitForInstallReadiness(server.URL); err != nil {
-		t.Fatal(err)
+// Nuxt의 ok와 GOAPI의 ready 응답을 모두 정상으로 판정한다.
+func TestWaitForInstallReadinessAcceptsHealthyResponses(t *testing.T) {
+	for _, status := range []string{"ok", "ready"} {
+		t.Run(status, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, _ *http.Request) {
+				response.Header().Set("Content-Type", "application/json")
+				_, _ = fmt.Fprintf(response, `{"status":%q}`, status)
+			}))
+			defer server.Close()
+			if err := waitForInstallReadiness(server.URL); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
 
