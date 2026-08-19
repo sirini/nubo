@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "channel": {
-    "version": "1.2.10",
-    "tag": "v1.2.10"
+    "version": "1.2.11",
+    "tag": "v1.2.11"
   },
   "goapi": {
     "repository": "sirini/goapi",
-    "commit": "c7e2cf90d451ca66c153ce4fdb1af9600c082fab"
+    "commit": "667bd001ebe75183f6886e3b9254c4327ed32740"
   }
 }
