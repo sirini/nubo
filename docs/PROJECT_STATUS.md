@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- nuboctl 명령 통합·친절한 출력·업로드 진단 수정과 저사양 스킨 빌드 보완을 v1.2.10 통합 릴리스로 전달한다.
+- 게시한 v1.2.10을 실제 Ubuntu 서버에서 update하고 nuboctl 도움말·진단·스킨 적용 흐름을 QA한다.
 
 ## Current product boundary
 
@@ -86,6 +86,7 @@
 - 설치 후 업데이트와 사이트 꾸미기를 `nuboctl update`, `nuboctl customize`로 통일하고 단계·성공·주의·실패 출력을 읽기 쉽게 구분했다.
 - nuboctl의 명령별 도움말을 보강하고 doctor/status가 adoption 서버의 실제 systemd 서비스 계정으로 업로드 쓰기 권한을 검사하게 했다.
 - v1.2.10으로 버전을 올려 CLI 사용성·진단과 실서버 스킨 QA 수정사항을 하나의 패치 릴리스로 묶었다.
+- v1.2.10 통합 asset과 SHA-256을 정식 GitHub Release로 게시했다.
 
 ## Open findings
 
@@ -140,8 +141,9 @@
 - 사이트 빌드 복사: Nitro 형태의 내부 상대 링크를 파생 디렉터리에 복사한 뒤 링크 문자열 보존과 `hashTree` 통과를 회귀 테스트로 확인했다.
 - CLI 통합·출력: 공개 update/customize source routing, 잘못된 작업 폴더 안내, 내부 `--release` 분기와 캡처 출력의 무색상 보존을 Go 회귀 테스트로 확인했다.
 - CLI 도움말·업로드 진단: 공개 명령별 도움말 완전성과 인자 없는 성공 출력을 검사하고, systemd `User=` 자동 감지와 명시적 `--user` 우선 적용을 테스트했다.
+- v1.2.10 전달: clean NUBO `4ad1595`와 고정 GOAPI `c7e2cf9`로 nuboctl 0.10.0·두 libvips 변형·Nuxt prebuilt를 묶어 Ubuntu 검증과 내부·외부 SHA-256을 통과했다. 게시 asset을 다시 내려받아 manifest를 확인하고 새 shallow clone의 원격 `server:prepare`도 통과했다.
 
 ## Next action
 
-- 다음 통합 asset을 실제 Ubuntu 설치에서 `nuboctl update`한 뒤 layout/home 수정→`nuboctl customize`→관리 화면 선택→재수정 흐름을 확인한다.
+- 실제 Ubuntu의 v1.2.9 설치는 마지막으로 npm wrapper를 사용해 v1.2.10으로 올린 뒤 `nuboctl help/status/doctor/update/customize` 흐름을 확인한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.
