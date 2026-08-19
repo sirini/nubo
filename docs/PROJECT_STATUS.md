@@ -41,6 +41,8 @@
 - 설치 readiness는 Nuxt의 `ok`와 GOAPI의 `ready` 상태를 모두 정상으로 인정한다.
 - `nubo.service`는 기존 `nubo.target`을 감싸며 GOAPI·Web의 독립 unit 구조를 바꾸지 않는다.
 - 이미 adoption한 서버의 systemd unit은 update가 자동 변경하지 않고 운영자가 선택적으로 대표 unit을 설치한다.
+- v1.2.0 이전 소스 설치의 adoption은 기존 checkout을 갱신하지 않고 옆 경로의 깨끗한 clone에 환경과 업로드를 복사한 뒤 진행한다.
+- 커스텀 Vue 스킨은 빌드 시점 자산이며 공식 prebuilt adoption에 포함되지 않는다. custom artifact 지원 전에는 공식 스킨 전환 또는 별도 소스 빌드 운영이 필요하다.
 
 ## Recent completion
 
@@ -69,6 +71,7 @@
 - 새 설치·adoption이 대표 `nubo.service`를 활성화해 전체 lifecycle 명령을 짧게 제공하는 v1.2.8을 게시했다.
 - README와 AI/nuboctl 가이드를 현재 prebuilt 설치·adoption·update·Enter 백업 확인·`systemctl restart nubo` 흐름에 맞췄다.
 - NUBO와 GOAPI README에서 Ubuntu 22.04+ x86-64의 통합 prebuilt 운영 경로를 우선 안내하고, macOS·다른 Linux·Windows/WSL2의 소스 시험 경계를 정리했다.
+- 레거시 adoption을 새 clone·환경·업로드 복사·포트 종료 순서로 단순화하고, Nginx 업로드 경로와 커스텀 스킨 빌드/prebuilt 경계를 문서화했다.
 
 ## Open findings
 
@@ -113,6 +116,7 @@
 - v1.2.8 후보: systemd unit 정적 검증, 대표 service 렌더링·활성화·기존 릴리스 update 호환 테스트, nuboctl test/race/vet와 NUBO test/typecheck/build를 통과했다.
 - v1.2.8 전달: 통합 asset·SHA-256·prebuilt smoke를 통과하고 새 shallow clone의 원격 `server:prepare`에서 nuboctl 0.9.5와 대표 unit을 확인했다.
 - Ubuntu 24.04의 systemd 255 컨테이너에서 `nubo.service`와 `nubo.target` unit 구문 검증을 통과했다.
+- 새 clone adoption·커스텀 스킨 경계 안내 변경은 관련 Vue ESLint, NUBO 15개 테스트, typecheck와 production build를 통과했다.
 
 ## Next action
 

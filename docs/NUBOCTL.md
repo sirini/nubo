@@ -10,13 +10,27 @@
 전환한다. 일반 사용자는 하위 바이너리를 직접 실행하지 않고 저장소 wrapper를 사용한다.
 
 ```bash
-git pull --ff-only
+cd /var/www
+git clone --depth=1 https://github.com/sirini/nubo.git nubo-new
+cp /var/www/nubo-old/.env /var/www/nubo-new/.env
+cp -a /var/www/nubo-old/upload /var/www/nubo-new/upload
+cd /var/www/nubo-new
+sudo ss -ltnp | grep -E ':(3000|3006)\b' || true
 npm run server:adopt -- --dry-run
 npm run server:adopt
 ```
 
+기존 checkout에서 `git pull`하기보다 옆 경로의 깨끗한 clone에 `.env`와 `upload`를 복사하는 절차를
+권장한다. clone은 이후 서비스를 실행할 계정으로 만들고, root-only 서버가 아니라면 `sudo git clone`을
+피한다. PM2, tmux, 기존 systemd 또는 수동 명령으로 실행 중인 NUBO만 직접 종료해 `3000`·`3006`
+포트를 비운 뒤 명령을 실행한다. 새 clone에서 공식 adoption만 할 때는 `npm ci`와 Nuxt 빌드가 필요 없다.
+
 wrapper는 현재 공식 통합 릴리스를 내려받아 checksum을 검증하고 `/opt/nubo/releases`에 배치한 뒤,
-현재 프로젝트 경로를 `--source`로 전달한다. 실제 전환 전에는 외부 DB·업로드 백업을 완료했다면 빈
+새 clone 경로를 `--source`로 전달한다. 복사한 `.env`의 상대 `NUBO_UPLOAD_DIR`는 새 clone을 기준으로
+해석한다. 기존 Nginx/TLS는 수정하지 않으므로 `/upload/`의 `alias`가 dry-run에 표시된 업로드 절대
+경로와 같은지 운영자가 확인하고, 다르면 Nginx 설정을 직접 갱신·검증한다.
+
+실제 전환 전에는 외부 DB·업로드 백업을 완료했다면 빈
 입력(Enter)으로 진행하며 다른 문자열은 취소로 처리한다. 자동화는 사용자의 확인을 받은 경우에만
 `--non-interactive --backup-confirmed`를 함께 사용한다.
 
@@ -36,6 +50,13 @@ NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `Prote
 운영자가 기존 프론트엔드와 백엔드를 직접 종료한 뒤 같은 명령을 다시 실행해야 한다. 전환 실패 시에도
 기존 프로세스를 자동 재시작하지 않으며 이전 실행 방식으로 직접 시작하도록 안내한다. DB migration은
 additive지만 자동 rollback하지 않는다.
+
+`app/skins`의 Vue 스킨은 빌드 시점에 등록된다. 소스/커스텀 빌드 운영에서는 새 clone의 같은 위치에
+스킨을 복사한 뒤 `npm ci`, `npm run typecheck`, `npm run build`를 실행해야 관리 화면에 나타난다.
+그러나 `server:adopt`는 이 로컬 `.output`이 아니라 `/opt/nubo/current`의 공식 prebuilt를 실행하므로
+커스텀 스킨은 adoption 결과에 포함되지 않는다. 커스텀 스킨 사이트는 공식 스킨만 사용해 prebuilt로
+전환하거나, 새 clone의 `.output`을 실행하는 별도 소스/커스텀 배포를 유지해야 한다. 공식 릴리스
+디렉터리를 직접 수정하면 checksum과 update 검증이 깨진다.
 
 ## install
 

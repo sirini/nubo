@@ -225,16 +225,40 @@ prebuilt 운영 범위가 아니지만 공개 소스를 해당 환경에서 빌�
 
 ### v1.2.0 이전 소스 설치를 새 체제로 전환
 
-기존에 프로젝트 디렉터리에서 Nuxt와 `goapi-linux`를 직접 빌드해 실행했다면, 먼저 DB와
-`upload` 디렉터리를 서버 밖에 백업한 뒤 다음 두 명령으로 전환할 수 있습니다.
+기존 프로젝트에서 바로 `git pull`해 전환하기보다, 같은 서버의 옆 경로에 최신 NUBO를 새로 clone한 뒤
+환경 파일과 업로드를 옮겨 전환하는 방법을 권장합니다. 아래 예시는 기존 경로가
+`/var/www/nubo-old`, 새 경로가 `/var/www/nubo-new`인 경우입니다. 실제 경로는 서버에 맞게 바꾸세요.
+
+먼저 DB와 `upload`를 서버 밖에도 백업합니다. 그다음 기존 NUBO를 실행하던 계정으로 새 clone을 만들고
+파일을 복사합니다. 새 프로젝트 디렉터리의 소유자가 이후 systemd 서비스 계정이 되므로, root-only
+서버가 아니라면 `sudo git clone`은 사용하지 않는 편이 좋습니다.
 
 ```bash
-git pull --ff-only
+cd /var/www
+git clone --depth=1 https://github.com/sirini/nubo.git nubo-new
+cp /var/www/nubo-old/.env /var/www/nubo-new/.env
+cp -a /var/www/nubo-old/upload /var/www/nubo-new/upload
+cd /var/www/nubo-new
+```
+
+복사한 `.env`의 `NUBO_UPLOAD_DIR`가 상대 경로이거나 비어 있으면 새 clone의 `upload`를 사용합니다.
+절대 경로가 적혀 있으면 그 경로를 계속 사용하므로, 방금 복사한 디렉터리를 쓰려면 값을
+`./upload` 또는 새 절대 경로로 바꾸세요. 기존 Nginx의 `location /upload/`에 설정된 `alias`도 같은
+경로를 가리켜야 합니다. `server:adopt`는 기존 Nginx/TLS 설정을 자동 수정하거나 reload하지 않습니다.
+
+이제 PM2, tmux, 기존 systemd 또는 수동 명령으로 실행 중인 NUBO 프론트엔드와 GOAPI를 직접
+종료합니다. 다른 서비스까지 함께 종료하지 말고 NUBO 프로세스만 내린 뒤 포트 `3000`과 `3006`이
+비었는지 확인합니다. 두 포트가 비어 있어야 실제 전환이 시작됩니다.
+
+```bash
+sudo ss -ltnp | grep -E ':(3000|3006)\b' || true
 npm run server:adopt -- --dry-run
 npm run server:adopt
 ```
 
-dry-run은 다운로드한 공식 릴리스와 기존 `.env`를 검증하고 전체 계획만 보여줍니다. 실제 실행에서는
+새 clone에서는 `server:adopt`를 위해 `npm ci`나 `npm run build`를 실행할 필요가 없습니다. wrapper가
+공식 prebuilt 릴리스를 내려받아 검증하기 때문입니다. dry-run은 다운로드한 공식 릴리스와 복사한
+`.env`, 실제 사용할 업로드 경로를 검증하고 전체 계획만 보여줍니다. 실제 실행에서는
 외부 백업을 완료했다면 안내 문구에서 아무것도 입력하지 않고 Enter를 누릅니다. 다른 문자열을 입력하면
 변경 없이 취소합니다. 명령은 다음 원칙으로 동작합니다.
 
@@ -266,6 +290,33 @@ Cafe24처럼 root 계정만 사용하는 기존 서버에서는 root 소유 프�
 sudo systemctl restart nubo
 sudo systemctl status nubo nubo-goapi nubo-web
 ```
+
+#### 커스텀 Vue 스킨을 사용하던 사이트
+
+`app/skins` 아래의 Vue 스킨과 `skin.json`은 런타임 플러그인이 아니라 Nuxt 빌드에 포함되는 소스입니다.
+따라서 소스 빌드 방식으로 계속 운영한다면 커스텀 스킨 폴더를 새 clone의 같은 위치에 복사한 뒤 다음
+명령으로 새 `.output`을 만들어야 관리 화면의 스킨 목록에 표시됩니다.
+
+```bash
+cp -a /var/www/nubo-old/app/skins/my-custom-skin /var/www/nubo-new/app/skins/
+cd /var/www/nubo-new
+npm ci
+npm run typecheck
+npm run build
+```
+
+다만 현재 `server:adopt`와 `server:update`가 설치하는 공식 prebuilt에는 NUBO 공식 스킨만 들어갑니다.
+위에서 만든 `/var/www/nubo-new/.output`은 `/opt/nubo/current/web/.output`을 실행하는 공식 systemd
+서비스에 자동으로 반영되지 않습니다. 그러므로 커스텀 Vue 스킨 사이트는 로컬 빌드가 adoption에
+포함된다고 가정하면 안 됩니다. 현재 선택지는 다음 두 가지입니다.
+
+- 공식 prebuilt로 전환하고 공식 번들에 포함된 스킨만 사용합니다.
+- 커스텀 스킨을 유지해야 한다면 소스/커스텀 빌드 운영을 유지하고, 새 clone의 `.output`을 실행하는
+  별도 배포 절차를 사용합니다. 이 경우 공식 `server:update`의 원자적 전환 대상은 아닙니다.
+
+사이트별 스킨을 포함한 custom artifact 설치·업데이트는 아직 공식 지원하지 않습니다. 공식 prebuilt
+디렉터리에 스킨이나 빌드 결과를 직접 복사하면 checksum 검증과 이후 업데이트를 깨뜨리므로 수정하지
+마세요.
 
 ### v1.2.2 이후 공식 서버 설치 업데이트
 
