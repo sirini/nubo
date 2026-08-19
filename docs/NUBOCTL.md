@@ -1,8 +1,13 @@
 # nuboctl 설치 준비와 진단
 
-현재 `nuboctl` MVP는 기존 소스 설치를 전환하는 `adopt`, 한국어 대화형 설치를 하는 `install`, 공개 프록시를 연결하는
-`activate-nginx`, 배치된 릴리스를 전환하는 `update`, 로컬 파생 Web을 전환하는 `skin apply`, 서버 상태를 읽기만 하는 `doctor`, `status`를 제공한다. AI·자동화는 릴리스
-최상위의 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
+최초 `install`과 기존 소스의 `adopt`는 PATH에 관리 명령이 생기기 전이므로 저장소의 npm bootstrap을
+사용한다. 설치가 끝난 뒤 운영자가 기억할 공개 명령은 `nuboctl status`, `doctor`, `update`, `customize`,
+`activate-nginx`다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
+경계이며 일반 사용자가 직접 실행하지 않는다. AI·자동화는 릴리스 최상위의
+`INSTALL_GUIDE_FOR_AI.md`를 따른다.
+
+TTY에서는 단계, 성공, 주의와 실패를 색과 기호로 구분한다. 로그 파일이나 파이프 출력은 자동으로
+평문이 되며, 색을 원하지 않으면 `NO_COLOR=1 nuboctl ...`처럼 실행한다.
 
 ## adopt
 
@@ -52,28 +57,28 @@ NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `Prote
 additive지만 자동 rollback하지 않는다.
 
 `app/skins`의 Vue 스킨은 빌드 시점에 등록된다. 기본 스킨을 직접 수정하기보다 별도 key의 폴더로
-복사해 사이트 전용 스킨으로 관리한다. adoption 뒤에는 `npm run server:customize`가 필요할 때만
+복사해 사이트 전용 스킨으로 관리한다. adoption 뒤에는 `nuboctl customize`가 필요할 때만
 `npm ci`를 실행하고 typecheck·production build를 거쳐 공식 기반과 로컬 Web을 결합한 파생 릴리스를
 만든다. 하위 `nuboctl skin apply`는 같은 공식 버전과 GOAPI/nuboctl/libvips 출처, checksum, 설치 환경과
 systemd 계약을 검증한 뒤 current 링크와 Web만 전환한다. readiness가 실패하면 이전 링크와 Web을
 복원한다. DB migration, 환경 버전 변경, GOAPI 재시작은 수행하지 않는다.
 
 ```bash
-npm run server:customize -- --dry-run
-npm run server:customize
+nuboctl customize --dry-run
+nuboctl customize
 ```
 
 `--dry-run`도 실제 빌드와 파생 릴리스 검증까지 수행하지만 current와 서비스는 변경하지 않는다. 공식
 릴리스 디렉터리를 직접 수정하면 checksum과 update 검증이 깨진다.
 
 현재 package lock은 저사양 가상 CPU에서 Vite 8의 변환이 멈추는 문제를 피하기 위해
-`rolldown-vite@7.3.1`을 호환 빌더로 고정한다. `server:customize`가 필요한 의존성을 자동 준비하므로
+`rolldown-vite@7.3.1`을 호환 빌더로 고정한다. `nuboctl customize`가 필요한 의존성을 자동 준비하므로
 운영자가 Vite를 따로 설치하거나 `NODE_OPTIONS`를 지정하지 않는다. 빌드 프로세스가 커널 OOM으로
 종료된다면 별도 문제이므로 swap이나 약 3GB 이상의 사용 가능한 메모리를 준비한다.
 
-공식 `server:update`는 로컬 소스를 임의로 빌드하지 않으며 업데이트 직후에는 공식 prebuilt Web으로
+공식 `nuboctl update`는 로컬 소스를 임의로 빌드하지 않으며 업데이트 직후에는 공식 prebuilt Web으로
 전환한다. 사이트 전용 스킨을 계속 사용하려면 업데이트가 성공한 뒤 새 checkout 상태에서
-`npm run server:customize`를 다시 실행한다. 공식 업데이트 시 사이트 빌드를 자동 재생성하는 기능은
+`nuboctl customize`를 다시 실행한다. 공식 업데이트 시 사이트 빌드를 자동 재생성하는 기능은
 후속 범위다.
 
 ## install
@@ -189,8 +194,9 @@ sudo /opt/nubo/releases/1.3.0/nuboctl update \
 6. 실패하면 이전 환경·링크를 복원하고 이전 서비스를 다시 시작해 readiness 재확인
 
 DB migration은 되돌리지 않는다. 따라서 새 migration은 직전 릴리스와 호환되는 additive 변경이어야 한다.
-릴리스 다운로드·압축 해제는 소스 저장소의 `npm run server:update`가 담당하고, 하위 `nuboctl update`는
-검증되어 배치된 릴리스부터 처리한다. 데이터 백업은 자동 수행하지 않는다. 동시 update는
+사용자가 프로젝트 폴더에서 실행하는 `nuboctl update`는 릴리스 다운로드·압축 해제를 먼저 수행한다.
+그 뒤 새 릴리스의 `nuboctl update --release ...`가 검증되어 배치된 릴리스부터 안전한 전환을 처리한다.
+데이터 백업은 자동 수행하지 않는다. 동시 update는
 설치별 잠금으로 차단한다. 현재 자동 update는 설치된 unit이 `current`를 참조하고 두 릴리스의 systemd/Nginx
 템플릿이 같을 때만 허용한다. 운영 템플릿 변경이 필요한 릴리스는 별도 전환 지원이 추가되기 전까지 거부한다.
 

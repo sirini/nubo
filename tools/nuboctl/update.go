@@ -25,7 +25,7 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 	}
 	printUpdatePlan(options, preflight)
 	if options.dryRun {
-		fmt.Println("\nDRY-RUN 완료: DB, current 링크와 서비스를 변경하지 않았습니다.")
+		printSuccess("미리보기가 끝났습니다. DB와 실행 중인 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
 	confirmed := options.backupConfirmed
@@ -36,7 +36,7 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 		}
 	}
 	if !confirmed {
-		fmt.Println("\nupdate를 취소했습니다. DB, current 링크와 서비스를 변경하지 않았습니다.")
+		printWarning("업데이트를 취소했습니다. DB와 실행 중인 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
 	if err := installDatabaseRelease(preflight.candidateDir, options.envFile, options.serviceUser, runner); err != nil {
@@ -69,21 +69,19 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 	if err := readiness(preflight.readinessURL); err != nil {
 		return recoverPreviousRelease(options, preflight, environment, runner, readiness, fmt.Errorf("새 릴리스 readiness 실패: %w", err))
 	}
-	fmt.Printf("\nNUBO update 완료: %s -> %s\n", preflight.previousVersion, preflight.candidateVersion)
-	fmt.Printf("현재 릴리스: %s -> %s\n", options.currentLink, preflight.candidateDir)
+	printSuccess("NUBO 업데이트 완료: %s → %s", preflight.previousVersion, preflight.candidateVersion)
+	printItem("현재 버전", "%s → %s", options.currentLink, preflight.candidateDir)
 	return nil
 }
 
 // update가 실제로 변경할 경계와 되돌리지 않는 DB 변경을 보여준다.
 func printUpdatePlan(options updateOptions, preflight updatePreflight) {
-	fmt.Printf("NUBO update 계획 (%s -> %s)\n", preflight.previousVersion, preflight.candidateVersion)
-	fmt.Printf("- 현재: %s\n", preflight.previousDir)
-	fmt.Printf("- 후보: %s\n", preflight.candidateDir)
-	fmt.Printf("- 전환: %s\n", options.currentLink)
-	fmt.Printf("- 명령: %s -> %s/nuboctl\n", options.commandLink, options.currentLink)
-	fmt.Println("- 실행: additive DB migration, 런타임 버전 갱신, 원자적 링크 전환, 서비스 restart, readiness 확인")
-	fmt.Println("- 실패 복구: 이전 환경·링크와 서비스 복원 (DB migration은 유지)")
-	fmt.Println("- 제외: 릴리스 다운로드·압축 해제, DB·업로드 백업과 복원")
+	printHeading("업데이트 계획  %s → %s", preflight.previousVersion, preflight.candidateVersion)
+	printItem("현재", "%s", preflight.previousDir)
+	printItem("새 버전", "%s", preflight.candidateDir)
+	printItem("바꿀 것", "DB 구조 갱신, 버전 전환, 서비스 재시작, 정상 동작 확인")
+	printItem("실패하면", "이전 버전과 서비스를 복구합니다. DB 구조 갱신은 유지됩니다")
+	printItem("직접 확인", "DB와 업로드 파일의 외부 백업")
 }
 
 // 두 애플리케이션 서비스를 새 current 릴리스로 다시 시작한다.

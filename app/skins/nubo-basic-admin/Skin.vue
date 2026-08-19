@@ -73,7 +73,7 @@
             같은지, 안내된 최소 NUBO 버전을 충족하는지 확인합니다.
           </li>
           <li>
-            NUBO 프로젝트 루트에서 <CommonVCode>npm run server:customize</CommonVCode>를 실행합니다.
+            NUBO 프로젝트 루트에서 <CommonVCode>nuboctl customize</CommonVCode>를 실행합니다.
             첫 실행에 필요한 의존성 설치, typecheck, production build와 안전한 서비스 전환은 명령이
             자동으로 수행합니다.
           </li>
@@ -111,7 +111,7 @@
           </li>
           <li>
             완성한 폴더를 서버의 <CommonVCode>app/skins/</CommonVCode> 아래에 배치한 후
-            <CommonVCode>npm run server:customize</CommonVCode>로 검증·빌드·적용합니다.
+            <CommonVCode>nuboctl customize</CommonVCode>로 검증·빌드·적용합니다.
           </li>
           <li>
             manifest 검증 오류가 없는지 확인하고, 게시판 관리 또는 이 화면에서 새 스킨을 선택해

@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type resultLevel uint8
 
@@ -35,19 +38,20 @@ func fail(name, detail string) checkResult {
 func printReport(results []checkResult) int {
 	failures := 0
 	warnings := 0
+	printHeading("점검 결과")
 	for _, result := range results {
-		label := "PASS"
+		label := paint(os.Stdout, ansiGreen, "✓ 통과")
 		switch result.level {
 		case levelWarn:
-			label = "WARN"
+			label = paint(os.Stdout, ansiYellow, "! 확인")
 			warnings++
 		case levelFail:
-			label = "FAIL"
+			label = paint(os.Stdout, ansiRed, "✗ 실패")
 			failures++
 		}
-		fmt.Printf("[%s] %s: %s\n", label, result.name, result.detail)
+		fmt.Printf("  %s  %s\n          %s\n", label, result.name, result.detail)
 	}
-	fmt.Printf("\n결과: 실패 %d, 경고 %d, 통과 %d\n", failures, warnings, len(results)-failures-warnings)
+	fmt.Printf("\n%s\n", paint(os.Stdout, ansiBold, fmt.Sprintf("요약  통과 %d · 확인 %d · 실패 %d", len(results)-failures-warnings, warnings, failures)))
 	if failures > 0 {
 		return 1
 	}

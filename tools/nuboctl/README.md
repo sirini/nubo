@@ -10,8 +10,13 @@
 ```bash
 npm run server:install
 npm run server:adopt
-npm run server:update
+nuboctl update
+nuboctl customize
 ```
+
+최초 설치와 구버전 adoption은 PATH에 `nuboctl`이 아직 없으므로 npm bootstrap 명령을 사용한다.
+설치가 끝난 뒤의 상태 확인, 진단, 업데이트와 사이트 스킨 빌드는 `nuboctl`로 통일한다. 기존
+`server:update`와 `server:customize` npm script는 자동화 호환을 위해 남겨 둔다.
 
 이 소스를 NUBO 저장소에 두는 이유는 설치기가 `deploy/`의 systemd·Nginx 템플릿, 릴리스 manifest,
 readiness와 update 계약을 NUBO 버전과 함께 변경하고 검증해야 하기 때문이다. GOAPI 저장소에는 HTTP API와

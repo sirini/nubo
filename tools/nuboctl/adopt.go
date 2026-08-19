@@ -66,7 +66,7 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 		}
 	}
 	if !confirmed {
-		fmt.Println("\nadoption을 취소했습니다. 서버의 파일과 서비스를 변경하지 않았습니다.")
+		printWarning("기존 사이트 전환을 취소했습니다. 서버의 파일과 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
 	stagedNode, nodeCreated, err := stageAdoptionNode(install.nodeBinary)
@@ -84,10 +84,12 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 		return fmt.Errorf("새 서비스 전환 실패: %w; 기존 프로세스는 자동으로 재시작하지 않았으므로 필요하면 이전 실행 방식으로 직접 시작하세요", err)
 	}
 	if err := backupLegacyEnvironment(adopt.sourceDir, adopt.stateDir); err != nil {
-		fmt.Printf("경고: 기존 환경 참고본을 만들지 못했습니다: %v (원본 .env는 그대로 유지됩니다)\n", err)
+		printWarning("기존 환경 참고본을 만들지 못했습니다: %v (원본 .env는 그대로입니다)", err)
 	}
-	fmt.Println("\nadoption 완료: 이제 npm run server:update로 다음 버전을 적용할 수 있습니다.")
-	fmt.Printf("기존 소스·.env·업로드·DB·Nginx는 삭제하거나 이동하지 않았습니다. 환경 참고본: %s\n", filepath.Join(adopt.stateDir, "adoption", "legacy.env"))
+	printSuccess("기존 사이트를 NUBO 관리 체제로 전환했습니다.")
+	printItem("업데이트", "이제 nuboctl update를 사용하세요")
+	printItem("보존 완료", "기존 소스, .env, 업로드, DB, Nginx")
+	printItem("환경 참고본", "%s", filepath.Join(adopt.stateDir, "adoption", "legacy.env"))
 	return nil
 }
 
@@ -98,7 +100,7 @@ func validateAdoptDestination(options adoptOptions) error {
 	}
 	for label, path := range paths {
 		if _, err := os.Lstat(path); err == nil {
-			return fmt.Errorf("%s이 이미 있습니다: %s; 이미 adoption했다면 npm run server:update를 사용하세요", label, path)
+			return fmt.Errorf("%s이 이미 있습니다: %s; 이미 adoption했다면 nuboctl update를 사용하세요", label, path)
 		} else if !os.IsNotExist(err) {
 			return err
 		}
@@ -146,27 +148,27 @@ func sourceIdentity(path string) (string, string, error) {
 }
 
 func printAdoptionIntroduction(adopt adoptOptions, install installOptions, warnings []string, occupiedPorts []int) {
-	fmt.Println("NUBO v1.2.2 이후 운영 체제로 전환합니다.")
-	fmt.Println("- 그대로 둠: 기존 프로젝트, .env, 업로드 파일, 데이터베이스, Nginx/TLS")
-	fmt.Println("- 새로 만듦: 검증된 공식 릴리스, /etc 환경 파일, current 링크, systemd 서비스")
-	fmt.Printf("- 서비스 계정: 기존 프로젝트 소유자 %s:%s\n", install.serviceUser, install.serviceGroup)
+	printHeading("기존 사이트 전환 계획")
+	printItem("그대로", "기존 프로젝트, .env, 업로드, DB, Nginx/HTTPS")
+	printItem("새로 준비", "공식 버전, 서버 환경 설정, systemd 서비스")
+	printItem("서비스 계정", "%s:%s", install.serviceUser, install.serviceGroup)
 	if warning := adoptionIdentityWarning(install.serviceUser); warning != "" {
-		fmt.Printf("- 주의: %s\n", warning)
+		printWarning("%s", warning)
 	}
-	fmt.Printf("- 업로드 위치 유지: %s\n", install.uploadDir)
-	fmt.Println("- 프로세스 관리 방식(PM2, tmux, systemd 등)을 추측하거나 실행 중인 프로세스를 자동 종료하지 않습니다.")
+	printItem("업로드", "기존 위치 유지: %s", install.uploadDir)
+	printItem("실행 중인 앱", "자동 종료하지 않습니다")
 	if len(occupiedPorts) > 0 {
-		fmt.Printf("- 먼저 종료 필요: 포트 %s을 사용 중입니다. 기존 NUBO 프론트엔드·백엔드를 직접 종료하세요.\n", formatPorts(occupiedPorts))
+		printWarning("포트 %s을 사용 중입니다. 기존 NUBO를 먼저 종료해 주세요", formatPorts(occupiedPorts))
 	} else {
-		fmt.Printf("- 포트 확인 완료: %d, %d을 사용할 수 있습니다.\n", install.webPort, install.goapiPort)
+		printItem("포트", "%d, %d 사용 가능", install.webPort, install.goapiPort)
 	}
-	fmt.Println("- DB migration은 additive이며 자동 rollback 대상이 아니므로 외부 DB·업로드 백업이 필요합니다.")
+	printItem("직접 확인", "DB와 업로드 파일의 외부 백업")
 	if len(warnings) > 0 {
-		fmt.Printf("- 주의: 현재 체제에서 사용하지 않는 기존 메일 설정은 옮기지 않습니다: %s (Resend 설정을 확인하세요)\n", strings.Join(warnings, ", "))
+		printWarning("사용하지 않는 기존 메일 설정은 옮기지 않습니다: %s", strings.Join(warnings, ", "))
 	}
-	fmt.Printf("- 기존 환경 참고본: %s\n\n", filepath.Join(adopt.stateDir, "adoption", "legacy.env"))
+	printItem("환경 참고본", "%s", filepath.Join(adopt.stateDir, "adoption", "legacy.env"))
 	if nodeNeedsStaging(install.nodeBinary) {
-		fmt.Println("- Node.js가 홈 디렉터리에 있어 systemd용 안정 경로 /opt/nubo/runtime/node로 복사합니다.")
+		printItem("Node.js", "systemd용 안정 경로 /opt/nubo/runtime/node에 복사")
 	}
 }
 

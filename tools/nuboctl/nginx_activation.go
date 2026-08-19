@@ -83,16 +83,16 @@ func activateNginx(options nginxActivationOptions, runner commandRunner, require
 		return err
 	}
 
-	fmt.Printf("Nginx 공개 활성화 계획 (%s)\n", domain)
+	printHeading("웹 공개 계획  %s", domain)
 	if alreadyEnabled {
-		fmt.Printf("- 유지: %s\n", enabled)
+		printItem("설정", "기존 연결 유지: %s", enabled)
 	} else {
-		fmt.Printf("- 연결: %s -> %s\n", enabled, available)
+		printItem("설정", "%s → %s", enabled, available)
 	}
-	fmt.Println("- 실행: nginx -t, nginx.service 부팅 활성화, start/reload")
-	fmt.Println("- 제외: TLS 인증서 발급과 HTTPS redirect")
+	printItem("실행", "Nginx 설정 검사, 부팅 활성화, 시작 또는 다시 읽기")
+	printItem("나중에", "HTTPS 인증서 발급과 자동 전환")
 	if options.dryRun {
-		fmt.Println("\nDRY-RUN 완료: Nginx 설정과 서비스를 변경하지 않았습니다.")
+		printSuccess("미리보기가 끝났습니다. Nginx 설정과 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
 	if !commandExists(runner, "nginx") || !commandExists(runner, "systemctl") {
@@ -128,8 +128,8 @@ func activateNginx(options nginxActivationOptions, runner commandRunner, require
 		return fmt.Errorf("Nginx %s 실패: %s", action, compactOutput(output, err))
 	}
 
-	fmt.Printf("\nHTTP 공개 활성화가 완료되었습니다: http://%s\n", domain)
-	fmt.Printf("TLS는 DNS 확인 후 운영자가 실행하세요: sudo certbot --nginx -d %s --redirect\n", domain)
+	printSuccess("HTTP 공개가 완료되었습니다: http://%s", domain)
+	printItem("HTTPS 다음 단계", "sudo certbot --nginx -d %s --redirect", domain)
 	return nil
 }
 

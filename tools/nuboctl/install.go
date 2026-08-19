@@ -80,7 +80,7 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 
 	printInstallPlan(options, files, environmentExists, currentExists, commandExists, nodeBinary)
 	if options.dryRun {
-		fmt.Println("\nDRY-RUN 완료: 서버의 파일과 서비스를 변경하지 않았습니다.")
+		printSuccess("미리보기가 끝났습니다. 서버의 파일과 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
 	if options.confirm != nil {
@@ -89,7 +89,7 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 			return fmt.Errorf("설치 확인 입력 실패: %w", err)
 		}
 		if !confirmed {
-			fmt.Println("\n설치를 취소했습니다. 서버의 파일과 서비스를 변경하지 않았습니다.")
+			printWarning("설치를 취소했습니다. 서버의 파일과 서비스는 바꾸지 않았습니다.")
 			return nil
 		}
 	}
@@ -136,45 +136,45 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 		}
 	}
 
-	fmt.Println("\nNUBO 서비스 설치와 readiness 확인이 완료되었습니다.")
+	printSuccess("NUBO 설치와 정상 동작 확인이 완료되었습니다.")
 	if options.manageNginx {
-		fmt.Printf("Nginx/TLS 활성화 후 관리자 로그인: https://%s/auth/login\n", options.domain)
-		fmt.Println("Nginx 설정은 아직 활성화하거나 reload하지 않았으며 TLS도 발급하지 않았습니다.")
+		printItem("다음 단계", "nuboctl activate-nginx")
+		printItem("관리자", "HTTPS 설정 후 https://%s/auth/login", options.domain)
 	}
 	return nil
 }
 
 // 생성·보존할 경로와 이번 단계에서 하지 않는 작업을 실행 전에 보여준다.
 func printInstallPlan(options installOptions, files []installFile, environmentExists, currentExists, commandExists bool, nodeBinary string) {
-	fmt.Printf("NUBO 설치 준비 계획 (%s)\n", options.domain)
-	fmt.Printf("- 릴리스 원본: %s\n", options.releaseDir)
+	printHeading("NUBO 설치 계획  %s", options.domain)
+	printItem("설치 파일", "%s", options.releaseDir)
 	if currentExists {
-		fmt.Printf("- current 링크 유지: %s\n", options.currentLink)
+		printItem("현재 버전", "기존 연결 유지: %s", options.currentLink)
 	} else {
-		fmt.Printf("- current 링크 생성: %s -> %s\n", options.currentLink, options.releaseDir)
+		printItem("현재 버전", "%s → %s", options.currentLink, options.releaseDir)
 	}
 	if commandExists {
-		fmt.Printf("- nuboctl 명령 유지: %s\n", options.commandLink)
+		printItem("관리 명령", "기존 경로 유지: %s", options.commandLink)
 	} else {
-		fmt.Printf("- nuboctl 명령 생성: %s -> %s/nuboctl\n", options.commandLink, options.currentLink)
+		printItem("관리 명령", "%s → %s/nuboctl", options.commandLink, options.currentLink)
 	}
-	fmt.Printf("- Node.js: %s\n", nodeBinary)
-	fmt.Printf("- 상태/업로드: %s / %s\n", options.stateDir, options.uploadDir)
+	printItem("Node.js", "%s", nodeBinary)
+	printItem("데이터", "상태 %s · 업로드 %s", options.stateDir, options.uploadDir)
 	printIdentityPlan(options)
 	if environmentExists {
-		fmt.Printf("- 환경 파일 보존: %s\n", options.envFile)
+		printItem("환경 설정", "기존 파일 유지: %s", options.envFile)
 	}
 	for _, file := range files {
 		if sameFileContent(file.path, file.content) {
-			fmt.Printf("- 유지: %s (%s)\n", file.path, file.label)
+			printItem("유지", "%s (%s)", file.path, file.label)
 		} else {
-			fmt.Printf("- 생성: %s (%s)\n", file.path, file.label)
+			printItem("새 파일", "%s (%s)", file.path, file.label)
 		}
 	}
-	fmt.Println("- 실행: GOAPI DB 준비, systemd 활성화·시작, 로컬 readiness 확인")
+	printItem("실행", "DB 준비, 서비스 시작, 정상 동작 확인")
 	if options.manageNginx {
-		fmt.Println("- 제외: Nginx enable/reload, TLS")
+		printItem("나중에", "Nginx 공개와 HTTPS 설정")
 	} else {
-		fmt.Println("- 보존: 기존 Nginx/TLS 설정 (생성·수정·reload하지 않음)")
+		printItem("그대로", "기존 Nginx/HTTPS 설정")
 	}
 }

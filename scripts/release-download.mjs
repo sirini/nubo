@@ -6,6 +6,7 @@ import { Readable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 import { spawnSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
+import { info } from "./terminal-output.mjs"
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 
@@ -125,10 +126,10 @@ export async function fetchRelease(descriptor, cacheRoot = join(projectRoot, ".n
   const expected = checksumFromFile(await downloadText(checksumURL), descriptor.archive)
   const archivePath = join(cacheRoot, descriptor.archive)
   if (!await exists(archivePath) || await sha256(archivePath) !== expected) {
-    console.log(`NUBO ${descriptor.version} 릴리스를 내려받습니다...`)
+    info(`NUBO ${descriptor.version} 공식 파일을 내려받습니다...`)
     await download(archiveURL, archivePath)
   } else {
-    console.log(`검증된 다운로드 캐시를 사용합니다: ${relative(projectRoot, archivePath)}`)
+    info(`이미 검증한 다운로드를 사용합니다: ${relative(projectRoot, archivePath)}`)
   }
   const actual = await sha256(archivePath)
   if (actual !== expected) {

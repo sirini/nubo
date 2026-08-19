@@ -141,9 +141,9 @@ After checksum and compatibility validation, `nuboctl` runs only additive databa
 updates the two runtime version values, switches `current`, restarts the services, and checks readiness. A
 readiness failure restores the previous environment, link, and processes, but does not reverse database
 migrations; every migration must therefore remain compatible with the immediately previous release.
-The core `nuboctl update` command still starts at a staged release and leaves backup and restore under operator
-control. The source checkout's `npm run server:update` wrapper downloads, verifies, extracts, and stages the
-configured release before invoking that boundary. The first update implementation also requires both releases to carry identical systemd and Nginx templates because it does not rewrite live service
+The public `nuboctl update` command runs from the source checkout and downloads, verifies, extracts, and stages
+the configured release. It then invokes the candidate binary with the internal `--release` option; that core
+boundary still starts at a staged release and leaves backup and restore under operator control. The first update implementation also requires both releases to carry identical systemd and Nginx templates because it does not rewrite live service
 configuration during a release transition.
 
 ## Minimal integrated bundle
@@ -165,10 +165,10 @@ The bundle intentionally excludes secrets, uploads, root dependencies, and rende
 It includes x86-64 baseline and x86-64-v2 sharp-libvips variants under `lib/`, with provenance and
 license records under `licenses/sharp-libvips/`. glibc selects the compatible variant automatically,
 so runtime servers do not install a system libvips package. It also includes the static Linux `nuboctl` binary
-with safe `install`, `activate-nginx`, and operator-staged `update` flows, read-only `doctor` and `status`
+with safe `install`, `activate-nginx`, source-coordinated `update` and `customize` flows, read-only `doctor` and `status`
 commands, and the unprivileged service and proxy templates used by the installer.
 
 The official archive is attached to an immutable GitHub Release. `deploy/release-sources.json` pins the GOAPI
 commit used by both local and CI release builds and selects the release or prerelease tag consumed by source
-checkouts. `npm run server:prepare`, `server:install`, and `server:update` all reuse this single archive; none of
+checkouts. `server:prepare`, `server:install`, and public `nuboctl update` all reuse this single archive; none of
 them runs `npm install` or builds application code on the target machine.

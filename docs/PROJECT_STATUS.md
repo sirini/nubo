@@ -27,7 +27,7 @@
 - 설정과 업로드는 릴리스 밖에 보존하며, Standard Mode는 운영 서버에서 npm 설치나 Nuxt 빌드를 하지 않는다.
 - 공식 릴리스는 sharp-libvips를 포함하고 상대 경로로 읽으며, 운영 서버에 시스템 libvips를 설치하지 않는다.
 - Git에는 실행 바이너리와 통합 압축본을 넣지 않고, 고정된 GOAPI commit으로 만든 GitHub Release asset 하나를 사용한다.
-- `npm run server:prepare`, `server:install`, `server:update`는 같은 asset과 외부 SHA-256을 검증해 사용한다.
+- `server:prepare`, 최초 `server:install`·`server:adopt`와 공개 `nuboctl update`는 같은 asset과 외부 SHA-256을 검증해 사용한다.
 - x86-64 호환판을 기본 경로에, sharp 공식 x86-64-v2판을 glibc-hwcaps 경로에 함께 둔다.
 - CPU 판별과 선택은 glibc에 맡기며 `nuboctl`은 SSE4.2가 없다는 이유로 설치를 거부하지 않는다.
 - Ubuntu와 Node.js는 각각 22.04와 22라는 최소 기준만 두고 이후 버전에 별도 상한이나 허용 목록을 두지 않는다.
@@ -42,11 +42,13 @@
 - `nubo.service`는 기존 `nubo.target`을 감싸며 GOAPI·Web의 독립 unit 구조를 바꾸지 않는다.
 - 이미 adoption한 서버의 systemd unit은 update가 자동 변경하지 않고 운영자가 선택적으로 대표 unit을 설치한다.
 - v1.2.0 이전 소스 설치의 adoption은 기존 checkout을 갱신하지 않고 옆 경로의 깨끗한 clone에 환경과 업로드를 복사한 뒤 진행한다.
-- 커스텀 Vue 스킨은 빌드 시점 자산이며 `server:customize`가 공식 기반과 로컬 Web을 별도 불변 파생 릴리스로 결합한다.
+- 커스텀 Vue 스킨은 빌드 시점 자산이며 `nuboctl customize`가 공식 기반과 로컬 Web을 별도 불변 파생 릴리스로 결합한다.
 - `nuboctl skin apply`는 같은 공식 버전의 Web만 원자적으로 전환하고 readiness 실패 시 이전 Web을 복구하며 DB·GOAPI·환경은 바꾸지 않는다.
 - install·adopt·update는 `/usr/local/bin/nuboctl`이 `current/nuboctl`을 따르게 하되 기존 다른 파일이나 링크를 덮어쓰지 않는다.
 - 외부 스킨 카탈로그와 다운로드는 후속 범위로 두고, 현재는 사용자가 신뢰하는 로컬 스킨 소스만 다룬다.
 - 저사양 가상 CPU의 Vite 8 변환 교착을 피하도록 Nuxt 4.5.2는 유지하고 Vite 해석만 `rolldown-vite@7.3.1`로 임시 고정한다.
+- 최초 install·adopt만 npm bootstrap을 사용하고 설치 후 공개 명령은 `nuboctl`의 status·doctor·update·customize·activate-nginx로 통일한다.
+- CLI 색상은 TTY에서만 사용하고 `NO_COLOR`와 `TERM=dumb`에서는 평문을 유지한다.
 
 ## Recent completion
 
@@ -80,11 +82,12 @@
 - v1.2.9 통합 asset과 SHA-256을 게시하고 install·adopt·update가 현재 `nuboctl`을 PATH에서 찾도록 연결했다.
 - 로컬 스킨 빌드가 저사양 가상 CPU에서도 진행되도록 호환 Rolldown-Vite를 lockfile에 고정했다.
 - 파생 릴리스 복사 시 Nitro의 내부 상대 심볼릭 링크를 그대로 보존해 checksum 검증이 원본 checkout을 외부 경로로 오인하지 않게 했다.
+- 설치 후 업데이트와 사이트 꾸미기를 `nuboctl update`, `nuboctl customize`로 통일하고 단계·성공·주의·실패 출력을 읽기 쉽게 구분했다.
 
 ## Open findings
 
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
-- 하위 `nuboctl update`는 데이터 백업·복원을 수행하지 않으며 npm wrapper도 외부 백업 확인을 유지한다.
+- 내부 `nuboctl update --release`는 데이터 백업·복원을 수행하지 않으며 공개 `nuboctl update`도 외부 백업 확인을 유지한다.
 - 실제 MySQL/MariaDB를 사용한 fresh DB·기존 DB 통합 검증은 서버 QA 때 확인해야 한다.
 - 새 설치 흐름은 실제 깨끗한 Ubuntu 서버에서 운영자 관점의 QA가 필요하다.
 - Cafe24의 실제 `cpu64-rhel6` 가상 CPU에서 호환판 이미지 처리 최종 QA가 필요하다.
@@ -94,7 +97,7 @@
 - adoption dry-run은 포트 점유를 안내하고, 실제 실행은 기존 프로세스를 임의 종료하지 않은 채 점유 포트가 있으면 변경 전에 중단한다.
 - v1.2.7까지 adoption한 서버는 대표 `nubo.service`를 원할 때 문서의 수동 절차로 추가한다.
 - 사이트 전용 스킨은 기본 스킨을 직접 수정하지 않고 별도 key로 복사해야 이후 `git pull` 충돌을 줄일 수 있다.
-- 공식 update 직후에는 공식 Web이 실행되며, 사이트 전용 스킨의 자동 재빌드는 아직 하지 않으므로 운영자가 `server:customize`를 다시 실행해야 한다.
+- 공식 update 직후에는 공식 Web이 실행되며, 사이트 전용 스킨의 자동 재빌드는 아직 하지 않으므로 운영자가 `nuboctl customize`를 다시 실행해야 한다.
 - Vite 8/Rolldown의 저사양 CPU 교착이 해결되면 임시 `rolldown-vite@7.3.1` override를 제거하고 Vite 8로 복귀해야 한다.
 
 ## Verification
@@ -132,8 +135,9 @@
 - v1.2.9 전달: 고정 GOAPI 커밋과 clean NUBO `7967275`로 통합 asset을 빌드해 nuboctl 0.9.6, 두 libvips 변형, 내부·외부 checksum, Ubuntu 24 재해제와 prebuilt smoke를 통과했다. GitHub 게시본도 다시 내려받아 SHA-256과 manifest를 확인했다.
 - Rolldown-Vite 호환 핀: Node 26.7.0의 깨끗한 `npm ci`, 17개 테스트, typecheck, audit 0건과 prebuilt smoke를 통과했다. CPU 2개 제한 production build는 4,839개 모듈을 변환해 23초에 완료했고 최대 RSS는 약 2.67GiB였다.
 - 사이트 빌드 복사: Nitro 형태의 내부 상대 링크를 파생 디렉터리에 복사한 뒤 링크 문자열 보존과 `hashTree` 통과를 회귀 테스트로 확인했다.
+- CLI 통합·출력: 공개 update/customize source routing, 잘못된 작업 폴더 안내, 내부 `--release` 분기와 캡처 출력의 무색상 보존을 Go 회귀 테스트로 확인했다.
 
 ## Next action
 
-- v1.2.9 통합 asset을 빌드하고 실제 Ubuntu 설치에서 layout/home 수정→`server:customize`→관리 화면 선택→재수정 흐름을 확인한다.
+- 다음 통합 asset을 실제 Ubuntu 설치에서 `nuboctl update`한 뒤 layout/home 수정→`nuboctl customize`→관리 화면 선택→재수정 흐름을 확인한다.
 - 깨끗한 Ubuntu와 Cafe24에서 install→activate-nginx→TLS→update 및 baseline 이미지 처리를 최종 확인한다.

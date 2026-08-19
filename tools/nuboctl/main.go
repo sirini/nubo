@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.9.6"
+const version = "0.10.0"
 
 type options struct {
 	releaseDir  string
@@ -36,14 +36,14 @@ func run(args []string) int {
 			if err == flag.ErrHelp {
 				return 0
 			}
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		if !options.nonInteractive && !options.backupConfirmed {
 			options.confirmBackup = promptUpdateBackup(newTerminalPrompter(os.Stdin, os.Stdout))
 		}
 		if err := runAdopt(options, systemRunner{}, true); err != nil {
-			fmt.Fprintln(os.Stderr, "adoption 실패:", err)
+			printFailure("기존 사이트 전환 실패: %v", err)
 			return 1
 		}
 		return 0
@@ -53,27 +53,27 @@ func run(args []string) int {
 			if err == flag.ErrHelp {
 				return 0
 			}
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		if options.nonInteractive {
 			if options.domain == "" {
-				fmt.Fprintln(os.Stderr, "비대화형 설치에는 --domain이 필요합니다")
+				printFailure("자동 설치에는 --domain이 필요합니다")
 				return 2
 			}
 			if _, statErr := os.Stat(options.envFile); os.IsNotExist(statErr) && options.envInput == "" {
-				fmt.Fprintln(os.Stderr, "새 비대화형 설치에는 비밀값을 담은 --env-input 파일이 필요합니다")
+				printFailure("새 자동 설치에는 비밀값을 담은 --env-input 파일이 필요합니다")
 				return 2
 			}
 		} else {
 			options, err = promptInstallOptions(options, newTerminalPrompter(os.Stdin, os.Stdout))
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "설치 입력 실패:", err)
+				printFailure("설치 정보를 읽지 못했습니다: %v", err)
 				return 2
 			}
 		}
 		if err := runInstall(options, systemRunner{}, true); err != nil {
-			fmt.Fprintln(os.Stderr, "설치 준비 실패:", err)
+			printFailure("설치를 끝내지 못했습니다: %v", err)
 			return 1
 		}
 		return 0
@@ -83,38 +83,59 @@ func run(args []string) int {
 			if err == flag.ErrHelp {
 				return 0
 			}
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		if err := activateNginx(options, systemRunner{}, true); err != nil {
-			fmt.Fprintln(os.Stderr, "Nginx 활성화 실패:", err)
+			printFailure("웹 공개 설정 실패: %v", err)
 			return 1
 		}
 		return 0
 	case "update":
+		if !hasReleaseOption(args[1:]) {
+			if requestsHelp(args[1:]) {
+				printUpdateUsage()
+				return 0
+			}
+			if err := runSourceWorkflow("update", args[1:]); err != nil {
+				printFailure("업데이트 실패: %v", err)
+				return 1
+			}
+			return 0
+		}
 		options, err := parseUpdateOptions(args[1:])
 		if err != nil {
 			if err == flag.ErrHelp {
 				return 0
 			}
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		if options.nonInteractive && !options.dryRun && !options.backupConfirmed {
-			fmt.Fprintln(os.Stderr, "비대화형 update에는 --backup-confirmed가 필요합니다")
+			printFailure("자동 업데이트에는 --backup-confirmed가 필요합니다")
 			return 2
 		}
 		if !options.nonInteractive && !options.backupConfirmed {
 			options.confirmBackup = promptUpdateBackup(newTerminalPrompter(os.Stdin, os.Stdout))
 		}
 		if err := runUpdate(options, systemRunner{}, waitForInstallReadiness, true); err != nil {
-			fmt.Fprintln(os.Stderr, "update 실패:", err)
+			printFailure("업데이트 실패: %v", err)
+			return 1
+		}
+		return 0
+	case "customize":
+		if requestsHelp(args[1:]) {
+			printCustomizeUsage()
+			return 0
+		}
+		if err := runSourceWorkflow("customize", args[1:]); err != nil {
+			printFailure("사이트 꾸미기 적용 실패: %v", err)
 			return 1
 		}
 		return 0
 	case "skin":
 		if len(args) < 2 || args[1] != "apply" {
-			fmt.Fprintln(os.Stderr, "사용법: nuboctl skin apply [옵션]")
+			printFailure("사용법: nuboctl skin apply [옵션]")
 			return 2
 		}
 		options, err := parseSiteApplyOptions(args[2:])
@@ -122,25 +143,25 @@ func run(args []string) int {
 			if err == flag.ErrHelp {
 				return 0
 			}
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		if err := runSiteApply(options, systemRunner{}, waitForInstallReadiness, true); err != nil {
-			fmt.Fprintln(os.Stderr, "스킨 적용 실패:", err)
+			printFailure("스킨 적용 실패: %v", err)
 			return 1
 		}
 		return 0
 	case "doctor":
 		options, err := parseOptions("doctor", args[1:])
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		return printReport(runDoctor(options, systemRunner{}))
 	case "status":
 		options, err := parseOptions("status", args[1:])
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			printFailure("%v", err)
 			return 2
 		}
 		return printReport(runStatus(options, systemRunner{}))
@@ -151,7 +172,7 @@ func run(args []string) int {
 		printUsage()
 		return 0
 	default:
-		fmt.Fprintf(os.Stderr, "알 수 없는 명령: %s\n", args[0])
+		printFailure("알 수 없는 명령: %s", args[0])
 		printUsage()
 		return 2
 	}
@@ -224,5 +245,33 @@ func resolveExecutable(executable string) string {
 
 // 현재 제공하는 명령의 짧은 사용법을 표준 오류에 출력한다.
 func printUsage() {
-	fmt.Fprintln(os.Stderr, "사용법: nuboctl <adopt|install|activate-nginx|update|skin|doctor|status|version> [옵션]")
+	fmt.Fprintln(os.Stderr, `NUBO 서버 관리
+
+사용법: nuboctl <명령> [옵션]
+
+자주 쓰는 명령:
+  status          현재 서비스 상태 확인
+  doctor          설치와 설정 문제 점검
+  update          새 공식 버전으로 업데이트
+  customize       로컬 스킨 수정본 빌드·적용
+  activate-nginx  HTTP 공개 설정 활성화
+
+기타: install, adopt, skin apply, version
+도움말: nuboctl <명령> --help`)
+}
+
+func printUpdateUsage() {
+	fmt.Fprintln(os.Stderr, `NUBO를 새 공식 버전으로 업데이트합니다.
+
+NUBO 프로젝트 폴더에서 실행하세요.
+  nuboctl update --dry-run   변경 없이 계획 확인
+  nuboctl update             다운로드·검증·전환`)
+}
+
+func printCustomizeUsage() {
+	fmt.Fprintln(os.Stderr, `로컬 스킨 수정본을 빌드하고 사이트에 적용합니다.
+
+NUBO 프로젝트 폴더에서 실행하세요.
+  nuboctl customize --dry-run   빌드하되 서비스는 유지
+  nuboctl customize             빌드·검증·Web 전환`)
 }

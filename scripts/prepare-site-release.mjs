@@ -14,6 +14,7 @@ import {
   stageSystemRelease,
 } from "./release-download.mjs"
 import { copyTree, createSiteManifest, hashTree, siteReleaseName, writeChecksums, writeDependencyStamp } from "./site-release.mjs"
+import { failure, info, section, success } from "./terminal-output.mjs"
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const buildRoot = join(projectRoot, ".nubo", "site-build")
@@ -41,16 +42,17 @@ async function ensureDependencies() {
     installedHash = ""
   }
   if (installedHash !== lockHash) {
-    console.log("사이트 빌드 의존성을 준비합니다...")
+    info("처음 한 번 필요한 빌드 도구를 준비합니다...")
     run("npm", ["ci"])
     await writeDependencyStamp(stampPath, lockHash)
   } else {
-    console.log("준비된 npm 의존성을 재사용합니다.")
+    info("준비된 빌드 도구를 그대로 사용합니다.")
   }
 }
 
 async function main() {
   assertSupportedRuntime()
+  section("사이트 꾸미기 빌드")
   const passthrough = process.argv.slice(2)
   for (const argument of passthrough) {
     if (argument !== "--dry-run") throw new Error(`지원하지 않는 옵션입니다: ${argument}`)
@@ -61,7 +63,7 @@ async function main() {
   const official = await extractRelease(descriptor, archive, join(projectRoot, ".nubo", "releases"))
 
   await ensureDependencies()
-  console.log("로컬 스킨의 타입과 production build를 검증합니다...")
+  info("수정한 화면을 검사하고 운영용 파일로 만듭니다...")
   run("npm", ["run", "typecheck"])
   run("npm", ["run", "build"])
 
@@ -82,11 +84,11 @@ async function main() {
   await writeChecksums(candidate)
 
   const systemRelease = stageSystemRelease(candidate)
-  console.log(`로컬 스킨 파생 릴리스를 준비했습니다: ${systemRelease}`)
+  success(`사이트 수정본을 안전하게 준비했습니다: ${systemRelease}`)
   runReleaseCommand(systemRelease, ["skin", "apply", "--release", systemRelease, ...passthrough])
 }
 
 main().catch(error => {
-  console.error(`오류: ${error.message}`)
+  failure(error.message)
   process.exitCode = 1
 })

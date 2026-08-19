@@ -10,6 +10,7 @@ import {
   runNuboctl,
   stageSystemRelease,
 } from "./release-download.mjs"
+import { failure, section, success } from "./terminal-output.mjs"
 
 async function main() {
   const [command = "prepare", ...args] = process.argv.slice(2)
@@ -17,13 +18,14 @@ async function main() {
     throw new Error(`알 수 없는 릴리스 준비 명령입니다: ${command}`)
   }
   assertSupportedRuntime()
+  section(command === "update" ? "NUBO 업데이트 준비" : command === "adopt" ? "기존 사이트 전환 준비" : "NUBO 설치 준비")
   const descriptor = await currentRelease()
   const archive = await fetchRelease(descriptor)
   const localRelease = await extractRelease(descriptor, archive, join(process.cwd(), ".nubo", "releases"))
 
   if (command === "prepare") {
     const link = await prepareGoapi(localRelease)
-    console.log(`NUBO 서버 런타임 ${descriptor.version} 준비 완료 (GOAPI: ${link})`)
+    success(`NUBO 서버 파일 ${descriptor.version} 준비 완료 (GOAPI: ${link})`)
     return
   }
 
@@ -40,6 +42,6 @@ async function main() {
 }
 
 main().catch(error => {
-  console.error(`오류: ${error.message}`)
+  failure(error.message)
   process.exitCode = 1
 })

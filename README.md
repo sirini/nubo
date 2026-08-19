@@ -52,12 +52,27 @@ NUBO 저장소의 공식 no-build 설치가 Nuxt와 GOAPI, 이미지 처리 라�
 git clone --depth=1 https://github.com/sirini/nubo.git
 cd nubo
 npm run server:install
-sudo /opt/nubo/current/nuboctl activate-nginx
+nuboctl activate-nginx
 ```
 
 `server:install`은 현재 정식 릴리스의 통합 압축본과 SHA-256을 GitHub Releases에서 받아 검증하고,
 `/opt/nubo/releases`에 배치한 뒤 그 안의 `nuboctl install`을 실행합니다. sharp-libvips 기반 라이브러리와
 이미지 코덱도 같은 압축본에 있으므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
+
+최초 설치와 v1.2.0 이전 사이트 전환 때만 아직 관리 명령이 없으므로 `npm run server:install` 또는
+`npm run server:adopt`를 사용합니다. 설치가 끝나면 `/usr/local/bin/nuboctl`이 등록되며 이후에는
+다음 명령만 기억하면 됩니다.
+
+```bash
+nuboctl status
+nuboctl doctor
+nuboctl update
+nuboctl customize
+nuboctl activate-nginx
+```
+
+기존 `npm run server:update`, `npm run server:customize`는 자동화 호환을 위해 남아 있지만 새 안내에서는
+사용하지 않습니다. `update`와 `customize`는 NUBO 프로젝트 폴더에서 실행해야 합니다.
 
 설치가 끝나면 GOAPI와 Web은 systemd의 `nubo.service`로 함께 관리합니다.
 
@@ -278,7 +293,7 @@ npm run server:adopt
 포트 `3000`/`3006`을 쓰는 기존 NUBO 프론트엔드와 백엔드는 운영자가 기존 실행 방식에 맞게 직접
 종료한 뒤 실제 명령을 다시 실행하면 됩니다. 새 서비스 전환이 실패해도 기존 프로세스를 임의로
 재시작하지 않으므로 출력에 따라 이전 실행 방식으로 직접 시작할 수 있습니다. adoption이 끝난 뒤부터는
-프로젝트 소스에서 빌드하지 않고 아래의 `server:update`를 사용합니다.
+서버 관리 명령을 `nuboctl`로 통일합니다.
 Cafe24처럼 root 계정만 사용하는 기존 서버에서는 root 소유 프로젝트도 adoption할 수 있습니다.
 이 경우 실행 계획에 경고를 표시하고 서비스는 root로 실행하지만, systemd의 파일시스템 보호,
 권한 상승 차단과 업로드 외 쓰기 경로 제한은 그대로 유지합니다. 일반 계정 운영이 가능하면 해당 계정을
@@ -301,14 +316,14 @@ cp -a /var/www/nubo-old/app/skins/my-custom-skin /var/www/nubo-new/app/skins/
 cd /var/www/nubo-new
 ```
 
-adoption을 마친 뒤에는 아래의 `server:customize`로 로컬 스킨을 공식 릴리스와 결합할 수 있습니다.
+adoption을 마친 뒤에는 아래의 `nuboctl customize`로 로컬 스킨을 공식 릴리스와 결합할 수 있습니다.
 명령이 의존성 설치, typecheck, production build, 파생 릴리스 checksum 생성, Web 재시작과 readiness
 검사를 수행합니다. 실패하면 이전 Web 빌드로 자동 복구하며 GOAPI, DB, 업로드, 환경 파일과 Nginx는
 변경하지 않습니다.
 
 ```bash
 cd /var/www/nubo-new
-npm run server:customize
+nuboctl customize
 ```
 
 첫 실행이나 `package-lock.json`이 바뀐 경우에만 `npm ci`를 자동 실행하고, 이후 문구·스타일 수정에는
@@ -321,7 +336,7 @@ npm run server:customize
 이상의 사용 가능한 메모리를 준비해야 합니다.
 
 ```bash
-npm run server:customize -- --dry-run
+nuboctl customize --dry-run
 ```
 
 공식 prebuilt 디렉터리는 여전히 직접 수정하면 안 됩니다. 커스텀 결과는
@@ -334,17 +349,17 @@ npm run server:customize -- --dry-run
 
 ```bash
 git pull --ff-only
-npm run server:update -- --dry-run
-npm run server:update
+nuboctl update --dry-run
+nuboctl update
 ```
 
-명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 `nuboctl update`의 백업 확인, additive migration,
+명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 백업 확인, additive migration,
 원자적 `current` 전환, 재시작과 readiness 검사를 그대로 수행합니다. 소스 개발 환경에서 GOAPI만
 갱신하려면 `npm run server:prepare`를 다시 실행합니다.
 
 사이트 전용 로컬 스킨을 사용 중이라면 공식 업데이트 직후에는 기본 prebuilt Web이 실행됩니다.
 현재 버전에서는 로컬 스킨을 자동으로 다시 빌드하지 않으므로, 업데이트가 정상 완료된 뒤 새 소스와의
-호환성을 확인하며 `npm run server:customize`를 한 번 더 실행합니다. 이 명령은 방금 설치한 공식 버전을
+호환성을 확인하며 `nuboctl customize`를 한 번 더 실행합니다. 이 명령은 방금 설치한 공식 버전을
 기반으로 사이트 전용 Web을 다시 만들고 Web만 전환합니다.
 
 v1.2.7까지 adoption을 마친 서버는 v1.2.8로 update해도 systemd 구성을 자동 변경하지 않습니다.
@@ -405,7 +420,7 @@ Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS�
 - 새 스킨을 만들 때 기본 스킨을 직접 수정하지 말고 폴더를 복사한 뒤 `skin.json`의 `key`, 이름과 버전을
   새 폴더에 맞게 바꾸는 방식을 권장합니다. 그래야 `git pull`과 공식 스킨 업데이트가 사이트 수정을
   덮어쓰지 않습니다.
-- 설치된 서버에서는 수정 후 `npm run server:customize` 한 명령으로 빌드·검증·적용합니다.
+- 설치된 서버에서는 수정 후 `nuboctl customize` 한 명령으로 빌드·검증·적용합니다.
 
 예를 들어 사이트 전용 레이아웃과 홈을 만들려면 기본 폴더를 새 key로 복사합니다.
 
@@ -418,7 +433,7 @@ cp -a app/skins/nubo-basic-home app/skins/my-site-home
 정보를 수정합니다. Vue 파일의 문구·구조·버튼 스타일을 사이트에 맞게 편집한 뒤 적용합니다.
 
 ```bash
-npm run server:customize
+nuboctl customize
 ```
 
 빌드가 적용되면 관리 화면의 레이아웃과 홈 선택 목록에서 새 스킨을 골라 **적용하기**를 누릅니다.

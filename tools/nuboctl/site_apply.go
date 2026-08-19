@@ -38,7 +38,7 @@ func runSiteApply(options siteApplyOptions, runner commandRunner, readiness func
 	}
 	printSiteApplyPlan(options, preflight)
 	if options.dryRun {
-		fmt.Println("\nDRY-RUN 완료: current 링크와 서비스를 변경하지 않았습니다.")
+		printSuccess("미리보기가 끝났습니다. 실행 중인 사이트는 바꾸지 않았습니다.")
 		return nil
 	}
 	if err := replaceCurrentRelease(options.currentLink, preflight.previousDir, preflight.candidateDir); err != nil {
@@ -50,8 +50,8 @@ func runSiteApply(options siteApplyOptions, runner commandRunner, readiness func
 	if err := readiness(preflight.readinessURL); err != nil {
 		return recoverPreviousSiteBuild(options, preflight, runner, readiness, fmt.Errorf("새 스킨 빌드 readiness 실패: %w", err))
 	}
-	fmt.Printf("\n로컬 스킨 적용 완료: NUBO %s · %s\n", preflight.version, preflight.skinsHash[:12])
-	fmt.Printf("현재 릴리스: %s -> %s\n", options.currentLink, preflight.candidateDir)
+	printSuccess("사이트 꾸미기 적용 완료: NUBO %s · %s", preflight.version, preflight.skinsHash[:12])
+	printItem("현재 버전", "%s → %s", options.currentLink, preflight.candidateDir)
 	return nil
 }
 
@@ -144,13 +144,11 @@ func validateSiteBase(previousDir, candidateDir string, previous, candidate rele
 }
 
 func printSiteApplyPlan(options siteApplyOptions, preflight siteApplyPreflight) {
-	fmt.Printf("로컬 스킨 적용 계획 (NUBO %s)\n", preflight.version)
-	fmt.Printf("- 현재: %s\n", preflight.previousDir)
-	fmt.Printf("- 후보: %s\n", preflight.candidateDir)
-	fmt.Printf("- 스킨 소스: %s\n", preflight.skinsHash)
-	fmt.Printf("- 전환: %s\n", options.currentLink)
-	fmt.Println("- 실행: 원자적 링크 전환, Web restart, 전체 readiness 확인")
-	fmt.Println("- 변경하지 않음: GOAPI, DB, 업로드, 환경 파일, Nginx/TLS")
+	printHeading("사이트 꾸미기 적용 계획  NUBO %s", preflight.version)
+	printItem("현재", "%s", preflight.previousDir)
+	printItem("수정본", "%s", preflight.candidateDir)
+	printItem("바꿀 것", "웹 화면 전환, Web 재시작, 정상 동작 확인")
+	printItem("그대로", "GOAPI, DB, 업로드, 환경 파일, Nginx/TLS")
 }
 
 func restartNuboWeb(runner commandRunner) error {
