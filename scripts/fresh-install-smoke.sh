@@ -26,6 +26,15 @@ run_root() {
   fi
 }
 
+NUBO_APT_METADATA_READY=false
+prepare_apt_metadata() {
+  if [[ "${NUBO_APT_METADATA_READY}" == "false" ]]; then
+    echo "[fresh-install] apt metadata 준비"
+    run_root timeout --foreground 5m apt-get update -qq
+    NUBO_APT_METADATA_READY=true
+  fi
+}
+
 # 실패한 hosted runner에서 서비스 원인을 바로 확인할 수 있게 로그를 남긴다.
 diagnose() {
   local exit_code=$?
@@ -61,10 +70,17 @@ for NUBO_UNUSED_PATH in /opt/nubo/current /etc/nubo/nubo.env /etc/systemd/system
 done
 trap diagnose EXIT
 
-echo "[fresh-install] apt metadata 준비"
-run_root timeout --foreground 5m apt-get update -qq
-echo "[fresh-install] 기본 패키지 설치"
-run_root timeout --foreground 5m env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ca-certificates curl nginx >/dev/null
+NUBO_MISSING_PACKAGES=()
+command -v curl >/dev/null 2>&1 || NUBO_MISSING_PACKAGES+=(curl)
+command -v nginx >/dev/null 2>&1 || NUBO_MISSING_PACKAGES+=(nginx)
+[[ -f /etc/ssl/certs/ca-certificates.crt ]] || NUBO_MISSING_PACKAGES+=(ca-certificates)
+if [[ ${#NUBO_MISSING_PACKAGES[@]} -gt 0 ]]; then
+  prepare_apt_metadata
+  echo "[fresh-install] 기본 패키지 설치: ${NUBO_MISSING_PACKAGES[*]}"
+  run_root timeout --foreground 5m env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "${NUBO_MISSING_PACKAGES[@]}" >/dev/null
+else
+  echo "[fresh-install] 기본 패키지 준비됨"
+fi
 if systemctl list-unit-files mysql.service --no-legend 2>/dev/null | grep -q '^mysql.service'; then
   NUBO_DATABASE_SERVICE="mysql.service"
   NUBO_DATABASE_CLIENT="mysql"
@@ -72,6 +88,7 @@ elif systemctl list-unit-files mariadb.service --no-legend 2>/dev/null | grep -q
   NUBO_DATABASE_SERVICE="mariadb.service"
   NUBO_DATABASE_CLIENT="mariadb"
 else
+  prepare_apt_metadata
   echo "[fresh-install] MariaDB 설치"
   run_root timeout --foreground 5m env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq mariadb-server >/dev/null
   NUBO_DATABASE_SERVICE="mariadb.service"
@@ -81,8 +98,25 @@ readonly NUBO_DATABASE_SERVICE NUBO_DATABASE_CLIENT
 echo "[fresh-install] ${NUBO_DATABASE_SERVICE} 시작"
 run_root timeout --foreground 2m systemctl enable --now "${NUBO_DATABASE_SERVICE}"
 
+NUBO_DATABASE_ROOT_PASSWORD=""
+if run_root timeout --foreground 15s env MYSQL_PWD=root "${NUBO_DATABASE_CLIENT}" --protocol=socket --user=root --execute='SELECT 1' >/dev/null 2>&1; then
+  NUBO_DATABASE_ROOT_PASSWORD="root"
+elif ! run_root timeout --foreground 15s "${NUBO_DATABASE_CLIENT}" --protocol=socket --user=root --execute='SELECT 1' >/dev/null 2>&1; then
+  echo "[fresh-install] database root 인증에 실패했습니다." >&2
+  exit 1
+fi
+readonly NUBO_DATABASE_ROOT_PASSWORD
+
+run_database_root() {
+  if [[ -n "${NUBO_DATABASE_ROOT_PASSWORD}" ]]; then
+    run_root timeout --foreground 1m env MYSQL_PWD="${NUBO_DATABASE_ROOT_PASSWORD}" "${NUBO_DATABASE_CLIENT}" --protocol=socket --user=root
+  else
+    run_root timeout --foreground 1m "${NUBO_DATABASE_CLIENT}" --protocol=socket --user=root
+  fi
+}
+
 echo "[fresh-install] smoke database 준비"
-run_root timeout --foreground 1m "${NUBO_DATABASE_CLIENT}" <<'SQL'
+run_database_root <<'SQL'
 CREATE DATABASE nubo_smoke CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER 'nubo_smoke'@'127.0.0.1' IDENTIFIED BY 'nubo-smoke-db-password';
 GRANT ALL PRIVILEGES ON nubo_smoke.* TO 'nubo_smoke'@'127.0.0.1';

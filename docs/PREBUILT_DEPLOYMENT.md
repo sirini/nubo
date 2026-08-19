@@ -52,7 +52,7 @@ NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi
 NUXT_PUBLIC_GOAPI_BASE=goapi
 NUXT_PUBLIC_DOMAIN=https://example.com
 NUXT_PUBLIC_TITLE=Example Community
-NUXT_PUBLIC_VERSION=1.2.13
+NUXT_PUBLIC_VERSION=1.2.14
 ```
 
 Point GOAPI at the file and pass the same file to Node:

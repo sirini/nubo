@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- fresh-install CI의 장시간 무출력 실행을 제한·진단 가능하게 보강하고 v1.2.13으로 게시한다.
+- GitHub hosted runner의 사전 설치 패키지·MySQL 인증 차이를 fresh-install smoke에 반영하고 v1.2.14로 게시한다.
 
 ## Current product boundary
 
@@ -132,6 +132,7 @@
 ## Verification
 
 - v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.
+- v1.2.13 후보: build-release는 통과했고 fresh-install 정지 위치를 확인했다. Ubuntu 24의 불필요한 apt metadata 갱신은 5분 timeout, Ubuntu 22의 사전 설치 MySQL은 root 인증 차이로 실패해 공개 Release는 만들지 않았다. 사전 설치 패키지 재사용과 MySQL 인증 감지를 v1.2.14에 추가한다.
 - lint 정리: 전체 ESLint 오류 0건·경고 50건 상한, NUBO 28개 테스트, typecheck, production build와 diff whitespace 검사를 통과했다.
 - fresh-install smoke: 현재 v1.2.11 후보를 Node.js 22.23.2와 격리된 Ubuntu 22.04/24.04 systemd 환경에 각각 설치해 MariaDB bootstrap, GOAPI·Web 기동, `/ready`와 build/contract를 포함한 `/version` 검증을 통과했다.
 - S2-Q04 필수 게이트: NUBO 28개 테스트·typecheck·production build·prebuilt smoke, contract 일치/불일치 회귀, workflow YAML parse와 공식 Ubuntu 22/libvips Docker 환경의 GOAPI 전체 test/vet을 통과했다. GOAPI 호스트 test/vet도 통과했다(`fc430b8`).
@@ -182,4 +183,4 @@
 
 ## Next action
 
-- v1.2.13 후보를 전체 릴리스 게이트로 재검증·게시하고 운영 update 확인 범위를 결정한다.
+- v1.2.14 후보를 전체 릴리스 게이트로 재검증·게시하고 운영 update 확인 범위를 결정한다.
