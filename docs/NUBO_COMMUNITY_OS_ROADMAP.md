@@ -431,13 +431,13 @@ npm run build
 
 - 우선순위: `P0`
 - 크기: `L`
-- 상태: `IN_PROGRESS`
+- 상태: `DONE`
 - 선행: S0-Q01 핵심 안정화
 
 ### 작업
 
 - [x] 현재 Nitro `/api` 100개와 GOAPI 115개 엔드포인트 목록 생성
-- [ ] 프런트가 실제 소비하는 endpoint별 request/result 타입 대조
+- [x] 프런트가 실제 소비하는 endpoint별 request/result 타입 대조
 - [x] `Resp<T>`와 오류 응답의 필수 필드 정의
 - [x] 인증 만료, 권한 부족, 검증 실패, 충돌의 v1 status/code 규칙 정의
 - [x] 프런트와 백엔드가 공유할 contract version 도입

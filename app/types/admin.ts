@@ -37,7 +37,6 @@ export const ADMIN_SYSTEM: AdminMenu = "System"
 // 대시보드 대표 타입 정의
 export type AdminDashboard = {
   statistic: AdminDashboardStatisticResult
-  latest: AdminDashboardLatest
   item: AdminDashboardItem
 }
 
@@ -135,26 +134,6 @@ export type AdminDashboardItem = {
   groups: Pair[]
   boards: Pair[]
   members: BoardWriter[]
-}
-
-// 대시보드 최근 (댓)글, 신고 목록 최신순 반환값 정의
-export type AdminDashboardLatest = {
-  posts: AdminDashboardLatestContent[]
-  comments: AdminDashboardLatestContent[]
-  reports: AdminDashboardLatestContent[]
-}
-
-// 대시보드 최근 신고 목록 반환값 정의
-export type AdminDashboardReport = {
-  uid: number
-  content: string
-  writer: BoardWriter
-}
-
-// 대시보드 최근 (댓)글 목록 반환값 정의
-export type AdminDashboardLatestContent = AdminDashboardReport & {
-  id: string
-  type: Board
 }
 
 // 대시보드에서 그래프 출력용 타입 정의
@@ -270,6 +249,7 @@ export type AdminBoardCreateParam = {
   levelDownload: number
   levelList: number
   levelView: number
+  levelWrite: number
   name: string
   pointComment: number
   pointDownload: number

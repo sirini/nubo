@@ -22,12 +22,9 @@
 [`contracts/api-response-v1.schema.json`](contracts/api-response-v1.schema.json)이다.
 
 ```ts
-type Resp<T> = {
-  success: boolean
-  error: string
-  code: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
-  result: T | null
-}
+type Resp<T> =
+  | { success: true; error: ""; code: 0; result: T }
+  | { success: false; error: string; code: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12; result: null }
 ```
 
 - 성공: `success=true`, `error=""`, `code=0`, `result=T | null`
@@ -127,9 +124,14 @@ Go 모델에는 query, JSON, multipart form이 혼재하고 기존 TypeScript �
 따라서 현재 전 모델 자동 생성은 오히려 잘못된 결합을 만들 가능성이 높다. 먼저 프런트가 실제 소비하는
 endpoint의 request/result를 목록화한 뒤, 안정된 JSON 모델부터 OpenAPI 또는 생성 타입 대상으로 옮긴다.
 
+현재 `app/composables`와 관리자 초대 화면이 명시한 `Resp<T>` 소비 지점을 GO result 구조와 대조했다.
+JSON result의 필드명은 일치하며, request는 handler가 실제 읽는 JSON·query·multipart 필드를 기준으로
+확인했다. 이 과정에서 성공/실패 응답의 `result` nullability를 TypeScript discriminated union으로 고치고,
+게시판 생성 request에 빠진 `levelWrite`를 추가했다. 화면 상태에만 남아 있던 과거 dashboard latest 타입도
+실제 분리 endpoint 구조에 맞춰 제거했다.
+
 ## 이번 대조에서 정리한 불일치
 
 - `/admin/group/admin`: 실제 프런트 호출과 GOAPI route 사이에 빠져 있던 Nitro proxy 추가
 - `/board/move/apply`: Nitro `PUT`을 GOAPI와 같은 `POST`로 정정
 - `/admin/dashboard/latest`: GOAPI route와 프런트 호출부가 없는 잔존 Nitro proxy 제거
-

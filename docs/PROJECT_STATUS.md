@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S0-Q03에서 프런트가 실제 소비하는 endpoint의 request/result 타입을 대조하고, 불일치 위험이 큰 모델만 추린다.
+- S0-Q04에서 release manifest의 build commit 노출과 NUBO–GOAPI contract 불일치 감지를 현재 배포 구조에 맞게 좁혀 검토한다.
 
 ## Current product boundary
 
@@ -94,6 +94,7 @@
 - 인증 코드의 이메일 결합·일회 소비, refresh token 원자적 회전, legacy SHA-256 로그인 시 bcrypt 전환, 활성 UID 1 최고관리자 경계를 최소 회귀 테스트로 고정했다.
 - GOAPI 115개와 Nitro proxy 100개·직접/대체 경로 15개를 대조하고, 공통 응답·오류 code·HTTP status 예외를 API contract v1 문서와 JSON Schema로 고정했다.
 - 누락된 그룹 관리자 변경 proxy를 추가하고, 게시글 이동의 PUT/POST 불일치를 바로잡았으며, 구현·호출부가 없는 dashboard latest proxy를 제거했다.
+- 프런트의 명시적 `Resp<T>` 소비 지점을 GO result와 대조하고 응답을 성공/실패 discriminated union으로 고쳤으며, 게시판 설정의 누락된 `levelWrite` request 필드와 오래된 dashboard latest 상태 타입을 정리했다.
 
 ## Open findings
 
@@ -150,8 +151,8 @@
 - systemd lifecycle 수정: fresh install과 기존 drop-in 없는 update의 추가, 기존 다른 drop-in 충돌 보호를 회귀 테스트로 확인했다. systemd 259 사용자 manager에서 대표 unit restart 전후 GOAPI·Web 시험 프로세스 PID가 모두 바뀌는 것도 검증했다.
 - v1.2.10을 Cafe24 가상서버 호스팅에서 설치·update하고 실제 MySQL/MariaDB, Nginx/TLS, 기본 이미지 처리와 운영 명령을 확인해 현재 실서버 QA를 완료했다.
 - GOAPI 인증 경계: repository·service·HTTP middleware/handler의 선별 테스트와 `go test ./...`, `go test -race ./...`, `go vet ./...`를 통과했다(GOAPI `4b80741`).
-- API contract v1: Nitro/GOAPI route 대조에서 누락·초과 0건을 확인했고, 변경 파일 ESLint, NUBO 18개 테스트, typecheck와 production build를 통과했다.
+- API contract v1: Nitro/GOAPI route 대조에서 누락·초과 0건을 확인했고, request/result 타입 대조 뒤 변경 파일 ESLint, NUBO 18개 테스트, typecheck와 production build를 통과했다.
 
 ## Next action
 
-- 프런트가 실제 소비하는 endpoint부터 TypeScript result와 GO model을 대조하고, 자동 생성 전에 고쳐야 할 이름·nullability·transport 불일치만 목록화한다.
+- S0-Q04의 남은 항목 중 release manifest build commit과 contract 불일치 감지를 실제 설치·update 흐름에 중복 없이 연결할 방법을 확인한다.

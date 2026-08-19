@@ -62,7 +62,6 @@ export const useAdminStore = defineStore("admin", () => {
       file: { history: [], total: 0 },
       image: { history: [], total: 0 },
     },
-    latest: { posts: [], comments: [], reports: [] },
     item: { groups: [], boards: [], members: [] },
   })
   const uploadUsage = ref<number>(0)

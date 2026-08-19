@@ -1,13 +1,11 @@
 // 에러 코드 타입 정의
 export type Code = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+export type ErrorCode = Exclude<Code, 0>
 
 // 서버 기본 응답 타입 정의
-export type Resp<T> = {
-  success: boolean
-  error: string
-  code: Code
-  result: T
-}
+export type Resp<T> =
+  | { success: true, error: "", code: 0, result: T }
+  | { success: false, error: string, code: ErrorCode, result: null }
 
 // 에러 코드 정의
 export const CODE = {
@@ -24,7 +22,7 @@ export const CODE = {
   RATE_LIMITED: 10,
   SIGNUP_DISABLED: 11,
   INVALID_INVITE: 12,
-}
+} as const satisfies Record<string, Code>
 
 // 키 값
 export const VISIT_KEY = "nubo-visit-date"
