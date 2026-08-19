@@ -88,7 +88,7 @@
 - adoption: v1.2.0 환경 참조·경로 변환, 버전값 교체, dry-run 무변경, 기존 관리 설치 거부, 포트 점유 감지·NVM Node 경로와 서비스 활성 상태 확인 테스트를 통과했다.
 - v1.2.3 후보: nuboctl test/race/vet, Node 15개 테스트, typecheck와 Vite 8 production build를 통과했다.
 - v1.2.3 전달: 고정 GOAPI commit으로 통합 asset을 빌드해 내부·외부 checksum과 prebuilt smoke를 통과했고, 정식 Release와 새 shallow clone의 원격 `server:prepare`·manifest를 확인했다.
-- v1.2.4 후보: PM2 자동 제어 제거, 점유 포트 dry-run 안내와 실제 실행 무변경 차단 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
+- v1.2.4 후보: PM2 자동 제어 제거, 점유 포트 dry-run 안내와 실제 운영 전환 전 차단 테스트, nuboctl test/race/vet, Node 15개 테스트, typecheck와 production build를 통과했다.
 - v1.2.4 전달: 고정 GOAPI·두 libvips 변형으로 통합 asset과 SHA-256을 게시하고 새 shallow clone에서 원격 `server:prepare`, nuboctl 0.9.1 manifest와 PM2 옵션 제거를 확인했다.
 
 ## Next action
