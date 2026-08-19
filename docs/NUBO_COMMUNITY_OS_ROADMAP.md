@@ -467,7 +467,7 @@ npm run build
 
 - 우선순위: `P1`
 - 크기: `S`
-- 상태: `IN_PROGRESS`
+- 상태: `DONE`
 - 저장소: GOAPI + NUBO
 
 ### 엔드포인트
@@ -477,7 +477,7 @@ npm run build
 - [x] `/version`: NUBO, GOAPI, API contract
 - [x] release manifest에서 build commit 확인
 - [x] 관리자 대시보드에서 버전 불일치 경고
-- [ ] Nitro 시작 시 GOAPI contract 호환성 확인
+- [x] Nitro 시작 시 GOAPI contract 호환성 확인
 
 ### 원칙
 

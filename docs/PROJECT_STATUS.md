@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- S0-Q04의 마지막 항목인 Nitro 시작 시 GOAPI contract 호환성 확인의 실패 정책과 최소 구현 범위를 정한다.
+- S0-Q04를 완료했으며 다음 우선순위인 릴리스 CI 게이트를 필수 검증 단위로 좁혀 합의한다.
 
 ## Current product boundary
 
@@ -13,6 +13,7 @@
 
 ## Decisions
 
+- Nitro 시작 시 GOAPI contract를 확인하되 정상 부팅 중 연결 지연이나 불일치가 Web 기동 자체를 막지는 않으며, 구조화 경고와 지속 `/ready`·`/version` 진단으로 처리한다.
 - `nuboctl`은 범용 배포판 검증기가 아니라 NUBO의 최소 실행 환경을 준비하고 문제 해결 방법을 안내한다.
 - checksum에 기록된 파일의 손상과 위험한 경로는 검사하지만, 목록에 없는 추가 파일까지 거부하지 않는다.
 - 새 업로드 경로는 서비스 계정 소유로 만들고, 기존 경로는 변경하지 않은 채 systemd가 실제 적용한 서비스 계정의 쓰기 권한을 검사한다.
@@ -57,8 +58,7 @@
 
 ## Recent completion
 
-- 관리자 대시보드가 Web·GOAPI runtime과 release manifest의 버전·API contract 불일치를 구체적인 값과 복구 행동으로 경고한다.
-- release manifest의 NUBO·GOAPI build commit과 버전을 `/version`에 노출하고 실행 조합·API contract 불일치를 `degraded` 진단으로 고정했다.
+- S0-Q04를 완료해 `/version`에 release build identity와 호환성 진단을 노출하고, 관리자 경고와 비차단 startup contract 확인을 연결했다.
 - 모든 Nuxt 공개 설정과 문서 제목이 prebuilt 실행 시 환경 파일에서 바뀌도록 런타임 계약을 바로잡았다.
 - `nuboctl` 구현과 테스트를 210줄 이하의 의미 단위 파일로 나누고 함수 주석을 짧은 한국어로 정리했다.
 - checksum 목록 밖의 일반 파일은 허용하되 기록된 파일과 위험 경로는 검증하며, 기존 업로드 경로의 쓰기 권한을 확인한다.
@@ -119,8 +119,7 @@
 
 ## Verification
 
-- S0-Q04 관리자 경고: 알려진 호환성 issue만 고르는 unit test, 변경 파일 ESLint, NUBO 23개 테스트, typecheck와 production build를 통과했다.
-- S0-Q04 build identity: NUBO 21개 테스트, 변경 파일 ESLint, typecheck, production build와 실제 prebuilt `/version` 일치·불일치 smoke를 통과했다.
+- S0-Q04: 일치·불일치·GOAPI 미준비 unit 경계, 관리자 경고 선별, 변경 파일 ESLint, NUBO 26개 테스트, typecheck, production build와 prebuilt `/version` smoke를 통과했다.
 - README의 설치·업데이트·소스 빌드 명령을 package scripts, Go module 요구 버전, govips의 플랫폼 요구사항과 대조했다.
 
 - `nuboctl`: 테스트, race, vet 통과; systemd 명령 순서와 readiness 응답, SSE4.2 없는 CPU 안내를 확인했다.
@@ -167,4 +166,4 @@
 
 ## Next action
 
-- Nitro 시작 시 GOAPI가 아직 준비되지 않은 정상 부팅과 실제 contract 불일치를 구분하는 정책을 정하고 S0-Q04 완료 범위를 확정한다.
+- S2-Q04 릴리스 CI의 큰 범위 중 NUBO test/typecheck/build, GOAPI test/vet, contract 일치 검사만 첫 필수 게이트로 묶을지 합의한다.

@@ -15,6 +15,8 @@
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
 - NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
   실행 중인 버전·API contract가 manifest와 다르면 `status="degraded"`와 machine-readable `issues`를 반환한다.
+- Nitro는 시작할 때 GOAPI `/version`을 2초 제한으로 한 번 확인한다. contract 불일치나 아직 준비되지 않은
+  GOAPI는 비밀값 없는 구조화 경고로 남기되 Web 기동을 막지 않으며, 지속 상태는 `/ready`와 `/version`이 판단한다.
 - OAuth request/callback 6개, Android Google OAuth, RSS, `/sync`, `/board/tag/recent`, `/home/nubo`,
   단일 알림 확인은 GOAPI 직접 노출 또는 현재 UI 비사용 경로다.
 
