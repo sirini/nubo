@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 로드맵을 v1.2.10 실서버 검증 결과에 맞추고, 실패 비용이 큰 인증·권한 경계의 필수 회귀 테스트만 보강한다.
+- S0-Q03의 현재 Nitro·GOAPI 계약을 목록화하고, 실제 불일치 위험이 있는 오류·HTTP status 규칙부터 작은 범위로 정리한다.
 
 ## Current product boundary
 
@@ -51,6 +51,7 @@
 - CLI 색상은 TTY에서만 사용하고 `NO_COLOR`와 `TERM=dumb`에서는 평문을 유지한다.
 - 인자 없는 `nuboctl`, `help [명령]`과 `<명령> --help`는 같은 한국어 입문·명령별 안내를 제공한다.
 - 대표 `nubo.service`의 restart는 GOAPI·Web에 직접 `PartOf=` 관계를 추가하고 기존 base unit을 덮어쓰지 않는 drop-in으로 보장한다.
+- 자동 테스트는 인증·권한·데이터 손실·동시성·배포처럼 실패 비용이 큰 경계를 우선하며, 구현 세부를 반복하는 테스트는 늘리지 않는다.
 
 ## Recent completion
 
@@ -89,6 +90,7 @@
 - v1.2.10으로 버전을 올려 CLI 사용성·진단과 실서버 스킨 QA 수정사항을 하나의 패치 릴리스로 묶었다.
 - v1.2.10 통합 asset과 SHA-256을 정식 GitHub Release로 게시했다.
 - 새 install과 update가 GOAPI·Web lifecycle drop-in을 설치해 `systemctl restart nubo`를 실제 프로세스에 전파하도록 바로잡았다.
+- 인증 코드의 이메일 결합·일회 소비, refresh token 원자적 회전, legacy SHA-256 로그인 시 bcrypt 전환, 활성 UID 1 최고관리자 경계를 최소 회귀 테스트로 고정했다.
 
 ## Open findings
 
@@ -143,7 +145,8 @@
 - v1.2.10 전달: clean NUBO `4ad1595`와 고정 GOAPI `c7e2cf9`로 nuboctl 0.10.0·두 libvips 변형·Nuxt prebuilt를 묶어 Ubuntu 검증과 내부·외부 SHA-256을 통과했다. 게시 asset을 다시 내려받아 manifest를 확인하고 새 shallow clone의 원격 `server:prepare`도 통과했다.
 - systemd lifecycle 수정: fresh install과 기존 drop-in 없는 update의 추가, 기존 다른 drop-in 충돌 보호를 회귀 테스트로 확인했다. systemd 259 사용자 manager에서 대표 unit restart 전후 GOAPI·Web 시험 프로세스 PID가 모두 바뀌는 것도 검증했다.
 - v1.2.10을 Cafe24 가상서버 호스팅에서 설치·update하고 실제 MySQL/MariaDB, Nginx/TLS, 기본 이미지 처리와 운영 명령을 확인해 현재 실서버 QA를 완료했다.
+- GOAPI 인증 경계: repository·service·HTTP middleware/handler의 선별 테스트와 `go test ./...`, `go test -race ./...`, `go vet ./...`를 통과했다(GOAPI `4b80741`).
 
 ## Next action
 
-- 인증 코드 1회 소비, refresh token 회전, legacy password migration과 대표 권한 경계 중 구현만으로 보장하기 어려운 부분을 최소 회귀 테스트로 고정한다.
+- S0-Q03에서 현재 Nitro `/api`와 GOAPI endpoint·응답 형식을 먼저 목록화하고, 프런트가 실제로 의존하는 계약 불일치만 추린다.
