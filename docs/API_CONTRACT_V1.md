@@ -99,7 +99,7 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 사용자 공개 | Public | `GET /auth/user/info`; `POST /auth/user/change-password` |
 | 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}` |
 | OAuth·네이티브 인증 | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/{google,refresh}` |
-| 네이티브 푸시 | JWT · Direct | `POST /push/device`; `DELETE /push/device` |
+| 네이티브 푸시 | JWT · Direct | `POST /push/device`; `DELETE /push/device` (Android `token` 필드에는 FCM 설치 ID(FID) 전달) |
 | 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer}` |
 | 게시판 보호 | JWT | `GET /board/{download,move/list}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
 | 최근 태그 | Public · Direct | `GET /board/tag/recent` |

@@ -67,7 +67,7 @@
 
 ## Recent completion
 
-- GOAPI에 Android FCM 토큰을 계정별로 등록·해제하는 `/push/device` 계약과 재실행 가능한 `push_device` 스키마를 추가했다.
+- GOAPI에 Android FCM 설치 ID(FID)를 계정별로 등록·해제하는 `/push/device` 계약과 재실행 가능한 `push_device` 스키마를 추가했다. 댓글·좋아요·1:1 대화 알림은 Firebase Admin SDK로 즉시 전달하며 Firebase 설정이 없으면 알림 목록만 유지한다.
 - GOAPI에 웹 쿠키 계약을 유지하면서 Android 앱이 refresh token을 원자적으로 회전할 수 있는 `/auth/android/refresh`를 추가했다.
 - v1.2.14에서 NUBO·GOAPI 필수 게이트와 Ubuntu 22.04/24.04 fresh-install을 모두 통과해 hosted runner 호환성을 확인했다.
 - ESLint 자동 수정 264건과 실제 오류 38건을 정리해 오류 0건으로 만들고, 전체 lint를 릴리스 게시 필수 게이트에 추가했다.
