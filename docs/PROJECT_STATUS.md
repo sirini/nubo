@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- GOAPI에 웹 쿠키 계약을 유지하면서 Android 앱이 refresh token을 원자적으로 회전할 수 있는 `/auth/android/refresh`를 추가했다.
 - v1.2.14에서 NUBO·GOAPI 필수 게이트와 Ubuntu 22.04/24.04 fresh-install을 모두 통과해 hosted runner 호환성을 확인했다.
 - ESLint 자동 수정 264건과 실제 오류 38건을 정리해 오류 0건으로 만들고, 전체 lint를 릴리스 게시 필수 게이트에 추가했다.
 - 패키징 후보를 Ubuntu 22.04/24.04 별도 runner에 전달해 fresh install과 서비스 정상 상태를 확인한 뒤에만 GitHub Release를 게시하도록 연결했다.

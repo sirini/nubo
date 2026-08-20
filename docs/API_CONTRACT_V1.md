@@ -1,7 +1,7 @@
 # NUBO API contract v1
 
 기준일: 2026-08-19  
-기준 구현: NUBO `main`, GOAPI `667bd00`
+기준 구현: NUBO `main`, GOAPI `dc27f53`
 
 이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
 호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두
@@ -11,13 +11,13 @@
 
 - 브라우저와 SSR은 원칙적으로 NUBO의 `/api/*`를 호출한다.
 - Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
-- 현재 Nitro proxy는 method 기준 100개이며 GOAPI 115개 중 아래 15개를 제외하고 모두 대응한다.
+- 현재 Nitro proxy는 method 기준 100개이며 GOAPI 116개 중 아래 16개를 제외하고 모두 대응한다.
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
 - NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
   실행 중인 버전·API contract가 manifest와 다르면 `status="degraded"`와 machine-readable `issues`를 반환한다.
 - Nitro는 시작할 때 GOAPI `/version`을 2초 제한으로 한 번 확인한다. contract 불일치나 아직 준비되지 않은
   GOAPI는 비밀값 없는 구조화 경고로 남기되 Web 기동을 막지 않으며, 지속 상태는 `/ready`와 `/version`이 판단한다.
-- OAuth request/callback 6개, Android Google OAuth, RSS, `/sync`, `/board/tag/recent`, `/home/nubo`,
+- OAuth request/callback 6개, Android Google OAuth·토큰 갱신, RSS, `/sync`, `/board/tag/recent`, `/home/nubo`,
   단일 알림 확인은 GOAPI 직접 노출 또는 현재 UI 비사용 경로다.
 
 ## 공통 JSON 응답
@@ -98,7 +98,7 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 인증 계정 | JWT | `GET /auth/load`; `PATCH /auth/update` |
 | 사용자 공개 | Public | `GET /auth/user/info`; `POST /auth/user/change-password` |
 | 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}` |
-| OAuth | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/google` |
+| OAuth·네이티브 인증 | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/{google,refresh}` |
 | 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer}` |
 | 게시판 보호 | JWT | `GET /board/{download,move/list}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
 | 최근 태그 | Public · Direct | `GET /board/tag/recent` |
