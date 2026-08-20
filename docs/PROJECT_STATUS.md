@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- GitHub hosted runner의 사전 설치 패키지·MySQL 인증 차이를 fresh-install smoke에 반영하고 v1.2.14로 게시한다.
+- checkout 없는 publish job에서도 저장소를 명시해 검증된 통합 자산을 v1.2.15로 게시한다.
 
 ## Current product boundary
 
@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- v1.2.14에서 NUBO·GOAPI 필수 게이트와 Ubuntu 22.04/24.04 fresh-install을 모두 통과해 hosted runner 호환성을 확인했다.
 - ESLint 자동 수정 264건과 실제 오류 38건을 정리해 오류 0건으로 만들고, 전체 lint를 릴리스 게시 필수 게이트에 추가했다.
 - 패키징 후보를 Ubuntu 22.04/24.04 별도 runner에 전달해 fresh install과 서비스 정상 상태를 확인한 뒤에만 GitHub Release를 게시하도록 연결했다.
 - 릴리스 workflow가 NUBO test/typecheck/build, GOAPI test/vet와 양쪽 API contract 일치를 모두 통과해야 패키징·게시하도록 보강했다.
@@ -117,7 +118,7 @@
 
 ## Open findings
 
-- v1.2.14 태그의 릴리스 workflow run `32279749883`이 진행 중이다. 세션 종료 후에도 GitHub에서 계속 실행되며 모든 gate가 통과해야 Release가 생성된다.
+- v1.2.14 릴리스 workflow run `32279749883`은 모든 build·검증·fresh-install gate를 통과했지만 checkout 없는 publish job의 `gh release create`가 로컬 Git 저장소를 요구해 마지막 게시 단계만 실패했다.
 - 릴리스 CI는 GOAPI 공식 검증과 통합 자산 빌드에서 공식 빌드를 반복해 실행 시간이 길다. 현재 차단 문제는 아니므로 최적화는 보류한다.
 - GitHub Actions의 v4 JavaScript action에 Node 20 사용 중단 안내가 표시된다. 현재 실행을 막지 않으므로 action major 갱신은 별도 호환성 확인 전까지 보류한다.
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
@@ -134,7 +135,8 @@
 
 ## Verification
 
-- v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서는 NUBO test/lint/typecheck/build와 API contract 검증을 통과하고 GOAPI 공식 환경 검증을 진행 중이다.
+- v1.2.15 후보: publish workflow YAML, release version 일치, NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, typecheck와 diff whitespace 검사를 통과했다.
+- v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증과 Ubuntu 22.04/24.04 fresh-install을 통과했다. publish는 제품 검증과 무관한 저장소 문맥 누락으로 실패했다.
 - v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.
 - v1.2.13 후보: build-release는 통과했고 fresh-install 정지 위치를 확인했다. Ubuntu 24의 불필요한 apt metadata 갱신은 5분 timeout, Ubuntu 22의 사전 설치 MySQL은 root 인증 차이로 실패해 공개 Release는 만들지 않았다. 사전 설치 패키지 재사용과 MySQL 인증 감지를 v1.2.14에 추가한다.
 - lint 정리: 전체 ESLint 오류 0건·경고 50건 상한, NUBO 28개 테스트, typecheck, production build와 diff whitespace 검사를 통과했다.
@@ -187,7 +189,7 @@
 
 ## Next action
 
-- 먼저 GitHub Actions run `32279749883`의 최종 결과와 v1.2.14 Release 생성을 확인한다.
+- publish 명령에 명시적 GitHub 저장소를 전달하고 v1.2.15 태그로 workflow를 시작한다. 장시간 실행은 실시간 모니터링하지 않고 다음 작업 시작 시 최종 결과를 확인한다.
 - 성공하면 게시 asset의 SHA-256·manifest 버전을 확인하고 상태 문서를 released로 갱신한다. 실패하면 태그를 이동하지 말고 실패 단계만 고쳐 다음 patch 버전으로 재시도한다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
 - optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
