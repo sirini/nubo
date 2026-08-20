@@ -11,6 +11,13 @@
     <Separator class="my-6" />
 
     <div class="space-y-10">
+      <p class="text-sm text-muted-foreground">
+        서비스 이용 및 게시물 운영 기준은
+        <NuxtLink to="/terms" class="font-medium text-primary underline underline-offset-4">
+          이용약관 및 커뮤니티 운영 원칙
+        </NuxtLink>
+        에서 확인할 수 있습니다.
+      </p>
       <section>
         <h2 class="text-2xl font-semibold tracking-tight mt-2 mb-4">
           제1조 (수집하는 개인정보 항목)

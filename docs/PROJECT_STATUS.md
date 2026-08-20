@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- 공개 `/terms`에 사진·게시물의 권리, 금지 콘텐츠, 신고·차단, 운영 조치와 데이터 삭제 원칙을 명시하고 사이트 메뉴·개인정보처리방침 및 Sensta Android 가입·최초 업로드 동의 흐름에 연결했다.
 - 웹과 Android 앱에서 계정·연관 데이터 완전 삭제를 지원하고, 브라우저용 `/delete-account` 경로를 개인정보처리방침과 계정 메뉴에 연결했다. 신고와 사용자 차단을 독립된 행동으로 분리하고 차단 콘텐츠·최근 활동·대화를 즉시 숨긴다.
 - GOAPI에 Android FCM 설치 ID(FID)를 계정별로 등록·해제하는 `/push/device` 계약과 재실행 가능한 `push_device` 스키마를 추가했다. 댓글·좋아요·1:1 대화 알림은 Firebase Admin SDK로 즉시 전달하며 Firebase 설정이 없으면 알림 목록만 유지한다.
 - GOAPI에 웹 쿠키 계약을 유지하면서 Android 앱이 refresh token을 원자적으로 회전할 수 있는 `/auth/android/refresh`를 추가했다.
@@ -139,6 +140,7 @@
 
 ## Verification
 
+- 이용약관·UGC 동의 흐름: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build와 Sensta 전체 Android 검증 스크립트를 통과했다.
 - 계정 삭제·사용자 안전 웹 경로: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
 - v1.2.15 후보: publish workflow YAML, release version 일치, NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, typecheck와 diff whitespace 검사를 통과했다.
 - v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증과 Ubuntu 22.04/24.04 fresh-install을 통과했다. publish는 제품 검증과 무관한 저장소 문맥 누락으로 실패했다.

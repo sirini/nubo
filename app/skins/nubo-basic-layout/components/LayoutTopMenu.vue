@@ -80,6 +80,11 @@
               <ShieldCheckIcon class="w-4 h-4" /> 개인정보 보호정책</NuxtLink
             >
           </DropdownMenuItem>
+          <DropdownMenuItem as-child class="w-full cursor-pointer">
+            <NuxtLink to="/terms" class="inline-flex gap-3 items-center">
+              <ScrollTextIcon class="w-4 h-4" /> 이용약관·운영 원칙
+            </NuxtLink>
+          </DropdownMenuItem>
           <DropdownMenuItem v-if="isAdmin" as-child class="w-full cursor-pointer">
             <NuxtLink to="/admin" class="inline-flex gap-3 items-center">
               <CogIcon class="w-4 h-4" /> 관리화면
@@ -109,6 +114,7 @@ import {
   LogOutIcon,
   MenuIcon,
   ShieldCheckIcon,
+  ScrollTextIcon,
   Trash2Icon,
 } from "lucide-vue-next"
 import { useNuboLayoutContext } from "~/providers/contexts/layout"
