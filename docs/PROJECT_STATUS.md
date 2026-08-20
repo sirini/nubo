@@ -118,6 +118,7 @@
 
 ## Open findings
 
+- v1.2.15 릴리스 workflow run `32380738928`을 시작했다. 장시간 실행은 실시간 모니터링하지 않고 다음 작업 시작 시 최종 결과와 Release 생성을 확인한다.
 - v1.2.14 릴리스 workflow run `32279749883`은 모든 build·검증·fresh-install gate를 통과했지만 checkout 없는 publish job의 `gh release create`가 로컬 Git 저장소를 요구해 마지막 게시 단계만 실패했다.
 - 릴리스 CI는 GOAPI 공식 검증과 통합 자산 빌드에서 공식 빌드를 반복해 실행 시간이 길다. 현재 차단 문제는 아니므로 최적화는 보류한다.
 - GitHub Actions의 v4 JavaScript action에 Node 20 사용 중단 안내가 표시된다. 현재 실행을 막지 않으므로 action major 갱신은 별도 호환성 확인 전까지 보류한다.
@@ -189,7 +190,7 @@
 
 ## Next action
 
-- publish 명령에 명시적 GitHub 저장소를 전달하고 v1.2.15 태그로 workflow를 시작한다. 장시간 실행은 실시간 모니터링하지 않고 다음 작업 시작 시 최종 결과를 확인한다.
+- 다음 작업 시작 시 GitHub Actions run `32380738928`의 최종 결과와 v1.2.15 Release 생성을 확인한다.
 - 성공하면 게시 asset의 SHA-256·manifest 버전을 확인하고 상태 문서를 released로 갱신한다. 실패하면 태그를 이동하지 말고 실패 단계만 고쳐 다음 patch 버전으로 재시도한다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
 - optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
