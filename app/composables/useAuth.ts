@@ -53,6 +53,15 @@ export const useAuth = () => {
     })
   }
 
+  // 본인 계정과 계정에 연결된 데이터를 영구 삭제한다.
+  const deleteMyAccount = async () => {
+    return await $fetch<Resp<null>>("/auth/account", {
+      baseURL: config.public.apiBase,
+      method: "DELETE",
+      body: { confirmation: "DELETE" },
+    })
+  }
+
   // 내 프로필 정보 업데이트
   const updateMyInfo = async (param: UpdateMyInfoParam) => {
     const fd = new FormData()
@@ -162,6 +171,7 @@ export const useAuth = () => {
     loadInitUserPermission,
     doLogin,
     doLogout,
+    deleteMyAccount,
     updateMyInfo,
     checkUsedEmail,
     checkUsedName,

@@ -1,7 +1,7 @@
 # NUBO API contract v1
 
-기준일: 2026-08-19  
-기준 구현: NUBO `main`, GOAPI `7590cd3`
+기준일: 2026-08-21
+기준 구현: NUBO `main`, GOAPI `42481c5`
 
 이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
 호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두
@@ -11,7 +11,7 @@
 
 - 브라우저와 SSR은 원칙적으로 NUBO의 `/api/*`를 호출한다.
 - Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
-- 현재 Nitro proxy는 method 기준 100개이며 GOAPI 118개 중 아래 18개를 제외하고 모두 대응한다.
+- 현재 Nitro proxy는 method 기준 103개이며 GOAPI 121개 중 아래 18개를 제외하고 모두 대응한다.
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
 - NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
   실행 중인 버전·API contract가 manifest와 다르면 `status="degraded"`와 machine-readable `issues`를 반환한다.
@@ -95,9 +95,9 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 관리자 스킨·시스템 | Admin | `PUT /admin/skin/setting`; `GET /admin/system/mail` |
 | 관리자 회원 | Admin | `GET /admin/user/{list,load,invites}`; `POST /admin/user/{create,modify,invite}`; `DELETE /admin/user/{remove,invite/:uid}` |
 | 인증 공개 | Public | `POST /auth/{signin,signup,reset-password,refresh,checkemail,checkname,verify,logout}`; `GET /auth/signup/status` |
-| 인증 계정 | JWT | `GET /auth/load`; `PATCH /auth/update` |
+| 인증 계정 | JWT | `GET /auth/load`; `PATCH /auth/update`; `DELETE /auth/account` |
 | 사용자 공개 | Public | `GET /auth/user/info`; `POST /auth/user/change-password` |
-| 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}` |
+| 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}`; `PUT /auth/user/block`; `DELETE /auth/user/block` |
 | OAuth·네이티브 인증 | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/{google,refresh}` |
 | 네이티브 푸시 | JWT · Direct | `POST /push/device`; `DELETE /push/device` (Android `token` 필드에는 FCM 설치 ID(FID) 전달) |
 | 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer}` |

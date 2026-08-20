@@ -38,27 +38,6 @@
       <CheckCircle2Icon class="w-4 h-4 mr-2" /> 이미 신고하신 사용자입니다
     </div>
 
-    <div class="space-y-3 mt-6">
-      <div class="text-sm font-medium text-muted-foreground">내 블랙리스트에 추가</div>
-      <Label
-        for="checkBlackList"
-        class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 hover:bg-accent/30 has-aria-checked:border-primary has-aria-checked:bg-primary/5 dark:has-aria-checked:bg-primary/10"
-      >
-        <Checkbox
-          id="checkBlackList"
-          v-model="isCheckedBlackList"
-          :disabled="isReportedUser"
-          class="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-        />
-        <div class="grid gap-1.5 font-normal">
-          <div class="text-sm leading-none font-medium">내 블랙리스트에 추가</div>
-          <div class="text-muted-foreground text-xs">
-            이 사용자가 남긴 게시글/댓글들이 더 이상 나에게 노출되지 않도록 합니다
-          </div>
-        </div>
-      </Label>
-    </div>
-
     <CommonVTooltip content="허위 신고 시 제재될 수 있습니다">
       <Button
         v-if="!isReportedUser"
@@ -83,7 +62,6 @@ const {
   isReportedUser,
   reportReason,
   reportDescription,
-  isCheckedBlackList,
   reportBadUser,
   closeReportForm,
 } = useNuboProfileContext()

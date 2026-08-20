@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- checkout 없는 publish job에서도 저장소를 명시해 검증된 통합 자산을 v1.2.15로 게시한다.
+- Sensta Android 2.0 재출시를 위해 NUBO·GOAPI의 계정 삭제와 사용자 안전 계약을 웹·앱에서 완결한다.
 
 ## Current product boundary
 
@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- 웹과 Android 앱에서 계정·연관 데이터 완전 삭제를 지원하고, 브라우저용 `/delete-account` 경로를 개인정보처리방침과 계정 메뉴에 연결했다. 신고와 사용자 차단을 독립된 행동으로 분리하고 차단 콘텐츠·최근 활동·대화를 즉시 숨긴다.
 - GOAPI에 Android FCM 설치 ID(FID)를 계정별로 등록·해제하는 `/push/device` 계약과 재실행 가능한 `push_device` 스키마를 추가했다. 댓글·좋아요·1:1 대화 알림은 Firebase Admin SDK로 즉시 전달하며 Firebase 설정이 없으면 알림 목록만 유지한다.
 - GOAPI에 웹 쿠키 계약을 유지하면서 Android 앱이 refresh token을 원자적으로 회전할 수 있는 `/auth/android/refresh`를 추가했다.
 - v1.2.14에서 NUBO·GOAPI 필수 게이트와 Ubuntu 22.04/24.04 fresh-install을 모두 통과해 hosted runner 호환성을 확인했다.
@@ -138,6 +139,7 @@
 
 ## Verification
 
+- 계정 삭제·사용자 안전 웹 경로: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
 - v1.2.15 후보: publish workflow YAML, release version 일치, NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, typecheck와 diff whitespace 검사를 통과했다.
 - v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증과 Ubuntu 22.04/24.04 fresh-install을 통과했다. publish는 제품 검증과 무관한 저장소 문맥 누락으로 실패했다.
 - v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.

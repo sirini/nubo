@@ -39,7 +39,14 @@
         >
           <Input
             v-model="chatMessage"
-            :placeholder="isLoggedIn ? '메시지를 입력해 주세요' : '로그인이 필요합니다'"
+            :placeholder="
+              isBlockedByMe
+                ? '차단한 사용자와는 대화할 수 없습니다'
+                : isLoggedIn
+                  ? '메시지를 입력해 주세요'
+                  : '로그인이 필요합니다'
+            "
+            :disabled="isBlockedByMe"
             class="flex-1"
             @keyup.enter="sendChatMessage"
           />
@@ -48,7 +55,7 @@
         <CommonVTooltip content="상대방에게 메시지를 남깁니다">
           <Button
             class="text-foreground flex items-center gap-2 cursor-pointer"
-            :disabled="!isLoggedIn"
+            :disabled="!isLoggedIn || isBlockedByMe"
             @click="sendChatMessage"
           >
             <Spinner v-if="isLoading" />
@@ -91,6 +98,7 @@ onMounted(() => {
 
 const {
   isLoggedIn,
+  isBlockedByMe,
   isLoading,
   chatHistories,
   chatMyUid,

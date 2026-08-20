@@ -16,6 +16,11 @@
               프로필 수정
             </NuxtLink>
           </DropdownMenuItem>
+          <DropdownMenuItem as-child class="w-full cursor-pointer text-destructive">
+            <NuxtLink to="/delete-account" class="inline-flex gap-3 items-center">
+              <Trash2Icon class="w-4 h-4" /> 계정 삭제
+            </NuxtLink>
+          </DropdownMenuItem>
           <DropdownMenuItem as-child class="w-full cursor-pointer">
             <NuxtLink to="/auth/logout" class="inline-flex gap-3 items-center"
               ><LogOutIcon class="w-4 h-4" /> 로그아웃</NuxtLink
@@ -104,6 +109,7 @@ import {
   LogOutIcon,
   MenuIcon,
   ShieldCheckIcon,
+  Trash2Icon,
 } from "lucide-vue-next"
 import { useNuboLayoutContext } from "~/providers/contexts/layout"
 

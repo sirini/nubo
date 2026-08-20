@@ -8,7 +8,7 @@ export interface NuboProfileContext {
   chatMessage: WritableComputedRef<string>
   chatMyUid: ComputedRef<number>
   editProfile: ComputedRef<EditProfileParam>
-  isCheckedBlackList: WritableComputedRef<boolean>
+  isBlockedByMe: ComputedRef<boolean>
   isLoading: ComputedRef<boolean>
   isLoggedIn: ComputedRef<boolean>
   isMe: ComputedRef<boolean>
@@ -22,6 +22,7 @@ export interface NuboProfileContext {
   userLatestComments: ComputedRef<BoardWriterLatestComment[]>
   userLatestPosts: ComputedRef<BoardWriterLatestPost[]>
   changeProfileImage: (event: Event) => void
+  changeUserBlock: () => Promise<void>
   closeReportForm: () => void
   openReportForm: (userUid: number) => void
   reportBadUser: () => Promise<void>

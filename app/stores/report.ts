@@ -2,10 +2,9 @@ import { toast } from "vue-sonner"
 import { useReport } from "~/composables/useReport.client"
 
 export const useReportStore = defineStore("report", () => {
-  const { getReportStatus, sendReport } = useReport()
+  const { getReportStatus, sendReport, changeUserBlock } = useReport()
   const description = ref<string>("")
   const isBannedByMe = ref<boolean>(false)
-  const isCheckedBlackList = ref<boolean>(false)
   const isOpenReportForm = ref<boolean>(false)
   const isReported = ref<boolean>(false)
   const selectedReason = ref<string>("")
@@ -22,7 +21,6 @@ export const useReportStore = defineStore("report", () => {
       }
       isReported.value = response.result.isReported
       isBannedByMe.value = response.result.isBannedByMe
-      isCheckedBlackList.value = response.result.isBannedByMe
     } catch (e) {
       toast(`❌ 신고 여부 및 블랙 리스트 추가 등의 정보를 가져오지 못했습니다: ${e}`)
     }
@@ -53,7 +51,7 @@ export const useReportStore = defineStore("report", () => {
       const response = await sendReport(
         targetUserUid.value,
         description.value,
-        isCheckedBlackList.value,
+        false,
       )
       if (!response.success) {
         toast(`❌ 신고서를 제출하지 못했습니다: ${response.error}`)
@@ -68,10 +66,29 @@ export const useReportStore = defineStore("report", () => {
     }
   }
 
+  // 신고 여부와 무관하게 차단 상태만 독립적으로 변경한다.
+  const toggleBlock = async () => {
+    if (targetUserUid.value < 1) {
+      toast(`⚠️ 차단 대상이 지정되지 않았습니다`)
+      return
+    }
+    const shouldBlock = !isBannedByMe.value
+    try {
+      const response = await changeUserBlock(targetUserUid.value, shouldBlock)
+      if (!response.success) {
+        toast(`❌ 차단 설정을 변경하지 못했습니다: ${response.error}`)
+        return
+      }
+      isBannedByMe.value = shouldBlock
+      toast(shouldBlock ? `✅ 사용자를 차단했습니다` : `✅ 사용자 차단을 해제했습니다`)
+    } catch (e) {
+      toast(`❌ 차단 설정을 변경하지 못했습니다: ${e}`)
+    }
+  }
+
   return {
     description,
     isBannedByMe,
-    isCheckedBlackList,
     isOpenReportForm,
     isReported,
     selectedReason,
@@ -81,5 +98,6 @@ export const useReportStore = defineStore("report", () => {
     close,
     open,
     send,
+    toggleBlock,
   }
 })

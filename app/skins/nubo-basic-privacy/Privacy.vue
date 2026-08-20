@@ -96,8 +96,11 @@
         </h2>
         <div class="leading-7">
           이용자는 언제든지 등록되어 있는 자신의 개인정보를 조회하거나 수정할 수 있으며, 가입
-          해지(회원 탈퇴)를 요청할 수 있습니다. 사이트 내 '마이페이지' 또는 '설정' 메뉴를 통해 직접
-          열람, 정정 또는 탈퇴가 가능합니다.
+          해지(회원 탈퇴)를 요청할 수 있습니다. 사이트 내 프로필에서 정보를 열람·정정할 수 있고,
+          <NuxtLink to="/delete-account" class="font-medium text-primary underline underline-offset-4">
+            계정 및 데이터 삭제 페이지
+          </NuxtLink>
+          에서 직접 탈퇴할 수 있습니다.
         </div>
       </section>
 

@@ -10,7 +10,14 @@ import {
 } from "~/types/user"
 
 export const useAuthStore = defineStore("auth", () => {
-  const { loadInitUserInfo, loadInitOtherUserInfo, doLogin, doLogout, updateMyInfo } = useAuth()
+  const {
+    loadInitUserInfo,
+    loadInitOtherUserInfo,
+    doLogin,
+    doLogout,
+    deleteMyAccount,
+    updateMyInfo,
+  } = useAuth()
   const { loadInitUserLatestContent } = useBoard()
   const user = useState<UserMyResult>("user-state", () => MY_INFO_RESULT)
   const isLoggedIn = computed(() => user.value.uid > 0)
@@ -97,6 +104,18 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  // 삭제가 성공한 경우에만 브라우저의 로그인 상태를 비운다.
+  const deleteAccount = async () => {
+    const response = await deleteMyAccount()
+    if (response.success) {
+      user.value = MY_INFO_RESULT
+      otherUser.value = USER_INFO_RESULT
+      userLatestPosts.value = []
+      userLatestComments.value = []
+    }
+    return response
+  }
+
   // 서버 세션이 만료된 경우 API 호출 없이 클라이언트의 로그인 상태만 정리합니다.
   const expireLocalSession = () => {
     user.value = MY_INFO_RESULT
@@ -146,6 +165,7 @@ export const useAuthStore = defineStore("auth", () => {
     getInitUserLatestContent,
     login,
     logout,
+    deleteAccount,
     expireLocalSession,
     update,
   }

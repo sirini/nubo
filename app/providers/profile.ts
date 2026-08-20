@@ -8,8 +8,8 @@ export const useProfileProvider = (): NuboProfileContext => {
 
   return {
     isLoggedIn: computed(() => auth.isLoggedIn),
-    userLatestPosts: computed(() => auth.userLatestPosts),
-    userLatestComments: computed(() => auth.userLatestComments),
+    userLatestPosts: computed(() => (report.isBannedByMe ? [] : auth.userLatestPosts)),
+    userLatestComments: computed(() => (report.isBannedByMe ? [] : auth.userLatestComments)),
     profileUser: computed(() => auth.otherUser),
     myPoint: computed(() => auth.user.point),
     isMe: computed(() => auth.otherUser.uid === auth.user.uid),
@@ -18,7 +18,7 @@ export const useProfileProvider = (): NuboProfileContext => {
       set: (val) => (report.isOpenReportForm = val),
     }),
     isLoading: computed(() => chat.isLoading),
-    chatHistories: computed(() => chat.history),
+    chatHistories: computed(() => (report.isBannedByMe ? [] : chat.history)),
     chatMyUid: computed(() => auth.user.uid),
     chatMessage: computed({ get: () => chat.message, set: (val: string) => (chat.message = val) }),
     editProfile: computed(() => auth.editProfile),
@@ -58,11 +58,12 @@ export const useProfileProvider = (): NuboProfileContext => {
       get: () => report.description,
       set: (val: string) => (report.description = val),
     }),
-    isCheckedBlackList: computed({
-      get: () => report.isCheckedBlackList,
-      set: (val) => (report.isCheckedBlackList = val),
-    }),
+    isBlockedByMe: computed(() => report.isBannedByMe),
     sendChatMessage: async () => {
+      if (report.isBannedByMe) {
+        toast(`⚠️ 차단한 사용자에게는 메시지를 보낼 수 없습니다`)
+        return
+      }
       await chat.send(auth.user.uid)
     },
     changeProfileImage: (event: Event) => {
@@ -103,6 +104,9 @@ export const useProfileProvider = (): NuboProfileContext => {
     },
     reportBadUser: async () => {
       await report.send()
+    },
+    changeUserBlock: async () => {
+      await report.toggleBlock()
     },
     closeReportForm: () => {
       report.close()

@@ -50,15 +50,62 @@
           <SirenIcon class="w-4 h-4" />신고하기
         </Button>
       </CommonVTooltip>
+      <CommonVTooltip content="이 사용자의 콘텐츠와 대화를 숨깁니다">
+        <Button
+          variant="outline"
+          class="flex items-center gap-2 cursor-pointer"
+          :disabled="profileUser.admin"
+          @click="isOpenBlockDialog = true"
+        >
+          <UserRoundCheckIcon v-if="isBlockedByMe" class="w-4 h-4" />
+          <BanIcon v-else class="w-4 h-4" />
+          {{ isBlockedByMe ? "차단 해제" : "사용자 차단" }}
+        </Button>
+      </CommonVTooltip>
     </div>
   </Card>
+
+  <AlertDialog v-model:open="isOpenBlockDialog">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>{{ isBlockedByMe ? "차단을 해제할까요?" : "사용자를 차단할까요?" }}</AlertDialogTitle>
+        <AlertDialogDescription>
+          {{
+            isBlockedByMe
+              ? "이 사용자의 콘텐츠와 대화를 다시 볼 수 있습니다."
+              : "이 사용자의 콘텐츠와 기존 대화가 더 이상 표시되지 않고 새 메시지도 주고받을 수 없습니다."
+          }}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>취소</AlertDialogCancel>
+        <AlertDialogAction @click="confirmBlockChange">
+          {{ isBlockedByMe ? "차단 해제" : "차단" }}
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
 
 <script setup lang="ts">
-import { LogOutIcon, ShieldCheckIcon, SirenIcon, UserRoundPenIcon } from "lucide-vue-next"
+import {
+  BanIcon,
+  LogOutIcon,
+  ShieldCheckIcon,
+  SirenIcon,
+  UserRoundCheckIcon,
+  UserRoundPenIcon,
+} from "lucide-vue-next"
 import { useNuboProfileContext } from "~/providers/contexts/profile"
 import ProfileEditSheet from "./ProfileEditSheet.vue"
 
-const { isMe, profileUser, openReportForm } = useNuboProfileContext()
+const { isMe, profileUser, isBlockedByMe, openReportForm, changeUserBlock } =
+  useNuboProfileContext()
+const isOpenBlockDialog = ref(false)
+
+const confirmBlockChange = async () => {
+  await changeUserBlock()
+  isOpenBlockDialog.value = false
+}
 const { sanitize } = useSanitize()
 </script>
