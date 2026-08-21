@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- Sensta Android 2.0용 GOAPI 인증·푸시·안전 계약을 고정한 NUBO v1.2.16 통합 릴리스를 검증·게시한다.
+- NUBO v1.2.16을 실서버에 백업·업데이트하고 Sensta Android 2.0의 인증·업로드·알림 흐름을 실기기로 확인한다.
 
 ## Current product boundary
 
@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- GOAPI `42481c5`를 고정한 NUBO v1.2.16을 게시했고 workflow run `32437963579`에서 모든 게이트와 Ubuntu 22.04/24.04 fresh-install, Release 게시를 통과했다.
 - v1.2.15 릴리스 workflow run `32380738928`이 NUBO·GOAPI 게이트와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 모두 통과했다.
 - 공개 `/terms`에 사진·게시물의 권리, 금지 콘텐츠, 신고·차단, 운영 조치와 데이터 삭제 원칙을 명시하고 사이트 메뉴·개인정보처리방침 및 Sensta Android 가입·최초 업로드 동의 흐름에 연결했다.
 - 웹과 Android 앱에서 계정·연관 데이터 완전 삭제를 지원하고, 브라우저용 `/delete-account` 경로를 개인정보처리방침과 계정 메뉴에 연결했다. 신고와 사용자 차단을 독립된 행동으로 분리하고 차단 콘텐츠·최근 활동·대화를 즉시 숨긴다.
@@ -123,6 +124,7 @@
 
 ## Open findings
 
+- v1.2.15·v1.2.16 CI manifest의 NUBO·nuboctl `dirty=true`는 workspace 안의 고정 GOAPI checkout을 untracked로 오인한 표기 오류다. commit·checksum·fresh-install에는 영향이 없으며 다음 릴리스부터 해당 checkout을 provenance 검사에서 제외한다.
 - 릴리스 CI는 GOAPI 공식 검증과 통합 자산 빌드에서 공식 빌드를 반복해 실행 시간이 길다. 현재 차단 문제는 아니므로 최적화는 보류한다.
 - GitHub Actions의 v4 JavaScript action에 Node 20 사용 중단 안내가 표시된다. 현재 실행을 막지 않으므로 action major 갱신은 별도 호환성 확인 전까지 보류한다.
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
@@ -139,6 +141,7 @@
 
 ## Verification
 
+- v1.2.16 릴리스: GitHub Actions run `32437963579`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 test/vet·통합 빌드, Ubuntu 22.04/24.04 fresh-install·게시를 통과했다. 공개 asset을 다시 내려받아 SHA-256과 NUBO `ade5ac7`·GOAPI `42481c5` manifest를 확인했다.
 - 이용약관·UGC 동의 흐름: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build와 Sensta 전체 Android 검증 스크립트를 통과했다.
 - 계정 삭제·사용자 안전 웹 경로: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
 - v1.2.15 릴리스: GitHub Actions run `32380738928`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증, Ubuntu 22.04/24.04 fresh-install과 Release 게시를 모두 통과했다.
@@ -195,7 +198,6 @@
 
 ## Next action
 
-- GOAPI `42481c5`를 고정한 v1.2.16을 로컬 게이트와 공식 Ubuntu 22 빌드로 검증하고, 태그·GitHub Release·SHA-256·manifest를 확인한다.
-- 릴리스 후 실서버 DB·업로드 백업, Firebase 선택 설정, `nuboctl update`·`doctor`, Sensta Android 실기기 QA를 진행한다.
+- 실서버 DB·업로드를 백업하고 Firebase 선택 설정을 준비한 뒤 `nuboctl update`·`doctor`, Sensta Android 실기기 QA를 진행한다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
 - optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.

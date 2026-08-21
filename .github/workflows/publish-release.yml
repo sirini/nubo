@@ -28,6 +28,9 @@ jobs:
           ref: ${{ steps.sources.outputs.goapi_commit }}
           path: goapi
 
+      - name: Exclude pinned GOAPI from NUBO provenance
+        run: echo "/goapi/" >> .git/info/exclude
+
       - name: Verify release version
         run: |
           version=$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' env.sample)
