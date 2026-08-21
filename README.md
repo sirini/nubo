@@ -9,7 +9,7 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-현재 버전은 **v1.2.15**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
+현재 버전은 **v1.2.16**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -113,7 +113,7 @@ npm run server:prepare
 ```dotenv
 GOAPI_DOMAIN=https://example.com
 GOAPI_TITLE=My NUBO
-GOAPI_VERSION=1.2.15
+GOAPI_VERSION=1.2.16
 
 GOAPI_PORT=3006
 DB_HOST=localhost
@@ -228,6 +228,7 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 ## 선택 환경 변수
 
 - `OAUTH_GOOGLE_*`, `OAUTH_NAVER_*`, `OAUTH_KAKAO_*`: 소셜 로그인 사용 시 설정
+- `FIREBASE_PROJECT_ID`, `FIREBASE_CREDENTIALS_FILE`: Sensta Android 푸시 알림용 Firebase 프로젝트와 서비스 계정 JSON 경로. 비우면 DB 알림만 유지
 - `OPENAI_API_KEY`: OpenAI 연동 자격 증명. 키만 설정해도 AI 기능은 활성화되지 않음
 - `OPENAI_IMAGE_DESCRIPTION_ENABLED`: 업로드 이미지 설명 생성을 명시적으로 활성화 (`false`가 기본값)
 - `OPENAI_IMAGE_DESCRIPTION_MODEL`: 이미지 입력을 지원하는 모델 ID (`gpt-5.6-luna`가 기본값)

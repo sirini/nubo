@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- Sensta Android 2.0 재출시를 위해 NUBO·GOAPI의 계정 삭제와 사용자 안전 계약을 웹·앱에서 완결한다.
+- Sensta Android 2.0용 GOAPI 인증·푸시·안전 계약을 고정한 NUBO v1.2.16 통합 릴리스를 검증·게시한다.
 
 ## Current product boundary
 
@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- v1.2.15 릴리스 workflow run `32380738928`이 NUBO·GOAPI 게이트와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 모두 통과했다.
 - 공개 `/terms`에 사진·게시물의 권리, 금지 콘텐츠, 신고·차단, 운영 조치와 데이터 삭제 원칙을 명시하고 사이트 메뉴·개인정보처리방침 및 Sensta Android 가입·최초 업로드 동의 흐름에 연결했다.
 - 웹과 Android 앱에서 계정·연관 데이터 완전 삭제를 지원하고, 브라우저용 `/delete-account` 경로를 개인정보처리방침과 계정 메뉴에 연결했다. 신고와 사용자 차단을 독립된 행동으로 분리하고 차단 콘텐츠·최근 활동·대화를 즉시 숨긴다.
 - GOAPI에 Android FCM 설치 ID(FID)를 계정별로 등록·해제하는 `/push/device` 계약과 재실행 가능한 `push_device` 스키마를 추가했다. 댓글·좋아요·1:1 대화 알림은 Firebase Admin SDK로 즉시 전달하며 Firebase 설정이 없으면 알림 목록만 유지한다.
@@ -122,8 +123,6 @@
 
 ## Open findings
 
-- v1.2.15 릴리스 workflow run `32380738928`을 시작했다. 장시간 실행은 실시간 모니터링하지 않고 다음 작업 시작 시 최종 결과와 Release 생성을 확인한다.
-- v1.2.14 릴리스 workflow run `32279749883`은 모든 build·검증·fresh-install gate를 통과했지만 checkout 없는 publish job의 `gh release create`가 로컬 Git 저장소를 요구해 마지막 게시 단계만 실패했다.
 - 릴리스 CI는 GOAPI 공식 검증과 통합 자산 빌드에서 공식 빌드를 반복해 실행 시간이 길다. 현재 차단 문제는 아니므로 최적화는 보류한다.
 - GitHub Actions의 v4 JavaScript action에 Node 20 사용 중단 안내가 표시된다. 현재 실행을 막지 않으므로 action major 갱신은 별도 호환성 확인 전까지 보류한다.
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
@@ -142,7 +141,7 @@
 
 - 이용약관·UGC 동의 흐름: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build와 Sensta 전체 Android 검증 스크립트를 통과했다.
 - 계정 삭제·사용자 안전 웹 경로: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
-- v1.2.15 후보: publish workflow YAML, release version 일치, NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, typecheck와 diff whitespace 검사를 통과했다.
+- v1.2.15 릴리스: GitHub Actions run `32380738928`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증, Ubuntu 22.04/24.04 fresh-install과 Release 게시를 모두 통과했다.
 - v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증과 Ubuntu 22.04/24.04 fresh-install을 통과했다. publish는 제품 검증과 무관한 저장소 문맥 누락으로 실패했다.
 - v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.
 - v1.2.13 후보: build-release는 통과했고 fresh-install 정지 위치를 확인했다. Ubuntu 24의 불필요한 apt metadata 갱신은 5분 timeout, Ubuntu 22의 사전 설치 MySQL은 root 인증 차이로 실패해 공개 Release는 만들지 않았다. 사전 설치 패키지 재사용과 MySQL 인증 감지를 v1.2.14에 추가한다.
@@ -196,7 +195,7 @@
 
 ## Next action
 
-- 다음 작업 시작 시 GitHub Actions run `32380738928`의 최종 결과와 v1.2.15 Release 생성을 확인한다.
-- 성공하면 게시 asset의 SHA-256·manifest 버전을 확인하고 상태 문서를 released로 갱신한다. 실패하면 태그를 이동하지 말고 실패 단계만 고쳐 다음 patch 버전으로 재시도한다.
+- GOAPI `42481c5`를 고정한 v1.2.16을 로컬 게이트와 공식 Ubuntu 22 빌드로 검증하고, 태그·GitHub Release·SHA-256·manifest를 확인한다.
+- 릴리스 후 실서버 DB·업로드 백업, Firebase 선택 설정, `nuboctl update`·`doctor`, Sensta Android 실기기 QA를 진행한다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
 - optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
