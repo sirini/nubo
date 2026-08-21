@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- GOAPI에서 웹 Google OAuth client와 Android ID 토큰 audience 설정을 분리했다. Android는 `OAUTH_GOOGLE_ANDROID_CLIENT_ID`를 우선 사용하고 미설정 시 기존 웹 client ID로 호환되며, ID 토큰 검증에는 별도 client secret을 요구하지 않는다.
 - GOAPI `42481c5`를 고정한 NUBO v1.2.16을 게시했고 workflow run `32437963579`에서 모든 게이트와 Ubuntu 22.04/24.04 fresh-install, Release 게시를 통과했다.
 - v1.2.15 릴리스 workflow run `32380738928`이 NUBO·GOAPI 게이트와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 모두 통과했다.
 - 공개 `/terms`에 사진·게시물의 권리, 금지 콘텐츠, 신고·차단, 운영 조치와 데이터 삭제 원칙을 명시하고 사이트 메뉴·개인정보처리방침 및 Sensta Android 가입·최초 업로드 동의 흐름에 연결했다.
@@ -141,6 +142,7 @@
 
 ## Verification
 
+- Android Google OAuth audience 분리: GOAPI `85186af`에서 설정 로딩·기존 설정 fallback 회귀 테스트와 전체 `go test ./...`, `go vet ./...`를 통과했다.
 - v1.2.16 릴리스: GitHub Actions run `32437963579`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 test/vet·통합 빌드, Ubuntu 22.04/24.04 fresh-install·게시를 통과했다. 공개 asset을 다시 내려받아 SHA-256과 NUBO `ade5ac7`·GOAPI `42481c5` manifest를 확인했다.
 - 이용약관·UGC 동의 흐름: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build와 Sensta 전체 Android 검증 스크립트를 통과했다.
 - 계정 삭제·사용자 안전 웹 경로: 읽기 쉬운 삭제 경고·확인 UI와 Android 참고 구현 안내를 포함해 NUBO 28개 테스트, 변경 페이지 ESLint, typecheck와 production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
@@ -198,6 +200,6 @@
 
 ## Next action
 
-- 실서버 DB·업로드를 백업하고 Firebase 선택 설정을 준비한 뒤 `nuboctl update`·`doctor`, Sensta Android 실기기 QA를 진행한다.
+- `OAUTH_GOOGLE_ANDROID_CLIENT_ID`가 설정된 GOAPI `85186af`를 실서버에 반영하고 Sensta Android Google 로그인과 이어지는 업로드·알림 흐름을 실기기로 확인한다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
 - optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
