@@ -187,6 +187,16 @@ node .output/server/index.mjs
 공식 설치에서는 PM2나 tmux로 별도 프로세스를 중복 실행하지 않습니다. 개발 중에는 `./goapi-linux`와
 `npm run dev`를 각각 실행하고, 운영에서는 `systemctl restart nubo`로 두 서비스를 함께 관리합니다.
 
+## NUBO 기반 Android 앱 개발
+
+NUBO와 GOAPI의 API v1을 이용하면 웹사이트와 같은 계정·게시판·사진 데이터를 사용하는 네이티브 Android
+앱을 별도 클라이언트로 개발할 수 있습니다. [Sensta Android](https://github.com/sirini/sensta)는 로그인과
+토큰 갱신, 사진 업로드, 프로필과 1:1 대화, 신고·차단·계정 삭제, Firebase 알림을 연결한 참고 구현입니다.
+
+새 앱은 Sensta를 그대로 복제하기보다 각 커뮤니티의 목적에 맞게 화면, 기능, 이름과 브랜드를 설계하는
+것을 권장합니다. 서버 연동 범위와 인증 방식은 [API v1 계약](./docs/API_CONTRACT_V1.md), 푸시 알림 설정은
+[env.sample](./env.sample)을 참고하세요.
+
 ## 메일과 회원가입 설정
 
 NUBO의 메일 제공자는 **Resend 하나만 사용**합니다. Gmail 앱 비밀번호나 SMTP 설정은 사용하지 않습니다.

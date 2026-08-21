@@ -70,7 +70,7 @@
 - GOAPI `42481c5`를 고정한 NUBO v1.2.16을 게시했고 workflow run `32437963579`에서 모든 게이트와 Ubuntu 22.04/24.04 fresh-install, Release 게시를 통과했다.
 - v1.2.15 릴리스 workflow run `32380738928`이 NUBO·GOAPI 게이트와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 모두 통과했다.
 - 공개 `/terms`에 사진·게시물의 권리, 금지 콘텐츠, 신고·차단, 운영 조치와 데이터 삭제 원칙을 명시하고 사이트 메뉴·개인정보처리방침 및 Sensta Android 가입·최초 업로드 동의 흐름에 연결했다.
-- 웹과 Android 앱에서 계정·연관 데이터 완전 삭제를 지원하고, 브라우저용 `/delete-account` 경로를 개인정보처리방침과 계정 메뉴에 연결했다. 신고와 사용자 차단을 독립된 행동으로 분리하고 차단 콘텐츠·최근 활동·대화를 즉시 숨긴다.
+- 웹과 Android 앱에서 계정·연관 데이터 완전 삭제를 지원하고, 브라우저용 `/delete-account` 경로를 개인정보처리방침과 계정 메뉴에 연결했다. 삭제 페이지의 경고·확인 영역을 읽기 쉬운 구조로 정돈하고 README에서 NUBO 기반 Android 앱의 참고 구현인 Sensta를 안내한다. 신고와 사용자 차단을 독립된 행동으로 분리하고 차단 콘텐츠·최근 활동·대화를 즉시 숨긴다.
 - GOAPI에 Android FCM 설치 ID(FID)를 계정별로 등록·해제하는 `/push/device` 계약과 재실행 가능한 `push_device` 스키마를 추가했다. 댓글·좋아요·1:1 대화 알림은 Firebase Admin SDK로 즉시 전달하며 Firebase 설정이 없으면 알림 목록만 유지한다.
 - GOAPI에 웹 쿠키 계약을 유지하면서 Android 앱이 refresh token을 원자적으로 회전할 수 있는 `/auth/android/refresh`를 추가했다.
 - v1.2.14에서 NUBO·GOAPI 필수 게이트와 Ubuntu 22.04/24.04 fresh-install을 모두 통과해 hosted runner 호환성을 확인했다.
@@ -143,7 +143,7 @@
 
 - v1.2.16 릴리스: GitHub Actions run `32437963579`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 test/vet·통합 빌드, Ubuntu 22.04/24.04 fresh-install·게시를 통과했다. 공개 asset을 다시 내려받아 SHA-256과 NUBO `ade5ac7`·GOAPI `42481c5` manifest를 확인했다.
 - 이용약관·UGC 동의 흐름: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build와 Sensta 전체 Android 검증 스크립트를 통과했다.
-- 계정 삭제·사용자 안전 웹 경로: NUBO 28개 테스트, typecheck, ESLint 오류 0건·기존 경고 50건 상한, production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
+- 계정 삭제·사용자 안전 웹 경로: 읽기 쉬운 삭제 경고·확인 UI와 Android 참고 구현 안내를 포함해 NUBO 28개 테스트, 변경 페이지 ESLint, typecheck와 production build를 통과했다. 연동 GOAPI는 전체 test와 vet를 통과했다.
 - v1.2.15 릴리스: GitHub Actions run `32380738928`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증, Ubuntu 22.04/24.04 fresh-install과 Release 게시를 모두 통과했다.
 - v1.2.14 후보: 로컬 NUBO 28개 테스트, ESLint 오류 0건·기존 경고 50건 상한, shell/YAML/version/diff 검사를 통과했다. GitHub Actions run `32279749883`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 검증과 Ubuntu 22.04/24.04 fresh-install을 통과했다. publish는 제품 검증과 무관한 저장소 문맥 누락으로 실패했다.
 - v1.2.12 후보: build-release 전체는 통과했지만 Ubuntu 22/24 fresh-install이 모두 32분간 무출력으로 실행되어 취소했으며 공개 Release는 만들지 않았다. 명령별 timeout과 진행 로그를 v1.2.13에 추가한다.
