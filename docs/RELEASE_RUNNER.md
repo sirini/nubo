@@ -5,6 +5,10 @@ Ubuntu 22.04/24.04 fresh-install과 최종 GitHub Release 게시는 일회용 Gi
 실행한다. 로컬 runner의 Docker layer와 npm download cache를 재사용하면서도 실제 설치 호환성 검증은
 깨끗한 환경에 남기는 경계다.
 
+로컬 runner에서는 `~/.npm`이 실행 사이에 그대로 유지되므로 `setup-node`의 원격 cache upload를
+사용하지 않는다. 수 GiB의 로컬 캐시를 매번 압축·업로드하는 비용을 피하기 위한 것이며, hosted
+fallback에서는 기존 GitHub npm cache를 계속 사용한다.
+
 기본 `build-release` 라벨은 다음과 같다.
 
 ```json
