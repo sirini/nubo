@@ -1,7 +1,7 @@
 # NUBO API contract v1
 
-기준일: 2026-08-21
-기준 구현: NUBO `main`, GOAPI `42481c5`
+기준일: 2026-08-22
+기준 구현: NUBO `main`, GOAPI `85186af`
 
 이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
 호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두

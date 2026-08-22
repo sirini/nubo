@@ -3,7 +3,7 @@
 > 저장 경로: `docs/NUBO_COMMUNITY_OS_ROADMAP.md`  
 > 문서 성격: 장기 전략 + 구현 로드맵 + Codex 작업 지침  
 > 기준 시점: 2026-08-20
-> 기준 버전: NUBO v1.2.16 candidate + main / GOAPI 42481c5
+> 기준 버전: NUBO v1.2.17 candidate + main / GOAPI 85186af
 > 상태: 살아 있는 문서(Living Document)
 
 ---

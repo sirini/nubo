@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO v1.2.16을 실서버에 백업·업데이트하고 Sensta Android 2.0의 인증·업로드·알림 흐름을 실기기로 확인한다.
+- GOAPI `85186af`를 고정한 NUBO v1.2.17을 게시·실서버 업데이트하고 Sensta Android Google 로그인을 실기기로 확인한다.
 
 ## Current product boundary
 
@@ -67,6 +67,7 @@
 
 ## Recent completion
 
+- GOAPI `85186af`를 고정하고 Android 전용 Google ID 토큰 audience 환경변수를 포함한 NUBO v1.2.17 릴리스 후보를 준비했다.
 - GOAPI에서 웹 Google OAuth client와 Android ID 토큰 audience 설정을 분리했다. Android는 `OAUTH_GOOGLE_ANDROID_CLIENT_ID`를 우선 사용하고 미설정 시 기존 웹 client ID로 호환되며, ID 토큰 검증에는 별도 client secret을 요구하지 않는다.
 - GOAPI `42481c5`를 고정한 NUBO v1.2.16을 게시했고 workflow run `32437963579`에서 모든 게이트와 Ubuntu 22.04/24.04 fresh-install, Release 게시를 통과했다.
 - v1.2.15 릴리스 workflow run `32380738928`이 NUBO·GOAPI 게이트와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 모두 통과했다.
@@ -200,6 +201,6 @@
 
 ## Next action
 
-- `OAUTH_GOOGLE_ANDROID_CLIENT_ID`가 설정된 GOAPI `85186af`를 실서버에 반영하고 Sensta Android Google 로그인과 이어지는 업로드·알림 흐름을 실기기로 확인한다.
+- NUBO v1.2.17 후보의 로컬·CI 게이트와 공개 asset을 검증한 뒤 실서버에 반영하고 Sensta Android Google 로그인과 이어지는 업로드·알림 흐름을 실기기로 확인한다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
 - optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
