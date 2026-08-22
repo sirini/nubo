@@ -22,6 +22,7 @@
           <Button
             v-for="group in groups"
             :key="group.uid"
+            variant="ghost"
             class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
             :class="
               selectedGroupId === group.id

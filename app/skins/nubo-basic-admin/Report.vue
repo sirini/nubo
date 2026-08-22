@@ -10,6 +10,7 @@
       <ScrollArea class="max-h-[calc(100dvh-215px)]">
         <div class="flex-1 space-y-2 p-4">
           <Button
+            variant="ghost"
             class="w-full flex items-center justify-start px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
             :class="
               status === 'wait'
@@ -23,6 +24,7 @@
           </Button>
 
           <Button
+            variant="ghost"
             class="w-full flex items-center justify-start px-3 py-2 text-sm rounded-md transition-colors cursor-pointer"
             :class="
               status === 'solved'

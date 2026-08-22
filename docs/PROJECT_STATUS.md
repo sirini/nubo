@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 관리 스킨 화면과 기본 홈에서 Market 발견→설치→적용→삭제 여정을 안내하고, 안전한 `nuboctl market remove`와 명령별 help를 다음 NUBO 릴리스 후보로 검증한다.
+- 빈 게시판 그룹 메뉴와 관리화면 사이드바 대비를 보정한 Market/nuboctl 작업을 NUBO v1.2.22로 공식 게시하고 nubohub.org에 적용한다.
 
 ## Product boundary
 
@@ -35,6 +35,7 @@
 
 ## Recent completion
 
+- 빈 게시판 그룹의 하위 메뉴에 클릭 불가 `(비어 있음)`을 표시하고, 게시판 그룹·신고 분류 사이드바 버튼의 light/dark 기본 글자 대비를 복구했다.
 - 관리 스킨 화면을 공식 Market 탐색, CLI 검색·상세·설치·삭제, customize 적용과 설치/적용 상태 차이를 설명하는 사용자 여정으로 개편했다.
 - `nuboctl market help [search|info|install|remove]`와 checksum 영수증 기반의 `market remove [--dry-run]`을 추가하고 nuboctl 버전을 0.13.0으로 올렸다.
 - 기본 홈의 `빌더들의 이야기` 바로가기에 GOAPI와 SENSTA 사이 MARKET 버튼을 추가해 공식 `/market/`으로 연결했다.
@@ -70,6 +71,7 @@
 
 ## Verification
 
+- 운영 API에서 `boards` 그룹이 빈 배열임을 확인했다. 로컬 Chromium light/dark에서 `(비어 있음)`, 그룹명과 신고 분류의 선택/비선택 대비, 가로 넘침 없음을 확인했다.
 - NUBO test 32건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. nuboctl 전체 test/race/vet와 운영 Market의 install→receipt→remove dry-run→remove 통합 smoke를 통과했다.
 - 홈과 관리 스킨 화면을 Chromium 1440px/390px light/dark에서 확인했다. MARKET 순서·모바일 줄바꿈·공식 링크·관리 안내와 한글 렌더링이 정상이며 페이지 가로 넘침이 없다.
 - remove는 변경·추가·누락·symlink 파일, 손상되거나 없는 영수증, 패키지의 예약 영수증 포함을 거부하고 원본 폴더를 보존하는 테스트를 통과했다.
@@ -98,5 +100,5 @@
 
 ## Next action
 
-- 제품 소유자가 관리 스킨 안내와 `nuboctl market help/remove` 출력을 최종 QA한 뒤 다음 NUBO 버전으로 공식 게시한다.
+- NUBO v1.2.22 릴리스 게이트를 통과해 공식 asset을 게시하고 nubohub.org를 업데이트한다.
 - 이후 범위는 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.

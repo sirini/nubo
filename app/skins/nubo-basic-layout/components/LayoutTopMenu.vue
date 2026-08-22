@@ -47,6 +47,13 @@
             <DropdownMenuPortal>
               <DropdownMenuSubContent class="w-48">
                 <DropdownMenuItem
+                  v-if="menu.boards.length === 0"
+                  disabled
+                  class="text-muted-foreground data-[disabled]:opacity-100"
+                >
+                  (비어 있음)
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   v-for="(board, idx) in menu.boards"
                   :key="idx"
                   as-child
