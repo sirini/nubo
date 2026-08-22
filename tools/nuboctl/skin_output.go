@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unicode"
 )
 
 func writeMarketEmpty(output io.Writer, query string) {
@@ -13,15 +14,64 @@ func writeMarketEmpty(output io.Writer, query string) {
 
 func writeMarketSearch(output io.Writer, list registryList, query string) {
 	writeMarketTitle(output, "SEARCH", query)
-	header := fmt.Sprintf("  %-31s  %-9s  %-22s  %s", "SKIN", "VERSION", "NAME", "REQUIRES")
+	header := fmt.Sprintf("  %s  %-9s  %s  %s", marketCell("SKIN", 22), "VERSION", marketCell("NAME", 26), "REQUIRES")
 	fmt.Fprintln(output, paint(output, ansiDim, header))
-	fmt.Fprintln(output, paint(output, ansiDim, "  ─────────────────────────────────────────────────────────────────────────────"))
+	fmt.Fprintln(output, paint(output, ansiDim, "  "+strings.Repeat("─", 74)))
 	for _, item := range list.Items {
-		key := paint(output, ansiBoldCyan, fmt.Sprintf("%-31s", item.Key))
+		key := paint(output, ansiBoldCyan, marketCell(item.Key, 22))
 		version := paint(output, ansiGreen, fmt.Sprintf("%-9s", item.Version))
-		fmt.Fprintf(output, "  %s  %s  %-22s  NUBO %s+\n", key, version, item.Name, item.MinNUBOVersion)
+		fmt.Fprintf(output, "  %s  %s  %s  NUBO %s+\n", key, version, marketCell(item.Name, 26), item.MinNUBOVersion)
 	}
 	fmt.Fprintf(output, "\n  %s\n", paint(output, ansiBoldGreen, fmt.Sprintf("✓ 스킨 %d개", list.Total)))
+}
+
+func marketCell(value string, width int) string {
+	cellWidth := 0
+	var cell strings.Builder
+	for _, character := range value {
+		characterWidth := marketRuneWidth(character)
+		if cellWidth+characterWidth > width {
+			return trimMarketCell(cell.String(), width)
+		}
+		cell.WriteRune(character)
+		cellWidth += characterWidth
+	}
+	return cell.String() + strings.Repeat(" ", width-cellWidth)
+}
+
+func trimMarketCell(value string, width int) string {
+	target := width - 1
+	cellWidth := 0
+	var cell strings.Builder
+	for _, character := range value {
+		characterWidth := marketRuneWidth(character)
+		if cellWidth+characterWidth > target {
+			break
+		}
+		cell.WriteRune(character)
+		cellWidth += characterWidth
+	}
+	trimmed := strings.TrimRightFunc(cell.String(), unicode.IsSpace)
+	cellWidth = marketDisplayWidth(trimmed)
+	return trimmed + "…" + strings.Repeat(" ", target-cellWidth)
+}
+
+func marketDisplayWidth(value string) int {
+	width := 0
+	for _, character := range value {
+		width += marketRuneWidth(character)
+	}
+	return width
+}
+
+func marketRuneWidth(character rune) int {
+	if unicode.Is(unicode.Mn, character) || unicode.Is(unicode.Me, character) || unicode.Is(unicode.Cf, character) {
+		return 0
+	}
+	if unicode.In(character, unicode.Hangul, unicode.Han, unicode.Hiragana, unicode.Katakana, unicode.Bopomofo) {
+		return 2
+	}
+	return 1
 }
 
 func writeMarketInfo(output io.Writer, item registrySkin) {

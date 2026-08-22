@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 제품 소유자가 npm 탐색 흐름으로 개편한 nubohub.org Market과 nuboctl 안내 페이지를 QA한다.
+- 한글·반응형 최종 검수와 CLI 출력 QA를 마친 nuboctl 0.12.1을 NUBO v1.2.21로 공식 게시한다.
 
 ## Product boundary
 
@@ -34,6 +34,8 @@
 
 ## Recent completion
 
+- Noto Sans CJK KR이 적용된 운영 Market·nuboctl을 데스크톱 dark·모바일 light로 최종 검수하고, 모바일 명령 비교표를 화면 안에서 모두 보이도록 조정해 Market `5cefc76`으로 게시·운영 반영했다.
+- `nuboctl market search`의 한글 이름 열을 실제 터미널 표시 폭으로 정렬하고 긴 이름을 80열 안에서 말줄임하도록 보정했다.
 - Market 카드·비교표·워크플로·사이트 운영 영역의 작은 영문 텍스트를 15–16px로 맞추고 제작자 앞 `by`, 삭제 안내 블록과 헤드라인 마침표를 제거했다.
 - `nuboctl market search/info/install` 출력을 색상 대응 헤더·정렬된 열·정보 구획·검증 결과·다음 단계가 있는 터미널 레이아웃으로 개편했다. 비대화형 출력은 ANSI 색상을 넣지 않는다.
 - `/var/backups/nubohub-market`의 과거 바이너리 4세트와 최초 설치 전 설정 1세트를 제품 소유자 요청에 따라 삭제했다.
@@ -64,6 +66,9 @@
 
 ## Verification
 
+- 운영 Market 데스크톱 dark·모바일 light와 nuboctl 데스크톱 dark·모바일 light에서 Noto Sans CJK KR 한글 글리프, HTTP 200, 브라우저 오류 없음과 페이지 가로 넘침 없음을 확인했다. 모바일 비교표 조정 뒤 표와 컨테이너 폭은 360px로 일치했다.
+- Market `29ed6a9`/`5cefc76` run `32574484922`/`32574622281`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 최종 운영 바이너리 SHA-256은 `2984cb4e2933786030c94d240e9991a9b700c1e111d5c779b3fe01a8dc7bf09f`이며 asset `20260822-4`, 내부·외부 readiness와 systemd active를 확인했다.
+- nuboctl 한글 표시 폭 단위 테스트와 전체 Go test/vet, 실제 운영 Market search/info를 통과했다.
 - Market `3a5dde7` run `32572827347`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `c2dd298e9a27270f4c86ec3019465272c02d88d5a9c85502e883650b8566b749`이며 외부 asset `20260822-3`, readiness, systemd active와 빈 Market 백업 디렉터리를 확인했다.
 - nuboctl `0d285fa`의 전체 test/vet, 실제 운영 Market search/info 색상 터미널 출력과 기본 스킨 9개 게시를 포함한 install 통합 smoke를 통과했다.
 - Market `7254835`를 데스크톱 dark·모바일 light·nuboctl dark 실브라우저로 확인하고 `go test`, `go vet`, shell 구문 검사와 MySQL 게시→조회→다운로드 smoke를 통과했다. 운영 바이너리 SHA-256은 `741c2356ae8f24fc85a3109011596fbbf1f2e1f20532e5fb4bd0cdb1fb2c55ff`이며 이번 배포에는 별도 바이너리 백업을 추가하지 않았다.
@@ -85,6 +90,5 @@
 
 ## Next action
 
-- 다음 세션에는 `fonts-noto-cjk`를 설치한 로컬 Chromium으로 한글까지 포함한 데스크톱·모바일 화면을 다시 확인하고, 새 `nuboctl market` 출력의 제품 소유자 QA를 반영한다.
-- CLI 출력이 확정되면 다음 NUBO 버전에 포함해 공식 nuboctl 바이너리로 게시한다.
-- 그 뒤 스킨 미리보기 자산, checksum 기반 안전한 `market remove`, 제작자 게시 흐름 중 다음 범위를 정한다. 결제·커미션은 계속 보류한다.
+- NUBO v1.2.21의 전체 릴리스 게이트와 공식 게시를 마친다.
+- 그 뒤 스킨 미리보기 자산, checksum 기반 안전한 `market remove`, 제작자 게시 흐름 중 다음 범위를 제품 소유자와 정한다. 결제·커미션은 계속 보류한다.

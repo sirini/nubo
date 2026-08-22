@@ -46,6 +46,22 @@ func TestSearchSkins(t *testing.T) {
 	}
 }
 
+func TestMarketCellUsesTerminalDisplayWidth(t *testing.T) {
+	for _, test := range []struct {
+		value, expected string
+		width           int
+	}{
+		{value: "Gallery", width: 10, expected: "Gallery   "},
+		{value: "기본 스킨", width: 11, expected: "기본 스킨  "},
+		{value: "기본 게시판 및 갤러리 스킨", width: 22, expected: "기본 게시판 및 갤러리…"},
+		{value: "기본 로그인 및 회원가입 스킨", width: 26, expected: "기본 로그인 및 회원가입…  "},
+	} {
+		if actual := marketCell(test.value, test.width); actual != test.expected {
+			t.Errorf("marketCell(%q, %d) = %q, want %q", test.value, test.width, actual, test.expected)
+		}
+	}
+}
+
 func TestShowSkinUsesReadableSections(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, _ *http.Request) {
 		fmt.Fprint(response, `{"key":"nubo-gallery","name":"Gallery","version":"1.0.0","author":"NUBO","description":"gallery skin","features":["다크 모드"],"min_nubo_version":"1.2.0"}`)
