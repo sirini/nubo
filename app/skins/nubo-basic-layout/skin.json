@@ -1,11 +1,11 @@
 {
   "key": "nubo-basic-layout",
   "name": "기본 레이아웃 스킨",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "sirini",
   "website": "https://nubohub.org",
   "description": "상단 좌측 메뉴, 우측 전체 검색을 제공하는 기본적인 레이아웃입니다",
   "preview": "preview.png",
-  "features": ["다크모드", "반응형 그리드"],
+  "features": ["다크 모드", "라이트 모드", "반응형 그리드"],
   "min_nubo_version": "1.1.1"
 }
