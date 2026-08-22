@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 작은 UI 보정을 다음 patch로 게시해 로컬 `build-release`, hosted fresh-install, GitHub Release로 이어지는 혼합 릴리스 경로를 실제 태그에서 최종 확인한다.
+- 작은 UI 보정을 v1.2.18로 게시해 로컬 `build-release`, hosted fresh-install, GitHub Release로 이어지는 혼합 릴리스 경로를 실제 태그에서 최종 확인한다.
 
 ## Product boundary
 
@@ -49,6 +49,6 @@
 
 ## Next action
 
-- 요청한 메뉴 아이콘·모바일 여백·홈 문구를 검증하고 다음 patch 태그를 게시한다.
+- 요청한 메뉴 아이콘·모바일 여백·홈 문구를 반영한 v1.2.18 태그를 게시한다.
 - 게시 뒤 혼합 runner 선택, clean provenance, Ubuntu 22.04/24.04 fresh-install과 공개 asset을 확인한다.
 - 이후 제품 작업은 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류의 최소 범위를 합의한 뒤 시작한다.
