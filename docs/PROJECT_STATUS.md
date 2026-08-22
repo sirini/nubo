@@ -30,9 +30,11 @@
 - NUBO Market은 비공개 `sirini/nubohub-market` 저장소의 독립 Go Fiber 서비스로 두고, 운영 서버는 MySQL 메타데이터·패키지 파일·API 제공만 담당한다.
 - 스킨 패키지는 단일 `<key>/` tar.gz, immutable key/version, Registry SHA-256을 계약으로 삼는다. `nuboctl market install`은 로컬 소스에만 설치하고 기존 `customize`가 빌드·적용한다.
 - 결제·계정·커미션·리뷰·서드파티 게시 권한은 MVP 뒤로 미루고, 현재 게시 API는 긴 운영자 토큰 하나로 보호한다.
+- Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
 
 ## Recent completion
 
+- Market 헤더를 필기체 워드마크와 설명형 아이콘 내비게이션으로 정리하고, 살구색 강조 톤·헤드라인 행간·명령 프로모션·카드 메타데이터·CTA·nuboctl 터미널과 안내문의 가독성을 다듬었다.
 - Market을 NUBO식 sticky blur 상단바, npm 오마주 검색 히어로, 터미널 명령 강조, 제작자 카드, 12개 페이징과 랜딩 CTA 구조로 개편하고 별도 `/market/nuboctl` 안내 페이지를 배치했다.
 - 기본 스킨 9개의 immutable 0.1.1을 게시하고 태그를 `다크 모드`, `라이트 모드`, `반응형 그리드`로 통일했다.
 - NUBO v1.2.20과 nuboctl 0.12.0을 게시하고 nubohub.org를 같은 GOAPI의 무중단 데이터 경계로 업데이트했다.
@@ -59,6 +61,8 @@
 
 ## Verification
 
+- Market `7254835`를 데스크톱 dark·모바일 light·nuboctl dark 실브라우저로 확인하고 `go test`, `go vet`, shell 구문 검사와 MySQL 게시→조회→다운로드 smoke를 통과했다. 운영 바이너리 SHA-256은 `741c2356ae8f24fc85a3109011596fbbf1f2e1f20532e5fb4bd0cdb1fb2c55ff`이며 이번 배포에는 별도 바이너리 백업을 추가하지 않았다.
+- 운영 `/market/`의 `20260822-2` CSS, 아이콘 설명, `/market/nuboctl` 콘텐츠와 외부 readiness 200을 확인했다. 강조용 HTML 때문에 깨진 문자열 기반 smoke는 `d5dea17`에서 의미 기반 검사로 보정했고 run `32572163829`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다.
 - Market `b5a26c3`/`d2f5ae5` run `32570563315`/`32570742778`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 데스크톱 dark·모바일 light 실브라우저 캡처를 확인했고, 운영 목록 9개·공통 태그 검색 9개·nuboctl 페이지·CSP와 NUBO/GOAPI/Market/Nginx active를 확인했다.
 - 새 운영 Market 바이너리 SHA-256은 `0a59f3b90860c02297c1473c3218b97e84e1d0ba669c4ac28562d949277cf82a`이며 stylesheet cache-busting을 적용했다. 직전 바이너리는 `/var/backups/nubohub-market/assets-d2f5ae5`에 보존했다.
 - v1.2.20 run `32568166081`: 통합 build 2분 30초, Ubuntu 22.04/24.04 fresh-install 19초/23초와 게시를 통과했다. 공개 asset SHA-256 `043bc65cf9cf9c2fad09517d6422cb49609e6bc1af25204c5b6c61f5a47aba2b`, clean NUBO/nuboctl `85a1130`, GOAPI `85186af`, nuboctl 0.12.0을 확인했다.
