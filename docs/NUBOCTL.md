@@ -2,7 +2,7 @@
 
 최초 `install`과 기존 소스의 `adopt`는 PATH에 관리 명령이 생기기 전이므로 저장소의 npm bootstrap을
 사용한다. 설치가 끝난 뒤 운영자가 기억할 공개 명령은 `nuboctl status`, `doctor`, `update`, `customize`,
-`activate-nginx`다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
+`skin`, `activate-nginx`다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
 경계이며 일반 사용자가 직접 실행하지 않는다. AI·자동화는 릴리스 최상위의
 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
@@ -92,6 +92,25 @@ nuboctl customize
 기존 사이트를 변경하지 않고, 공식 update가 성공한 뒤 준비한 Web을 적용한다. 적용만 실패한 경우에는
 새 공식 Web을 정상 상태로 남기고 복구 명령을 안내한다. 이번 update에서만 생략하려면
 `nuboctl update --no-customize`를 사용한다.
+
+## NUBO Market 스킨 설치
+
+`nuboctl skin`은 공개 Registry의 스킨을 검색하고 개발자 PC의 NUBO 소스에 설치한다. 다운로드한
+`.tar.gz`의 Registry SHA-256, manifest key/version, NUBO 최소 버전, 단일 최상위 폴더를 확인하고
+경로 탈출, 링크·특수 파일, 과도한 압축 해제 크기를 거부한다. 같은 key의 기존 폴더는 자동으로
+덮어쓰지 않는다.
+
+```bash
+nuboctl skin search gallery
+nuboctl skin info nubo-awesome-gallery
+nuboctl skin install nubo-awesome-gallery
+nuboctl skin install nubo-awesome-gallery --version 1.0.0
+nuboctl customize --dry-run
+```
+
+기본 Registry는 `https://nubohub.org/market`이다. 로컬 MVP를 시험할 때만
+`--registry http://127.0.0.1:3009` 또는 `NUBO_MARKET_URL`을 사용한다. 설치는 서버 프로세스를
+변경하거나 빌드하지 않으며, 실제 적용은 기존 `nuboctl customize` 경계를 따른다.
 
 ## install
 

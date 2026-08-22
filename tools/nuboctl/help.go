@@ -15,11 +15,12 @@ var helpPages = map[string]helpPage{
 		title: "NUBO 서버 관리",
 		body: `사용법: nuboctl <명령> [옵션]
 
-처음에는 이 다섯 가지만 기억하면 됩니다.
+처음에는 이 여섯 가지만 기억하면 됩니다.
   status          지금 사이트가 잘 실행되는지 확인
   doctor          설치와 설정에서 문제 찾기
   update          새 공식 버전으로 업데이트
   customize       수정한 스킨을 빌드하고 적용
+  skin            NUBO Market 스킨 검색·정보·설치
   activate-nginx  사이트를 HTTP로 공개
 
 명령별 도움말:
@@ -91,11 +92,19 @@ HTTPS 인증서 발급은 포함하지 않으며 출력되는 다음 명령을 �
   npm run server:adopt`,
 	},
 	"skin": {
-		title: "스킨 내부 전환 명령",
-		body: `skin apply는 nuboctl customize가 준비한 결과를 전환하는 내부 명령입니다.
-일반 사용자는 직접 실행하지 말고 다음 명령을 사용하세요.
+		title: "NUBO Market 스킨",
+		body: `NUBO Market에서 스킨을 찾고 현재 소스 checkout의 app/skins에 안전하게 설치합니다.
+checksum과 패키지 경로를 검증하며 기존 스킨을 덮어쓰지 않습니다. 설치 뒤 customize로 빌드·적용합니다.
 
-  nuboctl customize`,
+사용법:
+  nuboctl skin search [검색어]
+  nuboctl skin info <스킨-key>
+  nuboctl skin install <스킨-key>
+  nuboctl skin install <스킨-key> --version 1.0.0
+  nuboctl customize
+
+다른 Registry를 시험할 때는 --registry URL 또는 NUBO_MARKET_URL을 사용합니다.
+skin apply는 customize가 준비한 파생 릴리스를 전환하는 내부 명령입니다.`,
 	},
 	"version": {
 		title: "nuboctl 버전 확인",

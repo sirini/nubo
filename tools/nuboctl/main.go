@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.11.0"
+const version = "0.12.0"
 
 type options struct {
 	releaseDir  string
@@ -129,9 +129,16 @@ func run(args []string) int {
 		}
 		return 0
 	case "skin":
-		if len(args) < 2 || args[1] != "apply" {
-			printFailure("사용법: nuboctl skin apply [옵션]")
+		if len(args) < 2 {
+			printFailure("사용법: nuboctl skin <search|info|install> [인자]")
 			return 2
+		}
+		if args[1] != "apply" {
+			if err := runSkinRegistry(args[1:]); err != nil {
+				printFailure("스킨 작업 실패: %v", err)
+				return 1
+			}
+			return 0
 		}
 		options, err := parseSiteApplyOptions(args[2:])
 		if err != nil {
