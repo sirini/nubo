@@ -39,7 +39,7 @@ gh run watch --repo sirini/nubo
 gh workflow run publish-release.yml \
   --repo sirini/nubo \
   --ref main \
-  -f release_tag=v1.2.18
+  -f release_tag=v1.2.19
 ```
 
 정식 태그 push에서는 같은 게이트를 다시 실행하고 fresh-install이 모두 통과한 경우에만 게시한다.

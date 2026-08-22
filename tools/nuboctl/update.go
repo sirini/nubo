@@ -28,16 +28,21 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 		printSuccess("미리보기가 끝났습니다. DB와 실행 중인 서비스는 바꾸지 않았습니다.")
 		return nil
 	}
-	confirmed := options.backupConfirmed
-	if !confirmed && options.confirmBackup != nil {
-		confirmed, err = options.confirmBackup()
-		if err != nil {
-			return fmt.Errorf("백업 확인 입력 실패: %w", err)
+	if preflight.databaseChange {
+		if options.nonInteractive && !options.backupConfirmed {
+			return fmt.Errorf("GOAPI가 바뀌는 자동 업데이트에는 --backup-confirmed가 필요합니다")
 		}
-	}
-	if !confirmed {
-		printWarning("업데이트를 취소했습니다. DB와 실행 중인 서비스는 바꾸지 않았습니다.")
-		return nil
+		confirmed := options.backupConfirmed
+		if !confirmed && options.confirmBackup != nil {
+			confirmed, err = options.confirmBackup()
+			if err != nil {
+				return fmt.Errorf("백업 확인 입력 실패: %w", err)
+			}
+		}
+		if !confirmed {
+			printWarning("업데이트를 취소했습니다. DB와 실행 중인 서비스는 바꾸지 않았습니다.")
+			return nil
+		}
 	}
 	lifecycle, err := lifecycleDropInFiles(preflight.candidateDir, options.systemdDir)
 	if err != nil {
@@ -49,8 +54,10 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 	if output, reloadErr := runner.run("systemctl", "daemon-reload"); reloadErr != nil {
 		return fmt.Errorf("NUBO lifecycle 설정 반영 실패: %s", compactOutput(output, reloadErr))
 	}
-	if err := installDatabaseRelease(preflight.candidateDir, options.envFile, options.serviceUser, runner); err != nil {
-		return fmt.Errorf("후보 릴리스 migration: %w", err)
+	if preflight.databaseChange {
+		if err := installDatabaseRelease(preflight.candidateDir, options.envFile, options.serviceUser, runner); err != nil {
+			return fmt.Errorf("후보 릴리스 migration: %w", err)
+		}
 	}
 	environment, err := updateRuntimeVersions(options.envFile, preflight.versionValues)
 	if err != nil {
@@ -89,9 +96,18 @@ func printUpdatePlan(options updateOptions, preflight updatePreflight) {
 	printHeading("업데이트 계획  %s → %s", preflight.previousVersion, preflight.candidateVersion)
 	printItem("현재", "%s", preflight.previousDir)
 	printItem("새 버전", "%s", preflight.candidateDir)
-	printItem("바꿀 것", "서비스 lifecycle 연결, DB 구조 갱신, 버전 전환, 서비스 재시작, 정상 동작 확인")
-	printItem("실패하면", "이전 버전과 서비스를 복구합니다. DB 구조 갱신은 유지됩니다")
-	printItem("직접 확인", "DB와 업로드 파일의 외부 백업")
+	if preflight.databaseChange {
+		printItem("바꿀 것", "서비스 lifecycle 연결, DB 구조 갱신, 버전 전환, 서비스 재시작, 정상 동작 확인")
+		printItem("직접 확인", "DB와 업로드 파일의 외부 백업")
+	} else {
+		printItem("바꿀 것", "서비스 lifecycle 연결, 버전 전환, 서비스 재시작, 정상 동작 확인")
+		printItem("그대로", "GOAPI 출처와 DB 구조가 같아 migration·백업 확인을 생략합니다")
+	}
+	if preflight.databaseChange {
+		printItem("실패하면", "이전 버전과 서비스를 복구합니다. DB 구조 갱신은 유지됩니다")
+	} else {
+		printItem("실패하면", "이전 버전과 서비스를 복구합니다")
+	}
 }
 
 // 두 애플리케이션 서비스를 새 current 릴리스로 다시 시작한다.
@@ -105,23 +121,27 @@ func restartNuboServices(runner commandRunner) error {
 
 // 이전 링크와 서비스를 복원하고 DB migration이 남는다는 오류를 반환한다.
 func recoverPreviousRelease(options updateOptions, preflight updatePreflight, environment environmentTransition, runner commandRunner, readiness func(string) error, cause error) error {
+	migrationNote := ""
+	if preflight.databaseChange {
+		migrationNote = "; DB migration은 유지됩니다"
+	}
 	if err := replaceCurrentRelease(options.currentLink, preflight.candidateDir, preflight.previousDir); err != nil {
 		if !currentReleaseIs(options.currentLink, preflight.previousDir) {
-			return fmt.Errorf("%v; 이전 current 복원도 실패했습니다: %w; DB migration은 유지됩니다", cause, err)
+			return fmt.Errorf("%v; 이전 current 복원도 실패했습니다: %w%s", cause, err, migrationNote)
 		}
 	}
 	if err := restoreRuntimeEnvironment(options.envFile, environment); err != nil {
 		if !environmentFileIs(options.envFile, environment.previous) {
-			return fmt.Errorf("%v; 이전 링크는 복원했지만 환경 파일 복구 실패: %w; DB migration은 유지됩니다", cause, err)
+			return fmt.Errorf("%v; 이전 링크는 복원했지만 환경 파일 복구 실패: %w%s", cause, err, migrationNote)
 		}
 	}
 	if err := restartNuboServices(runner); err != nil {
-		return fmt.Errorf("%v; 이전 링크는 복원했지만 서비스 복구 실패: %w; DB migration은 유지됩니다", cause, err)
+		return fmt.Errorf("%v; 이전 링크는 복원했지만 서비스 복구 실패: %w%s", cause, err, migrationNote)
 	}
 	if err := readiness(preflight.readinessURL); err != nil {
-		return fmt.Errorf("%v; 이전 링크와 서비스를 복원했지만 readiness 실패: %w; DB migration은 유지됩니다", cause, err)
+		return fmt.Errorf("%v; 이전 링크와 서비스를 복원했지만 readiness 실패: %w%s", cause, err, migrationNote)
 	}
-	return fmt.Errorf("%v; 이전 릴리스 %s로 복구했습니다. DB migration은 유지됩니다", cause, preflight.previousVersion)
+	return fmt.Errorf("%v; 이전 릴리스 %s로 복구했습니다%s", cause, preflight.previousVersion, migrationNote)
 }
 
 // current가 오류 뒤에도 기대한 실제 디렉터리를 가리키는지 확인한다.

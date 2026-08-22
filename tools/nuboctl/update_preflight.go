@@ -15,6 +15,7 @@ type updatePreflight struct {
 	candidateVersion string
 	readinessURL     string
 	versionValues    map[string]string
+	databaseChange   bool
 }
 
 // 현재 설치와 후보 릴리스가 안전한 update 전제조건을 만족하는지 확인한다.
@@ -83,7 +84,15 @@ func preflightUpdate(options updateOptions, runner commandRunner, readiness func
 		previousDir: previousDir, candidateDir: candidateDir,
 		previousVersion: previousManifest.ReleaseVersion, candidateVersion: candidateManifest.ReleaseVersion,
 		readinessURL: endpoint, versionValues: versionValues,
+		databaseChange: databaseChangeRequired(previousManifest, candidateManifest),
 	}, nil
+}
+
+// GOAPI 출처가 완전히 같을 때는 같은 멱등 migration과 백업 확인을 반복하지 않는다.
+func databaseChangeRequired(previous, candidate releaseManifest) bool {
+	oldComponent, oldOK := previous.Components["goapi"]
+	newComponent, newOK := candidate.Components["goapi"]
+	return !oldOK || !newOK || oldComponent.Commit == "" || newComponent.Commit == "" || oldComponent.Commit != newComponent.Commit
 }
 
 // 후보 sample과 manifest에서 런타임 버전 표시에 쓸 값을 검증한다.

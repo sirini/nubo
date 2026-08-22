@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.10.1"
+const version = "0.11.0"
 
 type options struct {
 	releaseDir  string
@@ -112,10 +112,6 @@ func run(args []string) int {
 				return 0
 			}
 			printFailure("%v", err)
-			return 2
-		}
-		if options.nonInteractive && !options.dryRun && !options.backupConfirmed {
-			printFailure("자동 업데이트에는 --backup-confirmed가 필요합니다")
 			return 2
 		}
 		if !options.nonInteractive && !options.backupConfirmed {

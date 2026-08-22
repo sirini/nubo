@@ -9,7 +9,7 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-현재 버전은 **v1.2.18**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
+현재 버전은 **v1.2.19**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -77,7 +77,8 @@ nuboctl activate-nginx
 같은 입문 안내가 나옵니다.
 
 기존 `npm run server:update`, `npm run server:customize`는 자동화 호환을 위해 남아 있지만 새 안내에서는
-사용하지 않습니다. `update`와 `customize`는 NUBO 프로젝트 폴더에서 실행해야 합니다.
+사용하지 않습니다. `update`와 `customize`는 NUBO 프로젝트 폴더에서 실행해야 하며, `update`가
+`git pull --ff-only`부터 릴리스 전환과 등록된 커스텀 Web 재적용까지 이어서 수행합니다.
 
 설치가 끝나면 GOAPI와 Web은 systemd의 `nubo.service`로 함께 관리합니다.
 GOAPI와 Web에는 `PartOf=nubo.service` drop-in이 설치되므로 대표 unit의 restart가 두 프로세스에
@@ -364,22 +365,28 @@ nuboctl customize --dry-run
 
 ### v1.2.2 이후 공식 서버 설치 업데이트
 
-공식 서버 설치는 DB와 업로드의 외부 백업을 마친 뒤 저장소의 릴리스 채널을 갱신하고 한 명령으로 업데이트합니다.
+공식 서버 설치는 NUBO 프로젝트 폴더에서 한 명령으로 업데이트합니다.
 
 ```bash
-git pull --ff-only
 nuboctl update --dry-run
 nuboctl update
 ```
 
-명령은 새 통합 릴리스를 내려받아 검증·배치한 뒤 백업 확인, additive migration,
-원자적 `current` 전환, 재시작과 readiness 검사를 그대로 수행합니다. 소스 개발 환경에서 GOAPI만
-갱신하려면 `npm run server:prepare`를 다시 실행합니다.
+명령은 먼저 checkout을 `git pull --ff-only`로 갱신하고 새 통합 릴리스를 검증·배치한 뒤 원자적
+`current` 전환, 재시작과 readiness 검사를 수행합니다. 공식 기본 스킨이나 다른 소스 파일의 수정이
+남아 있거나 브랜치가 원격과 갈라졌다면 덮어쓰지 않고 서버 변경 전에 중단합니다. 별도 key로 만든
+사이트 전용 스킨 폴더의 변경은 보존합니다. pull을 의도적으로 생략할 때만 `--no-pull`을 사용합니다.
+따라서 공개 `update --dry-run`도 checkout의 fast-forward와 후보 릴리스·커스텀 Web 준비는 수행하며,
+실행 중인 서비스·DB·`current` 링크만 변경하지 않습니다. 소스까지 그대로 둔 채 검증하려면
+`--dry-run --no-pull`을 함께 사용합니다.
 
-사이트 전용 로컬 스킨을 사용 중이라면 공식 업데이트 직후에는 기본 prebuilt Web이 실행됩니다.
-현재 버전에서는 로컬 스킨을 자동으로 다시 빌드하지 않으므로, 업데이트가 정상 완료된 뒤 새 소스와의
-호환성을 확인하며 `nuboctl customize`를 한 번 더 실행합니다. 이 명령은 방금 설치한 공식 버전을
-기반으로 사이트 전용 Web을 다시 만들고 Web만 전환합니다.
+`nuboctl customize`를 한 번 적용한 설치는 커스텀 사용 상태를 기억합니다. 이후 `update`는 새 버전용
+커스텀 Web을 먼저 typecheck·빌드하고, 공식 릴리스 전환이 성공하면 자동으로 적용합니다. 빌드가
+실패하면 기존 사이트를 건드리지 않으며, 이번 업데이트에서만 건너뛰려면 `--no-customize`를 사용합니다.
+
+이전·후보 릴리스의 GOAPI commit이 같으면 DB migration과 반복적인 백업 질문을 생략합니다. GOAPI가
+바뀌는 업데이트만 기존처럼 외부 DB·업로드 백업을 확인하고 additive migration을 수행합니다. 소스 개발
+환경에서 GOAPI만 갱신하려면 `npm run server:prepare`를 다시 실행합니다.
 
 v1.2.7까지 adoption을 마친 서버는 v1.2.8로 update해도 systemd 구성을 자동 변경하지 않습니다.
 짧은 대표 명령을 원할 때만 다음 절차를 한 번 실행합니다. 실행 중인 GOAPI와 Web은 이 과정에서
@@ -439,7 +446,8 @@ Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS�
 - 새 스킨을 만들 때 기본 스킨을 직접 수정하지 말고 폴더를 복사한 뒤 `skin.json`의 `key`, 이름과 버전을
   새 폴더에 맞게 바꾸는 방식을 권장합니다. 그래야 `git pull`과 공식 스킨 업데이트가 사이트 수정을
   덮어쓰지 않습니다.
-- 설치된 서버에서는 수정 후 `nuboctl customize` 한 명령으로 빌드·검증·적용합니다.
+- 설치된 서버에서는 처음 수정한 뒤 `nuboctl customize`로 빌드·검증·적용합니다. 이후 공식 update가
+  커스텀 Web도 자동으로 다시 빌드합니다.
 
 예를 들어 사이트 전용 레이아웃과 홈을 만들려면 기본 폴더를 새 key로 복사합니다.
 

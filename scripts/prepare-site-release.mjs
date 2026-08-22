@@ -4,7 +4,7 @@ import { createHash } from "node:crypto"
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import { spawnSync } from "node:child_process"
 import { dirname, join, resolve } from "node:path"
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import {
   assertSupportedRuntime,
   currentRelease,
@@ -14,6 +14,7 @@ import {
   stageSystemRelease,
 } from "./release-download.mjs"
 import { copyTree, createSiteManifest, hashTree, siteReleaseName, writeChecksums, writeDependencyStamp } from "./site-release.mjs"
+import { enableAutoCustomize } from "./source-update.mjs"
 import { failure, info, section, success } from "./terminal-output.mjs"
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..")
@@ -50,17 +51,18 @@ async function ensureDependencies() {
   }
 }
 
-async function main() {
+export function applySiteRelease(systemRelease, dryRun = false) {
+  runReleaseCommand(systemRelease, ["skin", "apply", "--release", systemRelease, ...(dryRun ? ["--dry-run"] : [])])
+}
+
+export async function prepareSiteRelease({ descriptor, official, dryRun = false, apply = true } = {}) {
   assertSupportedRuntime()
   section("사이트 꾸미기 빌드")
-  const passthrough = process.argv.slice(2)
-  for (const argument of passthrough) {
-    if (argument !== "--dry-run") throw new Error(`지원하지 않는 옵션입니다: ${argument}`)
+  descriptor ??= await currentRelease()
+  if (!official) {
+    const archive = await fetchRelease(descriptor)
+    official = await extractRelease(descriptor, archive, join(projectRoot, ".nubo", "releases"))
   }
-
-  const descriptor = await currentRelease()
-  const archive = await fetchRelease(descriptor)
-  const official = await extractRelease(descriptor, archive, join(projectRoot, ".nubo", "releases"))
 
   await ensureDependencies()
   info("수정한 화면을 검사하고 운영용 파일로 만듭니다...")
@@ -85,10 +87,24 @@ async function main() {
 
   const systemRelease = stageSystemRelease(candidate)
   success(`사이트 수정본을 안전하게 준비했습니다: ${systemRelease}`)
-  runReleaseCommand(systemRelease, ["skin", "apply", "--release", systemRelease, ...passthrough])
+  if (apply) {
+    applySiteRelease(systemRelease, dryRun)
+    if (!dryRun) await enableAutoCustomize(projectRoot)
+  }
+  return systemRelease
 }
 
-main().catch(error => {
-  failure(error.message)
-  process.exitCode = 1
-})
+async function main() {
+  const args = process.argv.slice(2)
+  for (const argument of args) {
+    if (argument !== "--dry-run") throw new Error(`지원하지 않는 옵션입니다: ${argument}`)
+  }
+  await prepareSiteRelease({ dryRun: args.includes("--dry-run") })
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main().catch(error => {
+    failure(error.message)
+    process.exitCode = 1
+  })
+}

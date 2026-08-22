@@ -11,6 +11,13 @@ import {
   stageSystemRelease,
 } from "./release-download.mjs"
 import { failure, section, success } from "./terminal-output.mjs"
+import { applySiteRelease, prepareSiteRelease } from "./prepare-site-release.mjs"
+import {
+  enableAutoCustomize,
+  parsePublicUpdateArgs,
+  pullSourceCheckout,
+  shouldAutoCustomize,
+} from "./source-update.mjs"
 
 async function main() {
   const [command = "prepare", ...args] = process.argv.slice(2)
@@ -19,6 +26,9 @@ async function main() {
   }
   assertSupportedRuntime()
   section(command === "update" ? "NUBO 업데이트 준비" : command === "adopt" ? "기존 사이트 전환 준비" : "NUBO 설치 준비")
+  const publicUpdate = command === "update" ? parsePublicUpdateArgs(args) : null
+  if (publicUpdate?.pull) pullSourceCheckout(process.cwd())
+
   const descriptor = await currentRelease()
   const archive = await fetchRelease(descriptor)
   const localRelease = await extractRelease(descriptor, archive, join(process.cwd(), ".nubo", "releases"))
@@ -29,8 +39,21 @@ async function main() {
     return
   }
 
+  let siteRelease = ""
+  const existingCustomization = publicUpdate && await shouldAutoCustomize(process.cwd())
+  if (existingCustomization && !publicUpdate.dryRun) await enableAutoCustomize(process.cwd())
+  const customize = publicUpdate?.customize && existingCustomization
+  if (customize) {
+    siteRelease = await prepareSiteRelease({
+      descriptor,
+      official: localRelease,
+      dryRun: publicUpdate.dryRun,
+      apply: false,
+    })
+  }
+
   const systemRelease = stageSystemRelease(localRelease)
-  let commandArgs = args
+  let commandArgs = publicUpdate?.passthrough ?? args
   if (command === "adopt") {
     if (args.includes("--source") || args.some(argument => argument.startsWith("--source="))) {
       throw new Error("--source 경로는 현재 NUBO 프로젝트로 자동 지정됩니다")
@@ -39,6 +62,17 @@ async function main() {
     commandArgs.push(...args)
   }
   runNuboctl(command, systemRelease, commandArgs)
+  if (command === "update" && siteRelease && !publicUpdate.dryRun) {
+    try {
+      applySiteRelease(siteRelease)
+      await enableAutoCustomize(process.cwd())
+    } catch (error) {
+      throw new Error(`공식 업데이트는 완료됐지만 커스텀 Web 적용에 실패했습니다: ${error.message}`)
+    }
+  }
+  if (command === "update" && siteRelease && publicUpdate.dryRun) {
+    success("커스텀 Web도 새 버전 기준으로 빌드·검증했습니다. 실행 중인 사이트는 바꾸지 않았습니다.")
+  }
 }
 
 main().catch(error => {

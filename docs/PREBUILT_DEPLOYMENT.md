@@ -52,7 +52,7 @@ NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi
 NUXT_PUBLIC_GOAPI_BASE=goapi
 NUXT_PUBLIC_DOMAIN=https://example.com
 NUXT_PUBLIC_TITLE=Example Community
-NUXT_PUBLIC_VERSION=1.2.18
+NUXT_PUBLIC_VERSION=1.2.19
 ```
 
 Point GOAPI at the file and pass the same file to Node:
@@ -149,10 +149,12 @@ After checksum and compatibility validation, `nuboctl` runs only additive databa
 updates the two runtime version values, switches `current`, restarts the services, and checks readiness. A
 readiness failure restores the previous environment, link, and processes, but does not reverse database
 migrations; every migration must therefore remain compatible with the immediately previous release.
-The public `nuboctl update` command runs from the source checkout and downloads, verifies, extracts, and stages
-the configured release. It then invokes the candidate binary with the internal `--release` option; that core
-boundary still starts at a staged release and leaves backup and restore under operator control. The first update implementation also requires both releases to carry identical systemd and Nginx templates because it does not rewrite live service
-configuration during a release transition.
+The public `nuboctl update` command first protects official local changes and runs `git pull --ff-only`, then
+downloads, verifies, extracts, and stages the configured release. A previously applied site build is rebuilt for
+the candidate before the service transition and applied automatically afterwards. The internal `--release`
+boundary still starts at a staged release. It asks for an external backup and runs additive database setup only
+when the pinned GOAPI commit changes. Both releases must carry identical systemd and Nginx templates because the
+update does not rewrite live service configuration during a release transition.
 
 ## Minimal integrated bundle
 
@@ -178,5 +180,6 @@ commands, and the unprivileged service and proxy templates used by the installer
 
 The official archive is attached to an immutable GitHub Release. `deploy/release-sources.json` pins the GOAPI
 commit used by both local and CI release builds and selects the release or prerelease tag consumed by source
-checkouts. `server:prepare`, `server:install`, and public `nuboctl update` all reuse this single archive; none of
-them runs `npm install` or builds application code on the target machine.
+checkouts. `server:prepare`, `server:install`, and the official portion of public `nuboctl update` all reuse this
+single archive. Only installations that previously registered a local site customization run the required
+dependency preparation, typecheck, and Web build during update.

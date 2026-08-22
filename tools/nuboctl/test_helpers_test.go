@@ -110,7 +110,7 @@ func createInstallTestRelease(t *testing.T, releaseDir string) {
 func createInstallTestReleaseVersion(t *testing.T, releaseDir, version string) {
 	t.Helper()
 	files := map[string]string{
-		"manifest.json":             fmt.Sprintf(`{"schemaVersion":2,"releaseVersion":%q,"target":{"os":%q,"arch":%q},"components":{"goapi":{"version":%q,"commit":"test-goapi","dirty":false},"nuboctl":{"version":"test","commit":"test-nuboctl","dirty":false}},"nativeLibraries":{"libvips":{"version":"8.18.3","selection":"glibc-hwcaps","variants":{"x86-64":{"path":"lib/libvips-cpp.so.8.18.3","source":"test"},"x86-64-v2":{"path":"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3","source":"test"}}}}}`, version, runtime.GOOS, runtime.GOARCH, version) + "\n",
+		"manifest.json":             fmt.Sprintf(`{"schemaVersion":2,"releaseVersion":%q,"target":{"os":%q,"arch":%q},"components":{"goapi":{"version":%q,"commit":%q,"dirty":false},"nuboctl":{"version":"test","commit":"test-nuboctl","dirty":false}},"nativeLibraries":{"libvips":{"version":"8.18.3","selection":"glibc-hwcaps","variants":{"x86-64":{"path":"lib/libvips-cpp.so.8.18.3","source":"test"},"x86-64-v2":{"path":"lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3","source":"test"}}}}}`, version, runtime.GOOS, runtime.GOARCH, version, "test-goapi-"+version) + "\n",
 		"bin/goapi":                 "#!/bin/sh\nexit 0\n",
 		"nuboctl":                   "#!/bin/sh\nexit 0\n",
 		"lib/libvips-cpp.so.8.18.3": "library\n",

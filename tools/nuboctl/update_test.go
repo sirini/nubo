@@ -149,6 +149,49 @@ func TestRunUpdateCancellationDoesNotChangeRelease(t *testing.T) {
 	}
 }
 
+// GOAPI commit이 같으면 migration과 백업 질문 없이 UI-only update를 수행한다.
+func TestRunUpdateSkipsBackupAndMigrationForSameGoapi(t *testing.T) {
+	options, runner := updateTestSetup(t)
+	manifestPath := filepath.Join(options.candidateDir, "manifest.json")
+	contents, err := os.ReadFile(manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	contents = []byte(strings.ReplaceAll(string(contents), "test-goapi-1.3.0", "test-goapi-1.2.1"))
+	if err := os.WriteFile(manifestPath, contents, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	rewriteTestChecksums(t, options.candidateDir)
+	options.backupConfirmed = false
+	options.nonInteractive = true
+	options.confirmBackup = func() (bool, error) {
+		t.Fatal("GOAPI가 같은 update에서 백업을 질문했습니다")
+		return false, nil
+	}
+
+	if err := runUpdate(options, runner, func(string) error { return nil }, false); err != nil {
+		t.Fatal(err)
+	}
+	assertCurrentTarget(t, options.currentLink, options.candidateDir)
+	if strings.Contains(strings.Join(*runner.calls, "\n"), " install") {
+		t.Fatal("GOAPI가 같은 update에서 migration을 실행했습니다")
+	}
+}
+
+// GOAPI가 바뀌는 비대화형 update는 실제 백업 확인을 계속 요구한다.
+func TestRunUpdateRequiresBackupForBackendChange(t *testing.T) {
+	options, runner := updateTestSetup(t)
+	options.backupConfirmed = false
+	options.nonInteractive = true
+	err := runUpdate(options, runner, func(string) error { return nil }, false)
+	if err == nil || !strings.Contains(err.Error(), "--backup-confirmed") {
+		t.Fatalf("백업 없는 백엔드 update 결과 = %v", err)
+	}
+	if strings.Contains(strings.Join(*runner.calls, "\n"), " install") {
+		t.Fatal("백업 확인 전에 migration을 실행했습니다")
+	}
+}
+
 // 같은 버전이나 낮은 버전은 update 경로로 전환하지 않는다.
 func TestRequireNewerRelease(t *testing.T) {
 	for _, candidate := range []string{"1.2.1", "1.2.0", "1.1.9"} {

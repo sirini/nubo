@@ -46,12 +46,15 @@ var helpPages = map[string]helpPage{
 	},
 	"update": {
 		title: "NUBO 업데이트",
-		body: `새 공식 버전을 내려받아 검증한 뒤 DB와 실행 버전을 안전하게 전환합니다.
-NUBO 프로젝트 폴더에서 실행하며, 실제 업데이트 전에는 외부 백업이 필요합니다.
+		body: `NUBO 프로젝트를 fast-forward로 갱신하고 새 공식 버전을 안전하게 전환합니다.
+커스텀 스킨을 사용 중이면 새 버전용 Web을 먼저 빌드하고 update 뒤 자동 적용합니다.
+GOAPI 출처가 바뀌어 DB 준비가 필요할 때만 외부 백업을 확인합니다.
 
 사용법:
   nuboctl update --dry-run   바꿀 내용을 먼저 확인
-  nuboctl update             업데이트 실행`,
+  nuboctl update             소스 갱신·업데이트·커스텀 Web 적용
+  nuboctl update --no-pull   현재 checkout 그대로 사용
+  nuboctl update --no-customize  이번에만 커스텀 Web 적용 생략`,
 	},
 	"customize": {
 		title: "사이트 꾸미기 적용",
