@@ -2,7 +2,7 @@
   "type": "board",
   "key": "nubo-basic-board",
   "name": "기본 게시판 및 갤러리 스킨",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "sirini",
   "website": "https://nubohub.org",
   "description": "기본적인 게시판 및 갤러리에서 사용 가능한 스킨입니다",

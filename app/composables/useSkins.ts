@@ -24,6 +24,7 @@ const manifestSchema = z.object({
   website: z.string().url(),
   description: z.string().min(1),
   preview: z.string().min(1),
+  screenshots: z.array(z.string().min(1)).max(9).optional(),
   features: z.array(z.string()),
   min_nubo_version: z.string().regex(/^\d+\.\d+\.\d+$/),
 })

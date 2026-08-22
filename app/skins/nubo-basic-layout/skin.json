@@ -1,7 +1,7 @@
 {
   "key": "nubo-basic-layout",
   "name": "기본 레이아웃 스킨",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "sirini",
   "website": "https://nubohub.org",
   "description": "상단 좌측 메뉴, 우측 전체 검색을 제공하는 기본적인 레이아웃입니다",

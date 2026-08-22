@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO v1.2.22와 nuboctl 0.13.0 게시·운영 반영을 완료하고 다음 스킨 미리보기 범위를 정한다.
+- 대표 이미지와 선택 스크린샷을 포함하는 스킨 미리보기 계약·화면을 Market에 배포하고 기본 스킨 0.1.2를 게시한다.
 
 ## Product boundary
 
@@ -35,6 +35,8 @@
 
 ## Recent completion
 
+- 스킨 manifest에 필수 대표 이미지와 선택 `screenshots` 최대 9장 계약을 추가하고, 기본 스킨 9개의 실제 1280×720 대표 이미지와 관리 스킨 추가 화면 2장을 준비했다.
+- Market 목록·상세에 대표 이미지를 배치하고, 추가 이미지가 있을 때만 3열 그리드와 클릭 확대·재클릭 닫기 오버레이를 표시하도록 구현했다.
 - NUBO v1.2.22와 nuboctl 0.13.0을 공식 게시하고 nubohub.org를 같은 GOAPI의 무중단 데이터 경계로 업데이트했다.
 - 빈 게시판 그룹의 하위 메뉴에 클릭 불가 `(비어 있음)`을 표시하고, 게시판 그룹·신고 분류 사이드바 버튼의 light/dark 기본 글자 대비를 복구했다.
 - 관리 스킨 화면을 공식 Market 탐색, CLI 검색·상세·설치·삭제, customize 적용과 설치/적용 상태 차이를 설명하는 사용자 여정으로 개편했다.
@@ -72,6 +74,8 @@
 
 ## Verification
 
+- 기본 스킨 0.1.2 9개를 임시 MySQL Market에 게시해 대표·추가 이미지 API와 패키지 원본 다운로드를 확인했다. Market Go test/race/vet, MySQL 통합 smoke, Ubuntu 22.04 공식 빌드를 통과했다.
+- Market 목록·관리 스킨 상세·스크린샷 오버레이를 Chromium 데스크톱 dark에서 확인했으며, 이미지 로드와 레이아웃이 정상이다. NUBO test 32건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다.
 - v1.2.22 run `32577075329`: 통합 build 2분 46초, Ubuntu 22.04/24.04 fresh-install 18초/21초와 게시를 통과했다. 공개 asset SHA-256은 `4199dcab84d7930c94e7ef4e635f6b2a804a7cb46c26f6a7caa2c53c62434c22`다.
 - nubohub.org를 1.2.21에서 1.2.22로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, NUBO·GOAPI·Nginx·nubohub-market active와 nuboctl 0.13.0 help를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
 - 운영 홈 light/dark에서 빈 `boards` 그룹의 `(비어 있음)`과 MARKET 버튼, 브라우저 오류 없음, 가로 넘침 없음을 확인했다. 관리 그룹·신고 사이드바는 같은 빌드의 mock API light/dark 화면에서 선택·비선택 글자 대비를 확인했다.
@@ -104,4 +108,4 @@
 
 ## Next action
 
-- 다음 범위는 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.
+- Market 바이너리를 운영 반영한 뒤 기본 스킨 0.1.2를 게시하고 light/dark·desktop/mobile 최종 검수를 진행한다. 이후 계정·소유권이 필요한 제작자 게시 흐름을 검토하며 결제·커미션은 계속 보류한다.

@@ -335,6 +335,7 @@ export type AdminSkinInfo = {
   website: string
   description: string
   preview: string
+  screenshots?: string[]
   features: string[]
   min_nubo_version: string
 }
