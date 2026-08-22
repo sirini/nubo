@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 한글·반응형 최종 검수와 CLI 출력 QA를 마친 nuboctl 0.12.1을 NUBO v1.2.21로 공식 게시한다.
+- 다음 bounded scope로 checksum 기반의 안전한 `nuboctl market remove`를 설계·구현한다.
 
 ## Product boundary
 
@@ -34,6 +34,7 @@
 
 ## Recent completion
 
+- NUBO v1.2.21과 nuboctl 0.12.1을 공식 게시했다. 새 CLI는 한글 표시 폭 정렬과 80열 말줄임을 포함한다.
 - Noto Sans CJK KR이 적용된 운영 Market·nuboctl을 데스크톱 dark·모바일 light로 최종 검수하고, 모바일 명령 비교표를 화면 안에서 모두 보이도록 조정해 Market `5cefc76`으로 게시·운영 반영했다.
 - `nuboctl market search`의 한글 이름 열을 실제 터미널 표시 폭으로 정렬하고 긴 이름을 80열 안에서 말줄임하도록 보정했다.
 - Market 카드·비교표·워크플로·사이트 운영 영역의 작은 영문 텍스트를 15–16px로 맞추고 제작자 앞 `by`, 삭제 안내 블록과 헤드라인 마침표를 제거했다.
@@ -66,6 +67,7 @@
 
 ## Verification
 
+- v1.2.21 run `32574750405`: 통합 build 2분 37초, Ubuntu 22.04/24.04 fresh-install 18초/10초와 게시를 통과했다. 공개 asset SHA-256 `0c0190ab33c3c6c2d21b745dd307fdb4b49bfd9cbb9309f3edcb4564fdadfad8`, clean NUBO/nuboctl `7bc009d`, GOAPI `85186af`, nuboctl 0.12.1을 확인했다.
 - 운영 Market 데스크톱 dark·모바일 light와 nuboctl 데스크톱 dark·모바일 light에서 Noto Sans CJK KR 한글 글리프, HTTP 200, 브라우저 오류 없음과 페이지 가로 넘침 없음을 확인했다. 모바일 비교표 조정 뒤 표와 컨테이너 폭은 360px로 일치했다.
 - Market `29ed6a9`/`5cefc76` run `32574484922`/`32574622281`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 최종 운영 바이너리 SHA-256은 `2984cb4e2933786030c94d240e9991a9b700c1e111d5c779b3fe01a8dc7bf09f`이며 asset `20260822-4`, 내부·외부 readiness와 systemd active를 확인했다.
 - nuboctl 한글 표시 폭 단위 테스트와 전체 Go test/vet, 실제 운영 Market search/info를 통과했다.
@@ -90,5 +92,7 @@
 
 ## Next action
 
-- NUBO v1.2.21의 전체 릴리스 게이트와 공식 게시를 마친다.
-- 그 뒤 스킨 미리보기 자산, checksum 기반 안전한 `market remove`, 제작자 게시 흐름 중 다음 범위를 제품 소유자와 정한다. 결제·커미션은 계속 보류한다.
+- `market install`이 설치 영수증에 package identity와 파일별 checksum을 기록하게 한다.
+- `market remove`는 영수증이 있고 모든 파일이 일치하며 예상 밖 파일이 없을 때만 삭제한다. 변경·추가·누락 파일이나 영수증 없는 폴더는 경로별 이유를 보여주고 거부하며, 첫 버전에는 `--force`를 넣지 않는다.
+- 삭제 전 dry-run 성격의 영향 요약과 삭제 뒤 `nuboctl customize` 안내를 제공한다. 기존 기본 스킨과 수동 설치 폴더는 삭제 대상으로 소급 등록하지 않는다.
+- 이후 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.
