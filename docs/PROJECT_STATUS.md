@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 제품 소유자가 nubohub.org Market 카탈로그와 v1.2.20의 `nuboctl market` 검색·정보·설치 흐름을 QA한다.
+- 제품 소유자가 npm 탐색 흐름으로 개편한 nubohub.org Market과 nuboctl 안내 페이지를 QA한다.
 
 ## Product boundary
 
@@ -33,6 +33,8 @@
 
 ## Recent completion
 
+- Market을 NUBO식 sticky blur 상단바, npm 오마주 검색 히어로, 터미널 명령 강조, 제작자 카드, 12개 페이징과 랜딩 CTA 구조로 개편하고 별도 `/market/nuboctl` 안내 페이지를 배치했다.
+- 기본 스킨 9개의 immutable 0.1.1을 게시하고 태그를 `다크 모드`, `라이트 모드`, `반응형 그리드`로 통일했다.
 - NUBO v1.2.20과 nuboctl 0.12.0을 게시하고 nubohub.org를 같은 GOAPI의 무중단 데이터 경계로 업데이트했다.
 - `nuboctl market search/info/install`을 공식 명령으로 정하고 기존 `skin` 명령은 호환 별칭으로 유지했다.
 - Market·nuboctl의 긴 파일과 함수를 조회·다운로드·압축 검사·명령 dispatch·route·게시 경계로 분리하고 보안 판단에 한글 주석을 보강했다.
@@ -48,6 +50,7 @@
 
 ## Open findings
 
+- `nuboctl market`은 아직 자동 remove를 제공하지 않는다. 설치 시 기록한 manifest/checksum으로 사용자 수정 여부를 판별한 뒤 안전하게 삭제하는 상태 모델이 필요하다.
 - Market MVP는 유료 권한·구매 취소·서명된 단기 URL을 제공하지 않는다. 판매 모델을 정할 때 계정 인증과 entitlement 경계를 별도 설계해야 한다.
 - Market 백업은 `nubohub_market` DB와 패키지 저장 디렉터리를 같은 시점의 세트로 보존해야 한다.
 - update는 데이터 백업·복원을 수행하지 않으며 GOAPI 변경 릴리스는 외부 백업을 전제로 한다.
@@ -56,6 +59,8 @@
 
 ## Verification
 
+- Market `b5a26c3` run `32570563315`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 데스크톱 dark·모바일 light 실브라우저 캡처를 확인했고, 운영 목록 9개·공통 태그 검색 9개·nuboctl 페이지·CSP와 NUBO/GOAPI/Market/Nginx active를 확인했다.
+- 새 운영 Market 바이너리 SHA-256은 `899e38f09be4b77b5bfc57856c4f6e46b105c2b8c363399038c3677c4fa49d83`이며 이전 바이너리는 `/var/backups/nubohub-market/discovery-b5a26c3`에 보존했다.
 - v1.2.20 run `32568166081`: 통합 build 2분 30초, Ubuntu 22.04/24.04 fresh-install 19초/23초와 게시를 통과했다. 공개 asset SHA-256 `043bc65cf9cf9c2fad09517d6422cb49609e6bc1af25204c5b6c61f5a47aba2b`, clean NUBO/nuboctl `85a1130`, GOAPI `85186af`, nuboctl 0.12.0을 확인했다.
 - nubohub.org를 1.2.19에서 1.2.20으로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, `market search/info`, NUBO·GOAPI·Market·Nginx active를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
 - Market `53f3e50` run `32568424692`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `4969f5187831a18bc01bb8b89cf8d729701ae9e4c7d8efb6cd0633d551581cff`이며 이전 바이너리는 `/var/backups/nubohub-market/market-cli-53f3e50`에 보존했다.
@@ -71,4 +76,4 @@
 
 ## Next action
 
-- 제품 소유자가 `https://nubohub.org/market/`의 9개 기본 스킨과 실제 PC의 `nuboctl market search/info/install`을 확인한다. 다음 범위는 피드백 뒤 미리보기 이미지·카테고리·게시자 흐름 중 하나로 작게 정하며 결제·커미션은 계속 보류한다.
+- 제품 소유자가 `https://nubohub.org/market/`과 `/market/nuboctl`의 데스크톱·모바일 흐름을 확인한다. 다음 범위는 피드백 뒤 스킨 미리보기 자산 또는 checksum 기반 안전한 `market remove` 중 하나로 정하며 결제·커미션은 계속 보류한다.
