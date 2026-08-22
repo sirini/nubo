@@ -36,8 +36,7 @@
                   target="_blank"
                   class="flex items-center justify-between group px-2 py-1.5 rounded-md hover:bg-primary/5 transition-colors"
                 >
-                  <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-primary animate-pulse" ></div>
+                  <div class="flex items-center">
                     <span
                       class="text-xs font-mono text-muted-foreground group-hover:text-primary transition-colors"
                     >

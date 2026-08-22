@@ -27,7 +27,7 @@
             <h2 id="market-guide-title" class="mt-2 text-2xl font-bold tracking-tight">
               커뮤니티에 어울리는 스킨을 찾아보세요
             </h2>
-            <p class="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
+            <p class="mt-2 max-w-3xl text-base leading-7 text-muted-foreground">
               공식 Market에서 스킨을 구경하고, <CommonVCode>nuboctl market</CommonVCode>으로
               내려받은 뒤 검증·빌드해 안전하게 적용할 수 있습니다. Market 설치는 실행 중인 사이트를
               바로 바꾸지 않습니다.
@@ -44,9 +44,9 @@
         </div>
         <div class="grid border-t bg-muted/25 sm:grid-cols-2 xl:grid-cols-4">
           <div v-for="step in marketSteps" :key="step.command" class="border-b p-4 last:border-b-0 sm:border-r sm:[&:nth-child(2n)]:border-r-0 xl:border-b-0 xl:[&:nth-child(2n)]:border-r xl:last:border-r-0">
-            <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{{ step.label }}</p>
+            <p class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{{ step.label }}</p>
             <CommonVCode class="mt-2 inline-block">{{ step.command }}</CommonVCode>
-            <p class="mt-2 text-xs leading-5 text-muted-foreground">{{ step.description }}</p>
+            <p class="mt-2 text-sm leading-6 text-muted-foreground">{{ step.description }}</p>
           </div>
         </div>
       </section>
@@ -83,7 +83,7 @@
       </h2>
 
       <CommonVCollapsible title="스킨은 어디서 받을 수 있나요?">
-        <a class="font-semibold text-primary underline underline-offset-4" href="https://nubohub.org/market/" target="_blank" rel="noopener noreferrer">NUBO Market</a>에서
+        <a class="font-semibold text-primary" href="https://nubohub.org/market/" target="_blank" rel="noopener noreferrer">NUBO Market</a>에서
         공개된 스킨을 이름·key·기능으로 구경할 수 있습니다. 상세 페이지에서 제작자, 지원 NUBO 버전과
         설치 명령을 확인하세요. 터미널에서는 <CommonVCode>nuboctl market search</CommonVCode>로 찾고
         <CommonVCode>nuboctl market info &lt;스킨-key&gt;</CommonVCode>로 같은 정보를 확인할 수 있습니다.

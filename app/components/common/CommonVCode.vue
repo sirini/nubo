@@ -1,3 +1,3 @@
 <template>
-  <Badge variant="outline" class="text-primary px-1.5"><slot ></slot></Badge>
+  <Badge variant="outline" class="px-1.5 text-sm text-primary"><slot ></slot></Badge>
 </template>
