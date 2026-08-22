@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.12.1"
+const version = "0.13.0"
 
 type options struct {
 	releaseDir  string
@@ -30,7 +30,7 @@ func run(args []string) int {
 		printHelp("")
 		return 0
 	}
-	if args[0] != "help" && len(args) > 1 && requestsHelp(args[1:]) {
+	if args[0] != "help" && args[0] != "market" && args[0] != "skin" && len(args) > 1 && requestsHelp(args[1:]) {
 		if printHelp(args[0]) {
 			return 0
 		}

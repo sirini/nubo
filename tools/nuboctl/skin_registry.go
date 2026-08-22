@@ -44,12 +44,15 @@ type registryList struct {
 type registryError struct {
 	Error string `json:"error"`
 }
-type skinRegistryOptions struct{ action, key, query, version, registry, source string }
+type skinRegistryOptions struct {
+	action, key, query, version, registry, source string
+	dryRun                                        bool
+}
 
 // 공개 명령은 key 뒤에 옵션을 쓰는 자연스러운 순서와 일반적인 옵션 우선 순서를 모두 허용한다.
 func parseSkinRegistryOptions(args []string) (skinRegistryOptions, error) {
 	if len(args) == 0 {
-		return skinRegistryOptions{}, fmt.Errorf("사용법: nuboctl market <search|info|install> [인자]")
+		return skinRegistryOptions{}, fmt.Errorf("사용법: nuboctl market <search|info|install|remove> [인자]")
 	}
 	options := skinRegistryOptions{action: args[0], registry: strings.TrimRight(os.Getenv("NUBO_MARKET_URL"), "/")}
 	if options.registry == "" {
@@ -62,7 +65,7 @@ func parseSkinRegistryOptions(args []string) (skinRegistryOptions, error) {
 	if err := validateSkinArguments(&options, positional); err != nil {
 		return skinRegistryOptions{}, err
 	}
-	if !validHTTPURL(options.registry) {
+	if options.action != "remove" && !validHTTPURL(options.registry) {
 		return skinRegistryOptions{}, fmt.Errorf("올바르지 않은 Registry URL입니다")
 	}
 	return options, nil
@@ -74,6 +77,7 @@ func parseSkinFlags(args []string, options *skinRegistryOptions) ([]string, erro
 	flags.StringVar(&options.registry, "registry", options.registry, "Skin Registry 기본 URL")
 	flags.StringVar(&options.source, "source", "", "NUBO 소스 checkout 경로")
 	flags.StringVar(&options.version, "version", "", "설치할 정확한 스킨 버전")
+	flags.BoolVar(&options.dryRun, "dry-run", false, "삭제할 파일을 검사하고 실제 삭제는 생략")
 	leading := ""
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		leading, args = args[0], args[1:]
@@ -98,19 +102,22 @@ func validateSkinArguments(options *skinRegistryOptions, positional []string) er
 		if len(positional) == 1 {
 			options.query = positional[0]
 		}
-	case "info", "install":
+	case "info", "install", "remove":
 		if len(positional) != 1 {
-			return fmt.Errorf("skin %s에는 스킨 key 하나가 필요합니다", options.action)
+			return fmt.Errorf("market %s에는 스킨 key 하나가 필요합니다", options.action)
 		}
 		options.key = positional[0]
 		if !skinKeyPattern.MatchString(options.key) {
 			return fmt.Errorf("올바르지 않은 스킨 key입니다: %s", options.key)
 		}
 	default:
-		return fmt.Errorf("지원하지 않는 skin 명령입니다: %s", options.action)
+		return fmt.Errorf("지원하지 않는 market 명령입니다: %s", options.action)
 	}
 	if options.action != "install" && options.version != "" {
-		return fmt.Errorf("--version은 skin install에서만 사용할 수 있습니다")
+		return fmt.Errorf("--version은 market install에서만 사용할 수 있습니다")
+	}
+	if options.action != "remove" && options.dryRun {
+		return fmt.Errorf("--dry-run은 market remove에서만 사용할 수 있습니다")
 	}
 	return nil
 }
@@ -128,6 +135,8 @@ func runSkinRegistry(args []string) error {
 		return showSkin(context.Background(), client, options, os.Stdout)
 	case "install":
 		return installSkin(context.Background(), client, options, os.Stdout)
+	case "remove":
+		return removeSkin(options, os.Stdout)
 	}
 	return nil
 }

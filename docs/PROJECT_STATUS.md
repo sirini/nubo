@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 다음 bounded scope로 checksum 기반의 안전한 `nuboctl market remove`를 설계·구현한다.
+- 관리 스킨 화면과 기본 홈에서 Market 발견→설치→적용→삭제 여정을 안내하고, 안전한 `nuboctl market remove`와 명령별 help를 다음 NUBO 릴리스 후보로 검증한다.
 
 ## Product boundary
 
@@ -29,11 +29,15 @@
 - 한 번 성공한 customize는 자동 적용 상태를 기록하고 이후 update에서 새 버전용 Web을 사전 빌드·재적용한다.
 - NUBO Market은 비공개 `sirini/nubohub-market` 저장소의 독립 Go Fiber 서비스로 두고, 운영 서버는 MySQL 메타데이터·패키지 파일·API 제공만 담당한다.
 - 스킨 패키지는 단일 `<key>/` tar.gz, immutable key/version, Registry SHA-256을 계약으로 삼는다. `nuboctl market install`은 로컬 소스에만 설치하고 기존 `customize`가 빌드·적용한다.
+- Market 설치는 package identity와 파일별 SHA-256 영수증을 남긴다. `market remove`는 영수증과 설치 파일이 모두 일치할 때만 삭제하며 `--force`는 제공하지 않는다.
 - 결제·계정·커미션·리뷰·서드파티 게시 권한은 MVP 뒤로 미루고, 현재 게시 API는 긴 운영자 토큰 하나로 보호한다.
 - Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
 
 ## Recent completion
 
+- 관리 스킨 화면을 공식 Market 탐색, CLI 검색·상세·설치·삭제, customize 적용과 설치/적용 상태 차이를 설명하는 사용자 여정으로 개편했다.
+- `nuboctl market help [search|info|install|remove]`와 checksum 영수증 기반의 `market remove [--dry-run]`을 추가하고 nuboctl 버전을 0.13.0으로 올렸다.
+- 기본 홈의 `빌더들의 이야기` 바로가기에 GOAPI와 SENSTA 사이 MARKET 버튼을 추가해 공식 `/market/`으로 연결했다.
 - NUBO v1.2.21과 nuboctl 0.12.1을 공식 게시했다. 새 CLI는 한글 표시 폭 정렬과 80열 말줄임을 포함한다.
 - Noto Sans CJK KR이 적용된 운영 Market·nuboctl을 데스크톱 dark·모바일 light로 최종 검수하고, 모바일 명령 비교표를 화면 안에서 모두 보이도록 조정해 Market `5cefc76`으로 게시·운영 반영했다.
 - `nuboctl market search`의 한글 이름 열을 실제 터미널 표시 폭으로 정렬하고 긴 이름을 80열 안에서 말줄임하도록 보정했다.
@@ -58,7 +62,6 @@
 
 ## Open findings
 
-- `nuboctl market`은 아직 자동 remove를 제공하지 않는다. 설치 시 기록한 manifest/checksum으로 사용자 수정 여부를 판별한 뒤 안전하게 삭제하는 상태 모델이 필요하다.
 - Market MVP는 유료 권한·구매 취소·서명된 단기 URL을 제공하지 않는다. 판매 모델을 정할 때 계정 인증과 entitlement 경계를 별도 설계해야 한다.
 - Market 백업은 `nubohub_market` DB와 패키지 저장 디렉터리를 같은 시점의 세트로 보존해야 한다.
 - update는 데이터 백업·복원을 수행하지 않으며 GOAPI 변경 릴리스는 외부 백업을 전제로 한다.
@@ -67,6 +70,9 @@
 
 ## Verification
 
+- NUBO test 32건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. nuboctl 전체 test/race/vet와 운영 Market의 install→receipt→remove dry-run→remove 통합 smoke를 통과했다.
+- 홈과 관리 스킨 화면을 Chromium 1440px/390px light/dark에서 확인했다. MARKET 순서·모바일 줄바꿈·공식 링크·관리 안내와 한글 렌더링이 정상이며 페이지 가로 넘침이 없다.
+- remove는 변경·추가·누락·symlink 파일, 손상되거나 없는 영수증, 패키지의 예약 영수증 포함을 거부하고 원본 폴더를 보존하는 테스트를 통과했다.
 - v1.2.21 run `32574750405`: 통합 build 2분 37초, Ubuntu 22.04/24.04 fresh-install 18초/10초와 게시를 통과했다. 공개 asset SHA-256 `0c0190ab33c3c6c2d21b745dd307fdb4b49bfd9cbb9309f3edcb4564fdadfad8`, clean NUBO/nuboctl `7bc009d`, GOAPI `85186af`, nuboctl 0.12.1을 확인했다.
 - 운영 Market 데스크톱 dark·모바일 light와 nuboctl 데스크톱 dark·모바일 light에서 Noto Sans CJK KR 한글 글리프, HTTP 200, 브라우저 오류 없음과 페이지 가로 넘침 없음을 확인했다. 모바일 비교표 조정 뒤 표와 컨테이너 폭은 360px로 일치했다.
 - Market `29ed6a9`/`5cefc76` run `32574484922`/`32574622281`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 최종 운영 바이너리 SHA-256은 `2984cb4e2933786030c94d240e9991a9b700c1e111d5c779b3fe01a8dc7bf09f`이며 asset `20260822-4`, 내부·외부 readiness와 systemd active를 확인했다.
@@ -92,7 +98,5 @@
 
 ## Next action
 
-- `market install`이 설치 영수증에 package identity와 파일별 checksum을 기록하게 한다.
-- `market remove`는 영수증이 있고 모든 파일이 일치하며 예상 밖 파일이 없을 때만 삭제한다. 변경·추가·누락 파일이나 영수증 없는 폴더는 경로별 이유를 보여주고 거부하며, 첫 버전에는 `--force`를 넣지 않는다.
-- 삭제 전 dry-run 성격의 영향 요약과 삭제 뒤 `nuboctl customize` 안내를 제공한다. 기존 기본 스킨과 수동 설치 폴더는 삭제 대상으로 소급 등록하지 않는다.
-- 이후 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.
+- 제품 소유자가 관리 스킨 안내와 `nuboctl market help/remove` 출력을 최종 QA한 뒤 다음 NUBO 버전으로 공식 게시한다.
+- 이후 범위는 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.

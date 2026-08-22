@@ -26,6 +26,13 @@ func TestParseSkinRegistryOptions(t *testing.T) {
 	if _, err = parseSkinRegistryOptions([]string{"install", "../escape"}); err == nil {
 		t.Fatal("unsafe key was accepted")
 	}
+	remove, err := parseSkinRegistryOptions([]string{"remove", "nubo-gallery", "--dry-run", "--source", "/tmp/source"})
+	if err != nil || remove.key != "nubo-gallery" || !remove.dryRun {
+		t.Fatalf("unexpected remove options: %+v / %v", remove, err)
+	}
+	if _, err = parseSkinRegistryOptions([]string{"search", "--dry-run"}); err == nil {
+		t.Fatal("search accepted --dry-run")
+	}
 }
 
 func TestSearchSkins(t *testing.T) {
@@ -106,8 +113,105 @@ func TestInstallSkinVerifiesAndExtractsPackage(t *testing.T) {
 	if !strings.Contains(string(contents), "gallery") || !strings.Contains(output.String(), "INSTALL COMPLETE") || !strings.Contains(output.String(), "nuboctl customize") {
 		t.Fatalf("unexpected installation: %s / %s", contents, output.String())
 	}
+	receipt, err := readSkinReceipt(filepath.Join(root, "app", "skins", "nubo-gallery"), "nubo-gallery")
+	if err != nil || receipt.Version != "1.0.0" || len(receipt.Files) != 2 {
+		t.Fatalf("unexpected install receipt: %+v / %v", receipt, err)
+	}
 	if err = installSkin(t.Context(), server.Client(), skinRegistryOptions{action: "install", registry: server.URL, key: "nubo-gallery", source: root}, &output); err == nil || !strings.Contains(err.Error(), "이미 설치") {
 		t.Fatalf("expected overwrite refusal, got %v", err)
+	}
+}
+
+func TestRemoveSkinPreviewsAndDeletesUnchangedInstall(t *testing.T) {
+	root, destination := skinTestReceipt(t)
+	var output bytes.Buffer
+	options := skinRegistryOptions{action: "remove", key: "nubo-gallery", source: root, dryRun: true}
+	if err := removeSkin(options, &output); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(destination); err != nil || !strings.Contains(output.String(), "REMOVE PREVIEW") {
+		t.Fatalf("dry-run changed skin or omitted preview: %v / %s", err, output.String())
+	}
+	output.Reset()
+	options.dryRun = false
+	if err := removeSkin(options, &output); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(destination); !os.IsNotExist(err) || !strings.Contains(output.String(), "삭제 완료") || !strings.Contains(output.String(), "nuboctl customize") {
+		t.Fatalf("skin was not removed safely: %v / %s", err, output.String())
+	}
+}
+
+func TestRemoveSkinRejectsChangedAndUntrackedFiles(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		change func(string) error
+		want   string
+	}{
+		{name: "modified", change: func(destination string) error {
+			return os.WriteFile(filepath.Join(destination, "Home.vue"), []byte("changed"), 0644)
+		}, want: "checksum 변경됨"},
+		{name: "added", change: func(destination string) error {
+			return os.WriteFile(filepath.Join(destination, "note.txt"), []byte("keep"), 0644)
+		}, want: "설치 영수증에 없는 파일"},
+		{name: "missing", change: func(destination string) error {
+			return os.Remove(filepath.Join(destination, "Home.vue"))
+		}, want: "파일 누락"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root, destination := skinTestReceipt(t)
+			if err := test.change(destination); err != nil {
+				t.Fatal(err)
+			}
+			err := removeSkin(skinRegistryOptions{key: "nubo-gallery", source: root}, &bytes.Buffer{})
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q refusal, got %v", test.want, err)
+			}
+			if _, statErr := os.Stat(destination); statErr != nil {
+				t.Fatalf("refused skin was changed: %v", statErr)
+			}
+		})
+	}
+}
+
+func TestRemoveSkinRejectsFolderWithoutReceipt(t *testing.T) {
+	root := skinTestSource(t, "1.2.21")
+	destination := filepath.Join(root, "app", "skins", "nubo-gallery")
+	if err := os.Mkdir(destination, 0755); err != nil {
+		t.Fatal(err)
+	}
+	err := removeSkin(skinRegistryOptions{key: "nubo-gallery", source: root}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "설치 영수증이 없어") {
+		t.Fatalf("expected missing receipt refusal, got %v", err)
+	}
+}
+
+func TestRemoveSkinRejectsSymlinkAndDamagedReceipt(t *testing.T) {
+	root, destination := skinTestReceipt(t)
+	if err := os.Remove(filepath.Join(destination, "Home.vue")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(root, "package.json"), filepath.Join(destination, "Home.vue")); err != nil {
+		t.Fatal(err)
+	}
+	err := removeSkin(skinRegistryOptions{key: "nubo-gallery", source: root}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "일반 파일이 아님") {
+		t.Fatalf("expected symlink refusal, got %v", err)
+	}
+	if _, statErr := os.Lstat(destination); statErr != nil {
+		t.Fatalf("refused skin was changed: %v", statErr)
+	}
+
+	root, destination = skinTestReceipt(t)
+	if err := os.WriteFile(filepath.Join(destination, skinReceiptName), []byte("not-json"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	err = removeSkin(skinRegistryOptions{key: "nubo-gallery", source: root}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "영수증이 손상") {
+		t.Fatalf("expected damaged receipt refusal, got %v", err)
+	}
+	if _, statErr := os.Stat(destination); statErr != nil {
+		t.Fatalf("refused skin was changed: %v", statErr)
 	}
 }
 
@@ -154,6 +258,26 @@ func TestExtractSkinPackageRejectsTraversal(t *testing.T) {
 	}
 }
 
+func TestExtractSkinPackageRejectsReservedReceipt(t *testing.T) {
+	directory := t.TempDir()
+	filename := filepath.Join(directory, "bad.tar.gz")
+	archive := skinTestArchive(t, map[string]string{
+		"nubo-test/skin.json":         `{"key":"nubo-test","version":"1.0.0"}`,
+		"nubo-test/.nubo-market.json": `{}`,
+	})
+	if err := os.WriteFile(filename, archive, 0644); err != nil {
+		t.Fatal(err)
+	}
+	skins := filepath.Join(directory, "skins")
+	if err := os.Mkdir(skins, 0755); err != nil {
+		t.Fatal(err)
+	}
+	err := extractSkinPackage(filename, skins, registrySkin{Key: "nubo-test", Version: "1.0.0"})
+	if err == nil || !strings.Contains(err.Error(), "예약 파일") {
+		t.Fatalf("expected reserved receipt refusal, got %v", err)
+	}
+}
+
 func skinTestSource(t *testing.T, version string) string {
 	t.Helper()
 	root := t.TempDir()
@@ -170,6 +294,32 @@ func skinTestSource(t *testing.T, version string) string {
 		t.Fatal(err)
 	}
 	return root
+}
+
+func skinTestReceipt(t *testing.T) (string, string) {
+	t.Helper()
+	root := skinTestSource(t, "1.2.21")
+	destination := filepath.Join(root, "app", "skins", "nubo-gallery")
+	if err := os.Mkdir(destination, 0755); err != nil {
+		t.Fatal(err)
+	}
+	files := []skinReceiptFile{}
+	for name, body := range map[string]string{"skin.json": `{"key":"nubo-gallery"}`, "Home.vue": "<template />"} {
+		filename := filepath.Join(destination, name)
+		if err := os.WriteFile(filename, []byte(body), 0644); err != nil {
+			t.Fatal(err)
+		}
+		checksum, err := fileSHA256(filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+		files = append(files, skinReceiptFile{Path: name, SHA256: checksum})
+	}
+	item := registrySkin{Key: "nubo-gallery", Version: "1.0.0", SHA256: strings.Repeat("a", 64)}
+	if err := writeSkinReceipt(destination, item, files); err != nil {
+		t.Fatal(err)
+	}
+	return root, destination
 }
 
 func skinTestArchive(t *testing.T, files map[string]string) []byte {

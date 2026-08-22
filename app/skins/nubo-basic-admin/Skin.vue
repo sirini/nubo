@@ -18,6 +18,38 @@
         <p class="font-semibold">사용할 수 없는 스킨 manifest가 있습니다</p>
         <ul class="mt-2 list-disc space-y-1 pl-5 text-muted-foreground"><li v-for="issue in manifestIssues" :key="issue">{{ issue }}</li></ul>
       </div>
+      <section class="overflow-hidden rounded-xl border bg-card" aria-labelledby="market-guide-title">
+        <div class="grid gap-6 p-5 lg:grid-cols-[1fr_auto] lg:items-center sm:p-6">
+          <div>
+            <div class="flex items-center gap-2 text-sm font-semibold text-primary">
+              <StoreIcon class="h-4 w-4" /> NUBO Market
+            </div>
+            <h2 id="market-guide-title" class="mt-2 text-2xl font-bold tracking-tight">
+              커뮤니티에 어울리는 스킨을 찾아보세요
+            </h2>
+            <p class="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
+              공식 Market에서 스킨을 구경하고, <CommonVCode>nuboctl market</CommonVCode>으로
+              내려받은 뒤 검증·빌드해 안전하게 적용할 수 있습니다. Market 설치는 실행 중인 사이트를
+              바로 바꾸지 않습니다.
+            </p>
+          </div>
+          <a
+            href="https://nubohub.org/market/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            스킨 둘러보기 <ExternalLinkIcon class="h-4 w-4" />
+          </a>
+        </div>
+        <div class="grid border-t bg-muted/25 sm:grid-cols-2 xl:grid-cols-4">
+          <div v-for="step in marketSteps" :key="step.command" class="border-b p-4 last:border-b-0 sm:border-r sm:[&:nth-child(2n)]:border-r-0 xl:border-b-0 xl:[&:nth-child(2n)]:border-r xl:last:border-r-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{{ step.label }}</p>
+            <CommonVCode class="mt-2 inline-block">{{ step.command }}</CommonVCode>
+            <p class="mt-2 text-xs leading-5 text-muted-foreground">{{ step.description }}</p>
+          </div>
+        </div>
+      </section>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card
           v-for="item in skinCategories"
@@ -51,43 +83,53 @@
       </h2>
 
       <CommonVCollapsible title="스킨은 어디서 받을 수 있나요?">
-        향후 <a href="https://nubohub.org" target="_blank"><CommonVCode>nubohub.org</CommonVCode></a>에서
-        스킨을 찾고 설치하는 기능을 제공할 예정입니다. 현재는 직접 만든 스킨이나 신뢰할 수 있는 곳에서
-        받은 스킨 폴더를 NUBO 소스의 <CommonVCode>app/skins/</CommonVCode> 아래에 배치합니다. 설치한
-        스킨 가운데 <CommonVCode>skin.json</CommonVCode>의 형식, 폴더 이름, 지원 NUBO 버전 검사를
-        통과한 스킨만 위 선택 목록에 표시됩니다.
+        <a class="font-semibold text-primary underline underline-offset-4" href="https://nubohub.org/market/" target="_blank" rel="noopener noreferrer">NUBO Market</a>에서
+        공개된 스킨을 이름·key·기능으로 구경할 수 있습니다. 상세 페이지에서 제작자, 지원 NUBO 버전과
+        설치 명령을 확인하세요. 터미널에서는 <CommonVCode>nuboctl market search</CommonVCode>로 찾고
+        <CommonVCode>nuboctl market info &lt;스킨-key&gt;</CommonVCode>로 같은 정보를 확인할 수 있습니다.
+        각 명령의 설명은 <CommonVCode>nuboctl market help</CommonVCode>에서 볼 수 있습니다.
       </CommonVCollapsible>
       <Separator />
-      <CommonVCollapsible title="다운로드한 스킨은 어떻게 설치하고 적용하나요?">
-        아래에서는 게시판 스킨 <CommonVCode>nubo-awesome-board</CommonVCode>를 설치한다고
-        가정합니다.
+      <CommonVCollapsible title="Market 스킨은 어떻게 설치하고 적용하나요?">
+        아래에서는 <CommonVCode>nubo-awesome-board</CommonVCode>를 설치한다고 가정합니다. 명령은
+        공식 릴리스 폴더가 아니라 업데이트에 사용하는 <strong>NUBO 소스 폴더(checkout)</strong>에서 실행하세요.
 
         <ul class="list-decimal py-4 pl-8 space-y-1.5 text-sm">
           <li>
-            압축을 푼 스킨 폴더를 서버의
-            <CommonVCode>(NUBO 설치 경로)/app/skins/</CommonVCode> 아래에 업로드합니다. 최종 경로는
-            <CommonVCode>app/skins/nubo-awesome-board/skin.json</CommonVCode> 형태여야 합니다.
+            <CommonVCode>nuboctl market info nubo-awesome-board</CommonVCode>로 제작자, 버전, 요구 NUBO
+            버전과 기능을 확인합니다.
           </li>
           <li>
-            스킨 폴더 이름과 <CommonVCode>skin.json</CommonVCode>의 <CommonVCode>key</CommonVCode>가
-            같은지, 안내된 최소 NUBO 버전을 충족하는지 확인합니다.
+            <CommonVCode>nuboctl market install nubo-awesome-board</CommonVCode>를 실행합니다. nuboctl이
+            Registry checksum, 압축 경로, manifest와 호환 버전을 검증한 뒤
+            <CommonVCode>app/skins/</CommonVCode>에 설치하며 기존 폴더는 덮어쓰지 않습니다.
           </li>
           <li>
-            NUBO 프로젝트 루트에서 <CommonVCode>nuboctl customize</CommonVCode>를 실행합니다.
-            첫 실행에 필요한 의존성 설치, typecheck, production build와 안전한 서비스 전환은 명령이
-            자동으로 수행합니다.
-          </li>
-          <li>
-            readiness 검사가 성공하면 새 스킨 빌드가 즉시 적용됩니다. 실패하면 이전 Web 빌드로
-            자동 복구되므로 systemd를 직접 재시작할 필요가 없습니다.
+            먼저 <CommonVCode>nuboctl customize --dry-run</CommonVCode>으로 typecheck와 production build를
+            확인한 뒤 <CommonVCode>nuboctl customize</CommonVCode>로 Web을 적용합니다.
           </li>
           <li>
             게시판 스킨은 게시판 관리에서 게시판별로 선택합니다. 레이아웃·홈·관리자·로그인·프로필
             등의 스킨은 이 화면에서 선택한 뒤 <strong>적용하기</strong>를 누릅니다.
           </li>
+          <li>
+            더 이상 쓰지 않는 Market 스킨은 먼저 다른 스킨으로 전환한 뒤
+            <CommonVCode>nuboctl market remove &lt;스킨-key&gt; --dry-run</CommonVCode>으로 영향을 확인하고
+            <CommonVCode>nuboctl market remove &lt;스킨-key&gt;</CommonVCode>로 삭제합니다. 설치 뒤 수정되거나
+            파일이 추가된 스킨은 자동 삭제하지 않습니다.
+          </li>
         </ul>
-        목록에 스킨이 나타나지 않으면 이 화면 상단의 manifest 오류 안내를 먼저 확인하세요.
-        공식 릴리스 디렉터리에 파일을 직접 복사하면 checksum과 업데이트 검증이 깨지므로 수정하지 마세요.
+        Market 설치와 삭제는 소스만 바꾸며 실행 중인 사이트에는 <CommonVCode>nuboctl customize</CommonVCode>를
+        다시 실행해야 반영됩니다. 목록에 스킨이 나타나지 않으면 이 화면 상단의 manifest 오류 안내를
+        확인하세요. 공식 릴리스 디렉터리를 직접 수정하면 checksum과 업데이트 검증이 깨집니다.
+      </CommonVCollapsible>
+      <Separator />
+      <CommonVCollapsible title="설치됨, 적용됨, 삭제됨은 무엇이 다른가요?">
+        <strong>설치됨</strong>은 스킨 파일이 소스의 <CommonVCode>app/skins/</CommonVCode>에 있다는 뜻이고,
+        <strong>빌드됨</strong>은 <CommonVCode>nuboctl customize</CommonVCode>가 그 소스로 운영 Web을 만들었다는
+        뜻입니다. <strong>적용됨</strong>은 게시판 관리나 이 화면에서 실제 사용할 스킨으로 선택한 상태입니다.
+        따라서 설치만으로 화면이 바뀌지 않으며, 사용 중인 스킨을 삭제하기 전에는 기본 스킨 등 다른 스킨으로
+        먼저 전환해야 합니다. 삭제 후에도 customize를 실행하기 전까지 현재 운영 Web은 그대로 유지됩니다.
       </CommonVCollapsible>
       <Separator />
       <CommonVCollapsible title="기존 스킨을 복사해서 수정하려면 어떻게 하나요?">
@@ -158,7 +200,9 @@ import {
   LogIn,
   MonitorCog,
   PaintbrushIcon,
+  ExternalLinkIcon,
   ShieldAlert,
+  StoreIcon,
   User,
 } from "lucide-vue-next"
 import { toast } from "vue-sonner"
@@ -170,6 +214,12 @@ defineOptions({ name: "NuboAdminSkin" })
 const config = useRuntimeConfig()
 const { installed, manifestIssues, settings } = useSkins()
 const selected = reactive({ ...settings.value })
+const marketSteps = [
+  { label: "찾기", command: "nuboctl market search", description: "이름·key·설명으로 공개 스킨을 검색합니다." },
+  { label: "확인", command: "nuboctl market info", description: "제작자, 버전, 기능과 호환성을 확인합니다." },
+  { label: "설치", command: "nuboctl market install", description: "검증된 패키지를 소스에 안전하게 설치합니다." },
+  { label: "관리", command: "nuboctl market remove", description: "수정되지 않은 Market 스킨만 안전하게 삭제합니다." },
+]
 const skinsFor = (type: AdminSkinType) => installed.value.filter((skin) => skin.type === type)
 const applySkin = async (type: AdminSkinType) => {
   try {

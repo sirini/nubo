@@ -19,6 +19,10 @@ nuboctl update
 전환과 새 버전용 스킨 재적용까지 처리한다. 기존 `server:update`와 `server:customize` npm script는
 자동화 호환을 위해 남겨 둔다.
 
+`nuboctl market search/info/install/remove`는 공식 Market에서 스킨을 찾고 checksum과 압축 경로를
+검증해 현재 소스 checkout에 설치한다. 설치 영수증과 파일 checksum이 모두 일치하는 스킨만 삭제하며,
+각 작업은 `nuboctl market help`에서 확인할 수 있다. 기존 `skin search/info/install`은 호환 별칭이다.
+
 이 소스를 NUBO 저장소에 두는 이유는 설치기가 `deploy/`의 systemd·Nginx 템플릿, 릴리스 manifest,
 readiness와 update 계약을 NUBO 버전과 함께 변경하고 검증해야 하기 때문이다. GOAPI 저장소에는 HTTP API와
 DB migration 구현만 둔다.

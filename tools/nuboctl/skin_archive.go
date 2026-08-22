@@ -3,6 +3,8 @@ package main
 import (
 	"archive/tar"
 	"compress/gzip"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -23,6 +25,7 @@ type skinArchiveState struct {
 	files         int
 	expandedBytes int64
 	manifestFound bool
+	receiptFiles  []skinReceiptFile
 }
 
 // 모든 파일을 격리 디렉터리에 푼 뒤 manifest까지 확인된 경우에만 최종 폴더로 전환한다.
@@ -49,7 +52,11 @@ func extractSkinPackage(filename, skinsDir string, item registrySkin) error {
 	if !state.manifestFound {
 		return fmt.Errorf("스킨 패키지에 skin.json이 없습니다")
 	}
-	return os.Rename(filepath.Join(temporary, item.Key), filepath.Join(skinsDir, item.Key))
+	installed := filepath.Join(temporary, item.Key)
+	if err := writeSkinReceipt(installed, item, state.receiptFiles); err != nil {
+		return err
+	}
+	return os.Rename(installed, filepath.Join(skinsDir, item.Key))
 }
 
 func extractSkinEntries(reader *tar.Reader, state *skinArchiveState) error {
@@ -112,18 +119,26 @@ func extractSkinFile(reader *tar.Reader, header *tar.Header, target, clean strin
 	if err := os.MkdirAll(filepath.Dir(target), 0755); err != nil {
 		return err
 	}
+	relative := strings.TrimPrefix(clean, state.item.Key+"/")
+	if relative == skinReceiptName {
+		return fmt.Errorf("스킨 패키지는 예약 파일 %s을 포함할 수 없습니다", skinReceiptName)
+	}
 	output, err := os.OpenFile(target, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
-	copied, copyErr := io.Copy(output, io.LimitReader(reader, header.Size))
+	hash := sha256.New()
+	copied, copyErr := io.Copy(io.MultiWriter(output, hash), io.LimitReader(reader, header.Size))
 	closeErr := output.Close()
 	if copyErr != nil || closeErr != nil || copied != header.Size {
 		return fmt.Errorf("스킨 파일을 쓸 수 없습니다")
 	}
 	if clean == state.item.Key+"/skin.json" {
-		return verifyInstalledManifest(target, state)
+		if err := verifyInstalledManifest(target, state); err != nil {
+			return err
+		}
 	}
+	state.receiptFiles = append(state.receiptFiles, skinReceiptFile{Path: relative, SHA256: hex.EncodeToString(hash.Sum(nil))})
 	return nil
 }
 

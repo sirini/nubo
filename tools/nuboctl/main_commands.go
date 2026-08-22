@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"strings"
 )
 
 func runAdoptCommand(args []string) int {
@@ -116,8 +117,34 @@ func runSkinCommand(args []string) int {
 
 func runMarketCommand(args []string) int {
 	if len(args) == 0 {
-		printFailure("사용법: nuboctl market <search|info|install> [인자]")
-		return 2
+		printMarketHelp("")
+		return 0
+	}
+	if args[0] == "help" {
+		if len(args) > 2 {
+			printFailure("사용법: nuboctl market help [명령]")
+			return 2
+		}
+		topic := ""
+		if len(args) == 2 {
+			topic = args[1]
+		}
+		if !printMarketHelp(topic) {
+			printFailure("도움말을 찾을 수 없는 Market 명령입니다: %s", topic)
+			return 2
+		}
+		return 0
+	}
+	if requestsHelp(args) {
+		topic := ""
+		if !strings.HasPrefix(args[0], "-") {
+			topic = args[0]
+		}
+		if !printMarketHelp(topic) {
+			printFailure("도움말을 찾을 수 없는 Market 명령입니다: %s", topic)
+			return 2
+		}
+		return 0
 	}
 	if err := runSkinRegistry(args); err != nil {
 		printFailure("Market 작업 실패: %v", err)

@@ -92,6 +92,27 @@ func writeMarketInstall(output io.Writer, item registrySkin, destination string)
 	writeMarketField(output, "VERSION", paint(output, ansiGreen, item.Version))
 	writeMarketField(output, "LOCATION", destination)
 	writeMarketField(output, "VERIFIED", paint(output, ansiBoldGreen, "SHA-256 checksum"))
+	writeMarketField(output, "TRACKED", "안전한 삭제용 파일 영수증")
+	fmt.Fprintf(output, "\n  %s  %s\n", paint(output, ansiDim, "NEXT"), paint(output, ansiBoldCyan, "nuboctl customize"))
+}
+
+func writeMarketRemovePlan(output io.Writer, removal skinRemoval, dryRun bool) {
+	action := "REMOVE"
+	if dryRun {
+		action = "REMOVE PREVIEW"
+	}
+	writeMarketTitle(output, action, removal.key)
+	writeMarketField(output, "VERSION", removal.version)
+	writeMarketField(output, "LOCATION", removal.destination)
+	writeMarketField(output, "FILES", fmt.Sprintf("%d개", removal.files))
+	writeMarketField(output, "VERIFIED", paint(output, ansiBoldGreen, "설치 뒤 변경 없음"))
+	if dryRun {
+		fmt.Fprintf(output, "\n  %s  실제 파일은 삭제하지 않았습니다\n", paint(output, ansiDim, "DRY RUN"))
+	}
+}
+
+func writeMarketRemoveComplete(output io.Writer, removal skinRemoval) {
+	fmt.Fprintf(output, "\n  %s\n", paint(output, ansiBoldGreen, "✓ 스킨 소스 삭제 완료"))
 	fmt.Fprintf(output, "\n  %s  %s\n", paint(output, ansiDim, "NEXT"), paint(output, ansiBoldCyan, "nuboctl customize"))
 }
 

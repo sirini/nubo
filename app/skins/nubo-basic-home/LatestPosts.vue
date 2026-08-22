@@ -9,7 +9,7 @@
         지금 자신만의 커뮤니티를 만들어가는 빌더들의 이야기를 확인해 보세요
       </p>
 
-      <div class="mt-6 flex items-center gap-2">
+      <div class="mt-6 flex flex-wrap items-center gap-2">
         <CommonVTooltip content="커뮤니티 빌더 NUBO 프로젝트를 GitHub에서 만나보세요">
           <Button
             variant="default"
@@ -31,6 +31,18 @@
           >
             <BinaryIcon class="w-4 h-4" />
             <span>GOAPI</span>
+          </Button>
+        </CommonVTooltip>
+
+        <CommonVTooltip content="NUBO Market에서 커뮤니티에 어울리는 스킨을 찾아보세요">
+          <Button
+            variant="outline"
+            class="cursor-pointer flex items-center gap-1.5"
+            size="lg"
+            @click="move('https://nubohub.org/market/')"
+          >
+            <PaintbrushIcon class="w-4 h-4" />
+            <span>MARKET</span>
           </Button>
         </CommonVTooltip>
 
@@ -56,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { BinaryIcon, CameraIcon, GitBranchIcon } from "lucide-vue-next"
+import { BinaryIcon, CameraIcon, GitBranchIcon, PaintbrushIcon } from "lucide-vue-next"
 import HomeGroupedPostCard from "./components/HomeGroupedPostCard.vue"
 import HomeSearchedPostCard from "./components/HomeSearchedPostCard.vue"
 
