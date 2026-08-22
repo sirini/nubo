@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- `nuboctl update` 한 명령으로 safe fast-forward pull, 공식 update와 등록된 커스텀 Web 재적용을 처리하고 UI-only 릴리스의 반복 백업 질문을 제거한다.
+- v1.2.19의 한 명령 update와 커스텀 Web 자동 재적용을 sensta.me 운영 환경에서 QA한다.
 
 ## Product boundary
 
@@ -30,6 +30,7 @@
 
 ## Recent completion
 
+- v1.2.19에서 safe fast-forward pull, 등록된 커스텀 Web 자동 재적용, GOAPI 동일 시 migration·백업 질문 생략을 게시했다.
 - v1.2.18을 첫 혼합 릴리스 경로로 게시해 로컬 build, hosted fresh-install과 GitHub Release 게시를 최종 확인했다.
 - NUBO v1.2.17과 GOAPI `85186af`를 게시·운영 반영하고 Android Google ID token audience 분리를 실기기에서 확인했다.
 - Android token 회전, FID 푸시, 계정 완전 삭제, 신고와 차단 분리, 공개 이용약관을 NUBO/GOAPI 공통 기능으로 반영했다.
@@ -43,11 +44,11 @@
 
 ## Verification
 
-- v1.2.19 candidate: source pull 단위 테스트 4건, 전체 NUBO 테스트 32건, ESLint 오류 0건(기존 경고 50), typecheck, production build, API contract v1 일치, nuboctl test/race/vet를 통과했다.
+- v1.2.19 run `32561064226`: 로컬 통합 build 2분 36초, hosted Ubuntu 22.04/24.04 fresh-install 25초/18초와 게시를 통과했다. 공개 asset checksum, clean NUBO/nuboctl `73c8a3c`, GOAPI `85186af`, nuboctl 0.11.0, API contract 1을 확인했다.
+- source pull 단위 테스트 4건, 전체 NUBO 테스트 32건, ESLint 오류 0건(기존 경고 50), typecheck, production build, API contract 일치, nuboctl test/race/vet를 통과했다.
 - v1.2.18 run `32559598632`: WSL2 self-hosted build 2분 35초, hosted Ubuntu 22.04/24.04 fresh-install 18초/19초와 게시를 통과했다. 공개 asset의 SHA-256, clean NUBO/nuboctl `1b34bd3`, GOAPI `85186af`, API contract 1을 다시 확인했다.
 - sensta.me update 후 `nuboctl status` 16건과 `doctor` 17건, GOAPI/Web/Nginx, 내부·외부 `/ready`와 `/version`을 확인했다.
 
 ## Next action
 
-- v1.2.19 통합 bundle과 Ubuntu 22.04/24.04 fresh-install을 검증해 게시한다.
-- sensta.me에서 한 명령 update와 커스텀 Web 자동 재적용을 QA한다.
+- sensta.me checkout에서 `nuboctl update` 한 번으로 pull, UI-only 전환, 백업 질문 생략과 sensta-me 커스텀 Web 재적용을 확인한다.
