@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 검증할 릴리스 태그 형식(vX.Y.Z, 게시하지 않음)
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -18,7 +24,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Check out NUBO
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Read release sources
         id: sources
@@ -27,7 +33,7 @@ jobs:
           echo "goapi_commit=$(jq -r .goapi.commit deploy/release-sources.json)" >> "$GITHUB_OUTPUT"
 
       - name: Check out pinned GOAPI
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ steps.sources.outputs.goapi_repository }}
           ref: ${{ steps.sources.outputs.goapi_commit }}
@@ -37,12 +43,14 @@ jobs:
         run: echo "/goapi/" >> .git/info/exclude
 
       - name: Verify release version
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
         run: |
           version=$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' env.sample)
-          test "$GITHUB_REF_NAME" = "v${version}"
+          test "$RELEASE_TAG" = "v${version}"
 
       - name: Set up Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -78,7 +86,7 @@ jobs:
         run: npm run build:release
 
       - name: Upload release candidate
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nubo-linux-amd64
           path: |
@@ -99,15 +107,15 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out NUBO
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
       - name: Download release candidate
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nubo-linux-amd64
           path: dist
@@ -116,13 +124,14 @@ jobs:
         run: bash scripts/fresh-install-smoke.sh dist/nubo-*-linux-amd64.tar.gz
 
   publish:
+    if: github.event_name == 'push'
     needs: fresh-install
     runs-on: ubuntu-22.04
     permissions:
       contents: write
     steps:
       - name: Download verified release candidate
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: nubo-linux-amd64
           path: dist

@@ -27,6 +27,19 @@ gh workflow run verify-release-runner.yml --repo sirini/nubo
 gh run watch --repo sirini/nubo
 ```
 
+새 버전을 태그하기 전에는 게시 workflow를 수동 검증 모드로 실행할 수 있다. 이 모드는 로컬에서 전체
+통합 asset을 만들고 hosted Ubuntu 22.04/24.04 fresh-install까지 수행하지만 GitHub Release는 게시하지
+않는다. 입력 태그는 checkout의 `env.sample` 버전과 일치해야 한다.
+
+```bash
+gh workflow run publish-release.yml \
+  --repo sirini/nubo \
+  --ref main \
+  -f release_tag=v1.2.17
+```
+
+정식 태그 push에서는 같은 게이트를 다시 실행하고 fresh-install이 모두 통과한 경우에만 게시한다.
+
 ## Hosted fallback
 
 로컬 PC를 사용할 수 없을 때는 변수를 hosted runner로 바꾸고 대기 중인 run을 취소한 뒤 다시 실행한다.
