@@ -95,22 +95,23 @@ nuboctl customize
 
 ## NUBO Market 스킨 설치
 
-`nuboctl skin`은 공개 Registry의 스킨을 검색하고 개발자 PC의 NUBO 소스에 설치한다. 다운로드한
+`nuboctl market`은 공개 Registry의 스킨을 검색하고 개발자 PC의 NUBO 소스에 설치한다. 다운로드한
 `.tar.gz`의 Registry SHA-256, manifest key/version, NUBO 최소 버전, 단일 최상위 폴더를 확인하고
 경로 탈출, 링크·특수 파일, 과도한 압축 해제 크기를 거부한다. 같은 key의 기존 폴더는 자동으로
 덮어쓰지 않는다.
 
 ```bash
-nuboctl skin search gallery
-nuboctl skin info nubo-awesome-gallery
-nuboctl skin install nubo-awesome-gallery
-nuboctl skin install nubo-awesome-gallery --version 1.0.0
+nuboctl market search gallery
+nuboctl market info nubo-awesome-gallery
+nuboctl market install nubo-awesome-gallery
+nuboctl market install nubo-awesome-gallery --version 1.0.0
 nuboctl customize --dry-run
 ```
 
 기본 Registry는 `https://nubohub.org/market`이다. 로컬 MVP를 시험할 때만
 `--registry http://127.0.0.1:3009` 또는 `NUBO_MARKET_URL`을 사용한다. 설치는 서버 프로세스를
-변경하거나 빌드하지 않으며, 실제 적용은 기존 `nuboctl customize` 경계를 따른다.
+변경하거나 빌드하지 않으며, 실제 적용은 기존 `nuboctl customize` 경계를 따른다. 기존
+`nuboctl skin search/info/install`은 호환 별칭으로 유지한다.
 
 ## install
 

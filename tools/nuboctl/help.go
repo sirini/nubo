@@ -20,7 +20,7 @@ var helpPages = map[string]helpPage{
   doctor          설치와 설정에서 문제 찾기
   update          새 공식 버전으로 업데이트
   customize       수정한 스킨을 빌드하고 적용
-  skin            NUBO Market 스킨 검색·정보·설치
+  market          NUBO Market 스킨 검색·정보·설치
   activate-nginx  사이트를 HTTP로 공개
 
 명령별 도움말:
@@ -91,19 +91,26 @@ HTTPS 인증서 발급은 포함하지 않으며 출력되는 다음 명령을 �
   npm run server:adopt -- --dry-run
   npm run server:adopt`,
 	},
-	"skin": {
+	"market": {
 		title: "NUBO Market 스킨",
 		body: `NUBO Market에서 스킨을 찾고 현재 소스 checkout의 app/skins에 안전하게 설치합니다.
 checksum과 패키지 경로를 검증하며 기존 스킨을 덮어쓰지 않습니다. 설치 뒤 customize로 빌드·적용합니다.
 
 사용법:
-  nuboctl skin search [검색어]
-  nuboctl skin info <스킨-key>
-  nuboctl skin install <스킨-key>
-  nuboctl skin install <스킨-key> --version 1.0.0
+  nuboctl market search [검색어]
+  nuboctl market info <스킨-key>
+  nuboctl market install <스킨-key>
+  nuboctl market install <스킨-key> --version 1.0.0
   nuboctl customize
 
 다른 Registry를 시험할 때는 --registry URL 또는 NUBO_MARKET_URL을 사용합니다.
+기존 nuboctl skin search/info/install도 호환 별칭으로 유지됩니다.`,
+	},
+	"skin": {
+		title: "스킨 호환 명령",
+		body: `Market 명령의 이전 이름과 customize 내부 적용 명령을 호환성 때문에 유지합니다.
+
+새로운 검색·설치에는 nuboctl market을 사용하세요.
 skin apply는 customize가 준비한 파생 릴리스를 전환하는 내부 명령입니다.`,
 	},
 	"version": {

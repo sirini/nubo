@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestHelpCoversPublicCommands(t *testing.T) {
-	for _, command := range []string{"", "status", "doctor", "update", "customize", "skin", "activate-nginx", "install", "adopt"} {
+	for _, command := range []string{"", "status", "doctor", "update", "customize", "market", "skin", "activate-nginx", "install", "adopt"} {
 		page, ok := helpPages[command]
 		if !ok || page.title == "" || page.body == "" {
 			t.Fatalf("%q 도움말이 비어 있습니다", command)
@@ -17,5 +17,16 @@ func TestHelpCoversPublicCommands(t *testing.T) {
 func TestNoArgumentsShowsHelpSuccessfully(t *testing.T) {
 	if code := run(nil); code != 0 {
 		t.Fatalf("인자 없는 도움말 종료 코드 = %d", code)
+	}
+}
+
+func TestMarketCommandAndSkinAliasAreRouted(t *testing.T) {
+	if code := run([]string{"market"}); code != 2 {
+		t.Fatalf("인자 없는 market 종료 코드 = %d", code)
+	}
+	for _, command := range []string{"market", "skin"} {
+		if code := run([]string{command, "unknown"}); code != 1 {
+			t.Fatalf("%s 호환 경로 종료 코드 = %d", command, code)
+		}
 	}
 }
