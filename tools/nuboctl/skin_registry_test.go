@@ -41,8 +41,24 @@ func TestSearchSkins(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(output.String(), "nubo-gallery") || !strings.Contains(output.String(), "총 1개") {
+	if !strings.Contains(output.String(), "NUBO MARKET · SEARCH · gallery") || !strings.Contains(output.String(), "nubo-gallery") || !strings.Contains(output.String(), "스킨 1개") {
 		t.Fatalf("unexpected output: %s", output.String())
+	}
+}
+
+func TestShowSkinUsesReadableSections(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(response http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(response, `{"key":"nubo-gallery","name":"Gallery","version":"1.0.0","author":"NUBO","description":"gallery skin","features":["다크 모드"],"min_nubo_version":"1.2.0"}`)
+	}))
+	defer server.Close()
+	var output bytes.Buffer
+	if err := showSkin(t.Context(), server.Client(), skinRegistryOptions{registry: server.URL, key: "nubo-gallery"}, &output); err != nil {
+		t.Fatal(err)
+	}
+	for _, expected := range []string{"NUBO MARKET · SKIN", "VERSION", "FEATURES", "DESCRIPTION"} {
+		if !strings.Contains(output.String(), expected) {
+			t.Fatalf("missing %q in output: %s", expected, output.String())
+		}
 	}
 }
 
@@ -71,7 +87,7 @@ func TestInstallSkinVerifiesAndExtractsPackage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(contents), "gallery") || !strings.Contains(output.String(), "nuboctl customize") {
+	if !strings.Contains(string(contents), "gallery") || !strings.Contains(output.String(), "INSTALL COMPLETE") || !strings.Contains(output.String(), "nuboctl customize") {
 		t.Fatalf("unexpected installation: %s / %s", contents, output.String())
 	}
 	if err = installSkin(t.Context(), server.Client(), skinRegistryOptions{action: "install", registry: server.URL, key: "nubo-gallery", source: root}, &output); err == nil || !strings.Contains(err.Error(), "이미 설치") {

@@ -142,13 +142,10 @@ func searchSkins(ctx context.Context, client *http.Client, options skinRegistryO
 		return err
 	}
 	if len(list.Items) == 0 {
-		fmt.Fprintln(output, "검색 결과가 없습니다.")
+		writeMarketEmpty(output, options.query)
 		return nil
 	}
-	for _, item := range list.Items {
-		fmt.Fprintf(output, "%-32s %-10s %s (NUBO >= %s)\n", item.Key, item.Version, item.Name, item.MinNUBOVersion)
-	}
-	fmt.Fprintf(output, "\n총 %d개\n", list.Total)
+	writeMarketSearch(output, list, options.query)
 	return nil
 }
 
@@ -157,7 +154,7 @@ func showSkin(ctx context.Context, client *http.Client, options skinRegistryOpti
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(output, "%s (%s)\nkey: %s\nauthor: %s\nNUBO: %s 이상\ndownloads: %d\n%s\n", item.Name, item.Version, item.Key, item.Author, item.MinNUBOVersion, item.Downloads, item.Description)
+	writeMarketInfo(output, item)
 	return nil
 }
 

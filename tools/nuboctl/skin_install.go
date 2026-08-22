@@ -42,8 +42,7 @@ func installSkin(ctx context.Context, client *http.Client, options skinRegistryO
 	if err := extractSkinPackage(packagePath, skinsDir, item); err != nil {
 		return err
 	}
-	fmt.Fprintf(output, "스킨 설치 완료: %s %s\n", item.Key, item.Version)
-	fmt.Fprintln(output, "사이트에 반영하려면 이 checkout에서 nuboctl customize를 실행하세요.")
+	writeMarketInstall(output, item, filepath.Join(skinsDir, item.Key))
 	return nil
 }
 
