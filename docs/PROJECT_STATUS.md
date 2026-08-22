@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO v1.2.17과 GOAPI `85186af`가 반영된 실서버에서 Sensta Android Google 로그인과 이어지는 업로드·알림 흐름을 실기기로 확인한다.
+- 다음 patch 태그에서 로컬 build-release, hosted fresh-install, GitHub Release 게시까지 새 혼합 릴리스 경로를 최종 확인한다.
 
 ## Current product boundary
 
@@ -15,6 +15,7 @@
 
 - API contract version은 NUBO JSON과 GOAPI embedded text를 각 저장소의 machine-readable source로 두고 릴리스 전에 반드시 일치시킨다.
 - 릴리스 CI는 전체 lint 부채와 분리해 NUBO test/typecheck/build, GOAPI 공식 빌드 환경의 test/vet, contract 일치를 게시 전 필수 게이트로 실행한다.
+- 태그 릴리스의 무거운 build-release는 신뢰하는 WSL2 self-hosted runner에서 실행하고, 일회용 Ubuntu 22.04/24.04 fresh-install과 최종 게이트 게시만 GitHub hosted runner에서 수행한다.
 - 전체 ESLint 오류는 게시 전에 차단하고, 기존 의미 판단 경고 50건을 상한으로 고정해 새 경고가 늘어나지 않게 한다.
 - fresh-install CI는 단계별 진행을 출력하고 외부 명령과 job 전체에 제한 시간을 둬 정지한 runner가 게시를 무기한 막지 않게 한다.
 - optional prop·sanitize된 HTML lint 경고 50건은 현재 동작을 바꿀 필수 사유가 없어 보류하고 새 경고 증가만 막는다.
@@ -67,6 +68,8 @@
 
 ## Recent completion
 
+- WSL2에 태그 릴리스 전용 `nubo-release` runner를 사용자 systemd 서비스로 등록하고, hosted fallback 저장소 변수와 게시 없는 수동 전체 preflight를 추가했다. JavaScript actions도 Node 24 기반 checkout/setup/artifact 최신 major로 갱신했다.
+- sensta.me의 GOAPI `85186af` 반영 뒤 Sensta Android Google 로그인이 실기기에서 정상 처리되는 것을 확인했다.
 - NUBO v1.2.17을 GitHub Actions run `32551859327`로 게시하고 공개 asset의 SHA-256과 clean NUBO `4f32d9a`·GOAPI `85186af` manifest를 다시 확인했다.
 - sensta.me 외부 DB·업로드 백업을 확보한 뒤 v1.2.17로 update하고 사이트 전용 스킨을 파생 릴리스 `nubo-1.2.17-site-4d09e8d66bcb-linux-amd64`로 재적용했다. 운영 환경의 Android Google OAuth client 설정도 보존됐다.
 - GOAPI `85186af`를 고정하고 Android 전용 Google ID 토큰 audience 환경변수를 포함한 NUBO v1.2.17 릴리스 후보를 준비했다.
@@ -128,10 +131,7 @@
 
 ## Open findings
 
-- v1.2.17 hosted release에서 NUBO build는 약 1분 31초, 첫 GOAPI 공식 Docker 검증은 약 4분 30초, 통합 asset build는 약 18분이 걸렸고 fresh-install은 Ubuntu 버전별 약 20초였다. 반복 빌드는 로컬 WSL2 또는 self-hosted runner의 CPU·Docker cache를 활용하고, 격리된 Ubuntu fresh-install만 hosted runner에 남기는 경로를 검토한다.
 - v1.2.15·v1.2.16 CI manifest의 NUBO·nuboctl `dirty=true`는 workspace 안의 고정 GOAPI checkout을 untracked로 오인한 표기 오류다. commit·checksum·fresh-install에는 영향이 없으며 다음 릴리스부터 해당 checkout을 provenance 검사에서 제외한다.
-- 릴리스 CI는 GOAPI 공식 검증과 통합 자산 빌드에서 공식 빌드를 반복해 실행 시간이 길다. 현재 차단 문제는 아니므로 최적화는 보류한다.
-- GitHub Actions의 v4 JavaScript action에 Node 20 사용 중단 안내가 표시된다. 현재 실행을 막지 않으므로 action major 갱신은 별도 호환성 확인 전까지 보류한다.
 - Certbot 설치·약관·인증서 발급과 HTTPS redirect는 운영자가 수행한다.
 - 내부 `nuboctl update --release`는 데이터 백업·복원을 수행하지 않으며 공개 `nuboctl update`도 외부 백업 확인을 유지한다.
 - 전체 NUBO ESLint에는 기본값을 추가하면 런타임 의미가 달라질 수 있는 optional prop 경고 46건과 검토가 필요한 `v-html` 경고 4건이 남아 있다.
@@ -146,6 +146,7 @@
 
 ## Verification
 
+- 혼합 릴리스 runner: 수동 smoke run `32553785565`에서 로컬 checkout·32 CPU/30GiB 환경·Docker 실행을 10초에 확인했다. 전체 preflight run `32554073029`는 NUBO·GOAPI 게이트와 통합 asset을 로컬 build job 2분 28초에 완료했고, hosted Ubuntu 22.04/24.04 fresh-install을 각각 18초·19초에 통과한 뒤 publish를 의도대로 건너뛰었다.
 - v1.2.17 릴리스·운영 QA: GitHub Actions run `32551859327`에서 모든 필수 게이트, Ubuntu 22.04/24.04 fresh-install과 게시를 통과했다. sensta.me update·customize 후 `nuboctl status` 16건과 `doctor` 17건이 모두 통과했고, GOAPI·Web·Nginx가 active이며 내부·외부 `/ready`와 `/version`에서 NUBO 1.2.17, clean NUBO `4f32d9a`·GOAPI `85186af`, API contract 1을 확인했다.
 - Android Google OAuth audience 분리: GOAPI `85186af`에서 설정 로딩·기존 설정 fallback 회귀 테스트와 전체 `go test ./...`, `go vet ./...`를 통과했다.
 - v1.2.16 릴리스: GitHub Actions run `32437963579`에서 NUBO test/lint/typecheck/build, API contract, GOAPI 공식 환경 test/vet·통합 빌드, Ubuntu 22.04/24.04 fresh-install·게시를 통과했다. 공개 asset을 다시 내려받아 SHA-256과 NUBO `ade5ac7`·GOAPI `42481c5` manifest를 확인했다.
@@ -205,6 +206,6 @@
 
 ## Next action
 
-- Windows ADB에 Android 기기를 연결해 Sensta Google 로그인에서 새 Android audience 검증이 통과하는지 확인하고 이어지는 업로드·알림 흐름을 실기기로 점검한다.
+- 다음 patch 릴리스에서 실제 태그 push가 로컬 runner를 선택하고 hosted fresh-install 뒤 Release를 게시하는지 확인한다. Sensta의 이어지는 업로드·알림 흐름은 별도 실기기 QA로 남긴다.
 - 릴리스가 끝난 뒤 다음 필수 후보는 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류다. 둘 다 크기 `M`이므로 구현 전에 요청 추적의 최소 범위와 운영자에게 꼭 필요한 오류 안내만 다시 합의한다.
-- optional prop·`v-html` lint 경고 50건, 릴리스 CI 중복 빌드 최적화와 action major 갱신은 현재 보류한다.
+- optional prop·`v-html` lint 경고 50건은 현재 보류한다.
