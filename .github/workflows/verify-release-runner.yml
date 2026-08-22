@@ -1,0 +1,27 @@
+name: Verify local release runner
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ${{ fromJSON(vars.NUBO_RELEASE_BUILD_RUNNER || '["self-hosted","Linux","X64","nubo-release"]') }}
+    timeout-minutes: 10
+    steps:
+      - name: Check out NUBO
+        uses: actions/checkout@v4
+
+      - name: Report local capacity
+        run: |
+          uname -a
+          printf 'CPU cores: '
+          nproc
+          free -h
+
+      - name: Verify Docker
+        run: |
+          docker version
+          docker run --rm ubuntu:22.04 true

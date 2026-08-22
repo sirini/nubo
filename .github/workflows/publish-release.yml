@@ -6,11 +6,16 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: publish-linux-release
+  cancel-in-progress: false
 
 jobs:
   build-release:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ fromJSON(vars.NUBO_RELEASE_BUILD_RUNNER || '["self-hosted","Linux","X64","nubo-release"]') }}
+    timeout-minutes: 45
     steps:
       - name: Check out NUBO
         uses: actions/checkout@v4
@@ -113,6 +118,8 @@ jobs:
   publish:
     needs: fresh-install
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - name: Download verified release candidate
         uses: actions/download-artifact@v4
