@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 빈 게시판 그룹 메뉴와 관리화면 사이드바 대비를 보정한 Market/nuboctl 작업을 NUBO v1.2.22로 공식 게시하고 nubohub.org에 적용한다.
+- NUBO v1.2.22와 nuboctl 0.13.0 게시·운영 반영을 완료하고 다음 스킨 미리보기 범위를 정한다.
 
 ## Product boundary
 
@@ -35,7 +35,7 @@
 
 ## Recent completion
 
-- NUBO v1.2.22 릴리스 후보를 nuboctl 0.13.0, Market 관리 여정과 빈 그룹·관리 사이드바 보정으로 준비했다.
+- NUBO v1.2.22와 nuboctl 0.13.0을 공식 게시하고 nubohub.org를 같은 GOAPI의 무중단 데이터 경계로 업데이트했다.
 - 빈 게시판 그룹의 하위 메뉴에 클릭 불가 `(비어 있음)`을 표시하고, 게시판 그룹·신고 분류 사이드바 버튼의 light/dark 기본 글자 대비를 복구했다.
 - 관리 스킨 화면을 공식 Market 탐색, CLI 검색·상세·설치·삭제, customize 적용과 설치/적용 상태 차이를 설명하는 사용자 여정으로 개편했다.
 - `nuboctl market help [search|info|install|remove]`와 checksum 영수증 기반의 `market remove [--dry-run]`을 추가하고 nuboctl 버전을 0.13.0으로 올렸다.
@@ -72,6 +72,9 @@
 
 ## Verification
 
+- v1.2.22 run `32577075329`: 통합 build 2분 46초, Ubuntu 22.04/24.04 fresh-install 18초/21초와 게시를 통과했다. 공개 asset SHA-256은 `4199dcab84d7930c94e7ef4e635f6b2a804a7cb46c26f6a7caa2c53c62434c22`다.
+- nubohub.org를 1.2.21에서 1.2.22로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, NUBO·GOAPI·Nginx·nubohub-market active와 nuboctl 0.13.0 help를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
+- 운영 홈 light/dark에서 빈 `boards` 그룹의 `(비어 있음)`과 MARKET 버튼, 브라우저 오류 없음, 가로 넘침 없음을 확인했다. 관리 그룹·신고 사이드바는 같은 빌드의 mock API light/dark 화면에서 선택·비선택 글자 대비를 확인했다.
 - 운영 API에서 `boards` 그룹이 빈 배열임을 확인했다. 로컬 Chromium light/dark에서 `(비어 있음)`, 그룹명과 신고 분류의 선택/비선택 대비, 가로 넘침 없음을 확인했다.
 - NUBO test 32건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. nuboctl 전체 test/race/vet와 운영 Market의 install→receipt→remove dry-run→remove 통합 smoke를 통과했다.
 - 홈과 관리 스킨 화면을 Chromium 1440px/390px light/dark에서 확인했다. MARKET 순서·모바일 줄바꿈·공식 링크·관리 안내와 한글 렌더링이 정상이며 페이지 가로 넘침이 없다.
@@ -101,5 +104,4 @@
 
 ## Next action
 
-- NUBO v1.2.22 릴리스 게이트를 통과해 공식 asset을 게시하고 nubohub.org를 업데이트한다.
-- 이후 범위는 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.
+- 다음 범위는 스킨 미리보기 자산을 우선 검토하고, 계정·소유권이 필요한 제작자 게시 흐름은 그 뒤로 둔다. 결제·커미션은 계속 보류한다.
