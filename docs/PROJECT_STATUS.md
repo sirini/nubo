@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 대표 이미지와 선택 스크린샷을 포함하는 스킨 미리보기 계약·화면을 Market에 배포하고 기본 스킨 0.1.2를 게시한다.
+- 스킨 대표·추가 이미지 미리보기를 운영 반영했으며, 다음 범위로 제작자 게시 흐름의 계정·소유권 경계를 정한다.
 
 ## Product boundary
 
@@ -32,9 +32,11 @@
 - Market 설치는 package identity와 파일별 SHA-256 영수증을 남긴다. `market remove`는 영수증과 설치 파일이 모두 일치할 때만 삭제하며 `--force`는 제공하지 않는다.
 - 결제·계정·커미션·리뷰·서드파티 게시 권한은 MVP 뒤로 미루고, 현재 게시 API는 긴 운영자 토큰 하나로 보호한다.
 - Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
+- Market 런타임 DB 계정에는 DDL 권한을 주지 않는다. additive schema 변경도 관리자 계정으로 선적용한 뒤 새 바이너리를 시작한다.
 
 ## Recent completion
 
+- Market `3cd5d77`을 운영 반영하고 기본 스킨 9개를 immutable 0.1.2로 게시했다. 모든 최신 스킨에 대표 이미지가 표시되며 관리 스킨은 추가 화면 2장을 제공한다.
 - 스킨 manifest에 필수 대표 이미지와 선택 `screenshots` 최대 9장 계약을 추가하고, 기본 스킨 9개의 실제 1280×720 대표 이미지와 관리 스킨 추가 화면 2장을 준비했다.
 - Market 목록·상세에 대표 이미지를 배치하고, 추가 이미지가 있을 때만 3열 그리드와 클릭 확대·재클릭 닫기 오버레이를 표시하도록 구현했다.
 - NUBO v1.2.22와 nuboctl 0.13.0을 공식 게시하고 nubohub.org를 같은 GOAPI의 무중단 데이터 경계로 업데이트했다.
@@ -74,6 +76,8 @@
 
 ## Verification
 
+- Market `05c04c2`/`3cd5d77` run `32578848071`/`32579308787`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `24051ee736aa6f28c3606e050beab8b826c54522e70cc5a5a005bf51c347db03`이며 내부·외부 readiness, asset `20260822-6`, 최신 0.1.2 9개와 이미지 원본 바이트를 확인했다.
+- 운영 Market 상세를 Chromium desktop light/dark와 390px mobile light로 검수했다. 추가 화면 3열 grid, 클릭 확대와 재클릭 닫기, 스크린샷이 없는 상세의 갤러리 미출력, 390px `innerWidth=scrollWidth=390`을 확인했다.
 - 기본 스킨 0.1.2 9개를 임시 MySQL Market에 게시해 대표·추가 이미지 API와 패키지 원본 다운로드를 확인했다. Market Go test/race/vet, MySQL 통합 smoke, Ubuntu 22.04 공식 빌드를 통과했다.
 - Market 목록·관리 스킨 상세·스크린샷 오버레이를 Chromium 데스크톱 dark에서 확인했으며, 이미지 로드와 레이아웃이 정상이다. NUBO test 32건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다.
 - v1.2.22 run `32577075329`: 통합 build 2분 46초, Ubuntu 22.04/24.04 fresh-install 18초/21초와 게시를 통과했다. 공개 asset SHA-256은 `4199dcab84d7930c94e7ef4e635f6b2a804a7cb46c26f6a7caa2c53c62434c22`다.
@@ -108,4 +112,4 @@
 
 ## Next action
 
-- Market 바이너리를 운영 반영한 뒤 기본 스킨 0.1.2를 게시하고 light/dark·desktop/mobile 최종 검수를 진행한다. 이후 계정·소유권이 필요한 제작자 게시 흐름을 검토하며 결제·커미션은 계속 보류한다.
+- 다음 범위는 제작자 계정·스킨 key 소유권·게시 버전 권한과 운영자 승인 경계를 먼저 설계한다. 결제·커미션은 계속 보류한다.
