@@ -41,7 +41,8 @@
         <DropdownMenuGroup v-if="menus.length > 0">
           <DropdownMenuSub v-for="(menu, index) in menus" :key="index">
             <DropdownMenuSubTrigger class="cursor-pointer"
-              ><FoldersIcon class="w-4 h-4 mr-3" /> {{ menu.group }}</DropdownMenuSubTrigger
+              ><FoldersIcon class="mr-3 h-4 w-4 text-muted-foreground" />
+              {{ menu.group }}</DropdownMenuSubTrigger
             >
             <DropdownMenuPortal>
               <DropdownMenuSubContent class="w-48">
@@ -82,7 +83,7 @@
           </DropdownMenuItem>
           <DropdownMenuItem as-child class="w-full cursor-pointer">
             <NuxtLink to="/terms" class="inline-flex gap-3 items-center">
-              <ScrollTextIcon class="w-4 h-4" /> 이용약관·운영 원칙
+              <ScrollTextIcon class="h-4 w-4 text-muted-foreground" /> 이용약관·운영 원칙
             </NuxtLink>
           </DropdownMenuItem>
           <DropdownMenuItem v-if="isAdmin" as-child class="w-full cursor-pointer">

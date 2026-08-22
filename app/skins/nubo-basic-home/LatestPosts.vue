@@ -4,9 +4,9 @@
       <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
         Community Builder
       </div>
-      <h1 class="mt-3 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">메이커들의 이야기</h1>
+      <h1 class="mt-3 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">빌더들의 이야기</h1>
       <p class="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
-        지금 자신만의 커뮤니티를 만들어가는 메이커들의 이야기를 확인해 보세요
+        지금 자신만의 커뮤니티를 만들어가는 빌더들의 이야기를 확인해 보세요
       </p>
 
       <div class="mt-6 flex items-center gap-2">

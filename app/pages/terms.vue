@@ -1,5 +1,5 @@
 <template>
-  <section class="container mx-auto max-w-3xl py-8">
+  <section class="container mx-auto max-w-3xl px-4 py-8 sm:px-6">
     <div class="mb-10 text-center">
       <h1 class="text-2xl font-bold tracking-tight">이용약관 및 커뮤니티 운영 원칙</h1>
       <p class="mt-4 text-muted-foreground">

@@ -6,13 +6,13 @@
       </SheetTrigger>
     </CommonVTooltip>
 
-    <SheetContent side="right" class="w-full sm:max-w-sm overflow-y-auto">
+    <SheetContent side="right" class="w-full overflow-y-auto px-4 sm:max-w-sm sm:px-6">
       <SheetHeader class="text-left">
         <SheetTitle>프로필 수정</SheetTitle>
         <SheetDescription> 다른 사용자에게 보여질 정보를 여기에서 수정합니다 </SheetDescription>
       </SheetHeader>
 
-      <div class="grid gap-2 py-6 px-4">
+      <div class="grid gap-2 py-6">
         <div class="flex flex-col items-center gap-4 mb-6">
           <Avatar class="w-32 h-32 border-2 border-primary/10">
             <AvatarImage :src="editProfile.profile" alt="Profile Preview" />
