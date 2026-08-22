@@ -59,8 +59,8 @@
 
 ## Verification
 
-- Market `b5a26c3` run `32570563315`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 데스크톱 dark·모바일 light 실브라우저 캡처를 확인했고, 운영 목록 9개·공통 태그 검색 9개·nuboctl 페이지·CSP와 NUBO/GOAPI/Market/Nginx active를 확인했다.
-- 새 운영 Market 바이너리 SHA-256은 `899e38f09be4b77b5bfc57856c4f6e46b105c2b8c363399038c3677c4fa49d83`이며 이전 바이너리는 `/var/backups/nubohub-market/discovery-b5a26c3`에 보존했다.
+- Market `b5a26c3`/`d2f5ae5` run `32570563315`/`32570742778`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 데스크톱 dark·모바일 light 실브라우저 캡처를 확인했고, 운영 목록 9개·공통 태그 검색 9개·nuboctl 페이지·CSP와 NUBO/GOAPI/Market/Nginx active를 확인했다.
+- 새 운영 Market 바이너리 SHA-256은 `0a59f3b90860c02297c1473c3218b97e84e1d0ba669c4ac28562d949277cf82a`이며 stylesheet cache-busting을 적용했다. 직전 바이너리는 `/var/backups/nubohub-market/assets-d2f5ae5`에 보존했다.
 - v1.2.20 run `32568166081`: 통합 build 2분 30초, Ubuntu 22.04/24.04 fresh-install 19초/23초와 게시를 통과했다. 공개 asset SHA-256 `043bc65cf9cf9c2fad09517d6422cb49609e6bc1af25204c5b6c61f5a47aba2b`, clean NUBO/nuboctl `85a1130`, GOAPI `85186af`, nuboctl 0.12.0을 확인했다.
 - nubohub.org를 1.2.19에서 1.2.20으로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, `market search/info`, NUBO·GOAPI·Market·Nginx active를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
 - Market `53f3e50` run `32568424692`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `4969f5187831a18bc01bb8b89cf8d729701ae9e4c7d8efb6cd0633d551581cff`이며 이전 바이너리는 `/var/backups/nubohub-market/market-cli-53f3e50`에 보존했다.
