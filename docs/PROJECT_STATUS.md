@@ -35,6 +35,7 @@
 
 ## Recent completion
 
+- NUBO v1.2.22 릴리스 후보를 nuboctl 0.13.0, Market 관리 여정과 빈 그룹·관리 사이드바 보정으로 준비했다.
 - 빈 게시판 그룹의 하위 메뉴에 클릭 불가 `(비어 있음)`을 표시하고, 게시판 그룹·신고 분류 사이드바 버튼의 light/dark 기본 글자 대비를 복구했다.
 - 관리 스킨 화면을 공식 Market 탐색, CLI 검색·상세·설치·삭제, customize 적용과 설치/적용 상태 차이를 설명하는 사용자 여정으로 개편했다.
 - `nuboctl market help [search|info|install|remove]`와 checksum 영수증 기반의 `market remove [--dry-run]`을 추가하고 nuboctl 버전을 0.13.0으로 올렸다.
