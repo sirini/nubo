@@ -34,6 +34,9 @@
 
 ## Recent completion
 
+- Market 카드·비교표·워크플로·사이트 운영 영역의 작은 영문 텍스트를 15–16px로 맞추고 제작자 앞 `by`, 삭제 안내 블록과 헤드라인 마침표를 제거했다.
+- `nuboctl market search/info/install` 출력을 색상 대응 헤더·정렬된 열·정보 구획·검증 결과·다음 단계가 있는 터미널 레이아웃으로 개편했다. 비대화형 출력은 ANSI 색상을 넣지 않는다.
+- `/var/backups/nubohub-market`의 과거 바이너리 4세트와 최초 설치 전 설정 1세트를 제품 소유자 요청에 따라 삭제했다.
 - Market 헤더를 필기체 워드마크와 설명형 아이콘 내비게이션으로 정리하고, 살구색 강조 톤·헤드라인 행간·명령 프로모션·카드 메타데이터·CTA·nuboctl 터미널과 안내문의 가독성을 다듬었다.
 - Market을 NUBO식 sticky blur 상단바, npm 오마주 검색 히어로, 터미널 명령 강조, 제작자 카드, 12개 페이징과 랜딩 CTA 구조로 개편하고 별도 `/market/nuboctl` 안내 페이지를 배치했다.
 - 기본 스킨 9개의 immutable 0.1.1을 게시하고 태그를 `다크 모드`, `라이트 모드`, `반응형 그리드`로 통일했다.
@@ -61,15 +64,17 @@
 
 ## Verification
 
+- Market `3a5dde7` run `32572827347`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `c2dd298e9a27270f4c86ec3019465272c02d88d5a9c85502e883650b8566b749`이며 외부 asset `20260822-3`, readiness, systemd active와 빈 Market 백업 디렉터리를 확인했다.
+- nuboctl `0d285fa`의 전체 test/vet, 실제 운영 Market search/info 색상 터미널 출력과 기본 스킨 9개 게시를 포함한 install 통합 smoke를 통과했다.
 - Market `7254835`를 데스크톱 dark·모바일 light·nuboctl dark 실브라우저로 확인하고 `go test`, `go vet`, shell 구문 검사와 MySQL 게시→조회→다운로드 smoke를 통과했다. 운영 바이너리 SHA-256은 `741c2356ae8f24fc85a3109011596fbbf1f2e1f20532e5fb4bd0cdb1fb2c55ff`이며 이번 배포에는 별도 바이너리 백업을 추가하지 않았다.
 - 운영 `/market/`의 `20260822-2` CSS, 아이콘 설명, `/market/nuboctl` 콘텐츠와 외부 readiness 200을 확인했다. 강조용 HTML 때문에 깨진 문자열 기반 smoke는 `d5dea17`에서 의미 기반 검사로 보정했고 run `32572163829`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다.
 - Market `b5a26c3`/`d2f5ae5` run `32570563315`/`32570742778`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 데스크톱 dark·모바일 light 실브라우저 캡처를 확인했고, 운영 목록 9개·공통 태그 검색 9개·nuboctl 페이지·CSP와 NUBO/GOAPI/Market/Nginx active를 확인했다.
-- 새 운영 Market 바이너리 SHA-256은 `0a59f3b90860c02297c1473c3218b97e84e1d0ba669c4ac28562d949277cf82a`이며 stylesheet cache-busting을 적용했다. 직전 바이너리는 `/var/backups/nubohub-market/assets-d2f5ae5`에 보존했다.
+- 당시 운영 Market 바이너리 SHA-256 `0a59f3b90860c02297c1473c3218b97e84e1d0ba669c4ac28562d949277cf82a`에 stylesheet cache-busting을 적용했다.
 - v1.2.20 run `32568166081`: 통합 build 2분 30초, Ubuntu 22.04/24.04 fresh-install 19초/23초와 게시를 통과했다. 공개 asset SHA-256 `043bc65cf9cf9c2fad09517d6422cb49609e6bc1af25204c5b6c61f5a47aba2b`, clean NUBO/nuboctl `85a1130`, GOAPI `85186af`, nuboctl 0.12.0을 확인했다.
 - nubohub.org를 1.2.19에서 1.2.20으로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, `market search/info`, NUBO·GOAPI·Market·Nginx active를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
-- Market `53f3e50` run `32568424692`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `4969f5187831a18bc01bb8b89cf8d729701ae9e4c7d8efb6cd0633d551581cff`이며 이전 바이너리는 `/var/backups/nubohub-market/market-cli-53f3e50`에 보존했다.
+- Market `53f3e50` run `32568424692`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 당시 운영 바이너리 SHA-256은 `4969f5187831a18bc01bb8b89cf8d729701ae9e4c7d8efb6cd0633d551581cff`였다.
 - 리팩터링 뒤 이번 Market/nuboctl 구현의 최대 함수는 각각 44줄/32줄이며 관련 구현 파일은 50~187줄로 분리했다. 기존 169줄 CLI dispatch도 명령별 handler로 분리했다. 전체 Go test/race/vet와 9개 기본 스킨 게시를 포함한 MySQL 통합 smoke를 통과했다.
-- 외부 `/market/` 목록 9개, 검색·상세·CSS, CSP, 각 설치 명령과 SHA-256 노출을 확인했다. 새 Market 바이너리는 기존 바이너리를 `/var/backups/nubohub-market/catalog-e18a594`에 보존한 뒤 적용했다.
+- 외부 `/market/` 목록 9개, 검색·상세·CSS, CSP, 각 설치 명령과 SHA-256 노출을 확인했다.
 - 운영 서버의 내부·외부 Market readiness, 별도 사용자와 systemd hardening, 제한된 DB 권한, Nginx 설정, 게시·목록·상세·다운로드를 확인했다. 무토큰 게시 401, 중복 버전 409, 운영 패키지 SHA-256과 로컬 `nuboctl` 설치 결과의 원본 일치를 확인했으며 기존 NUBO Web readiness도 정상이다.
 - NUBO Market `go test ./...`, `go vet ./...`, MySQL 8 게시→조회→다운로드 원본 비교와 실제 `nuboctl` 설치 통합 smoke를 통과했다. Ubuntu 22.04 컨테이너에서 정적 linux/amd64 바이너리 SHA-256 `0fdeab264d933abe855ca2140cb84b38aad8e813ea074e8eaf4c730eb2775ff4`를 만들었다.
 - NUBO nuboctl 전체 Go test/vet, 0.12.0 Ubuntu 22.04/24.04 실행, unit 28건, ESLint 오류 0건(기존 경고 50), typecheck를 통과했다.
@@ -80,4 +85,6 @@
 
 ## Next action
 
-- 제품 소유자가 `https://nubohub.org/market/`과 `/market/nuboctl`의 데스크톱·모바일 흐름을 확인한다. 다음 범위는 피드백 뒤 스킨 미리보기 자산 또는 checksum 기반 안전한 `market remove` 중 하나로 정하며 결제·커미션은 계속 보류한다.
+- 다음 세션에는 `fonts-noto-cjk`를 설치한 로컬 Chromium으로 한글까지 포함한 데스크톱·모바일 화면을 다시 확인하고, 새 `nuboctl market` 출력의 제품 소유자 QA를 반영한다.
+- CLI 출력이 확정되면 다음 NUBO 버전에 포함해 공식 nuboctl 바이너리로 게시한다.
+- 그 뒤 스킨 미리보기 자산, checksum 기반 안전한 `market remove`, 제작자 게시 흐름 중 다음 범위를 정한다. 결제·커미션은 계속 보류한다.
