@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- Market·관리 스킨 화면의 운영 용어와 가독성 피드백을 반영해 다음 NUBO 릴리스를 준비한 뒤, 제작자 게시 흐름의 계정·소유권 경계를 구현한다.
+- 관리 스킨 화면 피드백과 제작자 계정·key 소유권·버전 제출·운영자 승인 경계를 운영 반영했다. 다음 범위는 첫 실제 제작자 온보딩 뒤 게시 UI 우선순위를 정한다.
 
 ## Product boundary
 
@@ -30,13 +30,15 @@
 - NUBO Market은 비공개 `sirini/nubohub-market` 저장소의 독립 Go Fiber 서비스로 두고, 운영 서버는 MySQL 메타데이터·패키지 파일·API 제공만 담당한다.
 - 스킨 패키지는 단일 `<key>/` tar.gz, immutable key/version, Registry SHA-256을 계약으로 삼는다. `nuboctl market install`은 로컬 소스에만 설치하고 기존 `customize`가 빌드·적용한다.
 - Market 설치는 package identity와 파일별 SHA-256 영수증을 남긴다. `market remove`는 영수증과 설치 파일이 모두 일치할 때만 삭제하며 `--force`는 제공하지 않는다.
-- 결제·계정·커미션·리뷰·서드파티 게시 권한은 MVP 뒤로 미루고, 현재 게시 API는 긴 운영자 토큰 하나로 보호한다.
+- Market 제작자 계정은 배포 사이트 회원과 분리하며 운영자가 발급한 고엔트로피 토큰의 SHA-256만 저장한다. 승인된 key 소유자만 버전을 제출하고 운영자 승인 전에는 공개하지 않는다.
+- 결제·커미션·구매 권한·리뷰는 계속 보류한다. 공식 기본 스킨의 직접 게시 API와 제작자 검토 API는 긴 운영자 토큰으로 보호한다.
 - Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
 - Market 런타임 DB 계정에는 DDL 권한을 주지 않는다. additive schema 변경도 관리자 계정으로 선적용한 뒤 새 바이너리를 시작한다.
 
 ## Recent completion
 
-- NUBO v1.2.23 릴리스 후보를 관리 스킨 안내 가독성과 사이드바 버전 표시 보정으로 준비했다.
+- Market 제작자 계정 발급·목록·토큰 회전·활성화/중지, key 소유권 요청·승인/반려, 버전 제출·승인/반려 API를 운영 반영했다. 제작자 manifest의 author·website는 계정과 일치해야 하며 승인 전 버전은 공개 API에서 보이지 않는다.
+- NUBO v1.2.23을 공식 게시하고 nubohub.org를 업데이트했다. 관리 스킨 안내 글자와 명령 배지의 가독성을 높이고 Market 링크 밑줄과 사이드바 버전 앞 점 애니메이션을 제거했다.
 - Market 상세의 설치 위치를 운영 서버로 명확히 하고, 관리 스킨 안내의 본문·명령 배지·단계 설명 가독성을 높였다. Market 링크 밑줄과 관리 사이드바 버전 앞 점 애니메이션은 제거했다.
 - Market `3cd5d77`을 운영 반영하고 기본 스킨 9개를 immutable 0.1.2로 게시했다. 모든 최신 스킨에 대표 이미지가 표시되며 관리 스킨은 추가 화면 2장을 제공한다.
 - 스킨 manifest에 필수 대표 이미지와 선택 `screenshots` 최대 9장 계약을 추가하고, 기본 스킨 9개의 실제 1280×720 대표 이미지와 관리 스킨 추가 화면 2장을 준비했다.
@@ -70,6 +72,8 @@
 
 ## Open findings
 
+- 제작자 온보딩과 운영자 검토는 현재 문서화된 API 흐름이다. 첫 실제 게시를 관찰한 뒤 웹 대시보드와 운영자 UI 중 반복 비용이 큰 쪽을 먼저 만든다.
+- 제작자 신원 확인과 토큰 전달은 운영자 수동 절차다. 이메일 복구나 외부 OAuth를 도입할 때도 NUBO 배포 사이트 회원과 Market 권한을 자동 결합하지 않는다.
 - Market MVP는 유료 권한·구매 취소·서명된 단기 URL을 제공하지 않는다. 판매 모델을 정할 때 계정 인증과 entitlement 경계를 별도 설계해야 한다.
 - Market 백업은 `nubohub_market` DB와 패키지 저장 디렉터리를 같은 시점의 세트로 보존해야 한다.
 - update는 데이터 백업·복원을 수행하지 않으며 GOAPI 변경 릴리스는 외부 백업을 전제로 한다.
@@ -78,6 +82,10 @@
 
 ## Verification
 
+- Market `f433ae9` run `32581192232`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `99fcda8758a08764f50a36bda2e823b5db7027d9d42fada09bdbbac6d6862fa7`이며 새 운영자 API 3종 목록, 무토큰 제작자 API 401, 내부·외부 readiness와 전체 서비스 active를 확인했다.
+- 제작자 통합 smoke에서 토큰 원문 비저장, 승인 전 key 제출 403, 승인 전 버전 조회 404, 운영자 승인 후 공개, 중복 승인 거부, 토큰 회전과 계정 중지를 확인했다. 운영 반영 전 DB·패키지는 `/var/backups/nubohub-market/20260823-0016-creator-publishing`에 같은 시점으로 백업했다.
+- v1.2.23 manual/tag run `32580699837`/`32581039600`: 통합 build와 Ubuntu 22.04/24.04 fresh-install을 통과했다. 공개 asset SHA-256은 `5ddc33a2a61f14b98215a4c06207009bce9573c2a8bbb67dbfc8ee4e8ef3a941`다.
+- nubohub.org를 1.2.22에서 1.2.23으로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, clean 운영 checkout과 NUBO·GOAPI·Market·Nginx active를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
 - Market `05c04c2`/`3cd5d77` run `32578848071`/`32579308787`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `24051ee736aa6f28c3606e050beab8b826c54522e70cc5a5a005bf51c347db03`이며 내부·외부 readiness, asset `20260822-6`, 최신 0.1.2 9개와 이미지 원본 바이트를 확인했다.
 - 운영 Market 상세를 Chromium desktop light/dark와 390px mobile light로 검수했다. 추가 화면 3열 grid, 클릭 확대와 재클릭 닫기, 스크린샷이 없는 상세의 갤러리 미출력, 390px `innerWidth=scrollWidth=390`을 확인했다.
 - 기본 스킨 0.1.2 9개를 임시 MySQL Market에 게시해 대표·추가 이미지 API와 패키지 원본 다운로드를 확인했다. Market Go test/race/vet, MySQL 통합 smoke, Ubuntu 22.04 공식 빌드를 통과했다.
@@ -114,4 +122,4 @@
 
 ## Next action
 
-- 다음 범위는 제작자 계정·스킨 key 소유권·게시 버전 권한과 운영자 승인 경계를 먼저 설계한다. 결제·커미션은 계속 보류한다.
+- 첫 실제 제작자 계정과 테스트 key로 운영 절차를 리허설한 뒤, 제작자 제출 대시보드와 운영자 승인 화면 중 다음 사용자 범위를 선정한다. 결제·커미션은 계속 보류한다.
