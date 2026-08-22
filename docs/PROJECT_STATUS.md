@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO Market 카탈로그와 `nuboctl market`을 포함한 v1.2.20 패치 릴리스를 게시·운영 검증한다.
+- 제품 소유자가 nubohub.org Market 카탈로그와 v1.2.20의 `nuboctl market` 검색·정보·설치 흐름을 QA한다.
 
 ## Product boundary
 
@@ -33,6 +33,8 @@
 
 ## Recent completion
 
+- NUBO v1.2.20과 nuboctl 0.12.0을 게시하고 nubohub.org를 같은 GOAPI의 무중단 데이터 경계로 업데이트했다.
+- `nuboctl market search/info/install`을 공식 명령으로 정하고 기존 `skin` 명령은 호환 별칭으로 유지했다.
 - Market·nuboctl의 긴 파일과 함수를 조회·다운로드·압축 검사·명령 dispatch·route·게시 경계로 분리하고 보안 판단에 한글 주석을 보강했다.
 - nubohub.org `/market/`에 빌드 없는 카탈로그·상세 화면을 배치하고 현재 `nubo-basic-*` 스킨 9개를 immutable 0.1.0 패키지로 등록했다.
 - NUBO Market을 nubohub.org의 별도 비로그인 사용자, MySQL DB, 3009 systemd 서비스와 `/market/` HTTPS 경로로 배치하고 `nubo-basic-home@0.1.0`을 첫 패키지로 게시했다.
@@ -54,6 +56,9 @@
 
 ## Verification
 
+- v1.2.20 run `32568166081`: 통합 build 2분 30초, Ubuntu 22.04/24.04 fresh-install 19초/23초와 게시를 통과했다. 공개 asset SHA-256 `043bc65cf9cf9c2fad09517d6422cb49609e6bc1af25204c5b6c61f5a47aba2b`, clean NUBO/nuboctl `85a1130`, GOAPI `85186af`, nuboctl 0.12.0을 확인했다.
+- nubohub.org를 1.2.19에서 1.2.20으로 전환한 뒤 `nuboctl status` 15건, 내부·외부 version/readiness, `market search/info`, NUBO·GOAPI·Market·Nginx active를 확인했다. GOAPI가 같아 migration과 백업 질문은 생략됐다.
+- Market `53f3e50` run `32568424692`의 Ubuntu 22.04 build/test와 MySQL 통합 smoke를 통과했다. 운영 바이너리 SHA-256은 `4969f5187831a18bc01bb8b89cf8d729701ae9e4c7d8efb6cd0633d551581cff`이며 이전 바이너리는 `/var/backups/nubohub-market/market-cli-53f3e50`에 보존했다.
 - 리팩터링 뒤 이번 Market/nuboctl 구현의 최대 함수는 각각 44줄/32줄이며 관련 구현 파일은 50~187줄로 분리했다. 기존 169줄 CLI dispatch도 명령별 handler로 분리했다. 전체 Go test/race/vet와 9개 기본 스킨 게시를 포함한 MySQL 통합 smoke를 통과했다.
 - 외부 `/market/` 목록 9개, 검색·상세·CSS, CSP, 각 설치 명령과 SHA-256 노출을 확인했다. 새 Market 바이너리는 기존 바이너리를 `/var/backups/nubohub-market/catalog-e18a594`에 보존한 뒤 적용했다.
 - 운영 서버의 내부·외부 Market readiness, 별도 사용자와 systemd hardening, 제한된 DB 권한, Nginx 설정, 게시·목록·상세·다운로드를 확인했다. 무토큰 게시 401, 중복 버전 409, 운영 패키지 SHA-256과 로컬 `nuboctl` 설치 결과의 원본 일치를 확인했으며 기존 NUBO Web readiness도 정상이다.
@@ -66,4 +71,4 @@
 
 ## Next action
 
-- v1.2.20 전체 로컬·hosted fresh-install 게이트를 통과시켜 게시하고 nubohub.org에서 `nuboctl update` 후 Market 명령을 확인한다.
+- 제품 소유자가 `https://nubohub.org/market/`의 9개 기본 스킨과 실제 PC의 `nuboctl market search/info/install`을 확인한다. 다음 범위는 피드백 뒤 미리보기 이미지·카테고리·게시자 흐름 중 하나로 작게 정하며 결제·커미션은 계속 보류한다.
