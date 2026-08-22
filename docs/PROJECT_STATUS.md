@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO Market Skin Registry MVP와 `nuboctl skin` 설치 경로를 nubohub.org 운영 환경에 배치하고 외부에서 검증한다.
+- nubohub.org에 배치한 NUBO Market Skin Registry MVP와 `nuboctl skin` 설치 경험을 제품 소유자가 QA한다.
 
 ## Product boundary
 
@@ -33,6 +33,7 @@
 
 ## Recent completion
 
+- NUBO Market을 nubohub.org의 별도 비로그인 사용자, MySQL DB, 3009 systemd 서비스와 `/market/` HTTPS 경로로 배치하고 `nubo-basic-home@0.1.0`을 첫 패키지로 게시했다.
 - NUBO Market MVP의 공개 목록·상세·버전·다운로드와 토큰 보호 게시 API, MySQL 저장소, 안전한 패키지 검사, Ubuntu 22.04 빌드와 systemd/Nginx 자산을 비공개 저장소 `35e20aa`로 게시했다.
 - `nuboctl` 0.12.0에 `skin search/info/install`을 추가해 checksum·호환 버전·archive 안전성·기존 폴더 비덮어쓰기를 보장하고 `customize`로 연결했다.
 - v1.2.19에서 safe fast-forward pull, 등록된 커스텀 Web 자동 재적용, GOAPI 동일 시 migration·백업 질문 생략을 게시했다.
@@ -51,6 +52,7 @@
 
 ## Verification
 
+- 운영 서버의 내부·외부 Market readiness, 별도 사용자와 systemd hardening, 제한된 DB 권한, Nginx 설정, 게시·목록·상세·다운로드를 확인했다. 무토큰 게시 401, 중복 버전 409, 운영 패키지 SHA-256과 로컬 `nuboctl` 설치 결과의 원본 일치를 확인했으며 기존 NUBO Web readiness도 정상이다.
 - NUBO Market `go test ./...`, `go vet ./...`, MySQL 8 게시→조회→다운로드 원본 비교와 실제 `nuboctl` 설치 통합 smoke를 통과했다. Ubuntu 22.04 컨테이너에서 정적 linux/amd64 바이너리 SHA-256 `0fdeab264d933abe855ca2140cb84b38aad8e813ea074e8eaf4c730eb2775ff4`를 만들었다.
 - NUBO nuboctl 전체 Go test/vet, 0.12.0 Ubuntu 22.04/24.04 실행, unit 28건, ESLint 오류 0건(기존 경고 50), typecheck를 통과했다.
 - v1.2.19 run `32561064226`: 로컬 통합 build 2분 36초, hosted Ubuntu 22.04/24.04 fresh-install 25초/18초와 게시를 통과했다. 공개 asset checksum, clean NUBO/nuboctl `73c8a3c`, GOAPI `85186af`, nuboctl 0.11.0, API contract 1을 확인했다.
@@ -60,4 +62,4 @@
 
 ## Next action
 
-- nubohub.org에 별도 `nubohub-market` 사용자·DB·상태 경로와 3009 systemd 서비스를 만들고, 기존 Nginx 설정 백업 뒤 `/market/` 프록시와 내부·외부 readiness를 검증한다.
+- 제품 소유자가 실제 PC에서 `nuboctl skin search`와 `info`를 확인한다. 다음 구현은 사용 피드백 뒤 카탈로그 UI·게시 도구 중 작은 범위를 정하며 결제·커미션은 계속 보류한다.
