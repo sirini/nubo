@@ -9,7 +9,7 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
-현재 버전은 **v1.2.19**입니다. 기본 스킨만으로 바로 운영할 수 있고, `/app/skins` 아래의 스킨을 교체하거나 수정해 사이트의 성격을 바꿀 수 있습니다.
+최신 정식 버전은 상단 릴리스 배지와 [GitHub Releases](https://github.com/sirini/nubo/releases)에서 확인할 수 있습니다. 기본 스킨만으로 바로 운영할 수 있고, NUBO Market에서 다른 스킨을 찾거나 `/app/skins` 아래의 스킨을 수정해 사이트의 성격을 바꿀 수 있습니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -18,6 +18,7 @@ NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳
 - 회원가입, 비밀번호 초기화, 댓글 알림 메일을 Resend로 보낼 수 있습니다.
 - 관리자가 Markdown으로 단체 메일을 작성하고 미리보기·테스트 발송 후 회원에게 보낼 수 있습니다.
 - 가입 정책을 이메일 인증, 초대 전용, 가입 중지 중에서 선택할 수 있습니다.
+- [NUBO Market](https://nubohub.org/market/)에서 스킨의 대표 이미지와 실제 화면을 둘러보고 `nuboctl` 한 줄로 설치할 수 있습니다.
 - TSBOARD 데이터베이스 구조와의 호환성을 유지합니다.
 
 ## 구성 이해하기
@@ -69,6 +70,7 @@ nuboctl status
 nuboctl doctor
 nuboctl update
 nuboctl customize
+nuboctl market help
 nuboctl activate-nginx
 ```
 
@@ -438,6 +440,39 @@ server {
 
 Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS였다는 정보가 `X-Forwarded-Proto`로 전달되는지 확인하세요.
 
+## NUBO Market에서 스킨 찾고 적용하기
+
+[NUBO Market](https://nubohub.org/market/)에서는 스킨의 대표 이미지, 제작자와 지원 NUBO 버전을 살펴보고, 제작자가 추가했다면 실제 화면 스크린샷까지 볼 수 있습니다. 마음에 드는 스킨은 JavaScript 패키지를 `npm install`로 받듯 운영 서버의 NUBO 소스 폴더에서 `nuboctl market install` 한 줄로 내려받습니다.
+
+| 하고 싶은 일 | 웹·명령어 |
+| --- | --- |
+| 스킨 둘러보기 | [nubohub.org/market](https://nubohub.org/market/) |
+| 이름·기능으로 찾기 | `nuboctl market search` |
+| 제작자·버전·호환성 확인 | `nuboctl market info <스킨-key>` |
+| 검증해서 설치 | `nuboctl market install <스킨-key>` |
+| 변경 계획 확인·운영 적용 | `nuboctl customize --dry-run`, `nuboctl customize` |
+
+```bash
+nuboctl market search gallery
+SKIN_KEY="Market 상세에서 확인한 key"
+nuboctl market info "${SKIN_KEY}"
+nuboctl market install "${SKIN_KEY}"
+nuboctl customize --dry-run
+nuboctl customize
+```
+
+설치는 Registry SHA-256, manifest의 key·version과 NUBO 호환성, 압축 경로를 검증하고 기존 스킨 폴더를 덮어쓰지 않습니다. 설치만으로 실행 중인 사이트가 갑자기 바뀌지 않으며, `customize`가 typecheck와 production build를 통과한 뒤에만 새 Web을 적용합니다. 게시판 스킨은 게시판 관리에서, 레이아웃·홈·관리자·로그인·프로필 스킨은 관리 화면의 **스킨 관리**에서 마지막으로 선택합니다.
+
+사용하지 않는 Market 스킨은 먼저 관리 화면에서 다른 스킨으로 전환한 뒤 안전하게 삭제할 수 있습니다. 설치 당시 파일 영수증과 현재 파일이 모두 일치할 때만 삭제되므로 직접 수정한 스킨을 실수로 지우지 않습니다.
+
+```bash
+nuboctl market remove "${SKIN_KEY}" --dry-run
+nuboctl market remove "${SKIN_KEY}"
+nuboctl customize
+```
+
+명령별 설명은 `nuboctl market help`에서, 설치·업데이트와 함께 보는 전체 안내는 [nuboctl 소개](https://nubohub.org/market/nuboctl)와 [운영 문서](docs/NUBOCTL.md)에서 확인할 수 있습니다.
+
 ## 스킨 개발
 
 - 기본 스킨은 `/app/skins` 아래에 기능별로 나뉘어 있습니다.
@@ -479,6 +514,7 @@ nuboctl customize
 
 ## 관련 프로젝트
 
+- [NUBO Market](https://nubohub.org/market/): 스킨 탐색·미리보기·안전한 설치를 위한 공식 카탈로그
 - [GOAPI](https://github.com/sirini/goapi): NUBO 백엔드
 - [TSBOARD](https://github.com/sirini/tsboard): NUBO가 계승한 이전 프로젝트
 
