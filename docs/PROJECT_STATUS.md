@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 작은 UI 보정을 v1.2.18로 게시해 로컬 `build-release`, hosted fresh-install, GitHub Release로 이어지는 혼합 릴리스 경로를 실제 태그에서 최종 확인한다.
+- v1.2.18의 메뉴 아이콘·모바일 여백·홈 문구를 제품 소유자 QA로 확인하고 다음 작업 범위를 정한다.
 
 ## Product boundary
 
@@ -27,13 +27,13 @@
 
 ## Recent completion
 
+- v1.2.18을 첫 혼합 릴리스 경로로 게시해 로컬 build, hosted fresh-install과 GitHub Release 게시를 최종 확인했다.
 - NUBO v1.2.17과 GOAPI `85186af`를 게시·운영 반영하고 Android Google ID token audience 분리를 실기기에서 확인했다.
 - Android token 회전, FID 푸시, 계정 완전 삭제, 신고와 차단 분리, 공개 이용약관을 NUBO/GOAPI 공통 기능으로 반영했다.
 - WSL2 `nubo-release` runner, hosted fallback, 수동 full preflight와 최신 JavaScript actions를 구성했다.
 
 ## Open findings
 
-- 다음 patch의 실제 태그 push에서 로컬 build, hosted fresh-install, Release 게시까지 한 번에 확인해야 한다.
 - 공식 update 직후에는 공식 Web이 실행되므로 사이트 전용 스킨은 운영자가 `nuboctl customize`로 다시 적용해야 한다.
 - 내부·공개 update는 데이터 백업·복원을 수행하지 않으며 외부 백업을 전제로 한다.
 - Vite 8/Rolldown의 저사양 CPU 교착이 해결되면 임시 `rolldown-vite@7.3.1` override를 제거한다.
@@ -41,6 +41,7 @@
 
 ## Verification
 
+- v1.2.18 run `32559598632`: WSL2 self-hosted build 2분 35초, hosted Ubuntu 22.04/24.04 fresh-install 18초/19초와 게시를 통과했다. 공개 asset의 SHA-256, clean NUBO/nuboctl `1b34bd3`, GOAPI `85186af`, API contract 1을 다시 확인했다.
 - UI patch: 전체 ESLint 오류 0건, NUBO 28개 테스트, typecheck와 production build를 통과했다.
 - 혼합 runner smoke run `32553785565`: 로컬 checkout, 32 CPU/30GiB, Docker 실행을 10초에 확인했다.
 - 게시 없는 full preflight run `32554073029`: 로컬 통합 build 2분 28초, hosted Ubuntu 22.04/24.04 fresh-install 18초/19초를 통과했다.
@@ -49,6 +50,5 @@
 
 ## Next action
 
-- 요청한 메뉴 아이콘·모바일 여백·홈 문구를 반영한 v1.2.18 태그를 게시한다.
-- 게시 뒤 혼합 runner 선택, clean provenance, Ubuntu 22.04/24.04 fresh-install과 공개 asset을 확인한다.
+- 제품 소유자가 v1.2.18 UI를 모바일과 데스크톱에서 확인한다.
 - 이후 제품 작업은 S1-Q01 request ID/구조화 로그와 S1-Q02 오류 분류의 최소 범위를 합의한 뒤 시작한다.
