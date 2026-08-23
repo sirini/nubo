@@ -52,7 +52,7 @@ NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi
 NUXT_PUBLIC_GOAPI_BASE=goapi
 NUXT_PUBLIC_DOMAIN=https://example.com
 NUXT_PUBLIC_TITLE=Example Community
-NUXT_PUBLIC_VERSION=1.2.23
+NUXT_PUBLIC_VERSION=1.2.24
 ```
 
 Point GOAPI at the file and pass the same file to Node:
@@ -178,8 +178,8 @@ The bundle intentionally excludes secrets, uploads, root dependencies, and rende
 It includes x86-64 baseline and x86-64-v2 sharp-libvips variants under `lib/`, with provenance and
 license records under `licenses/sharp-libvips/`. glibc selects the compatible variant automatically,
 so runtime servers do not install a system libvips package. It also includes the static Linux `nuboctl` binary
-with safe `install`, `activate-nginx`, source-coordinated `update` and `customize` flows, read-only `doctor` and `status`
-commands, and the unprivileged service and proxy templates used by the installer.
+with safe `install`, `activate-nginx`, source-coordinated `update` and `customize` flows, read-only `doctor` and `status`,
+explicit `releases list/prune` management commands, and the unprivileged service and proxy templates used by the installer.
 
 The official archive is attached to an immutable GitHub Release. `deploy/release-sources.json` pins the GOAPI
 commit used by both local and CI release builds and selects the release or prerelease tag consumed by source
