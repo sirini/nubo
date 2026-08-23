@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO v1.2.24에 독립 기본 스킨과 nuboctl 0.14.0의 안전한 릴리스 정리를 포함해 공식 게시하고, nubohub.org에서 update·dry-run·정리를 운영 검증한다.
+- 제품 소유자가 nubohub.org의 블로그·갤러리 게시판을 새 독립 스킨 key로 전환하고 목록·보기·쓰기·수정 화면을 QA한다.
 
 ## Product boundary
 
@@ -40,9 +40,10 @@
 
 ## Recent completion
 
-- NUBO v1.2.24 릴리스 후보를 독립 게시판·블로그·갤러리 스킨과 nuboctl 0.14.0의 `releases list/prune`으로 준비했다.
+- NUBO v1.2.24를 독립 게시판·블로그·갤러리 스킨과 nuboctl 0.14.0의 `releases list/prune`으로 공식 게시하고 nubohub.org에 운영 반영했다.
+- 운영 릴리스 20개 중 current·previous·최신 예비 3개를 보존하고, 전체 무결성이 확인된 구버전 17개를 정리해 1.9 GiB를 확보했다.
 - nuboctl 0.14.0에 `releases list/prune`과 원자적 `previous` 기록을 추가했다. 정리는 update 잠금과 동일한 경계를 쓰며 manifest·checksum이 불완전하거나 보관함 밖인 대상은 삭제하지 않는다.
-- 약 2GB RAM인 nubohub.org에서 Node 기본 heap 한도로 customize typecheck가 실패했으나 `NODE_OPTIONS=--max-old-space-size=1536`으로 빌드·파생 릴리스 적용을 완료했다.
+- 약 2GB RAM인 nubohub.org에서 Node 기본 heap 한도로 customize typecheck가 실패했으나 `NODE_OPTIONS=--max-old-space-size=1536`으로 v1.2.24 커스텀 Web 빌드·파생 릴리스 적용을 완료했다.
 - blog·gallery·trade가 `nubo-basic-board`의 목록·보기·쓰기 컴포넌트를 import하던 숨은 의존성을 제거했다. 각 스킨은 필요한 UI를 자기 폴더에 소유하며 스킨 간 import 금지 테스트로 이 경계를 고정했다.
 - 독립 패키지 `nubo-basic-blog@0.1.1`, `nubo-basic-gallery@0.1.1`, `nubo-basic-trade@0.1.3`을 운영 Market에 게시했다.
 - 어제까지의 릴리스 자동화·Market·nuboctl·미리보기 작업을 리뷰하고, 기본 게시판 스킨을 `nubo-basic-board@0.2.0`, `nubo-basic-blog@0.1.0`, `nubo-basic-gallery@0.1.0`으로 분리해 운영 Market에 게시했다.
@@ -92,6 +93,8 @@
 
 ## Verification
 
+- v1.2.24 manual/tag run `32628128070`/`32628284883`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `3e27865f4255d498cd651e0623f77a261e5cb378314dd04340880cb4dca5151d`다.
+- nubohub.org를 v1.2.24 커스텀 릴리스로 전환한 뒤 `nuboctl status` 16건, 내부·외부 readiness/version, NUBO·GOAPI·Nginx·Market active와 clean checkout을 확인했다. `releases prune --dry-run`과 실제 정리는 같은 구버전 17개·1.9 GiB를 선택했으며, 정리 뒤 보호 릴리스 3개와 current/previous 링크를 재확인했다. 릴리스 디렉터리는 2.6 GiB에서 426 MiB, 루트 파일시스템 사용률은 84%에서 77%로 줄었다.
 - v1.2.24 릴리스 후보는 API contract 일치, NUBO test 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 nuboctl test/race/vet를 로컬에서 통과했다.
 - nuboctl 0.14.0의 전체 Go test/race/vet, Linux amd64 정적 빌드와 NUBO Vitest 35건을 통과했다. current·previous·공식 기반·최신 예비 보호, dry-run 무변경, 선택 삭제, 손상 checksum·추가 운영자 파일·일반 previous 파일 보존과 update/customize 전환 시 previous 기록을 단위 테스트로 확인했다.
 - NUBO `bcb4f1e`: 전체 테스트 35건, 스킨 독립성 테스트, ESLint 오류 0건(기존 경고 50), typecheck와 최종 production build를 통과했다. 전체 `app/skins` source에서 다른 스킨을 향한 상대·`~/skins` import가 없음을 확인했다.
