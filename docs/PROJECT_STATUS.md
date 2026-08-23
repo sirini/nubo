@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 로그인 기반 스킨 리뷰·별점, 권한 확인형 원본 스트리밍, `nubo-advance-gallery` 0.2.0과 `nubo-advance-blog` 0.1.0을 NUBO/GOAPI 1.2.26 통합 릴리스로 게시하고 nubohub.org에 반영했다.
+- 1.2.26에서 드러난 게시판 소속 그룹 유실과 빈 `boards` 그룹 생성 회귀의 원인을 규명하고 NUBO·GOAPI 패치를 검증했다.
 
 ## Product boundary
 
@@ -61,6 +61,8 @@
 - `nubo-advance-blog` 0.1.0을 독립 네 라우트로 추가했다. 대표 글과 에디토리얼 피드, 좁은 본문·넓은 표지·읽기 진행률·목차, 코드 복사, 댓글 관리와 큰 제목 중심 리치 편집 흐름을 제공한다.
 - NUBO와 GOAPI 공개 버전을 1.2.26부터 통일하고 exact commit manifest를 유지하는 통합 릴리스 정책을 확정했다.
 - NUBO/GOAPI v1.2.26 태그와 통합 asset을 게시하고 `nuboctl update`로 nubohub.org의 공식 런타임과 커스텀 Web을 갱신했다.
+- 직접 게시판 관리 경로에서 비동기 그룹 로딩 전 UID 0을 저장하던 회귀를 수정했다. 폼은 게시판의 `config.groupUid`를 사용하고 GOAPI는 존재하지 않는 그룹과 게시판 ID–UID 불일치를 거부한다.
+- DB 부트스트랩은 기존 사이트의 첫 그룹을 재사용하고 그룹이 하나도 없을 때만 `boards`를 생성하도록 수정했다.
 
 ## Open findings
 
@@ -88,9 +90,10 @@
 - NUBO/GOAPI v1.2.26은 로컬 NUBO 39건, lint 오류 0건(경고 50), typecheck, 1536 MiB production build와 GOAPI test/race/vet를 통과했다. CI run `32643934402`에서 공식 Ubuntu 빌드와 Ubuntu 22.04/24.04 fresh install 뒤 asset 2개를 게시했다.
 - 운영 전 백업은 `/var/backups/nubohub-nubo-pre-v1.2.26-20260823-225940.sql.gz`, `/var/backups/nubohub-upload-pre-v1.2.26-20260823-225940.tar.gz`와 SHA-256 영수증에 보존했다.
 - nubohub.org는 커스텀 릴리스 `e169646e59d6`(로컬 빌드 `f156b3639620`)에서 `nuboctl status` 16건, `/version`의 NUBO·GOAPI 1.2.26 exact commit, HTTPS와 readiness를 통과했다. 원본 API는 더 이상 404가 아니며 실제 JPEG byte range에 206을 반환했다.
+- 게시판 그룹 회귀 패치는 NUBO unit 40건, typecheck, ESLint 오류 0건(기존 경고 50), 1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다.
 
 ## Next action
 
-1. 다음 세션에서 장기 로드맵을 현재 제품 상태에 맞춰 다시 검토하고 다음 bounded scope를 합의한다.
-2. 두 advance 스킨을 실제 콘텐츠로 추가 브라우저 QA한 뒤 필요한 UX 수정과 Market 게시 여부를 결정한다.
-3. `customize` 메모리는 운영 OOM이 관측될 때만 상향한다.
+1. sensta.me의 이탈한 게시판 `group_uid`를 원래 그룹으로 복구하고, 부트스트랩이 추가한 빈 `boards` 그룹을 백업 후 정리한다.
+2. 다음 세션에서 장기 로드맵을 현재 제품 상태에 맞춰 다시 검토하고 다음 bounded scope를 합의한다.
+3. 두 advance 스킨을 실제 콘텐츠로 추가 브라우저 QA한 뒤 필요한 UX 수정과 Market 게시 여부를 결정한다.

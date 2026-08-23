@@ -1,0 +1,25 @@
+import type { BoardConfig } from "~/types/board"
+
+export const createBoardEditInitialValues = (config: BoardConfig) => ({
+  adminUid: config.admin.board,
+  boardUid: config.uid,
+  groupUid: config.groupUid,
+  id: config.id,
+  name: config.name,
+  info: config.info,
+  type: config.type,
+  skinKey: config.skinKey,
+  categories: config.category.map((cat) => cat.name).join(","),
+  rowCount: config.rowCount,
+  width: config.width,
+  levelList: config.level.list,
+  levelView: config.level.view,
+  levelWrite: config.level.write,
+  levelComment: config.level.comment,
+  levelDownload: config.level.download,
+  pointView: config.point.view,
+  pointWrite: config.point.write,
+  pointComment: config.point.comment,
+  pointDownload: config.point.download,
+  useCategory: config.useCategory,
+})

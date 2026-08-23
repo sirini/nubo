@@ -56,10 +56,10 @@ import { BOARD_CONFIG } from "~/types/board"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import BoardFieldGroup from "./BoardFieldGroup.vue"
 import { useBoardFormSchema } from "./boardFormSchema"
+import { createBoardEditInitialValues } from "./boardFormValues"
 
 const schema = useBoardFormSchema()
-const { groupInfo, getBoardConfig, modifyBoard, openBoardRemoveConfirmDialog } =
-  useNuboAdminContext()
+const { getBoardConfig, modifyBoard, openBoardRemoveConfirmDialog } = useNuboAdminContext()
 const props = defineProps<{
   selectedBoardId: string
   changePanel: (panel: "list" | "new" | "edit", boardId?: string) => Promise<void>
@@ -69,33 +69,9 @@ const setting = await getBoardConfig(props.selectedBoardId)
 
 cfg.value.config = setting.config
 
-// 스키마 지정 및 기존 값들 가져오기
-const cats = setting.config.category.map((cat) => cat.name).join(",")
 const { handleSubmit } = useForm({
   validationSchema: schema.validationSchema,
-  initialValues: {
-    adminUid: setting.config.admin.board,
-    boardUid: setting.config.uid,
-    groupUid: groupInfo.value.config.uid,
-    id: props.selectedBoardId,
-    name: setting.config.name,
-    info: setting.config.info,
-    type: setting.config.type,
-    skinKey: setting.config.skinKey,
-    categories: cats,
-    rowCount: setting.config.rowCount,
-    width: setting.config.width,
-    levelList: setting.config.level.list,
-    levelView: setting.config.level.view,
-    levelWrite: setting.config.level.write,
-    levelComment: setting.config.level.comment,
-    levelDownload: setting.config.level.download,
-    pointView: setting.config.point.view,
-    pointWrite: setting.config.point.write,
-    pointComment: setting.config.point.comment,
-    pointDownload: setting.config.point.download,
-    useCategory: setting.config.useCategory,
-  },
+  initialValues: createBoardEditInitialValues(setting.config),
 })
 
 // 기존 게시판 수정 요청 전송
