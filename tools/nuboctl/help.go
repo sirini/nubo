@@ -62,6 +62,7 @@ GOAPI 출처가 바뀌어 DB 준비가 필요할 때만 외부 백업을 확인�
 		title: "사이트 꾸미기 적용",
 		body: `app/skins에서 수정한 화면을 검사하고 빌드한 뒤 Web만 안전하게 전환합니다.
 NUBO 프로젝트 폴더에서 실행합니다. 실패하면 이전 Web으로 자동 복구합니다.
+Node heap은 기본 1536 MiB이며 기존 NODE_OPTIONS의 사용자 지정값을 우선합니다.
 
 사용법:
   nuboctl customize --dry-run   빌드하되 실행 중인 사이트는 유지

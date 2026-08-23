@@ -37,9 +37,11 @@
 - 스킨 패키지는 다른 스킨 폴더의 소스 파일을 import하지 않는다. 중복되더라도 각 스킨이 목록·보기·쓰기 UI를 직접 소유하고, 공유 경계는 NUBO의 provider·store·타입과 `app/components`의 플랫폼 UI로 제한한다.
 - 분리 전 `nubo-basic-board`를 선택한 기존 블로그·갤러리는 스킨 로더가 각각 전용 기본 스킨으로 연결해 업그레이드 전후 UI를 보존한다.
 - 릴리스 정리는 자동 삭제하지 않고 운영자가 `releases prune --dry-run`을 확인한 뒤 실행한다. current·previous·현재 커스텀 빌드의 공식 기반·최신 예비 1개를 보호하고, 삭제 후보도 전체 무결성을 재검증한다.
+- 커스텀 Web 빌드는 Node heap 1536 MiB를 기본 적용하되, 운영자가 `NODE_OPTIONS`로 지정한 heap과 다른 옵션을 우선 보존한다.
 
 ## Recent completion
 
+- nuboctl 0.14.1이 `customize`와 update의 커스텀 Web 재빌드에 Node heap 1536 MiB 기본값을 자동 적용하도록 보강했다.
 - NUBO v1.2.24를 독립 게시판·블로그·갤러리 스킨과 nuboctl 0.14.0의 `releases list/prune`으로 공식 게시하고 nubohub.org에 운영 반영했다.
 - 운영 릴리스 20개 중 current·previous·최신 예비 3개를 보존하고, 전체 무결성이 확인된 구버전 17개를 정리해 1.9 GiB를 확보했다.
 - nuboctl 0.14.0에 `releases list/prune`과 원자적 `previous` 기록을 추가했다. 정리는 update 잠금과 동일한 경계를 쓰며 manifest·checksum이 불완전하거나 보관함 밖인 대상은 삭제하지 않는다.
@@ -93,6 +95,7 @@
 
 ## Verification
 
+- nuboctl 0.14.1의 Node 환경 병합 단위 테스트와 전체 Go test/race/vet를 통과했다. `NODE_OPTIONS`가 없거나 다른 옵션만 있을 때 1536 MiB를 추가하고, dash/underscore 형식의 기존 heap 지정은 변경하지 않음을 확인했다.
 - v1.2.24 manual/tag run `32628128070`/`32628284883`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `3e27865f4255d498cd651e0623f77a261e5cb378314dd04340880cb4dca5151d`다.
 - nubohub.org를 v1.2.24 커스텀 릴리스로 전환한 뒤 `nuboctl status` 16건, 내부·외부 readiness/version, NUBO·GOAPI·Nginx·Market active와 clean checkout을 확인했다. `releases prune --dry-run`과 실제 정리는 같은 구버전 17개·1.9 GiB를 선택했으며, 정리 뒤 보호 릴리스 3개와 current/previous 링크를 재확인했다. 릴리스 디렉터리는 2.6 GiB에서 426 MiB, 루트 파일시스템 사용률은 84%에서 77%로 줄었다.
 - v1.2.24 릴리스 후보는 API contract 일치, NUBO test 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 nuboctl test/race/vet를 로컬에서 통과했다.

@@ -42,6 +42,35 @@ func TestPrepareSourceWorkflowExplainsWrongDirectory(t *testing.T) {
 	}
 }
 
+func TestSourceWorkflowEnvironmentAddsDefaultNodeHeap(t *testing.T) {
+	environment, applied := sourceWorkflowEnvironment([]string{"PATH=/usr/bin", "NODE_OPTIONS=--trace-warnings"})
+	if !applied || !reflect.DeepEqual(environment, []string{
+		"PATH=/usr/bin",
+		"NODE_OPTIONS=--trace-warnings --max-old-space-size=1536",
+	}) {
+		t.Fatalf("Node heap 기본값이 기존 옵션에 안전하게 추가되지 않았습니다: %v, %v", environment, applied)
+	}
+
+	environment, applied = sourceWorkflowEnvironment([]string{"PATH=/usr/bin"})
+	if !applied || environment[len(environment)-1] != "NODE_OPTIONS=--max-old-space-size=1536" {
+		t.Fatalf("NODE_OPTIONS가 없을 때 기본값이 추가되지 않았습니다: %v, %v", environment, applied)
+	}
+}
+
+func TestSourceWorkflowEnvironmentPreservesUserNodeHeap(t *testing.T) {
+	for _, nodeOptions := range []string{
+		"--max-old-space-size=2048",
+		"--trace-warnings --max_old_space_size=1024",
+		"--max-old-space-size 1792",
+	} {
+		existing := []string{"NODE_OPTIONS=" + nodeOptions}
+		environment, applied := sourceWorkflowEnvironment(existing)
+		if applied || !reflect.DeepEqual(environment, existing) {
+			t.Fatalf("사용자 Node heap 설정을 변경했습니다: %q → %v, %v", nodeOptions, environment, applied)
+		}
+	}
+}
+
 func TestReleaseOptionSelectsInternalUpdate(t *testing.T) {
 	if !hasReleaseOption([]string{"--release", "/opt/nubo/releases/candidate"}) || !hasReleaseOption([]string{"--release=/tmp/candidate"}) {
 		t.Fatal("내부 update의 --release 옵션을 찾지 못했습니다")

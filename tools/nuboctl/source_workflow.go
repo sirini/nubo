@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const defaultNodeHeapOption = "--max-old-space-size=1536"
+
 type sourceWorkflow struct {
 	root   string
 	script string
@@ -60,13 +62,49 @@ func runSourceWorkflow(command string, args []string) error {
 	}
 	commandLine := exec.Command(node, append([]string{workflow.script}, workflow.args...)...)
 	commandLine.Dir = workflow.root
+	environment, defaultHeapApplied := sourceWorkflowEnvironment(os.Environ())
+	commandLine.Env = environment
 	commandLine.Stdin = os.Stdin
 	commandLine.Stdout = os.Stdout
 	commandLine.Stderr = os.Stderr
+	if defaultHeapApplied {
+		printItem("Node heap", "1536 MiB 기본값 · NODE_OPTIONS로 변경 가능")
+	}
 	if err := commandLine.Run(); err != nil {
 		return fmt.Errorf("작업을 끝내지 못했습니다: %w", err)
 	}
 	return nil
+}
+
+// 운영자가 지정한 Node 옵션을 유지하면서 커스텀 Web 빌드에 필요한 heap 기본값만 보탠다.
+func sourceWorkflowEnvironment(environment []string) ([]string, bool) {
+	result := append([]string(nil), environment...)
+	for index, entry := range result {
+		key, value, found := strings.Cut(entry, "=")
+		if !found || key != "NODE_OPTIONS" {
+			continue
+		}
+		if hasNodeHeapOption(value) {
+			return result, false
+		}
+		value = strings.TrimSpace(value)
+		if value != "" {
+			value += " "
+		}
+		result[index] = "NODE_OPTIONS=" + value + defaultNodeHeapOption
+		return result, true
+	}
+	return append(result, "NODE_OPTIONS="+defaultNodeHeapOption), true
+}
+
+func hasNodeHeapOption(options string) bool {
+	for _, option := range strings.Fields(options) {
+		name, _, _ := strings.Cut(option, "=")
+		if name == "--max-old-space-size" || name == "--max_old_space_size" {
+			return true
+		}
+	}
+	return false
 }
 
 func hasReleaseOption(args []string) bool {

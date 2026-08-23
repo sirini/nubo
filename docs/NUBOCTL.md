@@ -84,9 +84,10 @@ nuboctl customize
 
 현재 package lock은 저사양 가상 CPU에서 Vite 8의 변환이 멈추는 문제를 피하기 위해
 `rolldown-vite@7.3.1`을 호환 빌더로 고정한다. `nuboctl customize`가 필요한 의존성을 자동 준비하므로
-운영자가 Vite를 따로 설치하지 않는다. 약 2GB RAM인 서버에서는 swap이 충분해도 Node.js의 기본 V8 heap
-한도에서 typecheck가 먼저 끝날 수 있다. 이 경우 `NODE_OPTIONS=--max-old-space-size=1536 nuboctl customize`로
-한 번 실행하며, 커널 OOM이라면 별도 문제이므로 swap이나 더 많은 사용 가능한 메모리를 준비한다.
+운영자가 Vite를 따로 설치하지 않는다. nuboctl은 `customize`와 update의 커스텀 Web 재빌드에 Node heap
+1536 MiB 기본값을 자동 적용한다. 기존 `NODE_OPTIONS`에 `--max-old-space-size` 또는
+`--max_old_space_size`를 지정했다면 그 값을 우선하며 다른 Node 옵션도 보존한다. 커널 OOM이라면 V8 heap
+한도와 별개 문제이므로 swap이나 더 많은 사용 가능한 메모리를 준비한다.
 
 `nuboctl customize`가 한 번 성공하면 checkout의 `.nubo` 상태에 자동 적용 의도를 기록한다. 이후
 `nuboctl update`는 새 공식 버전용 커스텀 Web을 서비스 전환 전에 typecheck·빌드한다. 빌드가 실패하면
