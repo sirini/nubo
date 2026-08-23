@@ -47,6 +47,11 @@ type nativeLibraryVariant struct {
 	Source string `json:"source"`
 }
 
+type releaseChecksum struct {
+	expected string
+	relative string
+}
+
 // 릴리스 manifest를 읽고 지원하는 최소 형식인지 확인한다.
 func readManifest(releaseDir string) (releaseManifest, error) {
 	var manifest releaseManifest
@@ -152,58 +157,69 @@ func validateNativeLibraryVariant(releaseDir, level string, variant nativeLibrar
 
 // 목록에 기록된 파일만 검증하며 운영자가 추가한 파일은 허용한다.
 func verifyReleaseChecksums(releaseDir string) error {
-	file, err := os.Open(filepath.Join(releaseDir, "checksums.txt"))
+	checksums, err := readReleaseChecksums(releaseDir)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	count := 0
-	checked := make(map[string]bool)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if len(line) < 67 {
-			return fmt.Errorf("잘못된 checksum 줄: %q", line)
-		}
-		expected := line[:64]
-		if _, err := hex.DecodeString(expected); err != nil {
-			return fmt.Errorf("잘못된 SHA-256 값: %q", expected)
-		}
-		relative := strings.TrimSpace(line[64:])
-		relative = strings.TrimPrefix(relative, "*")
-		relative = strings.TrimPrefix(relative, "./")
-		if relative == "" || filepath.IsAbs(relative) {
-			return fmt.Errorf("잘못된 checksum 경로: %q", relative)
-		}
-		clean := filepath.Clean(relative)
-		if clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
-			return fmt.Errorf("릴리스 밖을 가리키는 checksum 경로: %q", relative)
-		}
-		if checked[clean] {
-			return fmt.Errorf("중복된 checksum 경로: %q", relative)
-		}
-		filePath := filepath.Join(releaseDir, clean)
+	for _, checksum := range checksums {
+		filePath := filepath.Join(releaseDir, checksum.relative)
 		if err := ensureResolvedInside(releaseDir, filePath); err != nil {
 			return err
 		}
 		actual, err := fileSHA256(filePath)
 		if err != nil {
-			return fmt.Errorf("%s: %w", clean, err)
+			return fmt.Errorf("%s: %w", checksum.relative, err)
 		}
-		if actual != expected {
-			return fmt.Errorf("%s checksum 불일치", clean)
+		if actual != checksum.expected {
+			return fmt.Errorf("%s checksum 불일치", checksum.relative)
 		}
-		checked[clean] = true
-		count++
-	}
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-	if count == 0 {
-		return fmt.Errorf("checksum 항목이 없습니다")
 	}
 	return nil
+}
+
+// checksum 파일의 경로·중복·해시 형식을 한 번 해석해 진단과 삭제 inventory 검증이 공유한다.
+func readReleaseChecksums(releaseDir string) ([]releaseChecksum, error) {
+	file, err := os.Open(filepath.Join(releaseDir, "checksums.txt"))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	checksums := make([]releaseChecksum, 0, 128)
+	checked := make(map[string]bool)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) < 67 {
+			return nil, fmt.Errorf("잘못된 checksum 줄: %q", line)
+		}
+		expected := line[:64]
+		if _, err := hex.DecodeString(expected); err != nil {
+			return nil, fmt.Errorf("잘못된 SHA-256 값: %q", expected)
+		}
+		relative := strings.TrimSpace(line[64:])
+		relative = strings.TrimPrefix(relative, "*")
+		relative = strings.TrimPrefix(relative, "./")
+		if relative == "" || filepath.IsAbs(relative) {
+			return nil, fmt.Errorf("잘못된 checksum 경로: %q", relative)
+		}
+		clean := filepath.Clean(relative)
+		if clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+			return nil, fmt.Errorf("릴리스 밖을 가리키는 checksum 경로: %q", relative)
+		}
+		if checked[clean] {
+			return nil, fmt.Errorf("중복된 checksum 경로: %q", relative)
+		}
+		checked[clean] = true
+		checksums = append(checksums, releaseChecksum{expected: expected, relative: clean})
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+	if len(checksums) == 0 {
+		return nil, fmt.Errorf("checksum 항목이 없습니다")
+	}
+	return checksums, nil
 }
 
 // checksum에 기록된 경로가 심볼릭 링크로 릴리스 밖을 가리키지 않도록 막는다.

@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 기본 게시판·블로그·갤러리 분리와 모든 기본 스킨의 상호 소스 의존성 제거를 완료했다. 제품 소유자가 nubohub.org의 게시판별 스킨을 전환해 최종 QA한다.
+- 다음 공식 릴리스에 nuboctl 0.14.0을 포함하고, nubohub.org의 `releases prune --dry-run` 결과를 확인한 뒤 누적 릴리스를 정리한다.
 
 ## Product boundary
 
@@ -36,9 +36,12 @@
 - Market 런타임 DB 계정에는 DDL 권한을 주지 않는다. additive schema 변경도 관리자 계정으로 선적용한 뒤 새 바이너리를 시작한다.
 - 스킨 패키지는 다른 스킨 폴더의 소스 파일을 import하지 않는다. 중복되더라도 각 스킨이 목록·보기·쓰기 UI를 직접 소유하고, 공유 경계는 NUBO의 provider·store·타입과 `app/components`의 플랫폼 UI로 제한한다.
 - 분리 전 `nubo-basic-board`를 선택한 기존 블로그·갤러리는 스킨 로더가 각각 전용 기본 스킨으로 연결해 업그레이드 전후 UI를 보존한다.
+- 릴리스 정리는 자동 삭제하지 않고 운영자가 `releases prune --dry-run`을 확인한 뒤 실행한다. current·previous·현재 커스텀 빌드의 공식 기반·최신 예비 1개를 보호하고, 삭제 후보도 전체 무결성을 재검증한다.
 
 ## Recent completion
 
+- nuboctl 0.14.0에 `releases list/prune`과 원자적 `previous` 기록을 추가했다. 정리는 update 잠금과 동일한 경계를 쓰며 manifest·checksum이 불완전하거나 보관함 밖인 대상은 삭제하지 않는다.
+- 약 2GB RAM인 nubohub.org에서 Node 기본 heap 한도로 customize typecheck가 실패했으나 `NODE_OPTIONS=--max-old-space-size=1536`으로 빌드·파생 릴리스 적용을 완료했다.
 - blog·gallery·trade가 `nubo-basic-board`의 목록·보기·쓰기 컴포넌트를 import하던 숨은 의존성을 제거했다. 각 스킨은 필요한 UI를 자기 폴더에 소유하며 스킨 간 import 금지 테스트로 이 경계를 고정했다.
 - 독립 패키지 `nubo-basic-blog@0.1.1`, `nubo-basic-gallery@0.1.1`, `nubo-basic-trade@0.1.3`을 운영 Market에 게시했다.
 - 어제까지의 릴리스 자동화·Market·nuboctl·미리보기 작업을 리뷰하고, 기본 게시판 스킨을 `nubo-basic-board@0.2.0`, `nubo-basic-blog@0.1.0`, `nubo-basic-gallery@0.1.0`으로 분리해 운영 Market에 게시했다.
@@ -88,6 +91,7 @@
 
 ## Verification
 
+- nuboctl 0.14.0의 전체 Go test/race/vet, Linux amd64 정적 빌드와 NUBO Vitest 35건을 통과했다. current·previous·공식 기반·최신 예비 보호, dry-run 무변경, 선택 삭제, 손상 checksum·추가 운영자 파일·일반 previous 파일 보존과 update/customize 전환 시 previous 기록을 단위 테스트로 확인했다.
 - NUBO `bcb4f1e`: 전체 테스트 35건, 스킨 독립성 테스트, ESLint 오류 0건(기존 경고 50), typecheck와 최종 production build를 통과했다. 전체 `app/skins` source에서 다른 스킨을 향한 상대·`~/skins` import가 없음을 확인했다.
 - 최종 독립 패키지로 임시 MySQL Market의 공식 스킨 11개 게시와 nuboctl 설치 smoke를 통과했다. 운영 공개 다운로드에서도 blog `275a8f0b…942f`, gallery `67b3a79b…6851`, trade `4349b0d8…55af` SHA-256, 대표 이미지 원본, 최신 버전과 archive 내부 무의존성을 대조했고 Market active/ready를 확인했다.
 - NUBO `5c2f7bf`: 전체 테스트 34건, 스킨 registry 3건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. registry 테스트는 3개 게시판 계열 스킨 등록과 기존 `nubo-basic-board` 블로그·갤러리 설정의 호환 fallback을 확인한다.

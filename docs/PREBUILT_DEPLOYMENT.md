@@ -93,7 +93,10 @@ location /upload/ {
 ```
 
 Versioned bundles live in immutable `/opt/nubo/releases/<version>` directories. Services refer only to
-the `/opt/nubo/current` symlink, while configuration, state, and uploads remain outside every release.
+the `/opt/nubo/current` symlink, while configuration, state, and uploads remain outside every release. Before a
+successful transition changes `current`, nuboctl records its target in `/opt/nubo/previous`. Manual release pruning
+protects both links, the official base of the active site build, and one additional newest fallback. It only removes
+unprotected directories that still pass the complete manifest, required-file, and checksum validation.
 
 ## Linux service templates
 

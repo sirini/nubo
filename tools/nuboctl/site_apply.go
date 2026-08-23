@@ -41,6 +41,9 @@ func runSiteApply(options siteApplyOptions, runner commandRunner, readiness func
 		printSuccess("미리보기가 끝났습니다. 실행 중인 사이트는 바꾸지 않았습니다.")
 		return nil
 	}
+	if err := rememberPreviousRelease(options.currentLink, preflight.previousDir); err != nil {
+		return fmt.Errorf("직전 릴리스 기록 실패: %w", err)
+	}
 	if err := replaceCurrentRelease(options.currentLink, preflight.previousDir, preflight.candidateDir); err != nil {
 		return err
 	}

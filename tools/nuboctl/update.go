@@ -44,6 +44,9 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 			return nil
 		}
 	}
+	if err := rememberPreviousRelease(options.currentLink, preflight.previousDir); err != nil {
+		return fmt.Errorf("직전 릴리스 기록 실패: %w", err)
+	}
 	lifecycle, err := lifecycleDropInFiles(preflight.candidateDir, options.systemdDir)
 	if err != nil {
 		return err

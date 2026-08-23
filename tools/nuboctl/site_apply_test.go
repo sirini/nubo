@@ -11,6 +11,10 @@ import (
 
 func TestRunSiteApplySwitchesOnlyWebToReadyBuild(t *testing.T) {
 	options, runner := siteApplyTestSetup(t)
+	previous, err := resolveCurrentRelease(options.currentLink)
+	if err != nil {
+		t.Fatal(err)
+	}
 	readinessCalls := 0
 	if err := runSiteApply(options, runner, func(string) error {
 		readinessCalls++
@@ -22,6 +26,7 @@ func TestRunSiteApplySwitchesOnlyWebToReadyBuild(t *testing.T) {
 		t.Fatalf("readiness 확인 횟수 = %d", readinessCalls)
 	}
 	assertCurrentTarget(t, options.currentLink, options.candidateDir)
+	assertCurrentTarget(t, filepath.Join(filepath.Dir(options.currentLink), "previous"), previous)
 	joined := strings.Join(*runner.calls, "\n")
 	if strings.Count(joined, "systemctl restart nubo-web.service") != 1 {
 		t.Fatalf("Web restart 명령이 올바르지 않습니다: %s", joined)

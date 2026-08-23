@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.13.0"
+const version = "0.14.0"
 
 type options struct {
 	releaseDir  string
@@ -47,6 +47,8 @@ func run(args []string) int {
 		return runUpdateCommand(args[1:])
 	case "customize":
 		return runCustomizeCommand(args[1:])
+	case "releases":
+		return runReleasesCommand(args[1:])
 	case "market":
 		return runMarketCommand(args[1:])
 	case "skin":

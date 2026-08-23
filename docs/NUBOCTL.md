@@ -2,7 +2,7 @@
 
 최초 `install`과 기존 소스의 `adopt`는 PATH에 관리 명령이 생기기 전이므로 저장소의 npm bootstrap을
 사용한다. 설치가 끝난 뒤 운영자가 기억할 공개 명령은 `nuboctl status`, `doctor`, `update`, `customize`,
-`skin`, `activate-nginx`다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
+`releases`, `market`, `activate-nginx`다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
 경계이며 일반 사용자가 직접 실행하지 않는다. AI·자동화는 릴리스 최상위의
 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
@@ -84,8 +84,9 @@ nuboctl customize
 
 현재 package lock은 저사양 가상 CPU에서 Vite 8의 변환이 멈추는 문제를 피하기 위해
 `rolldown-vite@7.3.1`을 호환 빌더로 고정한다. `nuboctl customize`가 필요한 의존성을 자동 준비하므로
-운영자가 Vite를 따로 설치하거나 `NODE_OPTIONS`를 지정하지 않는다. 빌드 프로세스가 커널 OOM으로
-종료된다면 별도 문제이므로 swap이나 약 3GB 이상의 사용 가능한 메모리를 준비한다.
+운영자가 Vite를 따로 설치하지 않는다. 약 2GB RAM인 서버에서는 swap이 충분해도 Node.js의 기본 V8 heap
+한도에서 typecheck가 먼저 끝날 수 있다. 이 경우 `NODE_OPTIONS=--max-old-space-size=1536 nuboctl customize`로
+한 번 실행하며, 커널 OOM이라면 별도 문제이므로 swap이나 더 많은 사용 가능한 메모리를 준비한다.
 
 `nuboctl customize`가 한 번 성공하면 checkout의 `.nubo` 상태에 자동 적용 의도를 기록한다. 이후
 `nuboctl update`는 새 공식 버전용 커스텀 Web을 서비스 전환 전에 typecheck·빌드한다. 빌드가 실패하면
@@ -232,7 +233,8 @@ sudo /opt/nubo/releases/1.3.0/nuboctl update \
   --backup-confirmed
 ```
 
-1. GOAPI가 바뀐 경우 외부 백업 완료 확인과 additive DB migration 실행
+1. 외부 백업 확인 뒤 전환 직전의 정상 릴리스를 `/opt/nubo/previous`에 원자적으로 기록
+2. GOAPI가 바뀐 경우 additive DB migration 실행
 3. 외부 환경 파일의 GOAPI/Nuxt 런타임 버전을 후보 값으로 원자적 갱신
 4. `current` 링크를 원자적으로 교체
 5. NUBO 서비스 재시작과 readiness 확인
@@ -248,6 +250,29 @@ DB migration은 되돌리지 않는다. 따라서 새 migration은 직전 릴리
 템플릿이 같을 때만 허용한다. 운영 템플릿 변경이 필요한 릴리스는 별도 전환 지원이 추가되기 전까지 거부한다.
 공개 `--dry-run`도 fast-forward pull과 후보·커스텀 Web 준비는 수행한다. 서비스·DB·`current`는
 변경하지 않으며, checkout도 갱신하지 않으려면 `--no-pull`을 함께 사용한다.
+
+## releases
+
+`/opt/nubo/releases`의 불변 릴리스는 자동으로 덮어쓰지 않는다. `list`는 전체 릴리스의 버전·크기와 보호
+이유를 읽기 전용으로 보여주고, `prune`은 아래 기본 보존 집합 밖의 릴리스만 정리한다.
+
+- `/opt/nubo/current`가 가리키는 현재 활성 릴리스
+- update·customize 전환 직전에 기록한 `/opt/nubo/previous`
+- 현재 커스텀 빌드와 같은 버전의 공식 기반 릴리스
+- 위 대상 외에 수정 시각이 가장 최근인 예비 릴리스 1개
+- manifest를 인식할 수 없거나 전체 checksum·필수 파일 검증에 실패한 디렉터리
+
+```bash
+nuboctl releases list
+sudo nuboctl releases prune --dry-run
+sudo nuboctl releases prune
+```
+
+추가 예비 릴리스 수는 `--keep N`으로 조정한다. 실제 정리는 update와 같은 설치 잠금을 얻고, 삭제 직전에도
+대상이 `current`나 `previous`로 바뀌지 않았는지와 전체 릴리스 무결성을 다시 확인한다. checksum에 없는
+운영자 파일이나 릴리스 밖을 향한 링크가 하나라도 있으면 디렉터리 전체를 보존한다. 보관함 자체가
+심볼릭 링크이거나 보호 링크가 보관함의 직접 하위를 가리키지 않으면 중단한다. 자동 정리는 아직 하지 않으며
+운영자가 dry-run 결과를 확인한 뒤 명시적으로 실행한다.
 
 ## doctor
 

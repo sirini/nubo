@@ -11,8 +11,12 @@ import (
 // migration과 링크 전환 뒤 새 릴리스 readiness까지 확인한다.
 func TestRunUpdateSwitchesToReadyCandidate(t *testing.T) {
 	options, runner := updateTestSetup(t)
+	previous, err := resolveCurrentRelease(options.currentLink)
+	if err != nil {
+		t.Fatal(err)
+	}
 	readinessCalls := 0
-	err := runUpdate(options, runner, func(string) error {
+	err = runUpdate(options, runner, func(string) error {
 		readinessCalls++
 		return nil
 	}, false)
@@ -23,6 +27,7 @@ func TestRunUpdateSwitchesToReadyCandidate(t *testing.T) {
 		t.Fatalf("readiness 확인 횟수 = %d", readinessCalls)
 	}
 	assertCurrentTarget(t, options.currentLink, options.candidateDir)
+	assertCurrentTarget(t, filepath.Join(filepath.Dir(options.currentLink), "previous"), previous)
 	joined := strings.Join(*runner.calls, "\n")
 	if !strings.Contains(joined, filepath.Join(options.candidateDir, "bin", "goapi")+" install") {
 		t.Fatalf("후보 migration 명령이 없습니다: %s", joined)
