@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 로그인 기반 스킨 리뷰·별점의 운영 QA를 마쳤다. 권한 확인형 원본 이미지 스트리밍 계약과 `nubo-advance-gallery` 0.1.0 골격을 구현했으며 실제 콘텐츠 QA로 목록·뷰어·편집 흐름을 다듬는다.
+- 로그인 기반 스킨 리뷰·별점의 운영 QA를 마쳤다. 권한 확인형 원본 이미지 스트리밍 계약과 `nubo-advance-gallery` 0.2.0 브라우저 QA 후보를 구현했으며 실제 콘텐츠로 감상·편집 흐름을 검수한다.
 
 ## Product boundary
 
@@ -32,7 +32,7 @@
 - 스킨은 다른 스킨 폴더의 소스를 import하지 않는다. 공유 경계는 provider·store·타입과 플랫폼 공통 UI다.
 - 데스크톱 활성 링크·버튼·메뉴·선택 컨트롤은 손가락 커서, 비활성 컨트롤은 금지 커서를 사용한다.
 - 초기 리뷰는 nubohub.org 로그인 사용자에게 열고 계정당 스킨별 1개로 제한한다. 설치 여부와 제작자 본인 여부는 검사하지 않는다.
-- 리뷰 인증은 NUBO Web이 `uid`·닉네임·관리자 여부만 Market에 제공하고 Market은 로그인 토큰을 저장하지 않는다. 별점은 1~5, 본문은 10~2000자이며 숨김 리뷰는 집계에서 제외한다.
+- 리뷰 인증은 NUBO Web이 `uid`·닉네임·관리자 여부만 Market에 제공하고 Market은 로그인 토큰을 저장하지 않는다. 별점은 1~~5, 본문은 10~~2000자이며 숨김 리뷰는 집계에서 제외한다.
 - 초기 리뷰 관리는 영구 삭제 대신 운영자 숨김·복원만 제공한다. 사용자가 숨김 리뷰를 수정해도 자동 공개하지 않는다.
 - 기존 `nubo-basic-blog`·`nubo-basic-gallery`는 호환 기준선으로 유지하고 신규 `nubo-advance-blog`·`nubo-advance-gallery`를 독립 스킨으로 개발한다.
 - advance 블로그는 Medium의 읽기 흐름, advance 갤러리는 Unsplash의 정갈한 목록과 500px의 집중 감상 흐름에서 영감을 받되 `nubo-basic-layout`의 웜톤 라이트·다크 색상 체계를 계승한다.
@@ -54,7 +54,8 @@
 - 검수를 마친 `nubo-rehearsal-skin@1.0.0`의 공개 버전·제출·key 소유권·패키지 파일을 운영 Market에서 제거했다. 별도 `nubo-rehearsal` 제작자 계정은 유지했다.
 - 로그인 기반 스킨 리뷰·별점, 계정·스킨별 단일 리뷰 upsert와 운영자 숨김·복원을 구현하고 NUBO·Market `main` 및 nubohub.org에 반영했다.
 - 제품 소유자가 운영에서 리뷰 작성·수정, 별점과 관련 흐름이 의도대로 동작함을 최종 확인했다.
-- `nubo-advance-gallery`가 목록·상세·작성·수정 엔트리를 모두 자체 소유하도록 추가하고 웜톤 masonry 목록, 원본 전체화면, 화면 맞춤·1:1, 키보드 탐색과 독립 편집 화면을 구현했다.
+- `nubo-advance-gallery`가 목록·상세·작성·수정 엔트리를 모두 자체 소유하도록 추가하고 웜톤 masonry 목록, 권한 확인형 원본 전체화면, 화면 맞춤·1:1과 독립 편집 화면을 구현했다.
+- advance gallery 0.2.0에 댓글 작성·답글·수정·삭제, 기존 첨부 미리보기·삭제, 모바일 스와이프와 뷰어 포커스·상태 안내를 추가했다. 댓글 요청 실패 시 입력을 보존하고 화면 댓글 수를 즉시 동기화한다.
 
 ## Open findings
 
@@ -77,10 +78,10 @@
 - 운영 DB 적용 전 백업은 `/var/backups/nubohub-market-pre-reviews-20260823-205554.sql`, 이전 Market 바이너리는 `/opt/nubohub-market/nubohub-market.pre-reviews-20260823-210239`에 보존했다.
 - 운영 `/api/market/user`는 비로그인 요청에 의도한 401 JSON을 반환한다. Market 내부·공개 readiness, 공개 리뷰 API, 상세 리뷰 UI와 비인증 리뷰·운영자 변경 요청의 403 차단을 확인했고 운영 리뷰 데이터는 0건으로 유지했다.
 - 원본 이미지 계약은 교차 게시판·비밀글·삭제글·작성자 차단·보기 레벨 회귀 테스트, 저장 경로 비노출 직렬화 테스트와 반복 byte range 스트리밍 테스트를 통과했다. GOAPI 전체 test/race/vet와 NUBO unit 31건, typecheck, ESLint 오류 0건(기존 경고 50), production build를 통과했다.
-- advance gallery 추가 뒤 manifest·네 라우트 독립성 Nuxt 테스트 7건, typecheck, ESLint 오류 0건(기존 경고 50)과 production build를 통과했다. 스킨 추가 상태에서도 기본 Node heap 1536 MiB로 로컬 빌드가 완료됐다.
+- advance gallery 0.2.0은 manifest·네 라우트 독립성 Nuxt 테스트 7건, unit 31건, typecheck, ESLint 오류 0건(기존 경고 50)과 `NODE_OPTIONS=--max-old-space-size=1536` production build를 통과했다.
 
 ## Next action
 
-1. 실제 갤러리 콘텐츠로 목록 비율, 원본 지연 로드, 화면 맞춤·1:1, 키보드·모바일 탐색과 접근성을 브라우저 QA한다.
-2. 댓글 작성·수정과 기존 첨부 삭제를 advance 디자인 안에서 완성하고 스킨 패키지 검증·운영 배포를 준비한다.
-3. 갤러리 운영 QA와 필요한 수정 뒤 `nubo-advance-blog`의 Medium 계열 읽기 흐름을 개발한다.
+1. 실제 갤러리 콘텐츠로 목록 비율, 원본 지연 로드, 화면 맞춤·1:1, 댓글·첨부 관리, 키보드·모바일 탐색과 접근성을 브라우저 QA한다.
+2. QA 수정 뒤 advance gallery 패키지를 검증·운영 배포한다. `nuboctl customize` 메모리 부족은 실제 관측될 때만 서버 여유량과 함께 판단한다.
+3. 갤러리 운영 QA 뒤 `nubo-advance-blog`의 Medium 계열 읽기 흐름을 개발한다.

@@ -5,7 +5,7 @@ import type { EditorInsertImageResult } from "~/types/editor"
 // [에디터] 에 필요한 변수 & 함수들 정의
 export interface NuboEditorContext {
   config: ComputedRef<BoardConfig>
-  content: ComputedRef<string>
+  content: WritableComputedRef<string>
   imageSizeLimit: ComputedRef<{ profile: string; contentInsert: string; thumbnail: string }>
   imageUrl: ComputedRef<string>
   insertedImageResult: ComputedRef<EditorInsertImageResult | null>

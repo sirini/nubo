@@ -1,3 +1,4 @@
+import type { BoardAttachment } from "~/types/board"
 import type { Pair } from "~/types/common"
 import type { EditorTagItem } from "~/types/editor"
 
@@ -7,6 +8,7 @@ export interface NuboWriteContext {
   tags: ComputedRef<string[]>
   tagSuggestions: ComputedRef<EditorTagItem[]>
   attaches: ComputedRef<File[]>
+  files: ComputedRef<BoardAttachment[]>
   isLoggedIn: ComputedRef<boolean>
   isDragging: WritableComputedRef<boolean>
   isPopOver: ComputedRef<Record<string, boolean>>
@@ -19,7 +21,7 @@ export interface NuboWriteContext {
   titleSuggestions: WritableComputedRef<string[]>
   isSearchingTitles: ComputedRef<boolean>
   isWriting: WritableComputedRef<boolean>
-  isConfirmDialog: ComputedRef<boolean>
+  isConfirmDialog: WritableComputedRef<boolean>
   writeNewPost: () => Promise<void>
   cancelNewPost: () => void
   cancelEditPost: () => void
@@ -35,6 +37,7 @@ export interface NuboWriteContext {
   changeSelectedImages: (event: MouseEvent) => void
   selectSuggestedTitle: (title: string) => void
   removeFromList: (index: number) => void
+  confirmRemoveFile: (fileUid: number, index: number) => void
   modifyExistPost: () => Promise<void>
   removeAttachedFile: () => Promise<void>
 }

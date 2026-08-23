@@ -85,7 +85,7 @@ export const useCommentStore = defineStore("comment", () => {
       const response = await modify(param)
       if (!response.success) {
         toast(`❌ 댓글을 수정하지 못했습니다: ${response.error}`)
-        return
+        return false
       }
 
       const target = comments.value.find((c) => c.uid === param.modifyTargetUid)
@@ -93,10 +93,11 @@ export const useCommentStore = defineStore("comment", () => {
         target.content = param.content
       }
       toast(`✅ 댓글을 성공적으로 수정하였습니다`)
+      clear()
+      return true
     } catch (e) {
       toast(`❌ 댓글을 수정하지 못했습니다: ${e}`)
-    } finally {
-      clear()
+      return false
     }
   }
 
@@ -106,7 +107,7 @@ export const useCommentStore = defineStore("comment", () => {
       const response = await remove(param)
       if (!response.success) {
         toast(`❌ 댓글을 삭제하지 못했습니다: ${response.error}`)
-        return
+        return false
       }
       const target = comments.value.findIndex((c) => c.uid === param.removeTargetUid)
       if (target > -1) {
@@ -123,10 +124,11 @@ export const useCommentStore = defineStore("comment", () => {
         }
       }
       toast(`✅ 댓글을 성공적으로 삭제하였습니다`)
+      clear()
+      return true
     } catch (e) {
       toast(`❌ 댓글을 삭제하지 못했습니다: ${e}`)
-    } finally {
-      clear()
+      return false
     }
   }
 
@@ -136,7 +138,7 @@ export const useCommentStore = defineStore("comment", () => {
       const response = await reply(param)
       if (!response.success) {
         toast(`❌ 답글을 남기지 못했습니다: ${response.error}`)
-        return
+        return false
       }
       const comment = { ...COMMENT_RESULT }
       comment.uid = response.result
@@ -151,10 +153,11 @@ export const useCommentStore = defineStore("comment", () => {
         comments.value.splice(target + 1, 0, comment)
       }
       toast(`✅ 답글을 성공적으로 추가하였습니다`)
+      clear()
+      return true
     } catch (e) {
       toast(`❌ 답글을 남기지 못했습니다: ${e}`)
-    } finally {
-      clear()
+      return false
     }
   }
 
@@ -163,7 +166,7 @@ export const useCommentStore = defineStore("comment", () => {
     param.content = param.content.trim()
     if (param.content.length < 10) {
       toast(`⚠️ 댓글 내용이 너무 짧습니다: ${param}`)
-      return
+      return false
     }
 
     try {
@@ -171,7 +174,7 @@ export const useCommentStore = defineStore("comment", () => {
       const response = await write(param)
       if (!response.success) {
         toast(`❌ 댓글을 작성하지 못했습니다: ${response.error}`)
-        return
+        return false
       }
       const comment = { ...COMMENT_RESULT }
       comment.uid = response.result
@@ -183,10 +186,13 @@ export const useCommentStore = defineStore("comment", () => {
       comments.value.push(comment)
 
       toast(`✅ 댓글을 성공적으로 작성하였습니다`)
+      clear()
+      return true
     } catch (e) {
       toast(`❌ 댓글을 작성하지 못했습니다: ${e}`)
+      return false
     } finally {
-      clear()
+      isLoading.value = false
     }
   }
 

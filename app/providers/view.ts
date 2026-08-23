@@ -70,24 +70,33 @@ export const useViewProvider = (): NuboViewContext => {
     },
     openMovePostDialog: () => board.openMovePostDialog(),
     removeComment: async () => {
-      await comment.removeComment({
+      const removed = await comment.removeComment({
         boardUid: board.view.config.uid,
         userUid: auth.user.uid,
         removeTargetUid: comment.target.remove,
       })
+      if (removed && board.view.post.comment > 0) board.view.post.comment--
+      return removed
     },
     setModifyComment: (commentUid: number, content: string) => {
+      comment.target.reply = 0
       comment.target.modify = commentUid
       editor.content = content
       toast(`👉 기존 댓글을 작성란으로 가져왔습니다`)
     },
     setReplyComment: (commentUid: number, content: string) => {
+      comment.target.modify = 0
       comment.target.reply = commentUid
       editor.content = `<blockquote>${content}</blockquote><p>&nbsp;</p>`
       toast(`👉 답글을 남길 댓글을 작성란으로 가져왔습니다`)
     },
+    cancelCommentTarget: () => {
+      comment.target.reply = 0
+      comment.target.modify = 0
+      editor.content = ""
+    },
     writeNewComment: async () => {
-      await comment.writeComment(
+      const written = await comment.writeComment(
         {
           boardUid: board.view.config.uid,
           postUid,
@@ -96,10 +105,14 @@ export const useViewProvider = (): NuboViewContext => {
         },
         auth.user,
       )
-      editor.content = ""
+      if (written) {
+        editor.content = ""
+        board.view.post.comment++
+      }
+      return written
     },
     writeReplyComment: async () => {
-      await comment.replyComment(
+      const written = await comment.replyComment(
         {
           boardUid: board.view.config.uid,
           postUid,
@@ -109,17 +122,22 @@ export const useViewProvider = (): NuboViewContext => {
         },
         auth.user,
       )
-      editor.content = ""
+      if (written) {
+        editor.content = ""
+        board.view.post.comment++
+      }
+      return written
     },
     modifyExistComment: async () => {
-      await comment.modifyComment({
+      const modified = await comment.modifyComment({
         boardUid: board.view.config.uid,
         postUid,
         userUid: auth.user.uid,
         content: editor.content,
         modifyTargetUid: comment.target.modify,
       })
-      editor.content = ""
+      if (modified) editor.content = ""
+      return modified
     },
     downloadFile: async (fileUid: number) => {
       await board.downloadFile(fileUid)

@@ -10,6 +10,7 @@ export const useWriteProvider = (): NuboWriteContext => {
     tags: computed(() => edit.tags),
     tagSuggestions: computed(() => edit.tagSuggestions),
     attaches: computed(() => edit.attaches),
+    files: computed(() => edit.files),
     isLoggedIn: computed(() => auth.isLoggedIn),
     isDragging: computed({
       get: () => edit.isDragging,
@@ -30,7 +31,10 @@ export const useWriteProvider = (): NuboWriteContext => {
       set: (val: string[]) => (edit.titleSuggestions = val),
     }),
     isSearchingTitles: computed(() => edit.isSearchingTitles),
-    isConfirmDialog: computed(() => edit.isConfirmDialog),
+    isConfirmDialog: computed({
+      get: () => edit.isConfirmDialog,
+      set: (val: boolean) => (edit.isConfirmDialog = val),
+    }),
     isWriting: computed({
       get: () => edit.isWriting,
       set: (val: boolean) => (edit.isWriting = val),
@@ -86,6 +90,9 @@ export const useWriteProvider = (): NuboWriteContext => {
     },
     removeFromList: (index: number) => {
       edit.removeFromList(index)
+    },
+    confirmRemoveFile: (fileUid: number, index: number) => {
+      edit.confirmRemoveFile(fileUid, index)
     },
     modifyExistPost: async () => {
       await edit.modify()

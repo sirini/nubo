@@ -24,12 +24,13 @@ export interface NuboViewContext {
   confirmRemoveComment: (commentUid: number) => void
   confirmRemovePost: (postUid: number) => void
   openMovePostDialog: () => Promise<void>
-  removeComment: () => Promise<void>
+  removeComment: () => Promise<boolean>
   setModifyComment: (commentUid: number, content: string) => void
   setReplyComment: (commentUid: number, content: string) => void
-  writeNewComment: () => Promise<void>
-  writeReplyComment: () => Promise<void>
-  modifyExistComment: () => Promise<void>
+  cancelCommentTarget: () => void
+  writeNewComment: () => Promise<boolean>
+  writeReplyComment: () => Promise<boolean>
+  modifyExistComment: () => Promise<boolean>
   downloadFile: (fileUid: number) => Promise<void>
   originalImageUrl: (fileUid: number) => Promise<string>
   likePost: (isLiked: boolean) => Promise<void>
