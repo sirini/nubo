@@ -130,6 +130,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Check out release notes
+        uses: actions/checkout@v7
+
       - name: Download verified release candidate
         uses: actions/download-artifact@v8
         with:
@@ -139,11 +142,16 @@ jobs:
       - name: Publish immutable release assets
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >-
-          gh release create "$GITHUB_REF_NAME"
-          dist/nubo-*-linux-amd64.tar.gz
-          dist/nubo-*-linux-amd64.tar.gz.sha256
-          --verify-tag
-          --generate-notes
-          --title "$GITHUB_REF_NAME"
-          --repo "$GITHUB_REPOSITORY"
+        run: |
+          notes=(--generate-notes)
+          notes_file="docs/releases/${GITHUB_REF_NAME}.md"
+          if [[ -f "$notes_file" ]]; then
+            notes=(--notes-file "$notes_file")
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            dist/nubo-*-linux-amd64.tar.gz \
+            dist/nubo-*-linux-amd64.tar.gz.sha256 \
+            --verify-tag \
+            "${notes[@]}" \
+            --title "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY"

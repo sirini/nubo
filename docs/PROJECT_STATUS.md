@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 제품 소유자가 nubohub.org의 블로그·갤러리 게시판을 새 독립 스킨 key로 전환하고 목록·보기·쓰기·수정 화면을 QA한다.
+- nuboctl 0.14.1과 상세 릴리스 노트를 포함한 NUBO v1.2.25를 공식 게시·운영 검증한 뒤, 첫 실제 Market 제작자 게시 절차를 리허설한다.
 
 ## Product boundary
 
@@ -10,6 +10,7 @@
 - 현재 운영 대상은 직접 서버를 관리하는 한국어권 개인·소규모 커뮤니티다.
 - 공식 prebuilt는 Ubuntu 22.04+ amd64, Node.js 22+, systemd, Nginx, MySQL/MariaDB 단일 서버를 지원한다.
 - 컨테이너·Kubernetes·다중 배포판·범용 배포 추상화는 현재 범위가 아니다.
+- Certbot/TLS와 외부 DB·메일 제공자의 설치·계정·네트워크 검증, 운영 백업 자동화는 NUBO 솔루션 범위가 아니다.
 
 ## Current decisions
 
@@ -31,16 +32,19 @@
 - 스킨 패키지는 단일 `<key>/` tar.gz, immutable key/version, Registry SHA-256을 계약으로 삼는다. `nuboctl market install`은 로컬 소스에만 설치하고 기존 `customize`가 빌드·적용한다.
 - Market 설치는 package identity와 파일별 SHA-256 영수증을 남긴다. `market remove`는 영수증과 설치 파일이 모두 일치할 때만 삭제하며 `--force`는 제공하지 않는다.
 - Market 제작자 계정은 배포 사이트 회원과 분리하며 운영자가 발급한 고엔트로피 토큰의 SHA-256만 저장한다. 승인된 key 소유자만 버전을 제출하고 운영자 승인 전에는 공개하지 않는다.
-- 결제·커미션·구매 권한·리뷰는 계속 보류한다. 공식 기본 스킨의 직접 게시 API와 제작자 검토 API는 긴 운영자 토큰으로 보호한다.
+- 스킨 결제·커미션·구매 권한은 제품이 자리 잡은 뒤 다시 판단하며 현재 목표에서 제외한다. 무료 스킨 리뷰·별점은 제작자 리허설과 관리 UI 이후의 신뢰 기능으로 둔다.
 - Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
 - Market 런타임 DB 계정에는 DDL 권한을 주지 않는다. additive schema 변경도 관리자 계정으로 선적용한 뒤 새 바이너리를 시작한다.
 - 스킨 패키지는 다른 스킨 폴더의 소스 파일을 import하지 않는다. 중복되더라도 각 스킨이 목록·보기·쓰기 UI를 직접 소유하고, 공유 경계는 NUBO의 provider·store·타입과 `app/components`의 플랫폼 UI로 제한한다.
 - 분리 전 `nubo-basic-board`를 선택한 기존 블로그·갤러리는 스킨 로더가 각각 전용 기본 스킨으로 연결해 업그레이드 전후 UI를 보존한다.
 - 릴리스 정리는 자동 삭제하지 않고 운영자가 `releases prune --dry-run`을 확인한 뒤 실행한다. current·previous·현재 커스텀 빌드의 공식 기반·최신 예비 1개를 보호하고, 삭제 후보도 전체 무결성을 재검증한다.
 - 커스텀 Web 빌드는 Node heap 1536 MiB를 기본 적용하되, 운영자가 `NODE_OPTIONS`로 지정한 heap과 다른 옵션을 우선 보존한다.
+- DB·업로드와 Market DB·패키지의 백업·복원은 배포 환경별 운영자 책임으로 두고 NUBO가 자동 수행하지 않는다.
+- 현재 `rolldown-vite@7.3.1` 빌드가 저사양 서버에서 정상 동작하므로 Vite 8 전환은 안정성과 실익이 분명해질 때까지 추진하지 않는다.
 
 ## Recent completion
 
+- 제품 소유자가 nubohub.org의 블로그·갤러리를 독립 스킨 key로 전환하고 목록·보기·쓰기·수정 화면이 정상 동작함을 확인했다.
 - nuboctl 0.14.1이 `customize`와 update의 커스텀 Web 재빌드에 Node heap 1536 MiB 기본값을 자동 적용하도록 보강했다.
 - NUBO v1.2.24를 독립 게시판·블로그·갤러리 스킨과 nuboctl 0.14.0의 `releases list/prune`으로 공식 게시하고 nubohub.org에 운영 반영했다.
 - 운영 릴리스 20개 중 current·previous·최신 예비 3개를 보존하고, 전체 무결성이 확인된 구버전 17개를 정리해 1.9 GiB를 확보했다.
@@ -87,14 +91,11 @@
 
 - 제작자 온보딩과 운영자 검토는 현재 문서화된 API 흐름이다. 첫 실제 게시를 관찰한 뒤 웹 대시보드와 운영자 UI 중 반복 비용이 큰 쪽을 먼저 만든다.
 - 제작자 신원 확인과 토큰 전달은 운영자 수동 절차다. 이메일 복구나 외부 OAuth를 도입할 때도 NUBO 배포 사이트 회원과 Market 권한을 자동 결합하지 않는다.
-- Market MVP는 유료 권한·구매 취소·서명된 단기 URL을 제공하지 않는다. 판매 모델을 정할 때 계정 인증과 entitlement 경계를 별도 설계해야 한다.
-- Market 백업은 `nubohub_market` DB와 패키지 저장 디렉터리를 같은 시점의 세트로 보존해야 한다.
-- update는 데이터 백업·복원을 수행하지 않으며 GOAPI 변경 릴리스는 외부 백업을 전제로 한다.
-- Vite 8/Rolldown의 저사양 CPU 교착이 해결되면 임시 `rolldown-vite@7.3.1` override를 제거한다.
-- Certbot/TLS와 외부 DB·메일의 실제 운영 검증은 fresh-install smoke 범위 밖이다.
+- 무료 스킨 리뷰·별점은 실제 사용자만 남길 수 있는 최소 신뢰 경계, 신고·운영자 숨김, 집계 조작 방지를 제작자·운영 UI 범위가 정해진 뒤 설계한다.
 
 ## Verification
 
+- v1.2.25 릴리스 후보는 API contract v1 일치, NUBO Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 nuboctl test/race/vet를 로컬에서 통과했다.
 - nuboctl 0.14.1의 Node 환경 병합 단위 테스트와 전체 Go test/race/vet를 통과했다. `NODE_OPTIONS`가 없거나 다른 옵션만 있을 때 1536 MiB를 추가하고, dash/underscore 형식의 기존 heap 지정은 변경하지 않음을 확인했다.
 - v1.2.24 manual/tag run `32628128070`/`32628284883`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `3e27865f4255d498cd651e0623f77a261e5cb378314dd04340880cb4dca5151d`다.
 - nubohub.org를 v1.2.24 커스텀 릴리스로 전환한 뒤 `nuboctl status` 16건, 내부·외부 readiness/version, NUBO·GOAPI·Nginx·Market active와 clean checkout을 확인했다. `releases prune --dry-run`과 실제 정리는 같은 구버전 17개·1.9 GiB를 선택했으며, 정리 뒤 보호 릴리스 3개와 current/previous 링크를 재확인했다. 릴리스 디렉터리는 2.6 GiB에서 426 MiB, 루트 파일시스템 사용률은 84%에서 77%로 줄었다.
@@ -145,6 +146,7 @@
 
 ## Next action
 
-- 제품 소유자가 nubohub.org의 블로그·갤러리 게시판을 새 스킨 key로 전환하고 실제 목록·보기·쓰기·수정 화면을 QA한다.
-- 그 뒤 첫 실제 제작자 계정과 테스트 key로 운영 절차를 리허설하고, 관찰 결과에 따라 제작자 제출 대시보드와 운영자 승인 화면 중 우선순위를 정한다.
-- 결제·커미션·구매 권한·리뷰는 계속 보류한다.
+- NUBO v1.2.25를 상세 릴리스 노트와 함께 게시하고 nubohub.org에서 `NODE_OPTIONS` 없는 customize를 검증한다.
+- 첫 실제 제작자 계정과 테스트 key로 발급→소유권→제출→승인→공개 절차를 리허설한다.
+- 리허설 결과에 따라 제작자 제출 대시보드와 운영자 승인 화면의 범위·우선순위를 다시 리뷰한다.
+- 관리 UI 경계를 확정한 뒤 무료 스킨 리뷰·별점 기능을 설계·구현한다.
