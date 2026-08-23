@@ -1,8 +1,69 @@
 <template>
-  <!-- 글쓰기 동작은 모든 게시판 종류가 공유합니다. 블로그만의 폼이 필요하면 이 래퍼부터 교체하세요. -->
-  <DefaultWrite />
+  <section class="container mx-auto py-6">
+    <div class="mx-auto" :style="`max-width: ${config.width}px`">
+      <Card>
+        <CardHeader>
+          <CardTitle>새글쓰기</CardTitle>
+          <CardDescription>{{ config.name }} : {{ config.info }}</CardDescription>
+        </CardHeader>
+
+        <CardContent class="space-y-4">
+          <WritePostOptions />
+          <WriteDragDropUpload />
+          <WriteDragDropUploadedFiles />
+          <WriteTitle />
+          <WriteTiptapEditor v-model="content" :config="config" />
+          <WriteHashtag />
+        </CardContent>
+
+        <CardFooter class="flex justify-between items-center border-t">
+          <div class="flex items-center gap-2">
+            <CommonVTooltip content="작성 중인 내용은 임시 보관하고 입력 화면을 닫습니다">
+              <Button variant="outline" class="cursor-pointer" @click="cancelNewPost">취소</Button>
+            </CommonVTooltip>
+            <CommonVTooltip
+              v-if="isLoadDraft"
+              content="이 게시판에 자동 저장된 글을 다시 불러옵니다"
+            >
+              <Button variant="outline" class="cursor-pointer text-green-500" @click="loadDraft"
+                >임시글 불러오기</Button
+              >
+            </CommonVTooltip>
+            <span class="text-xs text-muted-foreground">{{ draftStatus }}</span>
+          </div>
+
+          <CommonVTooltip content="제출하시기 전에 글내용을 다시 한 번 살펴봐주세요">
+            <Button class="text-foreground cursor-pointer" @click="writeNewPost">제출하기</Button>
+          </CommonVTooltip>
+        </CardFooter>
+      </Card>
+    </div>
+
+    <CommonVLoadingDialog
+      v-if="!isLoadDraft"
+      v-model="isWriting"
+      message="게시글을 저장하고 있습니다"
+    />
+  </section>
 </template>
 
 <script setup lang="ts">
-import DefaultWrite from "../nubo-basic-board/DefaultWrite.vue"
+import { useNuboEditorContext } from "~/providers/contexts/editor"
+import { useNuboWriteContext } from "~/providers/contexts/write"
+import WriteDragDropUpload from "./components/write/WriteDragDropUpload.vue"
+import WriteDragDropUploadedFiles from "./components/write/WriteDragDropUploadedFiles.vue"
+import WriteHashtag from "./components/write/WriteHashtag.vue"
+import WritePostOptions from "./components/write/WritePostOptions.vue"
+import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
+import WriteTitle from "./components/write/WriteTitle.vue"
+
+// write provider는 제출·취소와 진행 상태를 맡아 스킨이 API나 router를 직접 다루지 않게 합니다.
+const { cancelNewPost, isWriting, writeNewPost } = useNuboWriteContext()
+// editor provider의 content는 v-model 가능한 HTML 본문이며 draft 값은 브라우저 임시 저장 상태입니다.
+const { content, config, isLoadDraft, lastDraftSavedAt, loadDraft } = useNuboEditorContext()
+
+const draftStatus = computed(() => {
+  if (!lastDraftSavedAt.value) return "내용 입력 시 브라우저에 자동 저장됩니다"
+  return `자동 저장 ${new Intl.DateTimeFormat("ko-KR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(lastDraftSavedAt.value)}`
+})
 </script>

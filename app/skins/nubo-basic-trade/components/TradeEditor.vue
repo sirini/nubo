@@ -16,12 +16,12 @@
 import { toast } from "vue-sonner"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import { useNuboWriteContext } from "~/providers/contexts/write"
-import WriteDragDropUpload from "../../nubo-basic-board/components/write/WriteDragDropUpload.vue"
-import WriteDragDropUploadedFiles from "../../nubo-basic-board/components/write/WriteDragDropUploadedFiles.vue"
-import WriteHashtag from "../../nubo-basic-board/components/write/WriteHashtag.vue"
-import WritePostOptions from "../../nubo-basic-board/components/write/WritePostOptions.vue"
-import WriteTiptapEditor from "../../nubo-basic-board/components/write/WriteTiptapEditor.vue"
-import WriteTitle from "../../nubo-basic-board/components/write/WriteTitle.vue"
+import WriteDragDropUpload from "./write/WriteDragDropUpload.vue"
+import WriteDragDropUploadedFiles from "./write/WriteDragDropUploadedFiles.vue"
+import WriteHashtag from "./write/WriteHashtag.vue"
+import WritePostOptions from "./write/WritePostOptions.vue"
+import WriteTiptapEditor from "./write/WriteTiptapEditor.vue"
+import WriteTitle from "./write/WriteTitle.vue"
 import TradeFields from "./TradeFields.vue"
 const props = defineProps<{ title: string; modify: boolean }>()
 const trade = useTradeStore()

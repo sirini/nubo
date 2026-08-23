@@ -40,14 +40,14 @@
 import { useNuboViewContext } from "~/providers/contexts/view"
 import GalleryExif from "./components/view/GalleryExif.vue"
 import GalleryImageCarousel from "./components/view/GalleryImageCarousel.vue"
-import ViewCommentList from "../nubo-basic-board/components/view/ViewCommentList.vue"
-import ViewBreadcrumb from "../nubo-basic-board/components/view/ViewBreadcrumb.vue"
-import ViewListButton from "../nubo-basic-board/components/view/ViewListButton.vue"
-import ViewMainContent from "../nubo-basic-board/components/view/ViewMainContent.vue"
-import ViewModifyButton from "../nubo-basic-board/components/view/ViewModifyButton.vue"
-import ViewWriteButton from "../nubo-basic-board/components/view/ViewWriteButton.vue"
-import ViewWriteComment from "../nubo-basic-board/components/view/ViewWriteComment.vue"
-import ViewWriterProfile from "../nubo-basic-board/components/view/ViewWriterProfile.vue"
+import ViewCommentList from "./components/view/ViewCommentList.vue"
+import ViewBreadcrumb from "./components/view/ViewBreadcrumb.vue"
+import ViewListButton from "./components/view/ViewListButton.vue"
+import ViewMainContent from "./components/view/ViewMainContent.vue"
+import ViewModifyButton from "./components/view/ViewModifyButton.vue"
+import ViewWriteButton from "./components/view/ViewWriteButton.vue"
+import ViewWriteComment from "./components/view/ViewWriteComment.vue"
+import ViewWriterProfile from "./components/view/ViewWriterProfile.vue"
 
 // view.images는 전체 이미지와 EXIF를, 쓰기 가능한 imgIdx는 carousel의 현재 위치를 제공합니다.
 const { view, imgIdx } = useNuboViewContext()

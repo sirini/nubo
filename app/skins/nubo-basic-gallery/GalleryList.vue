@@ -16,7 +16,7 @@
 import { useNuboListContext } from "~/providers/contexts/list"
 import GalleryHeader from "./components/list/GalleryHeader.vue"
 import GalleryPostCol from "./components/list/GalleryPostCol.vue"
-import ListFooter from "../nubo-basic-board/components/list/ListFooter.vue"
+import ListFooter from "./components/list/ListFooter.vue"
 
 // config.width는 관리자가 지정한 갤러리의 최대 콘텐츠 폭입니다.
 const { config } = useNuboListContext()

@@ -173,7 +173,10 @@
         확인하는 방법이 가장 빠릅니다.<br />
         <br />
         특히 <CommonVCode>skin.json</CommonVCode>의 필수 항목과 폴더 이름 규칙을 지키고, 기존
-        컴포넌트가 사용하는 provider 및 타입 계약을 유지하세요. <CommonVCode>preview</CommonVCode>에는
+        컴포넌트가 사용하는 provider 및 타입 계약을 유지하세요. 스킨끼리 컴포넌트를 import하면
+        Market 설치와 버전 관리에 숨은 의존성이 생기므로, 필요한 화면 코드는 자신의 스킨 폴더 안에
+        둡니다. 여러 스킨이 공유하는 코드는 NUBO의 provider·타입·플랫폼 UI로만 올립니다.
+        <CommonVCode>preview</CommonVCode>에는
         패키지 안의 대표 PNG·JPEG·WebP 이미지 한 장을 지정합니다. 실제 사이트 화면을 더 보여주고 싶다면
         <CommonVCode>screenshots</CommonVCode> 배열에 이미지 경로를 최대 9개까지 추가할 수 있으며, 없으면
         항목 자체를 생략해도 됩니다. Market 상세 화면은 이 이미지를 3열 그리드와 확대 보기로 제공합니다.

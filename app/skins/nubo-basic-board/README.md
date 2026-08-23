@@ -11,7 +11,7 @@
 - `components/list/ListPostRow.vue`: 일반 글 행
 - `DefaultView.vue`: 글보기 화면의 전체 배치
 - `DefaultWrite.vue`, `DefaultModify.vue`: 작성·수정 폼의 전체 배치
-- `components/view`, `components/write`: 세 스킨과 거래 스킨이 함께 쓰는 기본 동작 UI
+- `components/view`, `components/write`: 이 게시판 스킨이 소유하는 글보기·글쓰기 UI
 
 `DefaultList.vue`, `DefaultView.vue`, `DefaultWrite.vue`, `DefaultModify.vue`는 라우터가 찾는
 엔트리다. 이름을 바꾸지 말고 내부 마크업과 import 대상을 수정한다.
@@ -58,3 +58,7 @@
 
 provider가 제공하지 않는 데이터가 필요하다면 store를 스킨에서 직접 참조하기 전에 NUBO의
 provider 계약 확장을 제안한다. 그래야 같은 스킨이 SSR과 이후 NUBO 버전에서도 예측 가능하게 동작한다.
+
+다른 스킨 폴더의 컴포넌트를 import하지 않는다. 공통처럼 보이는 화면도 이 폴더가 직접 소유해야
+Market에서 독립적으로 설치·수정·버전 관리할 수 있다. 여러 스킨이 공유해도 되는 경계는 NUBO가
+제공하는 provider, 타입과 `app/components`의 플랫폼 UI뿐이다.

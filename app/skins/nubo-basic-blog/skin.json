@@ -2,7 +2,7 @@
   "type": "board",
   "key": "nubo-basic-blog",
   "name": "기본 블로그 스킨",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "sirini",
   "website": "https://nubohub.org",
   "description": "글의 표지와 본문 읽기 경험을 강조한 NUBO 기본 블로그 스킨입니다",

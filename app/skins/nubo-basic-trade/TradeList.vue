@@ -33,8 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import ListFooter from "../nubo-basic-board/components/list/ListFooter.vue"
-import ListHeader from "../nubo-basic-board/components/list/ListHeader.vue"
+import ListFooter from "./components/list/ListFooter.vue"
+import ListHeader from "./components/list/ListHeader.vue"
 import { TRADE_PRICE, type TradeInfo, type TradeStatus } from "~/types/trade"
 import type { BoardListItem } from "~/types/board"
 const board = useBoardStore()

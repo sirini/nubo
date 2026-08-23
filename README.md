@@ -480,6 +480,8 @@ nuboctl customize
   `nubo-basic-gallery`(사진 갤러리)로 분리되어 있어 만들려는 화면과 가장 가까운 폴더만 복사하면 됩니다.
 - 세 게시판 스킨의 `README.md`에는 엔트리 파일 지도와 provider가 주입하는 상태·함수의 용도를
   정리했습니다.
+- 각 스킨 패키지는 다른 스킨 폴더를 import하지 않고 독립적으로 목록·보기·쓰기 UI를 소유합니다.
+  여러 스킨이 공유하는 계약은 provider, 타입과 `/app/components`의 플랫폼 UI에만 둡니다.
 - 공통 UI는 Vue 3, Tailwind CSS, shadcn-vue 구성요소를 사용합니다.
 - 복잡한 데이터 처리는 composable/provider에 두고 스킨에서는 필요한 상태와 동작만 가져오는 구조를 지향합니다.
 - 새 스킨을 만들 때 기본 스킨을 직접 수정하지 말고 폴더를 복사한 뒤 `skin.json`의 `key`, 이름과 버전을
