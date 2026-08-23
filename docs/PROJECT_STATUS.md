@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- nubohub.org 로그인 기반 스킨 리뷰·별점을 NUBO–Market `main`에 구현·검증했다. 운영 서버 접근이 가능한 세션에서 스키마와 두 서비스를 배포해 사용자 흐름을 검수한다.
+- nubohub.org 로그인 기반 스킨 리뷰·별점을 운영 반영했다. 실제 계정으로 작성·수정·숨김·복원을 최종 검수한 뒤 advance 블로그·갤러리의 API·UX 계약을 작은 범위로 확정한다.
 
 ## Product boundary
 
@@ -33,6 +33,9 @@
 - 초기 리뷰는 nubohub.org 로그인 사용자에게 열고 계정당 스킨별 1개로 제한한다. 설치 여부와 제작자 본인 여부는 검사하지 않는다.
 - 리뷰 인증은 NUBO Web이 `uid`·닉네임·관리자 여부만 Market에 제공하고 Market은 로그인 토큰을 저장하지 않는다. 별점은 1~5, 본문은 10~2000자이며 숨김 리뷰는 집계에서 제외한다.
 - 초기 리뷰 관리는 영구 삭제 대신 운영자 숨김·복원만 제공한다. 사용자가 숨김 리뷰를 수정해도 자동 공개하지 않는다.
+- 기존 `nubo-basic-blog`·`nubo-basic-gallery`는 호환 기준선으로 유지하고 신규 `nubo-advance-blog`·`nubo-advance-gallery`를 독립 스킨으로 개발한다.
+- advance 블로그는 Medium의 읽기 흐름, advance 갤러리는 Unsplash의 정갈한 목록과 500px의 집중 감상 흐름에서 영감을 받되 `nubo-basic-layout`의 웜톤 라이트·다크 색상 체계를 계승한다.
+- advance 갤러리의 미리보기를 누르면 전체 화면에서 원본 이미지를 지연 로드하고 닫기·배경 클릭·Esc로 돌아온다. 원본은 직접 파일 URL이 아니라 게시물 조회 권한을 재검사하는 GOAPI 경로로 제공한다.
 - 결제·커미션·구매 권한은 제품이 자리 잡을 때까지 목표에서 제외한다.
 - 현재 `rolldown-vite@7.3.1`이 저사양 서버에서도 동작하므로 Vite 8 전환은 안정성과 실익이 분명할 때까지 보류한다.
 
@@ -47,6 +50,7 @@
 - NUBO와 Market의 활성 인터랙션 커서를 전수 보완하고 실제 운영 CSS까지 확인했다.
 - Chrome의 same-origin 폼이 opaque Origin을 보내던 운영자 로그인 호환성 문제를 `3deff6c`에서 수정했다.
 - 검수를 마친 `nubo-rehearsal-skin@1.0.0`의 공개 버전·제출·key 소유권·패키지 파일을 운영 Market에서 제거했다. 별도 `nubo-rehearsal` 제작자 계정은 유지했다.
+- 로그인 기반 스킨 리뷰·별점, 계정·스킨별 단일 리뷰 upsert와 운영자 숨김·복원을 구현하고 NUBO·Market `main` 및 nubohub.org에 반영했다.
 
 ## Open findings
 
@@ -58,17 +62,18 @@
 ## Verification
 
 - NUBO v1.2.25는 API contract v1 일치, Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 Ubuntu 22.04/24.04 fresh-install을 통과했다.
-- nubohub.org 커스텀 릴리스 `1150094a4665`는 `nuboctl status` 16건과 외부 ready/version을 통과했고 NUBO·GOAPI·Market·Nginx가 active다.
+- nubohub.org 커스텀 릴리스 `03030eab8c30`(로컬 스킨 빌드 `1b6427b75445`)은 `nuboctl status` 16건을 통과했고 NUBO·GOAPI·Market·Nginx가 active다.
 - Market `3deff6c`는 전체 Go test/race/vet와 CI run `32635409940`의 Ubuntu 22.04 빌드·MySQL smoke를 통과했다. 운영 바이너리 SHA-256은 `89fe8762651cceb20d454404e2ed1b2009efd56ac1d152755db9f1307275787f`다.
 - 운영 HTTPS에서 opaque Origin의 same-origin 로그인은 303, cross-site는 403임을 실제 운영 token을 노출하지 않고 확인했다.
 - 리허설 스킨 제거 뒤 공개 조회 404, 관련 DB 행 0, 패키지 디렉터리 삭제와 Market readiness를 확인했다.
 - 리뷰 변경은 NUBO 최소 사용자 계약, 계정·스킨 유니크 upsert, 숨김 상태 보존, 운영자 권한과 CSRF·교차 출처 차단 테스트를 통과했다.
 - NUBO의 Market 사용자 계약은 unit test, typecheck와 ESLint 오류 0건(기존 경고 50)을 통과했고 Market은 전체 Go test와 MySQL 8 통합 스모크를 통과했다.
 - NUBO `7f0d308`과 Market `2b76a2f`를 `main`에 푸시했다. Market CI run `32637202867`의 Ubuntu 22.04 빌드·MySQL 리뷰 스모크가 통과했고 공식 스크립트 바이너리 SHA-256은 `67586fe898b27a82f0c6c47ec3aaf2936cd4abdb2b6f48ad6120c1fb06f03f3b`다.
-- 현재 운영은 NUBO v1.2.25와 기존 Market으로 정상 응답하며 `/api/market/user`는 아직 404다. 새 리뷰 코드는 운영에 반영되지 않았다.
+- 운영 DB 적용 전 백업은 `/var/backups/nubohub-market-pre-reviews-20260823-205554.sql`, 이전 Market 바이너리는 `/opt/nubohub-market/nubohub-market.pre-reviews-20260823-210239`에 보존했다.
+- 운영 `/api/market/user`는 비로그인 요청에 의도한 401 JSON을 반환한다. Market 내부·공개 readiness, 공개 리뷰 API, 상세 리뷰 UI와 비인증 리뷰·운영자 변경 요청의 403 차단을 확인했고 운영 리뷰 데이터는 0건으로 유지했다.
 
 ## Next action
 
-1. 운영 DB에 `003_skin_reviews.sql`을 선적용하고 NUBO Web `7f0d308`과 Market `2b76a2f`를 순서대로 배포한다.
-2. 로그인 작성·수정·숨김·복원, 공개 집계와 장애 시 읽기 유지 흐름을 검수하고 필요한 수정·릴리스를 마친다.
-3. 운영 검수 뒤 장기 로드맵을 재검토하고, 그 전에 합의한 작은 범위부터 `nubo-advance-blog`, `nubo-advance-gallery`를 개발한다.
+1. 제품 소유자 계정으로 로그인 리뷰 작성·수정과 운영자 숨김·복원, 공개 집계 변화를 최종 검수한다.
+2. 검수에서 발견한 문제만 수정·릴리스하고 리뷰 작업을 닫는다.
+3. 로드맵을 재검토하면서 advance 스킨의 공통 경계와 원본 이미지 권한·스트리밍 계약을 먼저 확정한 뒤 한 스킨씩 개발한다.
