@@ -2,6 +2,7 @@ import type {
   BoardItem,
   BoardListParam,
   BoardListResult,
+  BoardOriginalImageResult,
   BoardViewDownloadResult,
   BoardViewLikeParam,
   BoardMovePostParam,
@@ -19,6 +20,18 @@ export const useBoard = () => {
   // 첨부파일 다운로드 하기
   const download = async (boardUid: number, fileUid: number) => {
     return await $fetch<Resp<BoardViewDownloadResult>>("/board/download", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: {
+        boardUid,
+        fileUid,
+      },
+    })
+  }
+
+  // 실제 업로드 경로 대신 권한 확인을 마친 원본 이미지 스트리밍 URL을 발급받는다.
+  const originalImage = async (boardUid: number, fileUid: number) => {
+    return await $fetch<Resp<BoardOriginalImageResult>>("/board/original", {
       baseURL: config.public.apiBase,
       method: "GET",
       query: {
@@ -103,6 +116,7 @@ export const useBoard = () => {
   }
 
   return {
+    originalImage,
     download,
     loadInitBoardView,
     loadInitBoardList,

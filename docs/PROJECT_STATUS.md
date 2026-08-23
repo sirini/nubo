@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- nubohub.org 로그인 기반 스킨 리뷰·별점을 운영 반영했다. 실제 계정으로 작성·수정·숨김·복원을 최종 검수한 뒤 advance 블로그·갤러리의 API·UX 계약을 작은 범위로 확정한다.
+- 로그인 기반 스킨 리뷰·별점의 운영 QA를 마쳤다. 권한 확인형 원본 이미지 스트리밍 계약을 기반으로 `nubo-advance-gallery`의 몰입형 목록·뷰어를 먼저 개발한다.
 
 ## Product boundary
 
@@ -20,6 +20,7 @@
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
 - 공개 update는 `git pull --ff-only`를 기본으로 하며 사이트 스킨은 `nuboctl customize`로 별도 파생 릴리스를 만든다.
 - 커스텀 Web 빌드는 Node heap 1536 MiB를 기본 적용하되 운영자가 지정한 `NODE_OPTIONS`를 우선 보존한다.
+- advance 스킨 추가만으로 기본 heap을 선제 상향하지 않는다. 운영 `nuboctl customize`에서 실제 메모리 부족이 확인되면 서버 여유 메모리와 peak 사용량을 확인한 뒤 `NODE_OPTIONS=--max-old-space-size=<MiB>`로 상향한다.
 - 릴리스 정리는 `releases prune --dry-run` 확인 뒤 실행하며 current·previous·공식 기반·최신 예비를 보호한다.
 - API contract v1의 application 오류는 HTTP 200 + `success=false`를 유지하고 HTTP status 의미 변경은 v2에서 다룬다.
 - ESLint 오류는 릴리스를 차단하고 기존 optional prop 46건과 `v-html` 4건은 경고 상한 50건으로 동결한다.
@@ -36,6 +37,7 @@
 - 기존 `nubo-basic-blog`·`nubo-basic-gallery`는 호환 기준선으로 유지하고 신규 `nubo-advance-blog`·`nubo-advance-gallery`를 독립 스킨으로 개발한다.
 - advance 블로그는 Medium의 읽기 흐름, advance 갤러리는 Unsplash의 정갈한 목록과 500px의 집중 감상 흐름에서 영감을 받되 `nubo-basic-layout`의 웜톤 라이트·다크 색상 체계를 계승한다.
 - advance 갤러리의 미리보기를 누르면 전체 화면에서 원본 이미지를 지연 로드하고 닫기·배경 클릭·Esc로 돌아온다. 원본은 직접 파일 URL이 아니라 게시물 조회 권한을 재검사하는 GOAPI 경로로 제공한다.
+- 원본 이미지 API는 보기 레벨·포인트 잔액, 비밀글, 삭제글, 작성자 차단과 file–board 소유권을 검사하되 보기 포인트를 다시 차감하지 않는다. 실제 저장 경로는 게시글 JSON에서도 숨기고, 2분짜리 토큰 스트림은 인라인 표시와 byte range를 지원한다.
 - 결제·커미션·구매 권한은 제품이 자리 잡을 때까지 목표에서 제외한다.
 - 현재 `rolldown-vite@7.3.1`이 저사양 서버에서도 동작하므로 Vite 8 전환은 안정성과 실익이 분명할 때까지 보류한다.
 
@@ -51,6 +53,7 @@
 - Chrome의 same-origin 폼이 opaque Origin을 보내던 운영자 로그인 호환성 문제를 `3deff6c`에서 수정했다.
 - 검수를 마친 `nubo-rehearsal-skin@1.0.0`의 공개 버전·제출·key 소유권·패키지 파일을 운영 Market에서 제거했다. 별도 `nubo-rehearsal` 제작자 계정은 유지했다.
 - 로그인 기반 스킨 리뷰·별점, 계정·스킨별 단일 리뷰 upsert와 운영자 숨김·복원을 구현하고 NUBO·Market `main` 및 nubohub.org에 반영했다.
+- 제품 소유자가 운영에서 리뷰 작성·수정, 별점과 관련 흐름이 의도대로 동작함을 최종 확인했다.
 
 ## Open findings
 
@@ -58,6 +61,7 @@
 - 제작자 신원 확인과 token 전달·복구는 현재 운영자 수동 절차다. 실제 이용이 생기기 전에는 이메일 복구나 외부 OAuth를 추가하지 않는다.
 - 리뷰의 설치 증명·제작자 제한·고급 남용 방지는 실제 남용이 관찰될 때 검토한다.
 - Market의 리뷰 작성은 NUBO Web 내부 사용자 확인 API에 의존한다. 확인 API 장애 시 공개 조회는 유지하고 작성·수정만 일시 중단한다.
+- 원본 이미지 스트리밍 토큰은 GOAPI 메모리에만 2분간 보관하므로 프로세스 재시작 시 열린 뷰어가 새 URL을 다시 발급받아야 한다. 단일 서버 현재 범위에는 별도 공유 저장소를 두지 않는다.
 
 ## Verification
 
@@ -71,9 +75,10 @@
 - NUBO `7f0d308`과 Market `2b76a2f`를 `main`에 푸시했다. Market CI run `32637202867`의 Ubuntu 22.04 빌드·MySQL 리뷰 스모크가 통과했고 공식 스크립트 바이너리 SHA-256은 `67586fe898b27a82f0c6c47ec3aaf2936cd4abdb2b6f48ad6120c1fb06f03f3b`다.
 - 운영 DB 적용 전 백업은 `/var/backups/nubohub-market-pre-reviews-20260823-205554.sql`, 이전 Market 바이너리는 `/opt/nubohub-market/nubohub-market.pre-reviews-20260823-210239`에 보존했다.
 - 운영 `/api/market/user`는 비로그인 요청에 의도한 401 JSON을 반환한다. Market 내부·공개 readiness, 공개 리뷰 API, 상세 리뷰 UI와 비인증 리뷰·운영자 변경 요청의 403 차단을 확인했고 운영 리뷰 데이터는 0건으로 유지했다.
+- 원본 이미지 계약은 교차 게시판·비밀글·삭제글·작성자 차단·보기 레벨 회귀 테스트, 저장 경로 비노출 직렬화 테스트와 반복 byte range 스트리밍 테스트를 통과했다. GOAPI 전체 test/race/vet와 NUBO unit 31건, typecheck, ESLint 오류 0건(기존 경고 50), production build를 통과했다.
 
 ## Next action
 
-1. 제품 소유자 계정으로 로그인 리뷰 작성·수정과 운영자 숨김·복원, 공개 집계 변화를 최종 검수한다.
-2. 검수에서 발견한 문제만 수정·릴리스하고 리뷰 작업을 닫는다.
-3. 로드맵을 재검토하면서 advance 스킨의 공통 경계와 원본 이미지 권한·스트리밍 계약을 먼저 확정한 뒤 한 스킨씩 개발한다.
+1. `nubo-advance-gallery`를 기존 basic 스킨과 독립된 패키지로 만들고 Unsplash 계열 목록과 500px 계열 집중 감상 뷰어를 구현한다.
+2. 미리보기 클릭 원본 지연 로드, 화면 맞춤·1:1 전환, 키보드·터치 탐색과 접근성을 검증한다.
+3. 갤러리 운영 QA와 필요한 수정 뒤 `nubo-advance-blog`의 Medium 계열 읽기 흐름을 개발한다.

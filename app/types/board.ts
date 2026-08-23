@@ -68,7 +68,6 @@ export type BoardBasicConfig = {
 // 파일 기본 구조 정의
 export type BoardFile = {
   uid: number
-  path: string
 }
 
 // 게시글 이동에 필요한 게시판 목록 타입 정의
@@ -246,6 +245,11 @@ export type BoardThumbnail = {
 // 첨부파일 다운로드 결과 정의
 export type BoardViewDownloadResult = {
   name: string
+  path: string
+}
+
+// 권한 확인 후 발급된 짧은 수명의 원본 이미지 스트리밍 경로
+export type BoardOriginalImageResult = {
   path: string
 }
 
