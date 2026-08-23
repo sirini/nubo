@@ -15,7 +15,8 @@
 ## Current decisions
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
-- 다음 통합 릴리스 목표는 NUBO 1.2.26·GOAPI 1.2.19이며 두 advance 스킨의 최소 NUBO 버전은 1.2.26이다.
+- NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
+- 다음 통합 릴리스 목표는 NUBO 1.2.26·GOAPI 1.2.26이며 두 advance 스킨의 최소 NUBO 버전은 1.2.26이다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.

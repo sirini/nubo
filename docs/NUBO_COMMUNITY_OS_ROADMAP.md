@@ -896,12 +896,12 @@ nuboctl update
 
 ### 태그 전략
 
-두 저장소의 버전이 항상 같아야 한다고 가정하지 않는다. release manifest가 실제 조합을 기록한다.
+NUBO와 GOAPI는 하나의 통합 제품으로 설치·업데이트되므로 v1.2.26부터 공개 버전을 동일하게 맞춘다. 사용자는 두 저장소의 호환 조합을 직접 선택하지 않으며, release manifest가 각 구성 요소의 정확한 commit과 API contract를 기록한다.
 
 ```json
 {
   "nubo": "1.3.0",
-  "goapi": "1.4.1",
+  "goapi": "1.3.0",
   "api_contract": "v1",
   "skin_schema": 1,
   "module_schema": 1,
