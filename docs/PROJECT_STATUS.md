@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 첫 실제 Market 제작자 게시 리허설에서 확인한 수작업과 인증 경계를 바탕으로 제작자·운영자 화면의 범위와 구현 순서를 확정한다.
+- 운영 반영한 Market 제작자 작업실과 운영자 화면을 제품 소유자가 직접 사용하며 검수하고, 피드백을 반영한 뒤 단순한 스킨 리뷰·별점으로 넘어간다.
 
 ## Product boundary
 
@@ -33,6 +33,7 @@
 - Market 설치는 package identity와 파일별 SHA-256 영수증을 남긴다. `market remove`는 영수증과 설치 파일이 모두 일치할 때만 삭제하며 `--force`는 제공하지 않는다.
 - Market 제작자 계정은 배포 사이트 회원과 분리하며 운영자가 발급한 고엔트로피 토큰의 SHA-256만 저장한다. 승인된 key 소유자만 버전을 제출하고 운영자 승인 전에는 공개하지 않는다.
 - 스킨 결제·커미션·구매 권한은 제품이 자리 잡은 뒤 다시 판단하며 현재 목표에서 제외한다. 무료 스킨 리뷰·별점은 제작자 리허설과 관리 UI 이후의 신뢰 기능으로 둔다.
+- 초기 스킨 리뷰는 nubohub.org 로그인 사용자에게 열고 설치 여부와 제작자 본인 여부를 검사하지 않는다. 계정당 스킨별 리뷰 1개만 제한하며, 이용이 생기기 전부터 복잡한 증명·남용 방지를 도입하지 않는다.
 - Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
 - Market 런타임 DB 계정에는 DDL 권한을 주지 않는다. additive schema 변경도 관리자 계정으로 선적용한 뒤 새 바이너리를 시작한다.
 - 스킨 패키지는 다른 스킨 폴더의 소스 파일을 import하지 않는다. 중복되더라도 각 스킨이 목록·보기·쓰기 UI를 직접 소유하고, 공유 경계는 NUBO의 provider·store·타입과 `app/components`의 플랫폼 UI로 제한한다.
@@ -44,6 +45,9 @@
 
 ## Recent completion
 
+- Market `1229b14`에 제작자 token 로그인·프로필·key 요청·패키지 제출·심사 이력과 운영자 계정 발급·중지·token 회전·key/버전 검토 화면을 구현해 운영 반영했다.
+- 새 Market 화면은 JavaScript 없이 서버 렌더링하며 장기 token을 브라우저에 저장하지 않는다. 2시간 서버 메모리 세션, HttpOnly·Secure·SameSite=Strict cookie, CSRF·Origin 검사와 no-store 응답을 적용했다.
+- 제작자·운영자 화면은 작은 영문 장식 문구를 쓰지 않고 한국어 본문·라벨·상태·버튼을 주로 15–16px 이상으로 구성했다. 1440px 데스크톱과 390px 모바일에서 로그인 전·후 레이아웃을 확인했다.
 - NUBO v1.2.25와 nuboctl 0.14.1을 상세 릴리스 노트로 공식 게시하고 nubohub.org를 커스텀 Web까지 운영 전환했다.
 - nubohub.org에서 외부 `NODE_OPTIONS` 없이 `nuboctl customize --dry-run`을 실행해 1536 MiB 기본 heap, typecheck, client·SSR·Nitro build와 후보 릴리스 준비를 끝까지 확인했다.
 - 운영 Market에 첫 제작자 `nubo-rehearsal`과 소유 key `nubo-rehearsal-skin`을 만들고 승인 전 차단, key 승인, 버전 제출, 공개 전 비노출, 최종 승인과 원본 다운로드 검증을 리허설했다. 제작자 토큰은 root 전용 0600 파일로 보관한다.
@@ -93,13 +97,14 @@
 
 ## Open findings
 
-- 실제 게시에서 제작자는 토큰 확인·key 요청·패키지 업로드·심사 상태 조회를, 운영자는 대기 목록 확인·숫자 ID 복사·승인/반려를 모두 API로 수행해야 했다. 제작자 대시보드를 먼저 만들고 같은 인증 경계를 재사용해 운영자 대기열 화면을 잇는 순서가 적절하다.
-- 브라우저 화면은 장기 creator/admin token을 Web Storage나 JavaScript에 보관하지 않는다. TLS 위에서 짧은 수명의 HttpOnly·Secure·SameSite 세션으로 교환하고, 모든 변경 요청에 origin/CSRF 경계를 둔 서버 렌더링 화면을 우선 검토한다.
+- 제작자·운영자 화면의 정보 구조와 실제 작업 흐름은 구현됐으며, 제품 소유자의 운영 사용 피드백에 따라 밀도·표현·검토 동선을 조정한다.
 - 제작자 신원 확인과 토큰 전달은 운영자 수동 절차다. 이메일 복구나 외부 OAuth를 도입할 때도 NUBO 배포 사이트 회원과 Market 권한을 자동 결합하지 않는다.
-- 무료 스킨 리뷰·별점은 실제 사용자만 남길 수 있는 최소 신뢰 경계, 신고·운영자 숨김, 집계 조작 방지를 제작자·운영 UI 범위가 정해진 뒤 설계한다.
+- 무료 스킨 리뷰·별점은 제작자·운영 UI 뒤에 진행한다. 첫 버전은 nubohub.org 로그인과 계정당 스킨별 1개만 적용하고 설치 증명·제작자 제한은 실제 남용이 관찰될 때 검토한다.
 
 ## Verification
 
+- Market `1229b14`는 전체 Go test/race/vet, 세션 cookie·CSRF·일회성 token 회귀 테스트, MySQL 8 통합 smoke, CI run `32633870893`과 Ubuntu 22.04 정적 빌드를 통과했다. 운영 바이너리 SHA-256은 `8fa0ac79c94fc53b335c65d190254e3a2b39792f4b4fed1b23da1e85c8b1cdba`다.
+- 운영에서 실제 creator/admin token 로그인, 장기 token이 없는 세션 cookie 속성, no-store, 기존 `nubo-rehearsal`의 승인 key·공개 버전 표시와 전체 서비스 active/readiness를 확인했다. 로그인 전·후 제작자/운영자 화면을 1440px과 390px Chromium light mode로 검수했다.
 - v1.2.25 manual/tag run `32630823394`/`32630978392`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, 상세 릴리스 노트를 사용한 GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `0362eb02b499c5e78fc335c9b3a9ff587a12fbba1bda4d04e4af89be0810a012`다.
 - nubohub.org를 v1.2.25 커스텀 릴리스 `84023fcf07d1`로 전환한 뒤 `nuboctl status` 16건, clean `51dcf5c`, 내부·외부 readiness/version과 NUBO·GOAPI·Nginx·Market active를 확인했다. 무설정 1536 MiB customize dry-run은 별도 후보 `9f66f0f34786`을 준비하고 운영 링크를 바꾸지 않았다.
 - 운영 제작자 리허설은 key 승인 전 제출 403, 제출 승인 전 공개 조회 404, 승인 뒤 search/info/상세 HTML 노출과 원본·다운로드 SHA-256 `05388d0d…5ee9` 일치를 통과했다. 발급 토큰은 응답 로그에서 가리고 `/root/.config/nubohub-market/creator-tokens/nubo-rehearsal.token`에 0600으로 보관했다.
@@ -155,6 +160,5 @@
 
 ## Next action
 
-- 제작자 token 로그인·프로필·key 요청·패키지 제출·심사 이력을 우선 화면으로 묶고, 장기 token을 브라우저에 남기지 않는 인증·CSRF 경계를 확정한다.
-- 운영자는 제작자 발급/중지/토큰 회전과 key·버전 대기열 승인/반려를 같은 보안 원칙의 별도 화면으로 제공한다.
-- 관리 UI 경계를 확정한 뒤 무료 스킨 리뷰·별점 기능을 설계·구현한다.
+- 제품 소유자가 `/market/creator`와 `/market/operator`를 실제 사용하며 UI와 작업 흐름을 검수하고 피드백을 전달한다.
+- UI 피드백 반영 뒤 nubohub.org 로그인 사용자에게 설치·제작자 여부와 무관하게 계정당 스킨별 1개 리뷰·별점을 허용하는 최소 기능을 구현한다.
