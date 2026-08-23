@@ -47,6 +47,7 @@
 - NUBO v1.2.25와 nuboctl 0.14.1을 상세 릴리스 노트로 공식 게시하고 nubohub.org를 커스텀 Web까지 운영 전환했다.
 - nubohub.org에서 외부 `NODE_OPTIONS` 없이 `nuboctl customize --dry-run`을 실행해 1536 MiB 기본 heap, typecheck, client·SSR·Nitro build와 후보 릴리스 준비를 끝까지 확인했다.
 - 운영 Market에 첫 제작자 `nubo-rehearsal`과 소유 key `nubo-rehearsal-skin`을 만들고 승인 전 차단, key 승인, 버전 제출, 공개 전 비노출, 최종 승인과 원본 다운로드 검증을 리허설했다. 제작자 토큰은 root 전용 0600 파일로 보관한다.
+- 리허설에서 KST MySQL 세션의 TIMESTAMP를 Go가 UTC로 해석해 재조회 시각이 9시간 늦어지는 문제를 발견했다. Market `546a72f`에서 DB 세션과 드라이버를 UTC로 고정하고 운영 반영했다.
 - 제품 소유자가 nubohub.org의 블로그·갤러리를 독립 스킨 key로 전환하고 목록·보기·쓰기·수정 화면이 정상 동작함을 확인했다.
 - nuboctl 0.14.1이 `customize`와 update의 커스텀 Web 재빌드에 Node heap 1536 MiB 기본값을 자동 적용하도록 보강했다.
 - NUBO v1.2.24를 독립 게시판·블로그·갤러리 스킨과 nuboctl 0.14.0의 `releases list/prune`으로 공식 게시하고 nubohub.org에 운영 반영했다.
@@ -102,6 +103,7 @@
 - v1.2.25 manual/tag run `32630823394`/`32630978392`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, 상세 릴리스 노트를 사용한 GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `0362eb02b499c5e78fc335c9b3a9ff587a12fbba1bda4d04e4af89be0810a012`다.
 - nubohub.org를 v1.2.25 커스텀 릴리스 `84023fcf07d1`로 전환한 뒤 `nuboctl status` 16건, clean `51dcf5c`, 내부·외부 readiness/version과 NUBO·GOAPI·Nginx·Market active를 확인했다. 무설정 1536 MiB customize dry-run은 별도 후보 `9f66f0f34786`을 준비하고 운영 링크를 바꾸지 않았다.
 - 운영 제작자 리허설은 key 승인 전 제출 403, 제출 승인 전 공개 조회 404, 승인 뒤 search/info/상세 HTML 노출과 원본·다운로드 SHA-256 `05388d0d…5ee9` 일치를 통과했다. 발급 토큰은 응답 로그에서 가리고 `/root/.config/nubohub-market/creator-tokens/nubo-rehearsal.token`에 0600으로 보관했다.
+- Market `546a72f`는 Go test/vet, 로컬·CI MySQL 8 통합 스모크와 Ubuntu 22.04 공식 빌드를 통과했다. 운영 바이너리 SHA-256은 `b77abc3d997c5c73deb2317f51a63614366f093ea810860165ec0b8a9acb07bf`이며 재배포 뒤 creator 생성 시각과 스킨 공개 시각이 각각 `09:48:20Z`, `09:48:21Z`로 일관되게 조회되고 전체 서비스가 active다.
 - v1.2.25 릴리스 후보는 API contract v1 일치, NUBO Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 nuboctl test/race/vet를 로컬에서 통과했다.
 - nuboctl 0.14.1의 Node 환경 병합 단위 테스트와 전체 Go test/race/vet를 통과했다. `NODE_OPTIONS`가 없거나 다른 옵션만 있을 때 1536 MiB를 추가하고, dash/underscore 형식의 기존 heap 지정은 변경하지 않음을 확인했다.
 - v1.2.24 manual/tag run `32628128070`/`32628284883`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `3e27865f4255d498cd651e0623f77a261e5cb378314dd04340880cb4dca5151d`다.
