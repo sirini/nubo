@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 기본 게시판·블로그·갤러리의 폴더 분리에 이어 blog·gallery·trade의 스킨 간 컴포넌트 의존성을 제거하고 독립 패키지 새 버전을 Market에 반영한다.
+- 기본 게시판·블로그·갤러리 분리와 모든 기본 스킨의 상호 소스 의존성 제거를 완료했다. 제품 소유자가 nubohub.org의 게시판별 스킨을 전환해 최종 QA한다.
 
 ## Product boundary
 
@@ -39,6 +39,8 @@
 
 ## Recent completion
 
+- blog·gallery·trade가 `nubo-basic-board`의 목록·보기·쓰기 컴포넌트를 import하던 숨은 의존성을 제거했다. 각 스킨은 필요한 UI를 자기 폴더에 소유하며 스킨 간 import 금지 테스트로 이 경계를 고정했다.
+- 독립 패키지 `nubo-basic-blog@0.1.1`, `nubo-basic-gallery@0.1.1`, `nubo-basic-trade@0.1.3`을 운영 Market에 게시했다.
 - 어제까지의 릴리스 자동화·Market·nuboctl·미리보기 작업을 리뷰하고, 기본 게시판 스킨을 `nubo-basic-board@0.2.0`, `nubo-basic-blog@0.1.0`, `nubo-basic-gallery@0.1.0`으로 분리해 운영 Market에 게시했다.
 - 각 게시판 계열 스킨에 엔트리 지도, provider 변수·함수 의미, 복사·확장 절차를 설명하는 README와 실제 주석을 추가했다. 블로그·갤러리 대표 이미지는 운영 실화면을 1280×720으로 캡처했다.
 - README에서 고정된 과거 버전 표기를 제거하고 NUBO Market의 미리보기→검색→설치→검증·적용→안전한 삭제 흐름과 공식 링크를 프로젝트 첫 안내에 보강했다.
@@ -86,6 +88,8 @@
 
 ## Verification
 
+- NUBO `bcb4f1e`: 전체 테스트 35건, 스킨 독립성 테스트, ESLint 오류 0건(기존 경고 50), typecheck와 최종 production build를 통과했다. 전체 `app/skins` source에서 다른 스킨을 향한 상대·`~/skins` import가 없음을 확인했다.
+- 최종 독립 패키지로 임시 MySQL Market의 공식 스킨 11개 게시와 nuboctl 설치 smoke를 통과했다. 운영 공개 다운로드에서도 blog `275a8f0b…942f`, gallery `67b3a79b…6851`, trade `4349b0d8…55af` SHA-256, 대표 이미지 원본, 최신 버전과 archive 내부 무의존성을 대조했고 Market active/ready를 확인했다.
 - NUBO `5c2f7bf`: 전체 테스트 34건, 스킨 registry 3건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. registry 테스트는 3개 게시판 계열 스킨 등록과 기존 `nubo-basic-board` 블로그·갤러리 설정의 호환 fallback을 확인한다.
 - Market `5fdb7ce`의 임시 MySQL 통합 smoke에서 공식 스킨 11개 게시, `라이트 모드` 검색 11개와 nuboctl 설치를 통과했다.
 - 운영 Market에 blog `b26ea554…7994`, board `dbd81eb5…1ac1`, gallery `36d7ba32…96e7` 패키지를 게시했다. 공개 API의 key/version, 1280×720 대표 이미지 원본, 다운로드 SHA-256과 상세 HTML을 대조했으며 전체 11개, 내부·외부 readiness와 systemd active를 확인했다.
