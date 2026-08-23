@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- nubohub.org 로그인 기반 스킨 리뷰·별점을 NUBO–Market에 구현했다. 로컬 검증 뒤 커밋·릴리스하고 운영 사용자 흐름을 검수한다.
+- nubohub.org 로그인 기반 스킨 리뷰·별점을 NUBO–Market `main`에 구현·검증했다. 운영 서버 접근이 가능한 세션에서 스키마와 두 서비스를 배포해 사용자 흐름을 검수한다.
 
 ## Product boundary
 
@@ -64,9 +64,11 @@
 - 리허설 스킨 제거 뒤 공개 조회 404, 관련 DB 행 0, 패키지 디렉터리 삭제와 Market readiness를 확인했다.
 - 리뷰 변경은 NUBO 최소 사용자 계약, 계정·스킨 유니크 upsert, 숨김 상태 보존, 운영자 권한과 CSRF·교차 출처 차단 테스트를 통과했다.
 - NUBO의 Market 사용자 계약은 unit test, typecheck와 ESLint 오류 0건(기존 경고 50)을 통과했고 Market은 전체 Go test와 MySQL 8 통합 스모크를 통과했다.
+- NUBO `7f0d308`과 Market `2b76a2f`를 `main`에 푸시했다. Market CI run `32637202867`의 Ubuntu 22.04 빌드·MySQL 리뷰 스모크가 통과했고 공식 스크립트 바이너리 SHA-256은 `67586fe898b27a82f0c6c47ec3aaf2936cd4abdb2b6f48ad6120c1fb06f03f3b`다.
+- 현재 운영은 NUBO v1.2.25와 기존 Market으로 정상 응답하며 `/api/market/user`는 아직 404다. 새 리뷰 코드는 운영에 반영되지 않았다.
 
 ## Next action
 
-1. NUBO와 Market 변경을 전체 빌드·검증하고 각각 `main`에 커밋·푸시한다.
-2. 운영 DB에 리뷰 스키마를 선적용하고 NUBO Web·Market을 배포해 로그인 작성·수정·숨김·복원과 공개 집계를 검수한다.
-3. 운영 수정·릴리스를 마친 뒤 장기 로드맵과 `nubo-advance-blog`, `nubo-advance-gallery`의 첫 범위를 합의한다.
+1. 운영 DB에 `003_skin_reviews.sql`을 선적용하고 NUBO Web `7f0d308`과 Market `2b76a2f`를 순서대로 배포한다.
+2. 로그인 작성·수정·숨김·복원, 공개 집계와 장애 시 읽기 유지 흐름을 검수하고 필요한 수정·릴리스를 마친다.
+3. 운영 검수 뒤 장기 로드맵을 재검토하고, 그 전에 합의한 작은 범위부터 `nubo-advance-blog`, `nubo-advance-gallery`를 개발한다.
