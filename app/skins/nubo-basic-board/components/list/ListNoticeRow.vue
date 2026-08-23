@@ -67,5 +67,6 @@ import { HeartIcon, PinIcon } from "lucide-vue-next"
 import { TableCell, TableRow } from "~/components/ui/table"
 import { useNuboListContext } from "~/providers/contexts/list"
 
+// notices는 provider가 차단 사용자의 글을 제외해 전달한 공지 목록입니다.
 const { config, notices } = useNuboListContext()
 </script>

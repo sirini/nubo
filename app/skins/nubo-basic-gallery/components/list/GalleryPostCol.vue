@@ -67,5 +67,6 @@ import { EyeIcon, HeartIcon, LockIcon, MessageCircleIcon } from "lucide-vue-next
 import { useNuboListContext } from "~/providers/contexts/list"
 import { STATUS } from "~/types/board"
 
+// posts의 cover가 카드 이미지이며 config.id와 글 uid를 조합해 상세 링크를 만듭니다.
 const { config, posts } = useNuboListContext()
 </script>

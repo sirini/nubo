@@ -64,5 +64,6 @@ import { ListIcon, LogInIcon, NotebookPenIcon, RssIcon, SettingsIcon } from "luc
 import { useNuboListContext } from "~/providers/contexts/list"
 
 const cfg = useRuntimeConfig()
+// config/posts는 블로그 소개와 현재 글 목록, 권한 값과 page는 쓰기·목록 이동 UI에 사용합니다.
 const { config, isAdmin, isLoggedIn, page, posts } = useNuboListContext()
 </script>

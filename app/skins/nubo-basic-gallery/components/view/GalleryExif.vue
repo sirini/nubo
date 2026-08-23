@@ -28,5 +28,6 @@
 <script setup lang="ts">
 import { useNuboViewContext } from "~/providers/contexts/view"
 
+// carousel과 같은 imgIdx를 읽어 현재 사진의 EXIF만 표시합니다.
 const { view, imgIdx } = useNuboViewContext()
 </script>

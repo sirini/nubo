@@ -51,6 +51,7 @@
 import { CalendarIcon, ClockIcon, MessageCircleIcon } from "lucide-vue-next"
 import { useNuboViewContext } from "~/providers/contexts/view"
 
+// view.post와 writer는 제목·작성 정보를, config는 목록 링크와 분류 설정을 제공합니다.
 const { view, config } = useNuboViewContext()
 const coverImage = computed(() =>
   getPreviewImage(view.value.images[0]?.thumbnail.large || view.value.post.cover),

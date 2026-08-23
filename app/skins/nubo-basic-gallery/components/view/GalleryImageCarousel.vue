@@ -59,6 +59,7 @@ import { DotIcon } from "lucide-vue-next"
 import type { CarouselApi } from "~/components/ui/carousel"
 import { useNuboViewContext } from "~/providers/contexts/view"
 
+// imgIdx는 provider와 양방향으로 연결되어 이미지와 EXIF 패널이 같은 현재 위치를 공유합니다.
 const { view, imgIdx } = useNuboViewContext()
 
 const api = ref<CarouselApi>()

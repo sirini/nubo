@@ -476,6 +476,10 @@ nuboctl customize
 ## 스킨 개발
 
 - 기본 스킨은 `/app/skins` 아래에 기능별로 나뉘어 있습니다.
+- 게시판 스타일은 `nubo-basic-board`(표 게시판), `nubo-basic-blog`(블로그),
+  `nubo-basic-gallery`(사진 갤러리)로 분리되어 있어 만들려는 화면과 가장 가까운 폴더만 복사하면 됩니다.
+- 세 게시판 스킨의 `README.md`에는 엔트리 파일 지도와 provider가 주입하는 상태·함수의 용도를
+  정리했습니다.
 - 공통 UI는 Vue 3, Tailwind CSS, shadcn-vue 구성요소를 사용합니다.
 - 복잡한 데이터 처리는 composable/provider에 두고 스킨에서는 필요한 상태와 동작만 가져오는 구조를 지향합니다.
 - 새 스킨을 만들 때 기본 스킨을 직접 수정하지 말고 폴더를 복사한 뒤 `skin.json`의 `key`, 이름과 버전을

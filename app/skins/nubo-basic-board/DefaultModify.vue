@@ -56,7 +56,9 @@ import WritePostOptions from "./components/write/WritePostOptions.vue"
 import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
+// config와 content는 수정할 게시판 설정과 v-model 가능한 기존 HTML 본문입니다.
 const { config, content } = useNuboEditorContext()
+// provider 함수는 수정 제출·취소·첨부 삭제 순서와 로딩 상태를 일관되게 처리합니다.
 const { cancelEditPost, isConfirmDialog, isWriting, modifyExistPost, removeAttachedFile } =
   useNuboWriteContext()
 </script>

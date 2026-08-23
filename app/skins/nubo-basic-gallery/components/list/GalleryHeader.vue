@@ -52,5 +52,6 @@
 import { ImageUpIcon, ListIcon, LogInIcon, SettingsIcon } from "lucide-vue-next"
 import { useNuboListContext } from "~/providers/contexts/list"
 
+// 권한 값은 버튼 노출에만, config/page는 갤러리 소개와 현재 목록 URL에 사용합니다.
 const { isAdmin, isLoggedIn, config, page } = useNuboListContext()
 </script>

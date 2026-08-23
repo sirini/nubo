@@ -1,0 +1,12 @@
+{
+  "type": "board",
+  "key": "nubo-basic-blog",
+  "name": "기본 블로그 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "글의 표지와 본문 읽기 경험을 강조한 NUBO 기본 블로그 스킨입니다",
+  "preview": "preview.png",
+  "features": ["다크 모드", "라이트 모드", "읽기 진행률"],
+  "min_nubo_version": "1.1.1"
+}

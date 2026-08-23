@@ -37,5 +37,7 @@ import ListHeader from "./components/list/ListHeader.vue"
 import ListNoticeRow from "./components/list/ListNoticeRow.vue"
 import ListPostRow from "./components/list/ListPostRow.vue"
 
+// config는 API 응답을 직접 다시 읽지 않아도 되는 반응형 게시판 설정입니다.
+// 이름·폭·분류 같은 값이 바뀌면 template도 함께 갱신됩니다.
 const { config } = useNuboListContext()
 </script>

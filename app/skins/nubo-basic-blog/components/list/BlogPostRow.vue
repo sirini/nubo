@@ -87,5 +87,6 @@
 import { ArrowRightIcon, CalendarIcon, ClockIcon, HeartIcon } from "lucide-vue-next"
 import { useNuboListContext } from "~/providers/contexts/list"
 
+// posts는 차단 사용자를 제외한 현재 페이지 글이며 config.id로 각 글의 링크를 만듭니다.
 const { config, posts } = useNuboListContext()
 </script>

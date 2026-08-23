@@ -138,8 +138,10 @@
 
         <ul class="list-decimal py-4 pl-8 space-y-1.5 text-sm">
           <li>
-            수정할 기본 스킨 폴더를 복사합니다. 예를 들어
-            <CommonVCode>nubo-basic-board</CommonVCode>를
+            수정할 화면과 가장 가까운 기본 스킨 폴더를 복사합니다. 일반 게시판은
+            <CommonVCode>nubo-basic-board</CommonVCode>, 블로그는
+            <CommonVCode>nubo-basic-blog</CommonVCode>, 갤러리는
+            <CommonVCode>nubo-basic-gallery</CommonVCode>에서 시작합니다. 예를 들어 게시판 폴더를
             <CommonVCode>my-awesome-board</CommonVCode>라는 새 폴더로 복사합니다.
           </li>
           <li>
@@ -148,8 +150,9 @@
             정보도 새 스킨에 맞게 수정합니다.
           </li>
           <li>
-            로컬 개발 환경에서 Vue 컴포넌트와 스타일을 수정하고 필요한 화면을 확인합니다. 작업 전
-            원본과 서버 설정을 백업해 두면 문제 발생 시 되돌리기 쉽습니다.
+            폴더 안의 <CommonVCode>README.md</CommonVCode>에서 엔트리 파일과 provider 변수·함수의
+            역할을 확인한 뒤 Vue 컴포넌트와 스타일을 수정합니다. 작업 전 원본과 서버 설정을 백업해
+            두면 문제 발생 시 되돌리기 쉽습니다.
           </li>
           <li>
             완성한 폴더를 서버의 <CommonVCode>app/skins/</CommonVCode> 아래에 배치한 후

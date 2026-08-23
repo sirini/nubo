@@ -57,7 +57,9 @@ import WritePostOptions from "./components/write/WritePostOptions.vue"
 import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
+// write provider는 제출·취소와 진행 상태를 맡아 스킨이 API나 router를 직접 다루지 않게 합니다.
 const { cancelNewPost, isWriting, writeNewPost } = useNuboWriteContext()
+// editor provider의 content는 v-model 가능한 HTML 본문이며 draft 값은 브라우저 임시 저장 상태입니다.
 const { content, config, isLoadDraft, lastDraftSavedAt, loadDraft } = useNuboEditorContext()
 
 const draftStatus = computed(() => {

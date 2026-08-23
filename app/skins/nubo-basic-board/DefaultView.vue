@@ -43,5 +43,6 @@ import ViewWriteButton from "./components/view/ViewWriteButton.vue"
 import ViewWriteComment from "./components/view/ViewWriteComment.vue"
 import ViewWriterProfile from "./components/view/ViewWriterProfile.vue"
 
+// view에는 현재 글·작성자·이미지·첨부가, config에는 게시판 이름·폭·권한 설정이 들어 있습니다.
 const { view, config } = useNuboViewContext()
 </script>

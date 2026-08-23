@@ -29,9 +29,34 @@ const manifestSchema = z.object({
   min_nubo_version: z.string().regex(/^\d+\.\d+\.\d+$/),
 })
 
+const builtInBoardSkin = (entry: string) => {
+  if (entry.startsWith("Blog")) return "nubo-basic-blog"
+  if (entry.startsWith("Gallery")) return "nubo-basic-gallery"
+  return "nubo-basic-board"
+}
+
+export const resolveSkinComponentPath = (skinKey: string, entry: string, fallbackEntry = entry) => {
+  const find = (key: string, filename: string) =>
+    Object.keys(components).find((path) => path.endsWith(`/skins/${key}/${filename}.vue`))
+  const builtIn = builtInBoardSkin(entry)
+
+  // 1. 선택한 스킨의 종류별 엔트리를 가장 먼저 존중한다.
+  // 2. 분리 전 기본 key를 쓰는 기존 블로그·갤러리는 새 전용 기본 스킨으로 호환한다.
+  // 3. 사용자 스킨의 Default* fallback을 유지한 뒤 공식 기본 스킨을 최종 안전망으로 쓴다.
+  return (
+    find(skinKey, entry) ||
+    (skinKey === "nubo-basic-board" && builtIn !== skinKey ? find(builtIn, entry) : undefined) ||
+    find(skinKey, fallbackEntry) ||
+    find(builtIn, entry) ||
+    find(builtIn, fallbackEntry) ||
+    find("nubo-basic-board", entry) ||
+    find("nubo-basic-board", fallbackEntry)
+  )
+}
+
 export const resolveSkinComponent = (skinKey: string, entry: string, fallbackEntry = entry) => {
-  const find = (key: string, filename: string) => Object.entries(components).find(([path]) => path.endsWith(`/skins/${key}/${filename}.vue`))?.[1]
-  const loader = find(skinKey, entry) || find(skinKey, fallbackEntry) || find("nubo-basic-board", entry) || find("nubo-basic-board", fallbackEntry)
+  const path = resolveSkinComponentPath(skinKey, entry, fallbackEntry)
+  const loader = path ? components[path] : undefined
   return loader ? defineAsyncComponent(loader as () => Promise<{ default: Component }>) : null
 }
 

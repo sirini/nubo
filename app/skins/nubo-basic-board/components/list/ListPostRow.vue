@@ -87,5 +87,6 @@ import { TableCell, TableRow } from "~/components/ui/table"
 import { useNuboListContext } from "~/providers/contexts/list"
 import { STATUS } from "~/types/board"
 
+// posts는 필터링된 현재 페이지 글, config는 분류 사용 여부 같은 표시 설정입니다.
 const { posts, config } = useNuboListContext()
 </script>

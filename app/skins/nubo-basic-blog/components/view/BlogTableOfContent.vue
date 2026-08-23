@@ -34,6 +34,7 @@
 import { useNuboViewContext } from "~/providers/contexts/view"
 import type { TableOfContent } from "~/types/board"
 
+// 본문 렌더링 뒤 `.nubo` 안의 h1~h3을 읽어 안정적인 anchor id와 목차를 만듭니다.
 const { makeTableOfContents } = useNuboViewContext()
 const headers = ref<TableOfContent[]>([])
 const activeHeaderId = ref<string>("")
