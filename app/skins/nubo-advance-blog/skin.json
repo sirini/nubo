@@ -1,0 +1,19 @@
+{
+  "type": "board",
+  "key": "nubo-advance-blog",
+  "name": "어드밴스 블로그 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "대표 글과 에디토리얼 피드, 몰입형 본문 읽기와 절제된 리치 편집기를 제공하는 NUBO 블로그 스킨입니다",
+  "preview": "preview.png",
+  "features": [
+    "에디토리얼 목록",
+    "읽기 진행률과 목차",
+    "몰입형 본문",
+    "리치 텍스트 편집",
+    "댓글 작성·관리",
+    "웜톤 라이트·다크"
+  ],
+  "min_nubo_version": "1.2.26"
+}

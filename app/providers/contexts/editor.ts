@@ -1,3 +1,4 @@
+import type { Editor } from "@tiptap/vue-3"
 import type { BoardConfig } from "~/types/board"
 import type { Pair } from "~/types/common"
 import type { EditorInsertImageResult } from "~/types/editor"
@@ -10,6 +11,7 @@ export interface NuboEditorContext {
   imageUrl: ComputedRef<string>
   insertedImageResult: ComputedRef<EditorInsertImageResult | null>
   insertedImages: ComputedRef<Pair[]>
+  headingStyle: WritableComputedRef<string>
   isAddLinkDialog: WritableComputedRef<boolean>
   isBlockquote: ComputedRef<boolean | undefined>
   isBold: ComputedRef<boolean | undefined>
@@ -23,6 +25,7 @@ export interface NuboEditorContext {
   lastDraftSavedAt: ComputedRef<number>
   previewInsertImages: ComputedRef<string[]>
   deleteInsertedImage: (imageUid: number) => Promise<void>
+  bindEditor: (editor: Editor | null, config?: BoardConfig) => void
   getAttr: (name: string) => Record<string, string | number | boolean | null | undefined>
   insertImageToEditor: (src: string) => void
   loadDraft: () => void
@@ -30,6 +33,7 @@ export interface NuboEditorContext {
   redo: () => boolean
   selectTextColor: (event: Event) => void
   setLink: (url: string) => void
+  setHeadingStyle: (value: string) => void
   toggleBlockquote: () => boolean
   toggleBold: () => boolean
   toggleCode: () => boolean
@@ -38,6 +42,7 @@ export interface NuboEditorContext {
   toggleStrike: () => boolean
   undo: () => boolean
   uploadingImages: () => Promise<void>
+  uploadContentImages: (files: File[]) => Promise<string[]>
 }
 
 export const nuboEditorKey: InjectionKey<NuboEditorContext> = Symbol("nuboEditorContext")

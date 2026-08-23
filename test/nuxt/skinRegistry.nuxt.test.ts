@@ -21,6 +21,7 @@ describe("built-in skin registry", () => {
       expect.arrayContaining([
         "nubo-basic-board",
         "nubo-basic-blog",
+        "nubo-advance-blog",
         "nubo-basic-gallery",
         "nubo-advance-gallery",
       ]),
@@ -43,6 +44,14 @@ describe("built-in skin registry", () => {
     for (const entry of ["GalleryList", "GalleryView", "GalleryWrite", "GalleryModify"]) {
       expect(resolveSkinComponentPath("nubo-advance-gallery", entry, "DefaultList")).toMatch(
         new RegExp(`/skins/nubo-advance-gallery/${entry}\\.vue$`),
+      )
+    }
+  })
+
+  it("keeps the advance blog independent for every blog route", () => {
+    for (const entry of ["BlogList", "BlogView", "BlogWrite", "BlogModify"]) {
+      expect(resolveSkinComponentPath("nubo-advance-blog", entry, "DefaultList")).toMatch(
+        new RegExp(`/skins/nubo-advance-blog/${entry}\\.vue$`),
       )
     }
   })

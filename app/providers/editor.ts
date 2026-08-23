@@ -15,6 +15,10 @@ export const useEditorProvider = (): NuboEditorContext => {
     imageUrl: computed(() => edit.imageUrl),
     insertedImageResult: computed(() => edit.insertedImageResult),
     insertedImages: computed(() => edit.insertedImages),
+    headingStyle: computed({
+      get: () => edit.editorHeadings,
+      set: (val: string) => (edit.editorHeadings = val),
+    }),
     isAddLinkDialog: computed({
       get: () => edit.isAddLinkDialog,
       set: (val: boolean) => (edit.isAddLinkDialog = val),
@@ -37,6 +41,13 @@ export const useEditorProvider = (): NuboEditorContext => {
     setLink: (url: string) => {
       edit.setLink(url)
     },
+    setHeadingStyle: (value: string) => {
+      edit.toggleHeading(value)
+    },
+    bindEditor: (editor, boardConfig) => {
+      edit.editor = editor
+      if (boardConfig) edit.config = boardConfig
+    },
     loadInsertedImages: (opt?: { reset: boolean } | undefined) => {
       edit.loadInsertedImages(opt)
     },
@@ -44,6 +55,7 @@ export const useEditorProvider = (): NuboEditorContext => {
     uploadingImages: async () => {
       await edit.uploadingImages()
     },
+    uploadContentImages: (files: File[]) => edit.uploadContentImages(files),
     insertImageToEditor: (src: string) => {
       edit.insertImageToEditor(src)
     },
