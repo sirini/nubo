@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 로그인 기반 스킨 리뷰·별점의 운영 QA를 마쳤다. 권한 확인형 원본 스트리밍과 `nubo-advance-gallery` 0.2.0, `nubo-advance-blog` 0.1.0 QA 후보를 구현했으며 NUBO 1.2.26 정식 릴리스 단위로 함께 검증한다.
+- 로그인 기반 스킨 리뷰·별점, 권한 확인형 원본 스트리밍, `nubo-advance-gallery` 0.2.0과 `nubo-advance-blog` 0.1.0을 NUBO/GOAPI 1.2.26 통합 릴리스로 게시하고 nubohub.org에 반영했다.
 
 ## Product boundary
 
@@ -16,7 +16,7 @@
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
 - NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
-- 다음 통합 릴리스 목표는 NUBO 1.2.26·GOAPI 1.2.26이며 두 advance 스킨의 최소 NUBO 버전은 1.2.26이다.
+- NUBO 1.2.26·GOAPI 1.2.26 통합 릴리스를 게시했으며 두 advance 스킨의 최소 NUBO 버전은 1.2.26이다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
@@ -59,6 +59,8 @@
 - `nubo-advance-gallery`가 목록·상세·작성·수정 엔트리를 모두 자체 소유하도록 추가하고 웜톤 masonry 목록, 권한 확인형 원본 전체화면, 화면 맞춤·1:1과 독립 편집 화면을 구현했다.
 - advance gallery 0.2.0에 댓글 작성·답글·수정·삭제, 기존 첨부 미리보기·삭제, 모바일 스와이프와 뷰어 포커스·상태 안내를 추가했다. 댓글 요청 실패 시 입력을 보존하고 화면 댓글 수를 즉시 동기화한다.
 - `nubo-advance-blog` 0.1.0을 독립 네 라우트로 추가했다. 대표 글과 에디토리얼 피드, 좁은 본문·넓은 표지·읽기 진행률·목차, 코드 복사, 댓글 관리와 큰 제목 중심 리치 편집 흐름을 제공한다.
+- NUBO와 GOAPI 공개 버전을 1.2.26부터 통일하고 exact commit manifest를 유지하는 통합 릴리스 정책을 확정했다.
+- NUBO/GOAPI v1.2.26 태그와 통합 asset을 게시하고 `nuboctl update`로 nubohub.org의 공식 런타임과 커스텀 Web을 갱신했다.
 
 ## Open findings
 
@@ -67,7 +69,6 @@
 - 리뷰의 설치 증명·제작자 제한·고급 남용 방지는 실제 남용이 관찰될 때 검토한다.
 - Market의 리뷰 작성은 NUBO Web 내부 사용자 확인 API에 의존한다. 확인 API 장애 시 공개 조회는 유지하고 작성·수정만 일시 중단한다.
 - 원본 이미지 스트리밍 토큰은 GOAPI 메모리에만 2분간 보관하므로 프로세스 재시작 시 열린 뷰어가 새 URL을 다시 발급받아야 한다. 단일 서버 현재 범위에는 별도 공유 저장소를 두지 않는다.
-- nubohub.org의 Web 커스텀 빌드는 최신 advance gallery를 포함하지만 공식 1.2.25 릴리스의 GOAPI 1.2.18에는 원본 경로가 없어 확대 요청이 404다. `customize`는 GOAPI를 교체하지 않으므로 1.2.26 통합 릴리스 설치 전까지 운영 원본 확대는 동작하지 않는다.
 
 ## Verification
 
@@ -84,9 +85,12 @@
 - 원본 이미지 계약은 교차 게시판·비밀글·삭제글·작성자 차단·보기 레벨 회귀 테스트, 저장 경로 비노출 직렬화 테스트와 반복 byte range 스트리밍 테스트를 통과했다. GOAPI 전체 test/race/vet와 NUBO unit 31건, typecheck, ESLint 오류 0건(기존 경고 50), production build를 통과했다.
 - advance gallery 0.2.0은 manifest·네 라우트 독립성 Nuxt 테스트 7건, unit 31건, typecheck, ESLint 오류 0건(기존 경고 50)과 `NODE_OPTIONS=--max-old-space-size=1536` production build를 통과했다.
 - 두 advance 스킨 동시 포함 상태는 네 라우트 독립성 Nuxt 테스트를 포함한 Nuxt 8건, unit 31건, typecheck, ESLint 오류 0건(기존 경고 50)과 `NODE_OPTIONS=--max-old-space-size=1536` production build를 통과했다.
+- NUBO/GOAPI v1.2.26은 로컬 NUBO 39건, lint 오류 0건(경고 50), typecheck, 1536 MiB production build와 GOAPI test/race/vet를 통과했다. CI run `32643934402`에서 공식 Ubuntu 빌드와 Ubuntu 22.04/24.04 fresh install 뒤 asset 2개를 게시했다.
+- 운영 전 백업은 `/var/backups/nubohub-nubo-pre-v1.2.26-20260823-225940.sql.gz`, `/var/backups/nubohub-upload-pre-v1.2.26-20260823-225940.tar.gz`와 SHA-256 영수증에 보존했다.
+- nubohub.org는 커스텀 릴리스 `e169646e59d6`(로컬 빌드 `f156b3639620`)에서 `nuboctl status` 16건, `/version`의 NUBO·GOAPI 1.2.26 exact commit, HTTPS와 readiness를 통과했다. 원본 API는 더 이상 404가 아니며 실제 JPEG byte range에 206을 반환했다.
 
 ## Next action
 
-1. GOAPI 원본 스트리밍 커밋과 NUBO 1.2.26 소스를 고정해 정식 통합 릴리스 후보를 만든다.
-2. 릴리스 계약·Ubuntu 빌드·fresh install 검증 뒤 nubohub.org에 설치하고 두 advance 스킨을 실제 콘텐츠로 브라우저 QA한다.
-3. 목록 비율, 원본 뷰어, 블로그 본문·편집·댓글의 QA 수정 뒤 두 스킨의 Market 게시 여부를 결정한다. `customize` 메모리는 실제 OOM이 관측될 때만 상향한다.
+1. 다음 세션에서 장기 로드맵을 현재 제품 상태에 맞춰 다시 검토하고 다음 bounded scope를 합의한다.
+2. 두 advance 스킨을 실제 콘텐츠로 추가 브라우저 QA한 뒤 필요한 UX 수정과 Market 게시 여부를 결정한다.
+3. `customize` 메모리는 운영 OOM이 관측될 때만 상향한다.

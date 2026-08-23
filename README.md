@@ -9,7 +9,11 @@
 
 NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
 
+> 문서 기준: 2026-08-23 · 최신 정식 버전: NUBO/GOAPI 1.2.26
+
 최신 정식 버전은 상단 릴리스 배지와 [GitHub Releases](https://github.com/sirini/nubo/releases)에서 확인할 수 있습니다. 기본 스킨만으로 바로 운영할 수 있고, NUBO Market에서 다른 스킨을 찾거나 `/app/skins` 아래의 스킨을 수정해 사이트의 성격을 바꿀 수 있습니다.
+
+NUBO와 GOAPI는 하나의 공식 bundle로 설치되므로 v1.2.26부터 공개 버전을 동일하게 맞춥니다. 운영자는 두 저장소의 호환 조합을 직접 고를 필요가 없으며, 각 릴리스 manifest가 실제 NUBO·GOAPI commit과 API contract를 기록합니다.
 
 ## 어떤 프로젝트인가요?
 
@@ -19,6 +23,9 @@ NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳
 - 관리자가 Markdown으로 단체 메일을 작성하고 미리보기·테스트 발송 후 회원에게 보낼 수 있습니다.
 - 가입 정책을 이메일 인증, 초대 전용, 가입 중지 중에서 선택할 수 있습니다.
 - [NUBO Market](https://nubohub.org/market/)에서 스킨의 대표 이미지와 실제 화면을 둘러보고 `nuboctl` 한 줄로 설치할 수 있습니다.
+- Market 로그인 사용자는 스킨마다 리뷰 하나와 1~5점 별점을 작성·수정할 수 있고, 운영자는 리뷰를 숨김·복원할 수 있습니다.
+- 기본 블로그·갤러리를 유지하면서 읽기 중심 `nubo-advance-blog`와 원본 전체 화면 감상용 `nubo-advance-gallery`를 제공합니다.
+- 갤러리 원본은 저장 파일 URL을 공개하지 않고 게시물 권한을 다시 확인하는 단기 스트림으로 전달합니다.
 - TSBOARD 데이터베이스 구조와의 호환성을 유지합니다.
 
 ## 구성 이해하기
@@ -116,7 +123,7 @@ npm run server:prepare
 ```dotenv
 GOAPI_DOMAIN=https://example.com
 GOAPI_TITLE=My NUBO
-GOAPI_VERSION=1.2.18
+GOAPI_VERSION=1.2.26
 
 GOAPI_PORT=3006
 DB_HOST=localhost
@@ -354,8 +361,9 @@ nuboctl customize
 
 저사양 가상 CPU에서 Vite 8의 변환 작업이 멈추는 문제를 피하기 위해 현재 lockfile은
 `rolldown-vite@7.3.1`을 호환 빌더로 고정합니다. 운영자가 Vite를 따로 설치하거나 `NODE_OPTIONS`를
-지정할 필요는 없습니다. 다만 빌드 중 메모리 부족으로 프로세스가 종료되는 서버라면 swap이나 약 3GB
-이상의 사용 가능한 메모리를 준비해야 합니다.
+지정할 필요는 없습니다. `nuboctl customize`와 자동 재적용은 기본 Node heap 1536 MiB를 사용하며,
+실제 OOM이 확인된 경우에만 서버 여유 메모리를 확인한 뒤 `NODE_OPTIONS=--max-old-space-size=<MiB>`를
+상향합니다.
 
 ```bash
 nuboctl customize --dry-run
@@ -444,6 +452,8 @@ Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS�
 
 [NUBO Market](https://nubohub.org/market/)에서는 스킨의 대표 이미지, 제작자와 지원 NUBO 버전을 살펴보고, 제작자가 추가했다면 실제 화면 스크린샷까지 볼 수 있습니다. 마음에 드는 스킨은 JavaScript 패키지를 `npm install`로 받듯 운영 서버의 NUBO 소스 폴더에서 `nuboctl market install` 한 줄로 내려받습니다.
 
+로그인 사용자는 상세 화면에서 계정·스킨별 리뷰 하나를 작성·수정하고 1~5점 별점을 남길 수 있습니다. 운영자가 숨긴 리뷰는 공개 목록과 평점 집계에서 제외되며 영구 삭제 대신 복원할 수 있습니다.
+
 | 하고 싶은 일 | 웹·명령어 |
 | --- | --- |
 | 스킨 둘러보기 | [nubohub.org/market](https://nubohub.org/market/) |
@@ -478,6 +488,9 @@ nuboctl customize
 - 기본 스킨은 `/app/skins` 아래에 기능별로 나뉘어 있습니다.
 - 게시판 스타일은 `nubo-basic-board`(표 게시판), `nubo-basic-blog`(블로그),
   `nubo-basic-gallery`(사진 갤러리)로 분리되어 있어 만들려는 화면과 가장 가까운 폴더만 복사하면 됩니다.
+- `nubo-advance-blog`는 좁은 본문·목차·읽기 진행률과 큰 제목 편집 흐름을, `nubo-advance-gallery`는
+  masonry 목록·전체 화면 원본·화면 맞춤/1:1·키보드/스와이프 탐색을 제공합니다. 기존 basic 스킨은
+  호환 기준선으로 계속 유지합니다.
 - 세 게시판 스킨의 `README.md`에는 엔트리 파일 지도와 provider가 주입하는 상태·함수의 용도를
   정리했습니다.
 - 각 스킨 패키지는 다른 스킨 폴더를 import하지 않고 독립적으로 목록·보기·쓰기 UI를 소유합니다.
@@ -514,6 +527,8 @@ nuboctl customize
 
 - 화면이 API에 연결되지 않으면 Nuxt와 GOAPI가 모두 실행 중인지, `.env`의 포트와 `GOAPI_BASE`가 일치하는지 확인합니다.
 - 이미지가 보이지 않으면 `upload` 경로의 권한과 Nginx `alias`를 확인합니다.
+- advance gallery의 원본 확대가 실패하면 Web과 GOAPI가 같은 통합 버전인지 `/version`에서 확인합니다.
+  브라우저에는 실제 업로드 경로 대신 `/api/board/original`의 단기 스트림만 보여야 합니다.
 - 메일이 오지 않으면 관리자 이메일 설정 화면, Resend 도메인 상태, 발신 주소의 도메인을 차례로 확인합니다.
 - 공식 설치를 업데이트한 뒤 DB 오류가 나면 `/opt/nubo/current/nuboctl status`와 `doctor` 결과를 확인합니다.
 - 추가 도움이 필요하면 [nubohub.org](https://nubohub.org)에서 문의해 주세요.
