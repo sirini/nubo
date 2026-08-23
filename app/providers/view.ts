@@ -124,6 +124,7 @@ export const useViewProvider = (): NuboViewContext => {
     downloadFile: async (fileUid: number) => {
       await board.downloadFile(fileUid)
     },
+    originalImageUrl: async (fileUid: number) => board.originalImageUrl(fileUid),
     likePost: async (isLiked: boolean) => {
       await board.likePost(isLiked)
     },

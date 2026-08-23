@@ -1,0 +1,2 @@
+<template><AdvanceGalleryEditor mode="write" /></template>
+<script setup lang="ts">import AdvanceGalleryEditor from "./components/AdvanceGalleryEditor.vue"</script>

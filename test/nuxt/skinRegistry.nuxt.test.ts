@@ -18,7 +18,12 @@ describe("built-in skin registry", () => {
       .map((skin) => skin.key)
 
     expect(boardKeys).toEqual(
-      expect.arrayContaining(["nubo-basic-board", "nubo-basic-blog", "nubo-basic-gallery"]),
+      expect.arrayContaining([
+        "nubo-basic-board",
+        "nubo-basic-blog",
+        "nubo-basic-gallery",
+        "nubo-advance-gallery",
+      ]),
     )
   })
 
@@ -32,5 +37,13 @@ describe("built-in skin registry", () => {
     expect(resolveSkinComponentPath("nubo-basic-board", "DefaultList", "DefaultList")).toMatch(
       /\/skins\/nubo-basic-board\/DefaultList\.vue$/,
     )
+  })
+
+  it("keeps the advance gallery independent for every gallery route", () => {
+    for (const entry of ["GalleryList", "GalleryView", "GalleryWrite", "GalleryModify"]) {
+      expect(resolveSkinComponentPath("nubo-advance-gallery", entry, "DefaultList")).toMatch(
+        new RegExp(`/skins/nubo-advance-gallery/${entry}\\.vue$`),
+      )
+    }
   })
 })

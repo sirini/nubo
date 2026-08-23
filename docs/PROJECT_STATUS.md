@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 로그인 기반 스킨 리뷰·별점의 운영 QA를 마쳤다. 권한 확인형 원본 이미지 스트리밍 계약을 기반으로 `nubo-advance-gallery`의 몰입형 목록·뷰어를 먼저 개발한다.
+- 로그인 기반 스킨 리뷰·별점의 운영 QA를 마쳤다. 권한 확인형 원본 이미지 스트리밍 계약과 `nubo-advance-gallery` 0.1.0 골격을 구현했으며 실제 콘텐츠 QA로 목록·뷰어·편집 흐름을 다듬는다.
 
 ## Product boundary
 
@@ -54,6 +54,7 @@
 - 검수를 마친 `nubo-rehearsal-skin@1.0.0`의 공개 버전·제출·key 소유권·패키지 파일을 운영 Market에서 제거했다. 별도 `nubo-rehearsal` 제작자 계정은 유지했다.
 - 로그인 기반 스킨 리뷰·별점, 계정·스킨별 단일 리뷰 upsert와 운영자 숨김·복원을 구현하고 NUBO·Market `main` 및 nubohub.org에 반영했다.
 - 제품 소유자가 운영에서 리뷰 작성·수정, 별점과 관련 흐름이 의도대로 동작함을 최종 확인했다.
+- `nubo-advance-gallery`가 목록·상세·작성·수정 엔트리를 모두 자체 소유하도록 추가하고 웜톤 masonry 목록, 원본 전체화면, 화면 맞춤·1:1, 키보드 탐색과 독립 편집 화면을 구현했다.
 
 ## Open findings
 
@@ -76,9 +77,10 @@
 - 운영 DB 적용 전 백업은 `/var/backups/nubohub-market-pre-reviews-20260823-205554.sql`, 이전 Market 바이너리는 `/opt/nubohub-market/nubohub-market.pre-reviews-20260823-210239`에 보존했다.
 - 운영 `/api/market/user`는 비로그인 요청에 의도한 401 JSON을 반환한다. Market 내부·공개 readiness, 공개 리뷰 API, 상세 리뷰 UI와 비인증 리뷰·운영자 변경 요청의 403 차단을 확인했고 운영 리뷰 데이터는 0건으로 유지했다.
 - 원본 이미지 계약은 교차 게시판·비밀글·삭제글·작성자 차단·보기 레벨 회귀 테스트, 저장 경로 비노출 직렬화 테스트와 반복 byte range 스트리밍 테스트를 통과했다. GOAPI 전체 test/race/vet와 NUBO unit 31건, typecheck, ESLint 오류 0건(기존 경고 50), production build를 통과했다.
+- advance gallery 추가 뒤 manifest·네 라우트 독립성 Nuxt 테스트 7건, typecheck, ESLint 오류 0건(기존 경고 50)과 production build를 통과했다. 스킨 추가 상태에서도 기본 Node heap 1536 MiB로 로컬 빌드가 완료됐다.
 
 ## Next action
 
-1. `nubo-advance-gallery`를 기존 basic 스킨과 독립된 패키지로 만들고 Unsplash 계열 목록과 500px 계열 집중 감상 뷰어를 구현한다.
-2. 미리보기 클릭 원본 지연 로드, 화면 맞춤·1:1 전환, 키보드·터치 탐색과 접근성을 검증한다.
+1. 실제 갤러리 콘텐츠로 목록 비율, 원본 지연 로드, 화면 맞춤·1:1, 키보드·모바일 탐색과 접근성을 브라우저 QA한다.
+2. 댓글 작성·수정과 기존 첨부 삭제를 advance 디자인 안에서 완성하고 스킨 패키지 검증·운영 배포를 준비한다.
 3. 갤러리 운영 QA와 필요한 수정 뒤 `nubo-advance-blog`의 Medium 계열 읽기 흐름을 개발한다.

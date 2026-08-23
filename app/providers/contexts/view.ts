@@ -31,6 +31,7 @@ export interface NuboViewContext {
   writeReplyComment: () => Promise<void>
   modifyExistComment: () => Promise<void>
   downloadFile: (fileUid: number) => Promise<void>
+  originalImageUrl: (fileUid: number) => Promise<string>
   likePost: (isLiked: boolean) => Promise<void>
   makeTableOfContents: () => TableOfContent[]
   updateReadingProgress: (element: string) => void

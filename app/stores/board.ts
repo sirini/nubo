@@ -22,6 +22,7 @@ export const useBoardStore = defineStore("board", () => {
     movePost,
     like,
     download,
+    originalImage,
     removePost,
   } = useBoard()
   const trade = useTradeStore()
@@ -129,6 +130,15 @@ export const useBoardStore = defineStore("board", () => {
     } catch (e) {
       toast(`❌ 파일을 내려받지 못했습니다: ${e}`)
     }
+  }
+
+  // 스킨에는 실제 저장 경로가 아닌 짧은 수명의 동일 출처 스트리밍 URL만 전달한다.
+  const originalImageUrl = async (fileUid: number) => {
+    const response = await originalImage(view.value.config.uid, fileUid)
+    if (!response?.success || !response.result?.path) {
+      throw new Error(response?.error || "원본 이미지를 불러올 수 없습니다")
+    }
+    return `/api${response.result.path}`
   }
 
   // 게시글에 좋아요 누르기
@@ -323,6 +333,7 @@ export const useBoardStore = defineStore("board", () => {
     getInitView,
     getInitList,
     downloadFile,
+    originalImageUrl,
     likePost,
     searchPost,
     setPagingUrl,
