@@ -34,6 +34,7 @@
 - Market 제작자 계정은 배포 사이트 회원과 분리하며 운영자가 발급한 고엔트로피 토큰의 SHA-256만 저장한다. 승인된 key 소유자만 버전을 제출하고 운영자 승인 전에는 공개하지 않는다.
 - 스킨 결제·커미션·구매 권한은 제품이 자리 잡은 뒤 다시 판단하며 현재 목표에서 제외한다. 무료 스킨 리뷰·별점은 제작자 리허설과 관리 UI 이후의 신뢰 기능으로 둔다.
 - 초기 스킨 리뷰는 nubohub.org 로그인 사용자에게 열고 설치 여부와 제작자 본인 여부를 검사하지 않는다. 계정당 스킨별 리뷰 1개만 제한하며, 이용이 생기기 전부터 복잡한 증명·남용 방지를 도입하지 않는다.
+- 데스크톱의 활성 링크·버튼·메뉴·선택 컨트롤은 손가락 커서를 공통 UX로 사용하고, 비활성 컨트롤은 금지 커서로 구분한다.
 - Market 코드 전용 배포에는 바이너리 사본을 매번 추가하지 않는다. 복구에 필요한 DB와 패키지 저장소는 여전히 같은 시점의 데이터 백업 세트로 다룬다.
 - Market 런타임 DB 계정에는 DDL 권한을 주지 않는다. additive schema 변경도 관리자 계정으로 선적용한 뒤 새 바이너리를 시작한다.
 - 스킨 패키지는 다른 스킨 폴더의 소스 파일을 import하지 않는다. 중복되더라도 각 스킨이 목록·보기·쓰기 UI를 직접 소유하고, 공유 경계는 NUBO의 provider·store·타입과 `app/components`의 플랫폼 UI로 제한한다.
@@ -45,6 +46,7 @@
 
 ## Recent completion
 
+- NUBO 공통 버튼·링크·폼 컨트롤과 드롭다운·셀렉트 항목, Market의 전체 링크·버튼·폼 컨트롤에 데스크톱 포인터 커서를 적용했다. 게시글 본문의 클릭 이벤트 위임 영역은 실제 링크·이미지가 아닌 본문 전체를 클릭 대상으로 오인시키지 않도록 제외했다.
 - Market `1229b14`에 제작자 token 로그인·프로필·key 요청·패키지 제출·심사 이력과 운영자 계정 발급·중지·token 회전·key/버전 검토 화면을 구현해 운영 반영했다.
 - 새 Market 화면은 JavaScript 없이 서버 렌더링하며 장기 token을 브라우저에 저장하지 않는다. 2시간 서버 메모리 세션, HttpOnly·Secure·SameSite=Strict cookie, CSRF·Origin 검사와 no-store 응답을 적용했다.
 - 제작자·운영자 화면은 작은 영문 장식 문구를 쓰지 않고 한국어 본문·라벨·상태·버튼을 주로 15–16px 이상으로 구성했다. 1440px 데스크톱과 390px 모바일에서 로그인 전·후 레이아웃을 확인했다.
@@ -97,12 +99,14 @@
 
 ## Open findings
 
+- Market 운영자 세션은 현재 NUBO 관리자 세션과 분리돼 있어 `/market/operator` 최초 진입에는 서버의 `MARKET_ADMIN_TOKEN`이 필요하다. 서버 비밀을 브라우저에 직접 입력하는 절차를 없애려면 NUBO 관리자 권한을 짧은 수명의 서명 코드로 Market 세션에 교환하는 별도 신뢰 경계를 설계한다.
 - 제작자·운영자 화면의 정보 구조와 실제 작업 흐름은 구현됐으며, 제품 소유자의 운영 사용 피드백에 따라 밀도·표현·검토 동선을 조정한다.
 - 제작자 신원 확인과 토큰 전달은 운영자 수동 절차다. 이메일 복구나 외부 OAuth를 도입할 때도 NUBO 배포 사이트 회원과 Market 권한을 자동 결합하지 않는다.
 - 무료 스킨 리뷰·별점은 제작자·운영 UI 뒤에 진행한다. 첫 버전은 nubohub.org 로그인과 계정당 스킨별 1개만 적용하고 설치 증명·제작자 제한은 실제 남용이 관찰될 때 검토한다.
 
 ## Verification
 
+- 포인터 UX 변경은 NUBO unit 29건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. 빌드된 공통 CSS에서 활성 버튼의 `cursor:pointer` 규칙을 확인했으며, Market은 CSS asset 회귀 테스트를 포함한 전체 Go test/vet를 통과했다.
 - Market `1229b14`는 전체 Go test/race/vet, 세션 cookie·CSRF·일회성 token 회귀 테스트, MySQL 8 통합 smoke, CI run `32633870893`과 Ubuntu 22.04 정적 빌드를 통과했다. 운영 바이너리 SHA-256은 `8fa0ac79c94fc53b335c65d190254e3a2b39792f4b4fed1b23da1e85c8b1cdba`다.
 - 운영에서 실제 creator/admin token 로그인, 장기 token이 없는 세션 cookie 속성, no-store, 기존 `nubo-rehearsal`의 승인 key·공개 버전 표시와 전체 서비스 active/readiness를 확인했다. 로그인 전·후 제작자/운영자 화면을 1440px과 390px Chromium light mode로 검수했다.
 - v1.2.25 manual/tag run `32630823394`/`32630978392`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, 상세 릴리스 노트를 사용한 GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `0362eb02b499c5e78fc335c9b3a9ff587a12fbba1bda4d04e4af89be0810a012`다.
