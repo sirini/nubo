@@ -46,7 +46,7 @@
 
 ## Recent completion
 
-- NUBO 공통 버튼·링크·폼 컨트롤과 드롭다운·셀렉트 항목, Market의 전체 링크·버튼·폼 컨트롤에 데스크톱 포인터 커서를 적용했다. 게시글 본문의 클릭 이벤트 위임 영역은 실제 링크·이미지가 아닌 본문 전체를 클릭 대상으로 오인시키지 않도록 제외했다.
+- NUBO `1631c3e`에서 공통 버튼·링크·폼 컨트롤과 드롭다운·셀렉트 항목, Market `4f48c9f`에서 전체 링크·버튼·폼 컨트롤에 데스크톱 포인터 커서를 적용하고 운영 반영했다. 게시글 본문의 클릭 이벤트 위임 영역은 실제 링크·이미지가 아닌 본문 전체를 클릭 대상으로 오인시키지 않도록 제외했다.
 - Market `1229b14`에 제작자 token 로그인·프로필·key 요청·패키지 제출·심사 이력과 운영자 계정 발급·중지·token 회전·key/버전 검토 화면을 구현해 운영 반영했다.
 - 새 Market 화면은 JavaScript 없이 서버 렌더링하며 장기 token을 브라우저에 저장하지 않는다. 2시간 서버 메모리 세션, HttpOnly·Secure·SameSite=Strict cookie, CSRF·Origin 검사와 no-store 응답을 적용했다.
 - 제작자·운영자 화면은 작은 영문 장식 문구를 쓰지 않고 한국어 본문·라벨·상태·버튼을 주로 15–16px 이상으로 구성했다. 1440px 데스크톱과 390px 모바일에서 로그인 전·후 레이아웃을 확인했다.
@@ -106,7 +106,7 @@
 
 ## Verification
 
-- 포인터 UX 변경은 NUBO unit 29건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. 빌드된 공통 CSS에서 활성 버튼의 `cursor:pointer` 규칙을 확인했으며, Market은 CSS asset 회귀 테스트를 포함한 전체 Go test/vet를 통과했다.
+- 포인터 UX 변경은 NUBO unit 29건, ESLint 오류 0건(기존 경고 50), typecheck와 production build를 통과했다. nubohub.org 커스텀 릴리스 `1150094a4665` 전환 뒤 status 16건, 전체 서비스 active, 외부 ready/version과 실제 entry CSS의 `cursor:pointer`를 확인했다. Market은 CSS asset 회귀 테스트를 포함한 전체 Go test/race/vet, CI run `32634585216`의 Ubuntu 22.04 빌드·MySQL smoke를 통과했고, 운영 바이너리 SHA-256은 `a93191cf97361a40d714e8284e39b57abc3c45211b41df721501fd8510f9fb3c`다.
 - Market `1229b14`는 전체 Go test/race/vet, 세션 cookie·CSRF·일회성 token 회귀 테스트, MySQL 8 통합 smoke, CI run `32633870893`과 Ubuntu 22.04 정적 빌드를 통과했다. 운영 바이너리 SHA-256은 `8fa0ac79c94fc53b335c65d190254e3a2b39792f4b4fed1b23da1e85c8b1cdba`다.
 - 운영에서 실제 creator/admin token 로그인, 장기 token이 없는 세션 cookie 속성, no-store, 기존 `nubo-rehearsal`의 승인 key·공개 버전 표시와 전체 서비스 active/readiness를 확인했다. 로그인 전·후 제작자/운영자 화면을 1440px과 390px Chromium light mode로 검수했다.
 - v1.2.25 manual/tag run `32630823394`/`32630978392`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, 상세 릴리스 노트를 사용한 GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `0362eb02b499c5e78fc335c9b3a9ff587a12fbba1bda4d04e4af89be0810a012`다.
