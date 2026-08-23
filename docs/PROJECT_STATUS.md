@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- nuboctl 0.14.1과 상세 릴리스 노트를 포함한 NUBO v1.2.25를 공식 게시·운영 검증한 뒤, 첫 실제 Market 제작자 게시 절차를 리허설한다.
+- 첫 실제 Market 제작자 게시 리허설에서 확인한 수작업과 인증 경계를 바탕으로 제작자·운영자 화면의 범위와 구현 순서를 확정한다.
 
 ## Product boundary
 
@@ -44,6 +44,9 @@
 
 ## Recent completion
 
+- NUBO v1.2.25와 nuboctl 0.14.1을 상세 릴리스 노트로 공식 게시하고 nubohub.org를 커스텀 Web까지 운영 전환했다.
+- nubohub.org에서 외부 `NODE_OPTIONS` 없이 `nuboctl customize --dry-run`을 실행해 1536 MiB 기본 heap, typecheck, client·SSR·Nitro build와 후보 릴리스 준비를 끝까지 확인했다.
+- 운영 Market에 첫 제작자 `nubo-rehearsal`과 소유 key `nubo-rehearsal-skin`을 만들고 승인 전 차단, key 승인, 버전 제출, 공개 전 비노출, 최종 승인과 원본 다운로드 검증을 리허설했다. 제작자 토큰은 root 전용 0600 파일로 보관한다.
 - 제품 소유자가 nubohub.org의 블로그·갤러리를 독립 스킨 key로 전환하고 목록·보기·쓰기·수정 화면이 정상 동작함을 확인했다.
 - nuboctl 0.14.1이 `customize`와 update의 커스텀 Web 재빌드에 Node heap 1536 MiB 기본값을 자동 적용하도록 보강했다.
 - NUBO v1.2.24를 독립 게시판·블로그·갤러리 스킨과 nuboctl 0.14.0의 `releases list/prune`으로 공식 게시하고 nubohub.org에 운영 반영했다.
@@ -89,12 +92,16 @@
 
 ## Open findings
 
-- 제작자 온보딩과 운영자 검토는 현재 문서화된 API 흐름이다. 첫 실제 게시를 관찰한 뒤 웹 대시보드와 운영자 UI 중 반복 비용이 큰 쪽을 먼저 만든다.
+- 실제 게시에서 제작자는 토큰 확인·key 요청·패키지 업로드·심사 상태 조회를, 운영자는 대기 목록 확인·숫자 ID 복사·승인/반려를 모두 API로 수행해야 했다. 제작자 대시보드를 먼저 만들고 같은 인증 경계를 재사용해 운영자 대기열 화면을 잇는 순서가 적절하다.
+- 브라우저 화면은 장기 creator/admin token을 Web Storage나 JavaScript에 보관하지 않는다. TLS 위에서 짧은 수명의 HttpOnly·Secure·SameSite 세션으로 교환하고, 모든 변경 요청에 origin/CSRF 경계를 둔 서버 렌더링 화면을 우선 검토한다.
 - 제작자 신원 확인과 토큰 전달은 운영자 수동 절차다. 이메일 복구나 외부 OAuth를 도입할 때도 NUBO 배포 사이트 회원과 Market 권한을 자동 결합하지 않는다.
 - 무료 스킨 리뷰·별점은 실제 사용자만 남길 수 있는 최소 신뢰 경계, 신고·운영자 숨김, 집계 조작 방지를 제작자·운영 UI 범위가 정해진 뒤 설계한다.
 
 ## Verification
 
+- v1.2.25 manual/tag run `32630823394`/`32630978392`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, 상세 릴리스 노트를 사용한 GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `0362eb02b499c5e78fc335c9b3a9ff587a12fbba1bda4d04e4af89be0810a012`다.
+- nubohub.org를 v1.2.25 커스텀 릴리스 `84023fcf07d1`로 전환한 뒤 `nuboctl status` 16건, clean `51dcf5c`, 내부·외부 readiness/version과 NUBO·GOAPI·Nginx·Market active를 확인했다. 무설정 1536 MiB customize dry-run은 별도 후보 `9f66f0f34786`을 준비하고 운영 링크를 바꾸지 않았다.
+- 운영 제작자 리허설은 key 승인 전 제출 403, 제출 승인 전 공개 조회 404, 승인 뒤 search/info/상세 HTML 노출과 원본·다운로드 SHA-256 `05388d0d…5ee9` 일치를 통과했다. 발급 토큰은 응답 로그에서 가리고 `/root/.config/nubohub-market/creator-tokens/nubo-rehearsal.token`에 0600으로 보관했다.
 - v1.2.25 릴리스 후보는 API contract v1 일치, NUBO Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 nuboctl test/race/vet를 로컬에서 통과했다.
 - nuboctl 0.14.1의 Node 환경 병합 단위 테스트와 전체 Go test/race/vet를 통과했다. `NODE_OPTIONS`가 없거나 다른 옵션만 있을 때 1536 MiB를 추가하고, dash/underscore 형식의 기존 heap 지정은 변경하지 않음을 확인했다.
 - v1.2.24 manual/tag run `32628128070`/`32628284883`에서 통합 build와 Ubuntu 22.04/24.04 fresh-install, GitHub Release 게시를 통과했다. 공개 asset SHA-256은 `3e27865f4255d498cd651e0623f77a261e5cb378314dd04340880cb4dca5151d`다.
@@ -146,7 +153,6 @@
 
 ## Next action
 
-- NUBO v1.2.25를 상세 릴리스 노트와 함께 게시하고 nubohub.org에서 `NODE_OPTIONS` 없는 customize를 검증한다.
-- 첫 실제 제작자 계정과 테스트 key로 발급→소유권→제출→승인→공개 절차를 리허설한다.
-- 리허설 결과에 따라 제작자 제출 대시보드와 운영자 승인 화면의 범위·우선순위를 다시 리뷰한다.
+- 제작자 token 로그인·프로필·key 요청·패키지 제출·심사 이력을 우선 화면으로 묶고, 장기 token을 브라우저에 남기지 않는 인증·CSRF 경계를 확정한다.
+- 운영자는 제작자 발급/중지/토큰 회전과 key·버전 대기열 승인/반려를 같은 보안 원칙의 별도 화면으로 제공한다.
 - 관리 UI 경계를 확정한 뒤 무료 스킨 리뷰·별점 기능을 설계·구현한다.
