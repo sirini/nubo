@@ -248,6 +248,24 @@ func TestValidateCandidateTemplatesAllowsNewFacadeService(t *testing.T) {
 	}
 }
 
+// install 시 Node 경로에 따라 달라지는 ProtectHome 정책만 update 호환으로 인정한다.
+func TestValidateCandidateTemplatesAllowsProtectHomeInstallPolicy(t *testing.T) {
+	options, _ := updateTestSetup(t)
+	previous, _ := resolveCurrentRelease(options.currentLink)
+	previousTemplate := filepath.Join(previous, "share", "systemd", "nubo-web.service.in")
+	contents, err := os.ReadFile(previousTemplate)
+	if err != nil {
+		t.Fatal(err)
+	}
+	contents = []byte(strings.ReplaceAll(string(contents), "ProtectHome=@NUBO_PROTECT_HOME@", "ProtectHome=true"))
+	if err := os.WriteFile(previousTemplate, contents, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateCandidateTemplates(previous, options.candidateDir); err != nil {
+		t.Fatalf("ProtectHome 설치 정책 차이를 update가 거부했습니다: %v", err)
+	}
+}
+
 func updateTestSetup(t *testing.T) (updateOptions, fakeRunner) {
 	t.Helper()
 	install := installTestOptions(t)

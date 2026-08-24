@@ -65,6 +65,8 @@ NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `Prote
 `GOAPI_VERSION`·`NUXT_PUBLIC_VERSION`만 현재 릴리스에 맞추며, 이미 실행 중인 대표 unit이 있어도 GOAPI와
 Web을 명시적으로 재시작한다. Web unit은 Node.js가 `/root/.nvm`이나 `/home/...` 아래 있을 때만 홈을
 읽기 전용으로 노출하고 쓰기는 계속 차단하며, 시스템 경로의 Node.js를 쓰면 홈을 완전히 숨긴다.
+이 `ProtectHome` 설치 정책 한 줄의 릴리스 간 차이는 실행 중인 unit을 자동 변경하지 않는 update에서
+호환 가능한 것으로 취급하며, 그 밖의 systemd·Nginx 템플릿 변경 차단은 유지한다.
 
 프로세스가 PM2, tmux, 기존 systemd 또는 수동 실행 중 어느 방식인지 추측하거나 프로세스를 종료하지
 않는다. dry-run은 내부 포트 `3000`·`3006`의 점유 여부와 종료 필요성을 안내하면서 나머지 계획을

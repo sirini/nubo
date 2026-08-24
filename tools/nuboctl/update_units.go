@@ -25,11 +25,27 @@ func validateCandidateTemplates(previousDir, candidateDir string) error {
 		if err != nil {
 			return err
 		}
+		if relative == "share/systemd/nubo-web.service.in" {
+			previous = normalizeWebProtectHome(previous)
+			candidate = normalizeWebProtectHome(candidate)
+		}
 		if !bytes.Equal(previous, candidate) {
 			return fmt.Errorf("후보의 운영 템플릿이 변경되어 자동 update할 수 없습니다: %s", relative)
 		}
 	}
 	return nil
+}
+
+// Node.js가 홈 아래에 있는 install만 read-only를 쓰므로 이 한 지시어 차이는
+// 실행 중인 unit을 바꾸지 않는 update에서 동등한 템플릿으로 취급한다.
+func normalizeWebProtectHome(content []byte) []byte {
+	lines := strings.Split(string(content), "\n")
+	for index, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "ProtectHome=") {
+			lines[index] = "ProtectHome=@INSTALL_POLICY@"
+		}
+	}
+	return []byte(strings.Join(lines, "\n"))
 }
 
 // 설치된 두 unit이 current 링크를 사용하고 Node.js가 지원 범위인지 확인한다.

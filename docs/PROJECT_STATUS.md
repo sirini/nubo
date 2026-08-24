@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- sensta.me 재설치에서 확인한 service identity·NVM Node·재시작·런타임 버전 회귀를 nuboctl hotfix로 막는다.
+- v1.2.28에서 재설치 hotfix로 직접 update할 수 있도록 ProtectHome 설치 정책의 좁은 템플릿 호환을 추가한다.
 
 ## Product boundary
 
@@ -16,7 +16,7 @@
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
 - NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
-- NUBO/GOAPI 1.2.29 재설치 hotfix를 준비 중이며 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
+- NUBO/GOAPI 1.2.29는 fresh install 검증 뒤 게시됐지만 v1.2.28 update가 ProtectHome 템플릿 차이로 차단되어, 직접 update 가능한 후속 hotfix를 준비한다. 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
@@ -77,6 +77,7 @@
 
 ## Open findings
 
+- v1.2.29는 fresh install에는 유효하지만 v1.2.28의 템플릿 변경 안전장치 때문에 직접 update할 수 없다. 태그·asset은 재작성하지 않고 후속 버전으로 해결한다.
 - sensta.me 소스 checkout의 `package-lock.json`에 서버 npm 실행이 만든 것으로 보이는 미커밋 변경이 있어 다음 source update 전에 운영자가 보존 또는 복구 여부를 정해야 한다.
 - Market 운영자 세션은 NUBO 관리자 세션과 분리돼 최초 진입에 `MARKET_ADMIN_TOKEN`이 필요하다. 짧은 수명의 서명 코드 교환은 필수가 아닌 후속 UX 개선 후보다.
 - 제작자 신원 확인과 token 전달·복구는 현재 운영자 수동 절차다. 실제 이용이 생기기 전에는 이메일 복구나 외부 OAuth를 추가하지 않는다.
