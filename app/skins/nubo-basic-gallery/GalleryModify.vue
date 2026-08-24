@@ -12,7 +12,7 @@
           <WriteDragDropUpload />
           <WriteDragDropUploadedFiles />
           <WriteTitle />
-          <WriteTiptapEditor v-model="content" :config="config" />
+          <NuboTiptapEditor v-model="content" :config="config" />
           <WriteHashtag />
         </CardContent>
 
@@ -53,7 +53,7 @@ import WriteDragDropUpload from "./components/write/WriteDragDropUpload.vue"
 import WriteDragDropUploadedFiles from "./components/write/WriteDragDropUploadedFiles.vue"
 import WriteHashtag from "./components/write/WriteHashtag.vue"
 import WritePostOptions from "./components/write/WritePostOptions.vue"
-import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
 // config와 content는 수정할 게시판 설정과 v-model 가능한 기존 HTML 본문입니다.

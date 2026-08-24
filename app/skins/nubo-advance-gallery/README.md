@@ -12,7 +12,11 @@ Unsplash 계열의 여백과 사진 중심 목록, 500px 계열의 집중 감상
 - 뷰어는 열린 버튼으로 포커스를 되돌리고, 열린 동안 키보드 포커스를 내부에 유지한다.
 - 원본 저장 경로는 스킨과 게시글 JSON에 전달하지 않는다.
 - 댓글 작성·답글·수정·삭제와 글 수정 중 기존 첨부 확인·삭제를 advance 화면 안에서 제공한다.
+- 작성·수정 본문은 표와 이미지 삽입을 포함한 플랫폼 공용 Tiptap 에디터를 사용한다.
 
 `GalleryList`, `GalleryView`, `GalleryWrite`, `GalleryModify`를 모두 자체 소유하므로 기본 스킨이 없어도
 동작하는 패키지를 유지한다. 0.2.0은 댓글 관리, 기존 첨부 삭제, 모바일 탐색과 뷰어 접근성을
 보완한 브라우저 QA 후보 버전이다. 권한 확인형 원본 API가 포함되는 NUBO 1.2.26 이상을 요구한다.
+
+스킨 제작 시 본문 에디터를 복제하지 않고 `~/components/editor/NuboTiptapEditor.vue`를 사용한다.
+공개 props와 profile 계약은 `docs/SKIN_EDITOR.md`에 설명되어 있다.

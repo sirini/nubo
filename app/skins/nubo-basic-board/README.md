@@ -11,7 +11,7 @@
 - `components/list/ListPostRow.vue`: 일반 글 행
 - `DefaultView.vue`: 글보기 화면의 전체 배치
 - `DefaultWrite.vue`, `DefaultModify.vue`: 작성·수정 폼의 전체 배치
-- `components/view`, `components/write`: 이 게시판 스킨이 소유하는 글보기·글쓰기 UI
+- `components/view`, `components/write`: 이 게시판 스킨이 소유하는 글보기·글쓰기 주변 UI
 
 `DefaultList.vue`, `DefaultView.vue`, `DefaultWrite.vue`, `DefaultModify.vue`는 라우터가 찾는
 엔트리다. 이름을 바꾸지 말고 내부 마크업과 import 대상을 수정한다.
@@ -53,7 +53,7 @@
 
 1. 폴더 전체를 `app/skins/my-board`처럼 복사한다.
 2. `skin.json`의 `key`를 폴더명과 같게 바꾸고 이름·버전·제작자 정보를 수정한다.
-3. 목록 행부터 바꾸고, 필요할 때만 공용 `components/view`와 `components/write`를 수정한다.
+3. 목록 행부터 바꾸고, 필요할 때만 이 스킨의 `components/view`와 `components/write`를 수정한다.
 4. `npm run lint`, `npm run typecheck`, `npm run build`로 확인한다.
 
 provider가 제공하지 않는 데이터가 필요하다면 store를 스킨에서 직접 참조하기 전에 NUBO의
@@ -62,3 +62,6 @@ provider 계약 확장을 제안한다. 그래야 같은 스킨이 SSR과 이후
 다른 스킨 폴더의 컴포넌트를 import하지 않는다. 공통처럼 보이는 화면도 이 폴더가 직접 소유해야
 Market에서 독립적으로 설치·수정·버전 관리할 수 있다. 여러 스킨이 공유해도 되는 경계는 NUBO가
 제공하는 provider, 타입과 `app/components`의 플랫폼 UI뿐이다.
+
+본문은 플랫폼 공용 `NuboTiptapEditor`를 사용한다. 스킨에서 에디터를 복제하지 않으며 사용법은
+`docs/SKIN_EDITOR.md`를 따른다.

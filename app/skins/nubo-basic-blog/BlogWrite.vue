@@ -12,7 +12,7 @@
           <WriteDragDropUpload />
           <WriteDragDropUploadedFiles />
           <WriteTitle />
-          <WriteTiptapEditor v-model="content" :config="config" />
+          <NuboTiptapEditor v-model="content" :config="config" />
           <WriteHashtag />
         </CardContent>
 
@@ -54,7 +54,7 @@ import WriteDragDropUpload from "./components/write/WriteDragDropUpload.vue"
 import WriteDragDropUploadedFiles from "./components/write/WriteDragDropUploadedFiles.vue"
 import WriteHashtag from "./components/write/WriteHashtag.vue"
 import WritePostOptions from "./components/write/WritePostOptions.vue"
-import WriteTiptapEditor from "./components/write/WriteTiptapEditor.vue"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 import WriteTitle from "./components/write/WriteTitle.vue"
 
 // write provider는 제출·취소와 진행 상태를 맡아 스킨이 API나 router를 직접 다루지 않게 합니다.

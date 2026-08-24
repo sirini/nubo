@@ -13,7 +13,7 @@
 - `components/view/BlogTableOfContent.vue`: 본문의 h1~h3 목차
 - `BlogWrite.vue`, `BlogModify.vue`: 블로그가 직접 소유하는 작성·수정 엔트리
 - `components/view`: 댓글·좋아요·첨부를 포함한 블로그 글보기 구성요소
-- `components/write`: 에디터·이미지 업로드·태그·글 옵션 구성요소
+- `components/write`: 태그·첨부·글 옵션 등 에디터 주변 구성요소
 
 라우터는 `BlogList`, `BlogView`, `BlogWrite`, `BlogModify`라는 이름을 찾으므로 이 네 파일명은
 유지한다.
@@ -40,7 +40,7 @@
 1. 이 폴더를 `app/skins/my-blog`로 복사하고 `skin.json`의 `key`와 제작자 정보를 바꾼다.
 2. `BlogPostRow.vue`와 `BlogView.vue`의 Tailwind class부터 바꾸면 목록과 본문 분위기를 빠르게
    확인할 수 있다.
-3. 댓글·에디터까지 바꾸려면 이 폴더의 `components/view`, `components/write`를 바로 수정한다.
+3. 댓글·글쓰기 주변 UI까지 바꾸려면 이 폴더의 `components/view`, `components/write`를 수정한다.
 4. `npm run lint`, `npm run typecheck`, `npm run build`로 확인한다.
 
 API나 store를 직접 호출하면 인증·SSR 경계를 중복 구현하게 된다. 필요한 데이터가 provider에
@@ -48,3 +48,6 @@ API나 store를 직접 호출하면 인증·SSR 경계를 중복 구현하게 �
 
 다른 스킨 폴더를 import하면 숨은 설치·버전 의존성이 생기므로 허용하지 않는다. 공유 경계는
 NUBO의 provider, 타입과 `app/components`의 플랫폼 UI까지다.
+
+본문은 플랫폼 공용 `NuboTiptapEditor`를 사용한다. 스킨에서 에디터를 복제하지 않으며 사용법은
+`docs/SKIN_EDITOR.md`를 따른다.

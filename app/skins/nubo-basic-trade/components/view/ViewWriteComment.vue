@@ -1,6 +1,6 @@
 <template>
   <div class="overflow-hidden rounded-xl border border-border/70 bg-background/45">
-    <WriteTiptapEditor v-model="edit.content" :config="view.config" profile="comment" />
+    <NuboTiptapEditor v-model="edit.content" :config="view.config" profile="comment" />
   </div>
   <Button
     v-if="commentTarget.reply"
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { useNuboViewContext } from "~/providers/contexts/view"
-import WriteTiptapEditor from "../write/WriteTiptapEditor.vue"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 
 const edit = useEditorStore()
 const { isLoggedIn, view, commentTarget, writeNewComment, writeReplyComment, modifyExistComment } =

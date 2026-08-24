@@ -3,7 +3,7 @@
     <Card><CardHeader><CardTitle>{{ title }}</CardTitle><CardDescription>{{ config.name }} : {{ config.info }}</CardDescription></CardHeader>
       <CardContent class="space-y-4">
         <WritePostOptions /><TradeFields /><WriteDragDropUpload /><WriteDragDropUploadedFiles />
-        <WriteTitle /><WriteTiptapEditor v-model="content" :config="config" /><WriteHashtag />
+        <WriteTitle /><NuboTiptapEditor v-model="content" :config="config" /><WriteHashtag />
       </CardContent>
       <CardFooter class="flex items-center justify-between border-t">
         <div class="flex gap-2"><Button variant="outline" @click="modify ? cancelEditPost() : cancelNewPost()">취소</Button><Button v-if="!modify && isLoadDraft" variant="outline" @click="loadDraft">임시글 불러오기</Button></div>
@@ -20,7 +20,7 @@ import WriteDragDropUpload from "./write/WriteDragDropUpload.vue"
 import WriteDragDropUploadedFiles from "./write/WriteDragDropUploadedFiles.vue"
 import WriteHashtag from "./write/WriteHashtag.vue"
 import WritePostOptions from "./write/WritePostOptions.vue"
-import WriteTiptapEditor from "./write/WriteTiptapEditor.vue"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 import WriteTitle from "./write/WriteTitle.vue"
 import TradeFields from "./TradeFields.vue"
 const props = defineProps<{ title: string; modify: boolean }>()

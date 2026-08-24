@@ -55,15 +55,15 @@
         <Select
           v-if="profile === 'post'"
           class="rounded-md bg-transparent p-2 text-sm hover:bg-accent"
-          :model-value="edit.editorHeadings"
-          @update:model-value="edit.toggleHeading"
+          :model-value="headingStyle"
+          @update:model-value="changeHeading"
         >
           <SelectTrigger class="w-24 cursor-pointer" aria-label="문단 스타일">
             <SelectValue placeholder="스타일" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="0" :selected="!edit.isHeadingActive()">본문</SelectItem>
+              <SelectItem value="0" :selected="!ed.isActive('heading')">본문</SelectItem>
               <SelectItem
                 v-for="(_, index) in 4"
                 :key="index"
@@ -129,7 +129,7 @@
           <SquareCode class="w-4 h-4" />
         </Button>
 
-        <WriteTableMenu v-if="profile === 'post'" :editor="ed" />
+        <NuboEditorTableMenu v-if="profile === 'post'" :editor="ed" />
 
         <div class="w-px h-6 bg-border mx-1"></div>
 
@@ -155,8 +155,8 @@
       </div>
 
       <EditorContent :editor="ed as unknown as Editor" class="tiptap p-4 focus:outline-none" />
-      <WriteAddLink />
-      <WriteImageUpload v-if="profile === 'post'" />
+      <NuboEditorLinkDialog />
+      <NuboEditorImageDialog v-if="profile === 'post'" />
     </div>
     <Toaster />
   </ClientOnly>
@@ -183,11 +183,11 @@ import {
 import type { BoardConfig } from "~/types/board"
 import type { EditorProfile } from "~/types/editor"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
-import WriteAddLink from "./WriteAddLink.vue"
-import WriteImageUpload from "./WriteImageUpload.vue"
-import WriteTableMenu from "./WriteTableMenu.vue"
+import type { AcceptableValue } from "reka-ui"
+import NuboEditorImageDialog from "./NuboEditorImageDialog.vue"
+import NuboEditorLinkDialog from "./NuboEditorLinkDialog.vue"
+import NuboEditorTableMenu from "./NuboEditorTableMenu.vue"
 
-const edit = useEditorStore()
 const props = withDefaults(
   defineProps<{ modelValue: string; config: BoardConfig; profile?: EditorProfile }>(),
   { profile: "post" },
@@ -204,15 +204,14 @@ onMounted(() => {
   })
   ed.value = editor
 
-  edit.editor = editor
-  edit.config = props.config
+  bindEditor(editor, props.config)
   syncBlockStyle()
   editor.on("selectionUpdate", syncBlockStyle)
   editor.on("transaction", syncBlockStyle)
 })
 
 const uploadEditorImages = async (files: File[]) => {
-  const sources = await edit.uploadContentImages(files)
+  const sources = await uploadContentImages(files)
   if (sources.length > 0) toast(`✅ 본문에 이미지를 삽입하였습니다`)
   return sources
 }
@@ -222,7 +221,11 @@ const syncBlockStyle = () => {
   const activeLevel = ([1, 2, 3, 4] as const).find((level) =>
     ed.value?.isActive("heading", { level }),
   )
-  edit.editorHeadings = activeLevel ? String(activeLevel) : "0"
+  headingStyle.value = activeLevel ? String(activeLevel) : "0"
+}
+
+const changeHeading = (value: AcceptableValue) => {
+  if (typeof value === "string") setHeadingStyle(value)
 }
 
 // 에디터에 연결된 변수값이 업데이트 되면 에디터에서도 맞춰서 변경해주기
@@ -238,6 +241,7 @@ watch(
 // 화면을 나가기 전에 에디터가 사용한 리소스 다시 회수하기
 onBeforeUnmount(() => {
   ed.value?.destroy()
+  bindEditor(null)
 })
 
 const {
@@ -250,6 +254,10 @@ const {
   isUploading,
   isAddLinkDialog,
   isImageUploadDialog,
+  headingStyle,
+  bindEditor,
+  setHeadingStyle,
+  uploadContentImages,
   toggleBold,
   toggleItalic,
   toggleStrike,

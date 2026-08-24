@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 실서비스에서 확인된 advance 스킨 UX·수정 경로·한글 굵기, 수동 실행 안내, 하위 경로 배포 지원을 작은 작업 단위로 순차 개선한다.
+- 공용 Tiptap 전환 후 기본·advance 스킨의 실제 작성·수정 UX를 제품 소유자가 확인한다.
 
 ## Product boundary
 
@@ -32,6 +32,7 @@
 - 제작자는 운영자가 발급한 token으로 로그인한다. 승인된 key 소유자만 버전을 제출하고 운영자 승인 전에는 공개하지 않는다.
 - Market 런타임 DB 계정에는 DDL 권한을 주지 않으며 schema 변경은 관리자 계정으로 선적용한다.
 - 스킨은 다른 스킨 폴더의 소스를 import하지 않는다. 공유 경계는 provider·store·타입과 플랫폼 공통 UI다.
+- 게시글·댓글의 Tiptap 구현과 도구막대·표·링크·본문 이미지 기능은 플랫폼이 소유하며 스킨은 `NuboTiptapEditor`를 사용한다.
 - 데스크톱 활성 링크·버튼·메뉴·선택 컨트롤은 손가락 커서, 비활성 컨트롤은 금지 커서를 사용한다.
 - 초기 리뷰는 nubohub.org 로그인 사용자에게 열고 계정당 스킨별 1개로 제한한다. 설치 여부와 제작자 본인 여부는 검사하지 않는다.
 - 리뷰 인증은 NUBO Web이 `uid`·닉네임·관리자 여부만 Market에 제공하고 Market은 로그인 토큰을 저장하지 않는다. 별점은 1~~5, 본문은 10~~2000자이며 숨김 리뷰는 집계에서 제외한다.
@@ -67,6 +68,7 @@
 - `body`에서 가변 폰트의 `wght` 축을 400으로 고정하던 선언을 제거해 한글의 `font-weight`가 Pretendard 가변축에 정상 반영되도록 했다.
 - 제한망에서 외부 반입한 공식 bundle과 SHA-256을 다단계 검증해 `.nubo/releases`와 `./goapi-linux`를 준비하는 `server:manual`을 추가하고, `.env`를 명시한 GOAPI·Nuxt 수동 실행 절차를 README에 문서화했다.
 - Nuxt `app.baseURL` 기본값과 `%s` 제목 템플릿을 명시하고, 실행 시 `NUXT_APP_BASE_URL=/sample/`이면 브라우저 API·원본·다운로드와 nuboctl 상태 확인도 같은 하위 경로를 따르도록 했다.
+- 기본 board/blog/gallery/trade와 advance blog/gallery의 게시글 작성·수정, 기본 스킨 댓글 편집기를 플랫폼 공용 `NuboTiptapEditor`로 통합했다. 스킨 내부 Tiptap 복제본을 제거하고 표·링크·이미지·Markdown 기능과 제작자 사용 계약을 공용화했다.
 
 ## Open findings
 
@@ -99,8 +101,9 @@
 - Pretendard 굵기 패치는 공식 GOV 1.3.9 variable과 기존 파일의 45~~920 축을 비교해 파일 문제가 아님을 확인했고, unit 37건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
 - `server:manual`은 unit 39건과 ESLint 오류 0건(기존 경고 50)을 통과했고, 로컬 NUBO 1.2.26 공식 asset으로 외부 SHA-256·압축 경로·manifest·내부 checksum 검증과 `goapi-linux` 준비를 실제 완료했다.
 - 하위 경로 패치는 NUBO 전체 50건, typecheck, ESLint 오류 0건(기존 경고 50), nuboctl 전체 Go test와 1536 MiB production build를 통과했다. 기본 빌드를 런타임 `/sample/`로 실행해 SSR·정적 asset·`/sample/api` 프록시와 readiness를 검증했다.
+- 공용 에디터 전환은 전체 Vitest 53건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
 
 ## Next action
 
-1. 제품 소유자가 실제 blog/gallery 콘텐츠와 한글 본문, 제한망·하위 경로 서비스에서 이번 변경을 QA한다.
+1. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
 2. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.

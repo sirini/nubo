@@ -126,14 +126,10 @@
         </ul>
       </div>
 
-      <label class="block space-y-2 text-sm font-medium"
-        >이야기
-        <Textarea
-          v-model="content"
-          class="mt-2 min-h-64 resize-y leading-7"
-          placeholder="사진을 찍은 순간과 장소, 생각을 기록해보세요"
-        />
-      </label>
+      <div class="space-y-2">
+        <p class="text-sm font-medium">이야기</p>
+        <NuboTiptapEditor v-model="content" :config="config" />
+      </div>
 
       <div class="space-y-3">
         <label class="text-sm font-medium" for="advance-gallery-tag">태그</label>
@@ -188,6 +184,7 @@
 
 <script setup lang="ts">
 import { ImageUpIcon, LoaderCircleIcon, Trash2Icon, XIcon } from "lucide-vue-next"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import { useNuboWriteContext } from "~/providers/contexts/write"
 

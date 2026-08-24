@@ -114,7 +114,7 @@
 
       <div>
         <h2 class="mb-3 text-sm font-medium">본문</h2>
-        <AdvanceBlogRichEditor v-model="content" :config="config" />
+        <NuboTiptapEditor v-model="content" :config="config" />
       </div>
 
       <div class="space-y-3">
@@ -183,7 +183,7 @@
 import { ImageUpIcon, LoaderCircleIcon, PaperclipIcon, Trash2Icon, XIcon } from "lucide-vue-next"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import { useNuboWriteContext } from "~/providers/contexts/write"
-import AdvanceBlogRichEditor from "./AdvanceBlogRichEditor.vue"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 const props = defineProps<{ mode: "write" | "modify" }>()
 const { config, content, isLoadDraft, lastDraftSavedAt, loadDraft } = useNuboEditorContext()
 const {
