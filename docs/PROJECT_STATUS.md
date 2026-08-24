@@ -16,7 +16,7 @@
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
 - NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
-- 다음 통합 릴리스는 NUBO/GOAPI 1.2.27이며 공용 Tiptap을 사용하는 공식 게시판 스킨의 최소 NUBO 버전도 1.2.27이다.
+- 다음 통합 릴리스는 NUBO/GOAPI 1.2.28 Nginx 비관리 hotfix이며 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
@@ -85,6 +85,7 @@
 
 ## Verification
 
+- NUBO/GOAPI v1.2.28 준비는 API contract v1 일치, NUBO 전체 Vitest 55건, lint 오류 0건(기존 경고 50), typecheck·1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다.
 - Nginx 비관리·실패 릴리스 정리 패치는 nuboctl 전체 Go test/vet, NUBO unit 47건, ESLint 오류 0건(기존 경고 50), Linux amd64 nuboctl 0.14.2 빌드와 Node/Bash 구문 검사를 통과했다.
 - NUBO v1.2.25는 API contract v1 일치, Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 Ubuntu 22.04/24.04 fresh-install을 통과했다.
 - nubohub.org 커스텀 릴리스 `03030eab8c30`(로컬 스킨 빌드 `1b6427b75445`)은 `nuboctl status` 16건을 통과했고 NUBO·GOAPI·Market·Nginx가 active다.
