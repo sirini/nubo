@@ -16,7 +16,7 @@
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
 - NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
-- NUBO/GOAPI 1.2.29는 fresh install 검증 뒤 게시됐지만 v1.2.28 update가 ProtectHome 템플릿 차이로 차단되어, 직접 update 가능한 후속 hotfix를 준비한다. 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
+- NUBO/GOAPI 1.2.30 직접-update 후속 hotfix를 준비 중이다. 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
@@ -89,7 +89,7 @@
 
 ## Verification
 
-- NUBO/GOAPI v1.2.29 후보는 API contract v1 일치, nuboctl 전체 Go test/vet, NUBO 전체 Vitest 55건, ESLint 오류 0건(기존 경고 50), typecheck와 1536 MiB production build, GOAPI 전체 test/race/vet를 통과했다.
+- NUBO/GOAPI v1.2.29는 API contract v1 일치, nuboctl 전체 Go test/vet, NUBO 전체 Vitest 55건, ESLint 오류 0건(기존 경고 50), typecheck와 1536 MiB production build, GOAPI 전체 test/race/vet 및 Ubuntu 22.04/24.04 fresh install을 통과했다. 공개 archive SHA-256은 `7f4e976a04d2d4bd494b6ba0539caa158ce609fed0b8557e6658c783e11e5fd0`다.
 - sensta.me의 current는 공식 `nubo-1.2.28-linux-amd64`이며 GOAPI/Web active, 환경 버전 1.2.28, 내부·공개 `/ready`, 공개 홈페이지 200과 `nuboctl status` 16건을 통과했다. 운영 복구용 환경 원본은 `/etc/nubo/nubo.env.pre-v1.2.28-20260825-033309`에 보존했다.
 - NUBO/GOAPI v1.2.28은 API contract v1 일치, NUBO 전체 Vitest 55건, lint 오류 0건(기존 경고 50), typecheck·1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다. CI run `32762151352`에서 공식 Ubuntu 빌드와 Ubuntu 22.04/24.04 fresh install 뒤 asset 2개를 게시했으며 공개 archive SHA-256은 `a346378e8e24fedd269ec3ec4c77251ef8b1e2ff54370e3a2949cccb1a16234b`다.
 - Nginx 비관리·실패 릴리스 정리 패치는 nuboctl 전체 Go test/vet, NUBO unit 47건, ESLint 오류 0건(기존 경고 50), Linux amd64 nuboctl 0.14.2 빌드와 Node/Bash 구문 검사를 통과했다.
