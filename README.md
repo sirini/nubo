@@ -188,8 +188,51 @@ npm run build
 
 ```bash
 npm run build
-node .output/server/index.mjs
+node --env-file="$PWD/.env" .output/server/index.mjs
 ```
+
+#### 제한망에서 수동으로 런타임 준비·실행
+
+`git pull`은 되지만 `npm run server:prepare`나 `server:install`의 Node `fetch`가 차단되는 환경에서는
+공식 릴리스의 압축 파일과 같은 이름의 `.sha256` 파일을 브라우저 또는 다운로드 가능한 PC에서 받아
+프로젝트 디렉터리로 옮깁니다. 인터넷 연결이 있는 셸에서 `curl`만 허용되는 경우에는 다음처럼 받을 수
+있습니다.
+
+```bash
+NUBO_VERSION=$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' env.sample)
+NUBO_ASSET="nubo-${NUBO_VERSION}-linux-amd64.tar.gz"
+NUBO_RELEASE_URL="https://github.com/sirini/nubo/releases/download/v${NUBO_VERSION}"
+curl -fLO "${NUBO_RELEASE_URL}/${NUBO_ASSET}"
+curl -fLO "${NUBO_RELEASE_URL}/${NUBO_ASSET}.sha256"
+```
+
+반입한 두 파일은 `server:manual`로 검증합니다. 이 명령은 바깥쪽 SHA-256, 안전한 압축 경로,
+내부 manifest와 파일별 checksum을 모두 확인한 뒤 Git에서 제외된 `.nubo/releases/`에 풀고
+`./goapi-linux` 심볼릭 링크를 만듭니다. 바이너리와 `libvips`를 `bin/`, `lib/`에 커밋할 필요가 없습니다.
+
+```bash
+npm install
+npm run server:manual -- \
+  --archive "$PWD/$NUBO_ASSET" \
+  --checksum "$PWD/$NUBO_ASSET.sha256"
+npm run build
+```
+
+그다음 두 터미널 또는 두 tmux 창에서 같은 `.env`를 명시해 각각 실행할 수 있습니다.
+
+```bash
+NUBO_ENV_FILE="$PWD/.env" ./goapi-linux
+```
+
+```bash
+node --env-file="$PWD/.env" .output/server/index.mjs
+```
+
+`goapi-linux`의 실제 대상은 공식 bundle의 `bin/goapi`이며, 그 형제 `lib/`를 RPATH로 참조합니다.
+소스 스킨을 바꾼 뒤에는 프론트엔드의 `npm run build`와 Node 프로세스 재시작만 필요합니다. tmux 수동
+실행은 제한망의 임시·소규모 운영에는 쓸 수 있지만 재부팅 자동 시작과 장애 재시작이 필요하면 공식
+`nuboctl`/systemd 설치를 사용하세요. 릴리스 파일을 다시 받을 수 없는 완전한 폐쇄망에서는 두 asset을
+함께 보관해야 이후 같은 검증 절차를 반복할 수 있습니다.
 
 빌드 서버에서 만든 `.output`만 운영 서버로 옮기는 no-build 배포 PoC와 런타임 환경 변수
 계약은 [Prebuilt Nuxt deployment PoC](./docs/PREBUILT_DEPLOYMENT.md)를 참고하세요.

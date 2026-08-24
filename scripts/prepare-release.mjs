@@ -6,9 +6,11 @@ import {
   currentRelease,
   extractRelease,
   fetchRelease,
+  parseManualReleaseArgs,
   prepareGoapi,
   runNuboctl,
   stageSystemRelease,
+  verifyManualRelease,
 } from "./release-download.mjs"
 import { failure, section, success } from "./terminal-output.mjs"
 import { applySiteRelease, prepareSiteRelease } from "./prepare-site-release.mjs"
@@ -21,19 +23,25 @@ import {
 
 async function main() {
   const [command = "prepare", ...args] = process.argv.slice(2)
-  if (!["prepare", "adopt", "install", "update"].includes(command)) {
+  if (!["prepare", "manual", "adopt", "install", "update"].includes(command)) {
     throw new Error(`알 수 없는 릴리스 준비 명령입니다: ${command}`)
   }
   assertSupportedRuntime()
-  section(command === "update" ? "NUBO 업데이트 준비" : command === "adopt" ? "기존 사이트 전환 준비" : "NUBO 설치 준비")
+  section(command === "update" ? "NUBO 업데이트 준비" : command === "adopt" ? "기존 사이트 전환 준비" : command === "manual" ? "NUBO 수동 런타임 준비" : "NUBO 설치 준비")
   const publicUpdate = command === "update" ? parsePublicUpdateArgs(args) : null
   if (publicUpdate?.pull) pullSourceCheckout(process.cwd())
 
   const descriptor = await currentRelease()
-  const archive = await fetchRelease(descriptor)
+  let archive
+  if (command === "manual") {
+    const inputs = parseManualReleaseArgs(args)
+    archive = await verifyManualRelease(descriptor, inputs.archive, inputs.checksum)
+  } else {
+    archive = await fetchRelease(descriptor)
+  }
   const localRelease = await extractRelease(descriptor, archive, join(process.cwd(), ".nubo", "releases"))
 
-  if (command === "prepare") {
+  if (command === "prepare" || command === "manual") {
     const link = await prepareGoapi(localRelease)
     success(`NUBO 서버 파일 ${descriptor.version} 준비 완료 (GOAPI: ${link})`)
     return

@@ -16,6 +16,7 @@
     "postinstall": "nuxt prepare",
     "server:adopt": "node scripts/prepare-release.mjs adopt",
     "server:install": "node scripts/prepare-release.mjs install",
+    "server:manual": "node scripts/prepare-release.mjs manual",
     "server:customize": "node scripts/prepare-site-release.mjs",
     "server:prepare": "node scripts/prepare-release.mjs prepare",
     "server:update": "node scripts/prepare-release.mjs update",

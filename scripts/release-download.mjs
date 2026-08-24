@@ -43,6 +43,37 @@ export function checksumFromFile(content, archive) {
   throw new Error(`${archive}의 SHA-256 값을 찾을 수 없습니다`)
 }
 
+export function parseManualReleaseArgs(args, cwd = process.cwd()) {
+  const values = { archive: "", checksum: "" }
+  for (let index = 0; index < args.length; index++) {
+    const argument = args[index]
+    let matched = false
+    for (const name of ["archive", "checksum"]) {
+      if (argument === `--${name}`) {
+        const value = args[++index]
+        if (!value || value.startsWith("--")) {
+          throw new Error(`--${name} 뒤에 파일 경로가 필요합니다`)
+        }
+        values[name] = value
+        matched = true
+      } else if (argument.startsWith(`--${name}=`)) {
+        values[name] = argument.slice(name.length + 3)
+        matched = true
+      }
+    }
+    if (!matched) {
+      throw new Error(`알 수 없는 수동 준비 옵션입니다: ${argument}`)
+    }
+  }
+  if (!values.archive || !values.checksum) {
+    throw new Error("수동 준비에는 --archive와 --checksum 파일이 모두 필요합니다")
+  }
+  return {
+    archive: resolve(cwd, values.archive),
+    checksum: resolve(cwd, values.checksum),
+  }
+}
+
 export function validateArchiveEntries(content, releaseName) {
   const entries = content.split(/\r?\n/).filter(Boolean)
   if (entries.length === 0) throw new Error("릴리스 압축 파일이 비어 있습니다")
@@ -134,6 +165,15 @@ export async function fetchRelease(descriptor, cacheRoot = join(projectRoot, ".n
   const actual = await sha256(archivePath)
   if (actual !== expected) {
     await rm(archivePath, { force: true })
+    throw new Error(`릴리스 SHA-256이 일치하지 않습니다: expected ${expected}, got ${actual}`)
+  }
+  return archivePath
+}
+
+export async function verifyManualRelease(descriptor, archivePath, checksumPath) {
+  const expected = checksumFromFile(await readFile(checksumPath, "utf8"), descriptor.archive)
+  const actual = await sha256(archivePath)
+  if (actual !== expected) {
     throw new Error(`릴리스 SHA-256이 일치하지 않습니다: expected ${expected}, got ${actual}`)
   }
   return archivePath
