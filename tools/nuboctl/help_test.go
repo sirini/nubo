@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestHelpCoversPublicCommands(t *testing.T) {
-	for _, command := range []string{"", "status", "doctor", "update", "customize", "releases", "market", "skin", "activate-nginx", "install", "adopt"} {
+	for _, command := range []string{"", "status", "doctor", "update", "customize", "releases", "market", "skin", "install", "adopt"} {
 		page, ok := helpPages[command]
 		if !ok || page.title == "" || page.body == "" {
 			t.Fatalf("%q 도움말이 비어 있습니다", command)

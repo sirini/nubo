@@ -72,7 +72,6 @@ trap diagnose EXIT
 
 NUBO_MISSING_PACKAGES=()
 command -v curl >/dev/null 2>&1 || NUBO_MISSING_PACKAGES+=(curl)
-command -v nginx >/dev/null 2>&1 || NUBO_MISSING_PACKAGES+=(nginx)
 [[ -f /etc/ssl/certs/ca-certificates.crt ]] || NUBO_MISSING_PACKAGES+=(ca-certificates)
 if [[ ${#NUBO_MISSING_PACKAGES[@]} -gt 0 ]]; then
   prepare_apt_metadata

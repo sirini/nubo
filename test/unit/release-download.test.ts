@@ -1,14 +1,16 @@
 import { createHash } from "node:crypto"
-import { mkdtemp, rm, writeFile } from "node:fs/promises"
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
 import {
   checksumFromFile,
+  discardStagedSystemRelease,
   parseManualReleaseArgs,
   readSetting,
   releaseDescriptor,
+  systemReleaseIsCurrent,
   validateArchiveEntries,
   verifyManualRelease,
 } from "../../scripts/release-download.mjs"
@@ -75,6 +77,30 @@ describe("release download contract", () => {
       await expect(verifyManualRelease(descriptor, archive, checksum)).rejects.toThrow(
         "SHA-256이 일치하지 않습니다",
       )
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
+
+  it("refuses to discard paths outside generated site releases", () => {
+    expect(() => discardStagedSystemRelease({ created: true, path: "/opt/nubo/releases/operator-data" })).toThrow(
+      "정리할 수 없는 릴리스 경로",
+    )
+    expect(() => discardStagedSystemRelease({ created: true, path: "/opt/nubo/current" })).toThrow(
+      "정리할 수 없는 릴리스 경로",
+    )
+    expect(discardStagedSystemRelease({ created: false, path: "/opt/nubo/releases/anything" })).toBe(false)
+  })
+
+  it("recognizes whether an update actually switched current", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "nubo-current-release-"))
+    const release = join(directory, "release")
+    const current = join(directory, "current")
+    try {
+      await mkdir(release)
+      await symlink(release, current)
+      expect(systemReleaseIsCurrent(release, current)).toBe(true)
+      expect(systemReleaseIsCurrent(join(directory, "other"), current)).toBe(false)
     } finally {
       await rm(directory, { recursive: true, force: true })
     }

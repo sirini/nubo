@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from "node:url"
 import {
   assertSupportedRuntime,
   currentRelease,
+  discardStagedSystemRelease,
   extractRelease,
   fetchRelease,
   runReleaseCommand,
@@ -55,7 +56,7 @@ export function applySiteRelease(systemRelease, dryRun = false) {
   runReleaseCommand(systemRelease, ["skin", "apply", "--release", systemRelease, ...(dryRun ? ["--dry-run"] : [])])
 }
 
-export async function prepareSiteRelease({ descriptor, official, dryRun = false, apply = true } = {}) {
+export async function prepareSiteRelease({ descriptor, official, dryRun = false, apply = true, stage = true } = {}) {
   assertSupportedRuntime()
   section("사이트 꾸미기 빌드")
   descriptor ??= await currentRelease()
@@ -85,13 +86,24 @@ export async function prepareSiteRelease({ descriptor, official, dryRun = false,
   await writeFile(join(candidate, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, { mode: 0o644 })
   await writeChecksums(candidate)
 
-  const systemRelease = stageSystemRelease(candidate)
-  success(`사이트 수정본을 안전하게 준비했습니다: ${systemRelease}`)
-  if (apply) {
-    applySiteRelease(systemRelease, dryRun)
-    if (!dryRun) await enableAutoCustomize(projectRoot)
+  if (!stage) {
+    success(`사이트 수정본을 로컬에서 검증했습니다: ${candidate}`)
+    return candidate
   }
-  return systemRelease
+  const stagedRelease = stageSystemRelease(candidate)
+  await rm(candidate, { recursive: true, force: true })
+  success(`사이트 수정본을 안전하게 준비했습니다: ${stagedRelease.path}`)
+  if (apply) {
+    try {
+      applySiteRelease(stagedRelease.path, dryRun)
+      if (!dryRun) await enableAutoCustomize(projectRoot)
+    } catch (error) {
+      discardStagedSystemRelease(stagedRelease)
+      throw error
+    }
+    if (dryRun) discardStagedSystemRelease(stagedRelease)
+  }
+  return stagedRelease.path
 }
 
 async function main() {

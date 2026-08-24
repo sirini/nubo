@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 )
 
-const version = "0.14.1"
+const version = "0.14.2"
 
 type options struct {
 	releaseDir  string
@@ -41,8 +41,6 @@ func run(args []string) int {
 		return runAdoptCommand(args[1:])
 	case "install":
 		return runInstallCommand(args[1:])
-	case "activate-nginx":
-		return runNginxCommand(args[1:])
 	case "update":
 		return runUpdateCommand(args[1:])
 	case "customize":

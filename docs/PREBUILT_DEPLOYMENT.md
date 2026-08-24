@@ -116,17 +116,11 @@ loopback-only GOAPI listener on port 3006. Browser application calls under `/api
 Nuxt so its authentication refresh and cookie handling remain active; direct `/goapi/` access supports
 OAuth and RSS routes.
 
-On a clean server, `nuboctl install` may create and validate a new site configuration. If a server
-block for the target domain already exists, or an existing installation is adopted, `nuboctl` must
-not edit Nginx files or enable, disable, or reload any Nginx configuration. Read-only diagnostics and
-printing a recommended configuration remain allowed. After a clean install, the separate idempotent
-`nuboctl activate-nginx` command links only that generated site, validates the complete configuration,
-and starts or reloads Nginx. TLS certificate issuance and Certbot stay under the server operator's control.
-
-`nuboctl install` renders these templates, points the systemd units at `current`, and starts the application
-services after database preparation. It leaves the generated Nginx site disabled until the separate
-`activate-nginx` step. Human operators use its Korean interactive flow; AI and automation follow the
-release-root `INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
+Nginx and TLS are fully operator-owned. `nuboctl install` does not read, create, modify, link, validate,
+enable, disable, or reload files under `/etc/nginx`; read-only diagnostics and the bundled configuration
+example remain available. The installer renders only the systemd templates, points those units at `current`,
+and starts the application services after database preparation. Human operators use its Korean interactive
+flow; AI and automation follow the release-root `INSTALL_GUIDE_FOR_AI.md` and explicit non-interactive options.
 
 New installs expose `nubo.service` as the operator-facing lifecycle unit while retaining `nubo.target`
 as the internal GOAPI/Web grouping. Operators can therefore run `systemctl restart nubo`, and may still
@@ -185,7 +179,7 @@ The bundle intentionally excludes secrets, uploads, root dependencies, and rende
 It includes x86-64 baseline and x86-64-v2 sharp-libvips variants under `lib/`, with provenance and
 license records under `licenses/sharp-libvips/`. glibc selects the compatible variant automatically,
 so runtime servers do not install a system libvips package. It also includes the static Linux `nuboctl` binary
-with safe `install`, `activate-nginx`, source-coordinated `update` and `customize` flows, read-only `doctor` and `status`,
+with safe `install`, source-coordinated `update` and `customize` flows, read-only `doctor` and `status`,
 explicit `releases list/prune` management commands, and the unprivileged service and proxy templates used by the installer.
 
 The official archive is attached to an immutable GitHub Release. `deploy/release-sources.json` pins the GOAPI

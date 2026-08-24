@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto"
-import { createReadStream, createWriteStream } from "node:fs"
+import { createReadStream, createWriteStream, realpathSync } from "node:fs"
 import { access, lstat, mkdir, mkdtemp, readFile, readlink, rename, rm, symlink } from "node:fs/promises"
 import { basename, dirname, join, relative, resolve, sep } from "node:path"
 import { Readable } from "node:stream"
@@ -241,10 +241,53 @@ export function stageSystemRelease(releaseDirectory) {
   const testArgs = testCommand === "sudo" ? ["test", "-d", destination] : ["-d", destination]
   const present = spawnSync(testCommand, testArgs, { stdio: "ignore" }).status === 0
   if (!present) {
-    runPrivileged("cp", ["-a", "--", releaseDirectory, destination])
-    runPrivileged("chown", ["-R", "root:root", destination])
+    const temporary = `${destination}.stage-${process.pid}`
+    try {
+      runPrivileged("rm", ["-rf", "--", temporary])
+      runPrivileged("cp", ["-a", "--", releaseDirectory, temporary])
+      runPrivileged("chown", ["-R", "root:root", temporary])
+      runPrivileged("mv", ["-T", "--", temporary, destination])
+    } finally {
+      try {
+        runPrivileged("rm", ["-rf", "--", temporary])
+      } catch {
+        // 원래 staging 오류를 유지하며 임시 경로는 다음 실행에서 다시 회수한다.
+      }
+    }
   }
-  return destination
+  return { created: !present, path: destination }
+}
+
+// 이번 실행이 새로 배치했지만 적용하지 못한 공식·파생 릴리스만 회수한다.
+export function discardStagedSystemRelease(stagedRelease) {
+  if (!stagedRelease?.created) return false
+  const releasesRoot = "/opt/nubo/releases"
+  const destination = resolve(stagedRelease.path)
+  const releaseName = /^nubo-[0-9A-Za-z.+-]+(?:-site-[a-f0-9]{12})?-linux-amd64$/
+  if (dirname(destination) !== releasesRoot || !releaseName.test(basename(destination))) {
+    throw new Error(`정리할 수 없는 릴리스 경로입니다: ${stagedRelease.path}`)
+  }
+  for (const link of ["/opt/nubo/current", "/opt/nubo/previous"]) {
+    try {
+      if (realpathSync(link) === destination) {
+        info(`사용 중인 릴리스는 보존합니다: ${destination}`)
+        return false
+      }
+    } catch {
+      // 링크가 없거나 끊어졌으면 이 후보를 참조하지 않는다.
+    }
+  }
+  runPrivileged("rm", ["-rf", "--", destination])
+  info(`적용하지 못한 릴리스를 정리했습니다: ${destination}`)
+  return true
+}
+
+export function systemReleaseIsCurrent(releaseDirectory, currentLink = "/opt/nubo/current") {
+  try {
+    return realpathSync(currentLink) === realpathSync(releaseDirectory)
+  } catch {
+    return false
+  }
 }
 
 export function runNuboctl(command, releaseDirectory, args) {

@@ -53,18 +53,6 @@ func validateAutomaticInstall(options installOptions) int {
 	return 0
 }
 
-func runNginxCommand(args []string) int {
-	options, err := parseNginxActivationOptions(args)
-	if err != nil {
-		return commandOptionError(err)
-	}
-	if err := activateNginx(options, systemRunner{}, true); err != nil {
-		printFailure("웹 공개 설정 실패: %v", err)
-		return 1
-	}
-	return 0
-}
-
 func runUpdateCommand(args []string) int {
 	if !hasReleaseOption(args) {
 		if err := runSourceWorkflow("update", args); err != nil {

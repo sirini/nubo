@@ -43,7 +43,6 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 		filepath.Join(options.systemdDir, "nubo-web.service"),
 		filepath.Join(options.systemdDir, "nubo-goapi.service.d", lifecycleDropInName),
 		filepath.Join(options.systemdDir, "nubo-web.service.d", lifecycleDropInName),
-		filepath.Join(options.nginxDir, "nubo-community.example.com.conf"),
 	} {
 		contents, err := os.ReadFile(path)
 		if err != nil {
@@ -154,22 +153,22 @@ func TestInstallUsesPrivateEnvironmentInput(t *testing.T) {
 	}
 }
 
-// 기존 도메인 설정 발견 시 모든 쓰기를 막는다.
-func TestInstallRejectsExistingNginxDomainBeforeWriting(t *testing.T) {
+// 운영자가 관리하는 Nginx 설정은 설치 여부와 내용에 관계없이 읽거나 변경하지 않는다.
+func TestInstallIgnoresOperatorNginxConfiguration(t *testing.T) {
 	options := installTestOptions(t)
-	conflicting := filepath.Join(filepath.Dir(options.nginxDir), "conf.d", "existing.conf")
+	conflicting := filepath.Join(filepath.Dir(filepath.Dir(options.systemdDir)), "nginx", "sites-enabled", "sensta.me")
 	if err := os.MkdirAll(filepath.Dir(conflicting), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(conflicting, []byte("server { server_name community.example.com; }\n"), 0o644); err != nil {
+	if err := os.Symlink("/missing/operator-owned-nginx-site", conflicting); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := runInstall(options, systemRunner{}, false); err == nil {
-		t.Fatal("기존 Nginx 도메인 설정을 허용했습니다")
+	if err := runInstall(options, systemRunner{}, false); err != nil {
+		t.Fatalf("운영자 Nginx 설정 때문에 설치가 실패했습니다: %v", err)
 	}
-	if _, err := os.Stat(options.envFile); !os.IsNotExist(err) {
-		t.Fatal("Nginx 충돌 후 환경 파일이 생성됐습니다")
+	if target, err := os.Readlink(conflicting); err != nil || target != "/missing/operator-owned-nginx-site" {
+		t.Fatalf("운영자 Nginx 설정이 변경됐습니다: %s, %v", target, err)
 	}
 }
 

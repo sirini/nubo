@@ -2,7 +2,7 @@
 
 최초 `install`과 기존 소스의 `adopt`는 PATH에 관리 명령이 생기기 전이므로 저장소의 npm bootstrap을
 사용한다. 설치가 끝난 뒤 운영자가 기억할 공개 명령은 `nuboctl status`, `doctor`, `update`, `customize`,
-`releases`, `market`, `activate-nginx`다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
+`releases`, `market`이다. `skin apply`와 `update --release`는 공개 명령이 준비한 파일을 안전하게 전환하는 내부
 경계이며 일반 사용자가 직접 실행하지 않는다. AI·자동화는 릴리스 최상위의
 `INSTALL_GUIDE_FOR_AI.md`를 따른다.
 
@@ -174,38 +174,18 @@ sudo ./nuboctl install \
 - 대표 `nubo.service`를 enable/start해 내부 `nubo.target`의 GOAPI·Web을 함께 올리고 로컬 `/ready`가 정상일 때까지 확인
 - GOAPI·Web에 `PartOf=nubo.service` lifecycle drop-in을 설치해 `systemctl restart nubo`를 두 프로세스에 직접 전파
 - `/usr/local/bin/nuboctl`이 `/opt/nubo/current/nuboctl`을 가리키게 해 버전 전환 뒤에도 짧은 명령을 유지
-- Nginx site를 `/etc/nginx/sites-available/nubo-<도메인>.conf`에 렌더링
 
 안전 규칙:
 
 - 기존 환경 파일은 덮어쓰지 않고 권한·도메인·포트를 검증한 후 보존한다.
 - 기존 DB 레코드는 덮어쓰지 않으며 중단된 설치는 같은 명령으로 다시 시도할 수 있다.
-- 기존 systemd/Nginx 파일이 예상 결과와 다르면 덮어쓰지 않고 실패한다.
+- 기존 systemd 파일이 예상 결과와 다르면 덮어쓰지 않고 실패한다.
 - 기존 `current`가 일반 경로이거나 다른 릴리스를 가리키면 install로 바꾸지 않고 실패한다.
-- Nginx 전체 설정 트리에서 대상 도메인이 발견되면 어떤 파일도 만들기 전에 중단한다.
 - `nuboctl`이 이전에 만든 동일한 파일은 변경 없이 보존하며 재실행해도 결과가 같다.
 
-Nginx enable·reload와 Certbot/TLS는 아직 수행하지 않는다. DB와 두 애플리케이션 서비스가 준비된 뒤
-`doctor`로 실행 조건을 확인하고 공개 프록시 단계로 넘어간다.
-
-## activate-nginx
-
-`install`이 성공한 직후 또는 `status`로 서비스 readiness를 확인한 뒤 설치기가 만든 site만
-`sites-enabled`에 연결한다. 전체 설정의
-`nginx -t`가 통과해야 Nginx를 부팅 활성화하고, 실행 중이면 reload하며 멈춰 있으면 start한다.
-
-```bash
-sudo ./nuboctl activate-nginx --dry-run
-sudo ./nuboctl activate-nginx
-```
-
-도메인은 `/etc/nubo/nubo.env`의 `NUXT_PUBLIC_DOMAIN`에서 읽는다. 기존 enabled 항목이 일반 파일이거나
-다른 설정을 가리키는 링크이면 덮어쓰지 않는다. 설정 검증이나 서비스 반영에 실패하면 이번 실행에서
-만든 링크를 제거한다.
-
-이 단계는 HTTP 공개만 활성화한다. DNS가 서버를 가리키는지 확인한 뒤 출력되는
-`certbot --nginx -d <도메인> --redirect` 명령으로 운영자가 약관·연락처를 확인하고 TLS를 발급한다.
-Certbot 설치와 인증서 발급은 `nuboctl`의 책임 범위에 포함하지 않는다.
+Nginx와 TLS는 운영자 소유다. `install`은 `/etc/nginx`를 읽거나 생성·수정·reload하지 않는다.
+DB와 두 애플리케이션 서비스가 준비된 뒤 `doctor`의 읽기 전용 진단과 Nginx 예시를 참고해
+운영자가 기존 프록시 설정을 직접 연결한다.
 
 ## update
 

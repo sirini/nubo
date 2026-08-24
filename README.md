@@ -60,12 +60,12 @@ NUBO 저장소의 공식 no-build 설치가 Nuxt와 GOAPI, 이미지 처리 라�
 git clone --depth=1 https://github.com/sirini/nubo.git
 cd nubo
 npm run server:install
-nuboctl activate-nginx
 ```
 
 `server:install`은 현재 정식 릴리스의 통합 압축본과 SHA-256을 GitHub Releases에서 받아 검증하고,
 `/opt/nubo/releases`에 배치한 뒤 그 안의 `nuboctl install`을 실행합니다. sharp-libvips 기반 라이브러리와
 이미지 코덱도 같은 압축본에 있으므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
+Nginx와 TLS 설정은 읽거나 생성·수정·reload하지 않으며 운영자가 기존 설정을 그대로 관리합니다.
 
 최초 설치와 v1.2.0 이전 사이트 전환 때만 아직 관리 명령이 없으므로 `npm run server:install` 또는
 `npm run server:adopt`를 사용합니다. 설치가 끝나면 `/usr/local/bin/nuboctl`이 등록되며 이후에는
@@ -78,7 +78,6 @@ nuboctl doctor
 nuboctl update
 nuboctl customize
 nuboctl market help
-nuboctl activate-nginx
 ```
 
 `nuboctl help customize`처럼 명령 이름을 붙이거나 `nuboctl customize --help`를 실행하면 해당 작업이

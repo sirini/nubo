@@ -15,14 +15,13 @@ var helpPages = map[string]helpPage{
 		title: "NUBO 서버 관리",
 		body: `사용법: nuboctl <명령> [옵션]
 
-처음에는 이 일곱 가지만 기억하면 됩니다.
+처음에는 이 여섯 가지만 기억하면 됩니다.
   status          지금 사이트가 잘 실행되는지 확인
   doctor          설치와 설정에서 문제 찾기
   update          새 공식 버전으로 업데이트
   customize       수정한 스킨을 빌드하고 적용
   market          NUBO Market 스킨 검색·정보·설치·삭제
   releases        설치된 릴리스 확인·안전한 정리
-  activate-nginx  사이트를 HTTP로 공개
 
 명령별 도움말:
   nuboctl help <명령>
@@ -83,15 +82,6 @@ Node heap은 기본 1536 MiB이며 기존 NODE_OPTIONS의 사용자 지정값을
   --releases DIR  릴리스 보관 디렉터리
   --current PATH  현재 릴리스 링크
   --previous PATH 직전 릴리스 링크`,
-	},
-	"activate-nginx": {
-		title: "웹 공개 설정",
-		body: `설치기가 준비한 Nginx 설정을 연결하고 검사한 뒤 HTTP 사이트를 공개합니다.
-HTTPS 인증서 발급은 포함하지 않으며 출력되는 다음 명령을 따릅니다.
-
-사용법:
-  nuboctl activate-nginx --dry-run
-  nuboctl activate-nginx`,
 	},
 	"install": {
 		title: "NUBO 처음 설치",

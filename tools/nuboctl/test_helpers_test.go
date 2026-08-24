@@ -64,9 +64,8 @@ func installTestOptions(t *testing.T) installOptions {
 		t.Fatal(err)
 	}
 	systemdDir := filepath.Join(root, "etc", "systemd", "system")
-	nginxDir := filepath.Join(root, "etc", "nginx", "sites-available")
 	osReleaseFile := filepath.Join(root, "etc", "os-release")
-	for _, directory := range []string{systemdDir, nginxDir} {
+	for _, directory := range []string{systemdDir} {
 		if err := os.MkdirAll(directory, 0o755); err != nil {
 			t.Fatal(err)
 		}
@@ -94,11 +93,8 @@ func installTestOptions(t *testing.T) installOptions {
 		webPort:       3000,
 		goapiPort:     3006,
 		goapiPath:     "goapi",
-		maxBodySize:   "100m",
 		systemdDir:    systemdDir,
-		nginxDir:      nginxDir,
 		osReleaseFile: osReleaseFile,
-		manageNginx:   true,
 	}
 }
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 // 모든 입력과 기존 파일을 먼저 검사한 뒤 설치 준비 파일을 안전하게 생성한다.
@@ -50,25 +49,17 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	}
 
 	tokens := map[string]string{
-		"@NUBO_USER@":          options.serviceUser,
-		"@NUBO_GROUP@":         options.serviceGroup,
-		"@NUBO_RELEASE_DIR@":   options.currentLink,
-		"@NUBO_STATE_DIR@":     options.stateDir,
-		"@NUBO_UPLOAD_DIR@":    options.uploadDir,
-		"@NUBO_ENV_FILE@":      options.envFile,
-		"@NODE_BINARY@":        nodeBinary,
-		"@NUBO_DOMAIN@":        options.domain,
-		"@NUBO_WEB_PORT@":      strconv.Itoa(options.webPort),
-		"@NUBO_GOAPI_PORT@":    strconv.Itoa(options.goapiPort),
-		"@NUBO_GOAPI_PATH@":    options.goapiPath,
-		"@NUBO_MAX_BODY_SIZE@": options.maxBodySize,
+		"@NUBO_USER@":        options.serviceUser,
+		"@NUBO_GROUP@":       options.serviceGroup,
+		"@NUBO_RELEASE_DIR@": options.currentLink,
+		"@NUBO_STATE_DIR@":   options.stateDir,
+		"@NUBO_UPLOAD_DIR@":  options.uploadDir,
+		"@NUBO_ENV_FILE@":    options.envFile,
+		"@NODE_BINARY@":      nodeBinary,
 	}
 
 	files, err := renderInstallFiles(options, tokens, environmentContent, environmentExists)
 	if err != nil {
-		return err
-	}
-	if err := protectExistingNginx(options, files); err != nil {
 		return err
 	}
 	if err := preflightInstallFiles(files); err != nil {
@@ -140,10 +131,7 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	}
 
 	printSuccess("NUBO 설치와 정상 동작 확인이 완료되었습니다.")
-	if options.manageNginx {
-		printItem("다음 단계", "nuboctl activate-nginx")
-		printItem("관리자", "HTTPS 설정 후 https://%s/auth/login", options.domain)
-	}
+	printItem("관리자", "운영자 Nginx/HTTPS 설정 후 https://%s/auth/login", options.domain)
 	return nil
 }
 
@@ -175,9 +163,5 @@ func printInstallPlan(options installOptions, files []installFile, environmentEx
 		}
 	}
 	printItem("실행", "DB 준비, 서비스 시작, 정상 동작 확인")
-	if options.manageNginx {
-		printItem("나중에", "Nginx 공개와 HTTPS 설정")
-	} else {
-		printItem("그대로", "기존 Nginx/HTTPS 설정")
-	}
+	printItem("그대로", "운영자 소유 Nginx/HTTPS 설정")
 }

@@ -23,9 +23,8 @@ Ubuntu와 Node.js는 위 최소 버전만 검사하며 이후 버전에 별도 �
 2. DB 비밀번호와 관리자 비밀번호를 CLI 인자로 전달하지 않는다.
 3. 비밀값은 `0600` 권한의 `--env-input` 파일로 전달한다.
 4. 기존 환경·systemd·Nginx 파일을 직접 덮어쓰거나 삭제하지 않는다.
-5. 기존 Nginx 설정이 도메인을 사용하면 자동 우회하지 말고 사용자에게 충돌 파일을 알린다.
+5. Nginx와 TLS는 운영자 소유이므로 NUBO 설치 과정에서 생성·수정·활성화·reload하지 않는다.
 6. 실패하면 먼저 오류 출력을 보존하고 `nuboctl doctor`로 현재 상태를 확인한다.
-7. Nginx 활성화 전에도 `activate-nginx --dry-run`을 먼저 성공시킨다.
 
 ## 기존 소스 설치 adoption
 
@@ -103,20 +102,13 @@ sudo ./nuboctl install \
 ## 현재 완료 범위
 
 `install`은 서비스 계정, 환경 파일, 상태·업로드 경로와 DB의 기본 관리자·게시판·최신 스키마를 준비한다.
-systemd 서비스를 활성화하고 로컬 readiness까지 확인하지만 Nginx site는 비활성 상태로 만든다.
+systemd 서비스를 활성화하고 로컬 readiness까지 확인하지만 Nginx와 TLS는 읽거나 변경하지 않는다.
 새 설치와 adoption은 대표 `nubo.service`로 내부 GOAPI·Web 서비스를 함께 관리한다. 운영자는
 `systemctl restart nubo`를 사용하며 필요할 때만 `nubo-goapi`와 `nubo-web`을 개별 관리한다.
 설치된 lifecycle drop-in의 `PartOf=nubo.service` 관계가 대표 restart를 두 프로세스에 직접 전파한다.
 
-`doctor`와 설치가 성공한 뒤 설치기가 만든 site만 별도 활성화한다.
-
-```bash
-sudo ./nuboctl activate-nginx --dry-run
-sudo ./nuboctl activate-nginx
-```
-
-두 명령이 모두 성공하면 HTTP 공개 상태다. Certbot 설치, 약관 동의, 인증서 발급과 HTTPS redirect는
-운영자에게 넘기고 `activate-nginx`가 출력한 도메인별 명령을 임의로 자동 실행하지 않는다.
+`doctor`와 설치가 성공한 뒤 운영자에게 기존 Nginx/TLS 설정 연결과 `nginx -t` 검증을 요청한다.
+AI는 운영자의 명시적 승인 없이 `/etc/nginx` 파일이나 링크를 만들거나 서비스를 reload하지 않는다.
 
 ## update
 

@@ -35,9 +35,8 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 		options: options{releaseDir: adopt.releaseDir, envFile: adopt.envFile, stateDir: adopt.stateDir, serviceUser: serviceUser},
 		domain:  domain, serviceGroup: serviceGroup, currentLink: adopt.currentLink, commandLink: adopt.commandLink,
 		uploadDir: uploadDir, nodeBinary: adopt.nodeBinary, webPort: 3000, goapiPort: 3006,
-		goapiPath: "goapi", maxBodySize: "100m", systemdDir: adopt.systemdDir,
-		nginxDir:      "/etc/nginx/sites-available",
-		osReleaseFile: adopt.osReleaseFile, activateServices: true, manageNginx: false,
+		goapiPath: "goapi", systemdDir: adopt.systemdDir,
+		osReleaseFile: adopt.osReleaseFile, activateServices: true,
 		environmentValues: values, dryRun: true,
 	}
 	install, err = applyEnvironmentToInstallOptions(install, values)

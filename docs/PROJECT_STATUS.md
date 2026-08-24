@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO/GOAPI 1.2.27과 Market 스킨 6종 게시 후 실제 작성·수정 UX를 제품 소유자가 확인한다.
+- sensta.me 복구를 막는 nuboctl의 Nginx 소유권 침범과 실패한 커스텀 릴리스 누적을 수정해 배포한다.
 
 ## Product boundary
 
@@ -20,6 +20,7 @@
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
+- Nginx와 TLS는 운영자 소유다. nuboctl install은 `/etc/nginx`를 읽거나 생성·수정·활성화·reload하지 않는다.
 - 공개 update는 `git pull --ff-only`를 기본으로 하며 사이트 스킨은 `nuboctl customize`로 별도 파생 릴리스를 만든다.
 - 커스텀 Web 빌드는 Node heap 1536 MiB를 기본 적용하되 운영자가 지정한 `NODE_OPTIONS`를 우선 보존한다.
 - advance 스킨 추가만으로 기본 heap을 선제 상향하지 않는다. 운영 `nuboctl customize`에서 실제 메모리 부족이 확인되면 서버 여유 메모리와 peak 사용량을 확인한 뒤 `NODE_OPTIONS=--max-old-space-size=<MiB>`로 상향한다.
@@ -46,6 +47,7 @@
 
 ## Recent completion
 
+- nuboctl 0.14.2에서 install의 Nginx 파일 생성·충돌 검사·활성화 명령을 제거하고, update/customize의 미적용 공식·사이트 후보를 current/previous 보호 뒤 자동 정리하도록 수정했다.
 - NUBO v1.2.25와 nuboctl 0.14.1을 상세 릴리스 노트로 게시하고 nubohub.org에 운영 반영했다.
 - 게시판·블로그·갤러리·중고거래 기본 스킨의 상호 소스 의존성을 제거하고 독립 Market 패키지로 게시했다.
 - 각 기본 스킨에 provider 변수·함수, 구성 요소 지도와 복사·확장 절차를 설명하는 주석과 README를 추가했다.
@@ -83,6 +85,7 @@
 
 ## Verification
 
+- Nginx 비관리·실패 릴리스 정리 패치는 nuboctl 전체 Go test/vet, NUBO unit 47건, ESLint 오류 0건(기존 경고 50), Linux amd64 nuboctl 0.14.2 빌드와 Node/Bash 구문 검사를 통과했다.
 - NUBO v1.2.25는 API contract v1 일치, Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 Ubuntu 22.04/24.04 fresh-install을 통과했다.
 - nubohub.org 커스텀 릴리스 `03030eab8c30`(로컬 스킨 빌드 `1b6427b75445`)은 `nuboctl status` 16건을 통과했고 NUBO·GOAPI·Market·Nginx가 active다.
 - Market `3deff6c`는 전체 Go test/race/vet와 CI run `32635409940`의 Ubuntu 22.04 빌드·MySQL smoke를 통과했다. 운영 바이너리 SHA-256은 `89fe8762651cceb20d454404e2ed1b2009efd56ac1d152755db9f1307275787f`다.
@@ -110,6 +113,6 @@
 
 ## Next action
 
-1. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
-2. Market 제출 시 게시판 스킨의 공용 Tiptap 사용을 검사하는 정책과 `nuboctl market update`는 후속 작업으로 진행한다.
-3. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.
+1. Nginx 비관리 hotfix를 공식 통합 릴리스로 게시하고 sensta.me의 NUBO 서비스를 복구한다.
+2. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
+3. Market 제출 시 게시판 스킨의 공용 Tiptap 사용 검사와 `nuboctl market update`, sensta.me 게시판 그룹 정리는 후속 작업으로 진행한다.

@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
+import { rm } from "node:fs/promises"
 import { join } from "node:path"
 import {
   assertSupportedRuntime,
   currentRelease,
+  discardStagedSystemRelease,
   extractRelease,
   fetchRelease,
   parseManualReleaseArgs,
   prepareGoapi,
   runNuboctl,
   stageSystemRelease,
+  systemReleaseIsCurrent,
   verifyManualRelease,
 } from "./release-download.mjs"
 import { failure, section, success } from "./terminal-output.mjs"
@@ -57,10 +60,12 @@ async function main() {
       official: localRelease,
       dryRun: publicUpdate.dryRun,
       apply: false,
+      stage: false,
     })
   }
 
-  const systemRelease = stageSystemRelease(localRelease)
+  const stagedSystemRelease = stageSystemRelease(localRelease)
+  const systemRelease = stagedSystemRelease.path
   let commandArgs = publicUpdate?.passthrough ?? args
   if (command === "adopt") {
     if (args.includes("--source") || args.some(argument => argument.startsWith("--source="))) {
@@ -69,17 +74,37 @@ async function main() {
     commandArgs = ["--source", process.cwd(), "--node", process.execPath]
     commandArgs.push(...args)
   }
-  runNuboctl(command, systemRelease, commandArgs)
+  try {
+    runNuboctl(command, systemRelease, commandArgs)
+  } catch (error) {
+    if (siteRelease) await rm(siteRelease, { recursive: true, force: true })
+    if (command === "update") discardStagedSystemRelease(stagedSystemRelease)
+    throw error
+  }
+  if (command === "update" && !publicUpdate.dryRun && !systemReleaseIsCurrent(systemRelease)) {
+    if (siteRelease) await rm(siteRelease, { recursive: true, force: true })
+    discardStagedSystemRelease(stagedSystemRelease)
+    return
+  }
   if (command === "update" && siteRelease && !publicUpdate.dryRun) {
+    let stagedSiteRelease
     try {
-      applySiteRelease(siteRelease)
+      stagedSiteRelease = stageSystemRelease(siteRelease)
+      applySiteRelease(stagedSiteRelease.path)
       await enableAutoCustomize(process.cwd())
     } catch (error) {
+      if (stagedSiteRelease) discardStagedSystemRelease(stagedSiteRelease)
       throw new Error(`공식 업데이트는 완료됐지만 커스텀 Web 적용에 실패했습니다: ${error.message}`)
+    } finally {
+      await rm(siteRelease, { recursive: true, force: true })
     }
   }
   if (command === "update" && siteRelease && publicUpdate.dryRun) {
+    await rm(siteRelease, { recursive: true, force: true })
     success("커스텀 Web도 새 버전 기준으로 빌드·검증했습니다. 실행 중인 사이트는 바꾸지 않았습니다.")
+  }
+  if (command === "update" && publicUpdate.dryRun) {
+    discardStagedSystemRelease(stagedSystemRelease)
   }
 }
 

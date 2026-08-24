@@ -23,15 +23,12 @@ type installOptions struct {
 	webPort           int
 	goapiPort         int
 	goapiPath         string
-	maxBodySize       string
 	systemdDir        string
-	nginxDir          string
 	osReleaseFile     string
 	dryRun            bool
 	nonInteractive    bool
 	envInput          string
 	activateServices  bool
-	manageNginx       bool
 	environmentValues map[string]string
 	confirm           func() (bool, error)
 }
@@ -49,7 +46,6 @@ var (
 	domainLabelPattern = regexp.MustCompile(`^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`)
 	namePattern        = regexp.MustCompile(`^[a-z_][a-z0-9_-]*$`)
 	pathSegmentPattern = regexp.MustCompile(`^[A-Za-z0-9_-]+$`)
-	bodySizePattern    = regexp.MustCompile(`^[1-9][0-9]*[kKmMgG]?$`)
 )
 
 // 비대화형 설치 옵션을 읽고 모든 경로를 절대 경로로 정규화한다.
@@ -67,12 +63,9 @@ func parseInstallOptions(args []string) (installOptions, error) {
 		webPort:          3000,
 		goapiPort:        3006,
 		goapiPath:        "goapi",
-		maxBodySize:      "100m",
 		systemdDir:       "/etc/systemd/system",
-		nginxDir:         "/etc/nginx/sites-available",
 		osReleaseFile:    "/etc/os-release",
 		activateServices: true,
-		manageNginx:      true,
 	}
 
 	flags := flag.NewFlagSet("install", flag.ContinueOnError)
@@ -90,9 +83,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 	flags.IntVar(&defaults.webPort, "web-port", defaults.webPort, "Nuxt 내부 포트")
 	flags.IntVar(&defaults.goapiPort, "goapi-port", defaults.goapiPort, "GOAPI 내부 포트")
 	flags.StringVar(&defaults.goapiPath, "goapi-path", defaults.goapiPath, "GOAPI 공개 경로")
-	flags.StringVar(&defaults.maxBodySize, "max-body-size", defaults.maxBodySize, "Nginx 요청 본문 제한")
 	flags.StringVar(&defaults.systemdDir, "systemd-dir", defaults.systemdDir, "systemd unit 출력 디렉터리")
-	flags.StringVar(&defaults.nginxDir, "nginx-dir", defaults.nginxDir, "Nginx sites-available 디렉터리")
 	flags.BoolVar(&defaults.dryRun, "dry-run", false, "파일을 변경하지 않고 계획만 출력")
 	flags.BoolVar(&defaults.nonInteractive, "non-interactive", false, "질문 없이 옵션과 입력 파일만 사용")
 	flags.StringVar(&defaults.envInput, "env-input", "", "비밀값을 포함한 비대화형 설치 입력 파일")
@@ -103,7 +94,7 @@ func parseInstallOptions(args []string) (installOptions, error) {
 		return installOptions{}, fmt.Errorf("예상하지 못한 인자: %s", flags.Arg(0))
 	}
 
-	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir, &defaults.currentLink, &defaults.commandLink, &defaults.systemdDir, &defaults.nginxDir} {
+	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir, &defaults.currentLink, &defaults.commandLink, &defaults.systemdDir} {
 		absolute, err := filepath.Abs(*item)
 		if err != nil {
 			return installOptions{}, err
@@ -144,12 +135,9 @@ func validateInstallOptions(options installOptions) error {
 	if !pathSegmentPattern.MatchString(options.goapiPath) {
 		return fmt.Errorf("GOAPI 경로는 영문자, 숫자, _, -만 사용할 수 있습니다")
 	}
-	if !bodySizePattern.MatchString(options.maxBodySize) {
-		return fmt.Errorf("Nginx 본문 제한 형식이 올바르지 않습니다: %s", options.maxBodySize)
-	}
 	for label, path := range map[string]string{
 		"릴리스": options.releaseDir, "환경 파일": options.envFile, "상태": options.stateDir,
-		"current": options.currentLink, "nuboctl 명령": options.commandLink, "업로드": options.uploadDir, "systemd": options.systemdDir, "Nginx": options.nginxDir,
+		"current": options.currentLink, "nuboctl 명령": options.commandLink, "업로드": options.uploadDir, "systemd": options.systemdDir,
 	} {
 		if !filepath.IsAbs(path) {
 			return fmt.Errorf("%s 경로는 절대 경로여야 합니다: %s", label, path)
