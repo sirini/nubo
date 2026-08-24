@@ -42,6 +42,7 @@ func prepareAdoptedEnvironment(sourceDir string) (map[string]string, string, str
 	setDefault(values, "GOAPI_BASE", "goapi")
 	setDefault(values, "GOAPI_PORT", "3006")
 	setDefault(values, "NITRO_PORT", "3000")
+	setDefault(values, "NUXT_APP_BASE_URL", "/")
 	setDefault(values, "DB_PORT", "3306")
 	setDefault(values, "DB_UNIX_SOCKET", "")
 	setDefault(values, "DB_MAX_IDLE", "10")

@@ -99,6 +99,13 @@ func checkEnvironment(options options, required bool) ([]checkResult, map[string
 		}
 	}
 
+	appBase, appBaseErr := normalizeAppBaseURL(values["NUXT_APP_BASE_URL"])
+	if appBaseErr != nil {
+		results = append(results, fail("NUXT_APP_BASE_URL", appBaseErr.Error()))
+	} else {
+		results = append(results, pass("NUXT_APP_BASE_URL", appBase))
+	}
+
 	return results, values
 }
 
@@ -136,5 +143,34 @@ func webBaseURL(options options, values map[string]string) string {
 	if _, err := strconv.Atoi(port); err != nil {
 		port = "3000"
 	}
-	return (&url.URL{Scheme: "http", Host: net.JoinHostPort(host, port)}).String()
+	baseURL := (&url.URL{Scheme: "http", Host: net.JoinHostPort(host, port)}).String()
+	appBase, err := normalizeAppBaseURL(values["NUXT_APP_BASE_URL"])
+	if err == nil && appBase != "/" {
+		baseURL += strings.TrimRight(appBase, "/")
+	}
+	return baseURL
+}
+
+func normalizeAppBaseURL(value string) (string, error) {
+	input := strings.TrimSpace(value)
+	if input == "" {
+		return "/", nil
+	}
+	if !strings.HasPrefix(input, "/") || strings.HasPrefix(input, "//") || strings.ContainsAny(input, "?#") {
+		return "", fmt.Errorf("/로 시작하는 경로여야 합니다: %s", input)
+	}
+	segments := make([]string, 0)
+	for _, segment := range strings.Split(input, "/") {
+		if segment == "" {
+			continue
+		}
+		if segment == "." || segment == ".." {
+			return "", fmt.Errorf("상대 경로 구간을 사용할 수 없습니다: %s", input)
+		}
+		segments = append(segments, segment)
+	}
+	if len(segments) == 0 {
+		return "/", nil
+	}
+	return "/" + strings.Join(segments, "/") + "/", nil
 }

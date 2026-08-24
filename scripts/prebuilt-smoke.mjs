@@ -12,6 +12,7 @@ const deploymentDirectory = await mkdtemp(join(tmpdir(), "nubo-prebuilt-smoke-")
 const configurationDirectory = await mkdtemp(join(tmpdir(), "nubo-prebuilt-config-"))
 const deployedOutput = join(deploymentDirectory, ".output")
 const runtimeEnvironmentFile = join(configurationDirectory, "nubo.env")
+const runtimeAppBase = "/sample/"
 const runtimeTitle = "Prebuilt Runtime Community"
 const runtimeDomain = "https://prebuilt-runtime.example"
 const runtimeVersion = "9.8.7-prebuilt"
@@ -152,6 +153,7 @@ try {
     [
       "NITRO_HOST=127.0.0.1",
       `NITRO_PORT=${webPort}`,
+      `NUXT_APP_BASE_URL=${runtimeAppBase}`,
       `NUXT_API_BASE_INTERNAL=http://127.0.0.1:${goapiPort}/${runtimeGoapiBase}`,
       `NUXT_PUBLIC_DOMAIN=${runtimeDomain}`,
       `NUXT_PUBLIC_GOAPI_BASE=${runtimeGoapiBase}`,
@@ -174,6 +176,7 @@ try {
   for (const key of [
     "NITRO_HOST",
     "NITRO_PORT",
+    "NUXT_APP_BASE_URL",
     "NUXT_API_BASE_INTERNAL",
     "NUXT_PUBLIC_DOMAIN",
     "NUXT_PUBLIC_GOAPI_BASE",
@@ -202,7 +205,8 @@ try {
   webProcess.stdout.on("data", (chunk) => logs.push(chunk.toString()))
   webProcess.stderr.on("data", (chunk) => logs.push(chunk.toString()))
 
-  const baseUrl = `http://127.0.0.1:${webPort}`
+  const origin = `http://127.0.0.1:${webPort}`
+  const baseUrl = `${origin}${runtimeAppBase.replace(/\/$/, "")}`
   await waitForServer(`${baseUrl}/health`, logs)
 
   const health = await requestJson(`${baseUrl}/health`)
@@ -231,6 +235,7 @@ try {
   const ssrHtml = await ssrResponse.text()
   assert.equal(ssrResponse.status, 200)
   assert.equal(ssrHtml.includes(`<title>${runtimeTitle}</title>`), true, "document title is not runtime-configured")
+  assert.equal(ssrHtml.includes(`${runtimeAppBase}api`.replace(/\/$/, "")), true, "SSR API base does not follow app baseURL")
   for (const runtimeValue of [
     runtimeTitle,
     runtimeDomain,
@@ -248,9 +253,9 @@ try {
     assert.equal(ssrHtml.includes(runtimeValue), true, `SSR HTML is missing ${runtimeValue}`)
   }
 
-  const assetPath = ssrHtml.match(/(?:href|src)="(\/_nuxt\/[^"?]+)/)?.[1]
+  const assetPath = ssrHtml.match(/(?:href|src)="(\/[^"?]*_nuxt\/[^"?]+)/)?.[1]
   assert.ok(assetPath, "SSR HTML does not reference a built Nuxt asset")
-  const assetResponse = await fetch(`${baseUrl}${assetPath}`)
+  const assetResponse = await fetch(`${origin}${assetPath}`)
   assert.equal(assetResponse.status, 200)
   assert.ok((await assetResponse.arrayBuffer()).byteLength > 0)
 
@@ -275,6 +280,7 @@ try {
 
   console.log("PASS prebuilt artifact contains only the self-contained .output directory")
   console.log("PASS deploy-time private and public runtimeConfig overrides")
+  console.log("PASS runtime app base prefixes SSR, assets, and browser API routes")
   console.log("PASS health, readiness, version, SSR, and built static assets")
   console.log("PASS GOAPI route and multipart body proxying")
   console.log("PASS upload files remain outside the replaceable Nuxt artifact")

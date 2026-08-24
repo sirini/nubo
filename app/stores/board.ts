@@ -15,6 +15,7 @@ import type { TradeListResult, TradeViewResult } from "~/types/trade"
 import { HomeSearchOptions } from "~/types/home"
 
 export const useBoardStore = defineStore("board", () => {
+  const config = useRuntimeConfig()
   const {
     loadInitBoardView,
     loadInitBoardList,
@@ -117,7 +118,7 @@ export const useBoardStore = defineStore("board", () => {
         return
       }
       const link = document.createElement("a")
-      link.href = `/api${response.result.path}`
+      link.href = joinRuntimePath(config.public.apiBase, response.result.path)
       link.download = response.result.name
       link.target = "_blank"
       link.style.display = "none"
@@ -138,7 +139,7 @@ export const useBoardStore = defineStore("board", () => {
     if (!response?.success || !response.result?.path) {
       throw new Error(response?.error || "원본 이미지를 불러올 수 없습니다")
     }
-    return `/api${response.result.path}`
+    return joinRuntimePath(config.public.apiBase, response.result.path)
   }
 
   // 게시글에 좋아요 누르기

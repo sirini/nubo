@@ -3,6 +3,8 @@
 
 GOAPI_TITLE=내 커뮤니티
 NUXT_PUBLIC_TITLE=내 커뮤니티
+# 루트 배포는 /, 하위 경로 배포는 /sample/
+NUXT_APP_BASE_URL=/
 
 DB_HOST=127.0.0.1
 DB_PORT=3306

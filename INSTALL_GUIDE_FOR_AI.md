@@ -66,6 +66,7 @@ sudoedit /root/nubo-install.env
 다음 값은 반드시 실제 값이어야 한다.
 
 - `GOAPI_TITLE`, `NUXT_PUBLIC_TITLE`: 같은 커뮤니티 이름
+- `NUXT_APP_BASE_URL`: 루트 배포는 `/`, 하위 경로 배포는 `/sample/` 형식
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`, `DB_TABLE_PREFIX`
 - `ADMIN_ID`, `ADMIN_PW`, `NUXT_PUBLIC_ADMIN_ID`: 두 관리자 ID는 같은 이메일
 

@@ -48,6 +48,7 @@ GOAPI_HOST=127.0.0.1
 GOAPI_PORT=3006
 NITRO_HOST=127.0.0.1
 NITRO_PORT=3000
+NUXT_APP_BASE_URL=/
 NUXT_API_BASE_INTERNAL=http://127.0.0.1:3006/goapi
 NUXT_PUBLIC_GOAPI_BASE=goapi
 NUXT_PUBLIC_DOMAIN=https://example.com
@@ -66,6 +67,12 @@ node --env-file=/etc/nubo/nubo.env /opt/nubo/current/web/.output/server/index.mj
 `NUXT_PUBLIC_GOAPI_BASE` is the public path used for browser-facing GOAPI routes such as OAuth and
 RSS. Node's built-in `--env-file` does not expand `${OTHER_VARIABLE}` references, so its environment
 file must contain final values as shown above.
+
+For a subpath deployment, set `NUXT_APP_BASE_URL=/sample/`. Nuxt routes and built assets then live
+below `/sample/`, and NUBO derives its same-origin browser proxy as `/sample/api` unless an explicit
+`NUXT_PUBLIC_API_BASE` overrides it. The reverse proxy must preserve that prefix when forwarding to
+Nitro. Direct GOAPI paths such as OAuth and RSS remain governed by `NUXT_PUBLIC_GOAPI_BASE` and the
+site's reverse-proxy configuration.
 
 Existing source installations require no change: without `NUBO_ENV_FILE`, GOAPI continues to use
 `.env` in its working directory. Values already present in the GOAPI process environment override

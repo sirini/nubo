@@ -291,6 +291,7 @@ Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없
 ## 선택 환경 변수
 
 - `OAUTH_GOOGLE_*`, `OAUTH_NAVER_*`, `OAUTH_KAKAO_*`: 소셜 로그인 사용 시 설정. Android ID 토큰의 audience가 웹 로그인과 다르면 `OAUTH_GOOGLE_ANDROID_CLIENT_ID`를 별도로 설정
+- `NUXT_APP_BASE_URL`: 기본 `/`. `https://internal.example.com/sample/` 아래에 배포할 때는 `/sample/`로 지정. 별도 `NUXT_PUBLIC_API_BASE`를 지정하지 않으면 브라우저 API도 자동으로 `/sample/api`를 사용
 - `FIREBASE_PROJECT_ID`, `FIREBASE_CREDENTIALS_FILE`: Sensta Android 푸시 알림용 Firebase 프로젝트와 서비스 계정 JSON 경로. 비우면 DB 알림만 유지
 - `OPENAI_API_KEY`: OpenAI 연동 자격 증명. 키만 설정해도 AI 기능은 활성화되지 않음
 - `OPENAI_IMAGE_DESCRIPTION_ENABLED`: 업로드 이미지 설명 생성을 명시적으로 활성화 (`false`가 기본값)

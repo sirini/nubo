@@ -66,6 +66,7 @@
 - advance 블로그 진행률을 viewport 최상단에 고정하고 두 advance 스킨의 수정 링크를 실제 `/edit` 라우트로 바로잡았다. 갤러리 본문 탐색 버튼을 키우고 1:1 원본에 중앙 시작·스크롤·마우스 드래그 패닝을 추가했다.
 - `body`에서 가변 폰트의 `wght` 축을 400으로 고정하던 선언을 제거해 한글의 `font-weight`가 Pretendard 가변축에 정상 반영되도록 했다.
 - 제한망에서 외부 반입한 공식 bundle과 SHA-256을 다단계 검증해 `.nubo/releases`와 `./goapi-linux`를 준비하는 `server:manual`을 추가하고, `.env`를 명시한 GOAPI·Nuxt 수동 실행 절차를 README에 문서화했다.
+- Nuxt `app.baseURL` 기본값과 `%s` 제목 템플릿을 명시하고, 실행 시 `NUXT_APP_BASE_URL=/sample/`이면 브라우저 API·원본·다운로드와 nuboctl 상태 확인도 같은 하위 경로를 따르도록 했다.
 
 ## Open findings
 
@@ -97,8 +98,9 @@
 - advance 스킨 UX 패치는 unit 36건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
 - Pretendard 굵기 패치는 공식 GOV 1.3.9 variable과 기존 파일의 45~~920 축을 비교해 파일 문제가 아님을 확인했고, unit 37건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
 - `server:manual`은 unit 39건과 ESLint 오류 0건(기존 경고 50)을 통과했고, 로컬 NUBO 1.2.26 공식 asset으로 외부 SHA-256·압축 경로·manifest·내부 checksum 검증과 `goapi-linux` 준비를 실제 완료했다.
+- 하위 경로 패치는 NUBO 전체 50건, typecheck, ESLint 오류 0건(기존 경고 50), nuboctl 전체 Go test와 1536 MiB production build를 통과했다. 기본 빌드를 런타임 `/sample/`로 실행해 SSR·정적 asset·`/sample/api` 프록시와 readiness를 검증했다.
 
 ## Next action
 
-1. Nuxt `baseURL`과 동일 출처 API 경로를 환경 변수 기반으로 함께 정규화하고 하위 경로 배포를 검증한다.
+1. 제품 소유자가 실제 blog/gallery 콘텐츠와 한글 본문, 제한망·하위 경로 서비스에서 이번 변경을 QA한다.
 2. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.

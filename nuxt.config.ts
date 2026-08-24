@@ -1,10 +1,12 @@
 import tailwindcss from "@tailwindcss/vite"
 import { resolve } from "pathe"
+import { normalizeAppBaseURL } from "./app/utils/runtimePath"
 
 const env = process.env
 const GOAPI_PORT = env.NUXT_PUBLIC_GOAPI_PORT || "3006"
 const GOAPI_PATH = env.NUXT_PUBLIC_GOAPI_BASE || env.NUXT_PUBLIC_GOAPI_PATH || "goapi"
 const GOAPI_URL = env.NUXT_API_BASE_INTERNAL || `http://127.0.0.1:${GOAPI_PORT}/${GOAPI_PATH}`
+const APP_BASE_URL = normalizeAppBaseURL(env.NUXT_APP_BASE_URL)
 
 // 기본 스킨 설정
 const defaultSkins = {
@@ -23,11 +25,19 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   devtools: { enabled: false },
 
+  app: {
+    baseURL: APP_BASE_URL,
+    head: {
+      titleTemplate: "%s",
+    },
+  },
+
   // 실행 시 환경 변수 (env.NUXT_PUBLIC_ 으로 시작하는 변수들은 .env 파일에서 참조합니다)
   runtimeConfig: {
     apiBaseInternal: GOAPI_URL, // SSR에서 사용할 서버 측 주소
     public: {
-      apiBase: "/api",
+      // 빈 값이면 runtime-paths 플러그인이 현재 app.baseURL 아래의 /api로 계산합니다.
+      apiBase: env.NUXT_PUBLIC_API_BASE || "",
       goapiBase: GOAPI_PATH,
       version: env.NUXT_PUBLIC_VERSION || "1.2.26",
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
