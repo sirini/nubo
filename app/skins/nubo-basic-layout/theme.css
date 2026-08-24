@@ -111,5 +111,4 @@
 
 body {
   font-family: var(--font-nubo);
-  font-variation-settings: "wght" var(--tw-font-weight, 400);
 }

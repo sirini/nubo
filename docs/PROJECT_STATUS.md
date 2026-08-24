@@ -64,6 +64,7 @@
 - 직접 게시판 관리 경로에서 비동기 그룹 로딩 전 UID 0을 저장하던 회귀를 수정했다. 폼은 게시판의 `config.groupUid`를 사용하고 GOAPI는 존재하지 않는 그룹과 게시판 ID–UID 불일치를 거부한다.
 - DB 부트스트랩은 기존 사이트의 첫 그룹을 재사용하고 그룹이 하나도 없을 때만 `boards`를 생성하도록 수정했다.
 - advance 블로그 진행률을 viewport 최상단에 고정하고 두 advance 스킨의 수정 링크를 실제 `/edit` 라우트로 바로잡았다. 갤러리 본문 탐색 버튼을 키우고 1:1 원본에 중앙 시작·스크롤·마우스 드래그 패닝을 추가했다.
+- `body`에서 가변 폰트의 `wght` 축을 400으로 고정하던 선언을 제거해 한글의 `font-weight`가 Pretendard 가변축에 정상 반영되도록 했다.
 
 ## Open findings
 
@@ -93,10 +94,10 @@
 - nubohub.org는 커스텀 릴리스 `e169646e59d6`(로컬 빌드 `f156b3639620`)에서 `nuboctl status` 16건, `/version`의 NUBO·GOAPI 1.2.26 exact commit, HTTPS와 readiness를 통과했다. 원본 API는 더 이상 404가 아니며 실제 JPEG byte range에 206을 반환했다.
 - 게시판 그룹 회귀 패치는 NUBO unit 40건, typecheck, ESLint 오류 0건(기존 경고 50), 1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다.
 - advance 스킨 UX 패치는 unit 36건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
+- Pretendard 굵기 패치는 공식 GOV 1.3.9 variable과 기존 파일의 45~~920 축을 비교해 파일 문제가 아님을 확인했고, unit 37건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
 
 ## Next action
 
-1. 현재 Pretendard 파일과 공식 Pretendard GOV variable 배포본의 weight 축·브라우저 적용 차이를 확인하고 한글 굵기를 복구한다.
-2. 제한망에서도 이해하기 쉬운 수동 실행 절차와 선택형 런타임 준비 명령의 범위를 설계·구현한다.
-3. Nuxt `baseURL`과 동일 출처 API 경로를 환경 변수 기반으로 함께 정규화하고 하위 경로 배포를 검증한다.
-4. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.
+1. 제한망에서도 이해하기 쉬운 수동 실행 절차와 선택형 런타임 준비 명령의 범위를 설계·구현한다.
+2. Nuxt `baseURL`과 동일 출처 API 경로를 환경 변수 기반으로 함께 정규화하고 하위 경로 배포를 검증한다.
+3. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.
