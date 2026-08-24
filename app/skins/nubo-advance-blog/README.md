@@ -18,5 +18,4 @@ NUBO provider 계약을 사용한다.
 본문 편집은 `~/components/editor/NuboTiptapEditor.vue`를 사용한다. 스킨 안에 별도 Tiptap 구현을
 두지 않으며 자세한 사용 계약은 `docs/SKIN_EDITOR.md`를 따른다.
 
-0.1.0은 NUBO 1.2.26의 writable editor·첨부·댓글 provider 계약을 기준으로 하는 첫 브라우저 QA
-후보 버전이다.
+0.1.0은 NUBO 1.2.27의 공용 Tiptap·첨부·댓글 provider 계약을 기준으로 하는 첫 공개 버전이다.

@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 공용 Tiptap 전환 후 기본·advance 스킨의 실제 작성·수정 UX를 제품 소유자가 확인한다.
+- NUBO/GOAPI 1.2.27 통합 릴리스와 공용 Tiptap 기반 공식 Market 스킨 6종을 게시한다.
 
 ## Product boundary
 
@@ -16,7 +16,7 @@
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
 - NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
-- NUBO 1.2.26·GOAPI 1.2.26 통합 릴리스를 게시했으며 두 advance 스킨의 최소 NUBO 버전은 1.2.26이다.
+- 다음 통합 릴리스는 NUBO/GOAPI 1.2.27이며 공용 Tiptap을 사용하는 공식 게시판 스킨의 최소 NUBO 버전도 1.2.27이다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
@@ -77,6 +77,8 @@
 - 리뷰의 설치 증명·제작자 제한·고급 남용 방지는 실제 남용이 관찰될 때 검토한다.
 - Market의 리뷰 작성은 NUBO Web 내부 사용자 확인 API에 의존한다. 확인 API 장애 시 공개 조회는 유지하고 작성·수정만 일시 중단한다.
 - 원본 이미지 스트리밍 토큰은 GOAPI 메모리에만 2분간 보관하므로 프로세스 재시작 시 열린 뷰어가 새 URL을 다시 발급받아야 한다. 단일 서버 현재 범위에는 별도 공유 저장소를 두지 않는다.
+- Market 제출 단계에서 게시판 스킨의 공용 Tiptap 사용을 자동 검사하는 정책은 후속 작업이다.
+- 설치된 Market 패키지를 영수증 검증과 안전한 교체로 갱신하는 `nuboctl market update`는 후속 작업이다.
 
 ## Verification
 
@@ -105,5 +107,6 @@
 
 ## Next action
 
-1. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
-2. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.
+1. NUBO/GOAPI 1.2.27 asset과 릴리스 노트를 게시하고 공식 Market 스킨 6종을 검증한다.
+2. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
+3. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.

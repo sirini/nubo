@@ -2,11 +2,11 @@
   "type": "board",
   "key": "nubo-basic-gallery",
   "name": "기본 갤러리 스킨",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "sirini",
   "website": "https://nubohub.org",
   "description": "사진 목록과 이미지 감상 경험을 강조한 NUBO 기본 갤러리 스킨입니다",
   "preview": "preview.png",
   "features": ["다크 모드", "라이트 모드", "반응형 그리드"],
-  "min_nubo_version": "1.1.1"
+  "min_nubo_version": "1.2.27"
 }

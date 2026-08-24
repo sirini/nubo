@@ -16,7 +16,7 @@ Unsplash 계열의 여백과 사진 중심 목록, 500px 계열의 집중 감상
 
 `GalleryList`, `GalleryView`, `GalleryWrite`, `GalleryModify`를 모두 자체 소유하므로 기본 스킨이 없어도
 동작하는 패키지를 유지한다. 0.2.0은 댓글 관리, 기존 첨부 삭제, 모바일 탐색과 뷰어 접근성을
-보완한 브라우저 QA 후보 버전이다. 권한 확인형 원본 API가 포함되는 NUBO 1.2.26 이상을 요구한다.
+보완한 첫 공개 버전이다. 권한 확인형 원본 API와 공용 Tiptap이 포함되는 NUBO 1.2.27 이상을 요구한다.
 
 스킨 제작 시 본문 에디터를 복제하지 않고 `~/components/editor/NuboTiptapEditor.vue`를 사용한다.
 공개 props와 profile 계약은 `docs/SKIN_EDITOR.md`에 설명되어 있다.
