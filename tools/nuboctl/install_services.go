@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -13,7 +14,8 @@ const installReadinessAttempts = 30
 
 // 홈 아래 Node.js만 읽기 가능하게 노출하고 시스템 경로에서는 홈을 완전히 숨긴다.
 func protectHomeForNode(nodeBinary string) string {
-	if nodeNeedsStaging(nodeBinary) {
+	clean := filepath.Clean(nodeBinary)
+	if strings.HasPrefix(clean, "/root/") || strings.HasPrefix(clean, "/home/") || nodeNeedsStaging(nodeBinary) {
 		return "read-only"
 	}
 	return "true"
