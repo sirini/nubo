@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 제품 소유자가 v1.2.30 적용 시점과 sensta.me 소스 checkout의 package-lock 정리 방향을 결정한다.
+- 이번 운영 hotfix 세션을 마쳤다. 다음 작업은 별도 범위 합의 후 시작한다.
 
 ## Product boundary
 
@@ -21,6 +21,7 @@
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
 - Nginx와 TLS는 운영자 소유다. nuboctl install은 `/etc/nginx`를 읽거나 생성·수정·활성화·reload하지 않는다.
+- nuboctl은 `node .output/server/index.mjs`와 GOAPI 바이너리 실행이라는 핵심 동작을 드러내는 얇은 운영 도구로 유지한다. 새 자동화·검사는 실제 반복 장애를 해결하는 최소 범위로 추가하고, 운영자 수동 복구 경로를 막거나 추상화로 가리지 않는다.
 - 공개 update는 `git pull --ff-only`를 기본으로 하며 사이트 스킨은 `nuboctl customize`로 별도 파생 릴리스를 만든다.
 - 커스텀 Web 빌드는 Node heap 1536 MiB를 기본 적용하되 운영자가 지정한 `NODE_OPTIONS`를 우선 보존한다.
 - advance 스킨 추가만으로 기본 heap을 선제 상향하지 않는다. 운영 `nuboctl customize`에서 실제 메모리 부족이 확인되면 서버 여유 메모리와 peak 사용량을 확인한 뒤 `NODE_OPTIONS=--max-old-space-size=<MiB>`로 상향한다.
@@ -47,6 +48,7 @@
 
 ## Recent completion
 
+- 제품 소유자가 sensta.me에서 v1.2.30 update를 완료했다. 사이트 전용 Web 릴리스에서 nuboctl 0.14.4, 런타임 버전 1.2.30, 공개 readiness와 status 17건 통과를 확인했다.
 - NUBO/GOAPI v1.2.30을 게시했다. 기존 service identity와 런타임 환경을 보존하는 재설치, NVM Node의 선택적 ProtectHome 정책, active 대표 unit 아래 앱 재시작과 v1.2.28 직접-update 호환을 포함한다.
 - sensta.me를 NUBO/GOAPI v1.2.28 공식 릴리스로 복구했다. 기존 root 서비스 identity와 운영자 Nginx·업로드를 유지했고 내부·공개 readiness 및 nuboctl status 16건을 확인했다.
 - nuboctl 0.14.2에서 install의 Nginx 파일 생성·충돌 검사·활성화 명령을 제거하고, update/customize의 미적용 공식·사이트 후보를 current/previous 보호 뒤 자동 정리하도록 수정했다.
@@ -89,6 +91,7 @@
 
 ## Verification
 
+- sensta.me current는 `nubo-1.2.30-site-456b3c352a7b-linux-amd64`이며 nuboctl 0.14.4, GOAPI/NUXT 버전 1.2.30, 공개 `/ready`와 `nuboctl status` 17건을 통과했다.
 - NUBO/GOAPI v1.2.30은 CI run `32764271688`에서 공식 Ubuntu 빌드, NUBO·GOAPI 검증, Ubuntu 22.04/24.04 fresh install과 공개 asset 게시를 통과했다. manifest는 NUBO `7deeb17`, GOAPI `5fdf55e`, nuboctl 0.14.4, dirty=false이며 archive SHA-256은 `12d1f33f3027bf527d1cdca8e09c69d3985b8c7a87264f63925407c4d3e14edd`다.
 - sensta.me에서 공개 v1.2.30 asset의 SHA-256을 확인하고 후보 nuboctl로 v1.2.28→v1.2.30 `update --dry-run`을 통과했다. current·DB·서비스는 바꾸지 않았고 후보 디렉터리를 정리한 뒤 v1.2.28 readiness와 status 16건 통과를 재확인했다.
 - NUBO/GOAPI v1.2.29는 API contract v1 일치, nuboctl 전체 Go test/vet, NUBO 전체 Vitest 55건, ESLint 오류 0건(기존 경고 50), typecheck와 1536 MiB production build, GOAPI 전체 test/race/vet 및 Ubuntu 22.04/24.04 fresh install을 통과했다. 공개 archive SHA-256은 `7f4e976a04d2d4bd494b6ba0539caa158ce609fed0b8557e6658c783e11e5fd0`다.
@@ -122,7 +125,7 @@
 
 ## Next action
 
-1. 외부 DB·업로드 백업을 새로 만든 뒤 sensta.me를 v1.2.30으로 실제 전환할지 결정한다.
-2. sensta.me의 `package-lock.json` 변경을 확인한 뒤 source update가 가능한 깨끗한 상태로 정리한다.
+1. 다음 nuboctl 변경 전 핵심 실행 흐름, 수동 대안, 추가 검사·자동화의 실제 필요성과 실패 비용을 먼저 검토한다.
+2. sensta.me의 의도된 `app/skins/sensta-me-home/` 변경을 보존하면서 `package-lock.json` 변경을 정리한다.
 3. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
 4. Market 제출 시 게시판 스킨의 공용 Tiptap 사용 검사와 `nuboctl market update`, sensta.me 게시판 그룹 정리는 후속 작업으로 진행한다.
