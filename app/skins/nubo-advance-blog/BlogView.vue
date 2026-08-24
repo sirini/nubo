@@ -1,9 +1,14 @@
 <template>
   <article class="min-h-screen">
-    <div
-      id="advance-blog-progress"
-      class="fixed left-0 top-0 z-50 h-0.5 w-full origin-left bg-primary"
-    ></div>
+    <ClientOnly>
+      <Teleport to="body">
+        <div
+          id="advance-blog-progress"
+          class="pointer-events-none fixed inset-x-0 top-0 z-[110] h-0.5 origin-left bg-primary"
+          aria-hidden="true"
+        ></div>
+      </Teleport>
+    </ClientOnly>
 
     <header class="mx-auto max-w-3xl px-4 pb-9 pt-12 sm:px-6 sm:pt-18">
       <NuxtLink
@@ -171,7 +176,7 @@
       >
       <div class="flex gap-2">
         <Button v-if="isWriter || isAdmin" variant="outline" as-child
-          ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/modify`">수정</NuxtLink></Button
+          ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`">수정</NuxtLink></Button
         ><Button v-if="isLoggedIn" as-child
           ><NuxtLink :to="`/board/${config.id}/write`">새 글 쓰기</NuxtLink></Button
         >

@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- 1.2.26에서 드러난 게시판 소속 그룹 유실과 빈 `boards` 그룹 생성 회귀의 원인을 규명하고 NUBO·GOAPI 패치를 검증했다.
+- 실서비스에서 확인된 advance 스킨 UX·수정 경로·한글 굵기, 수동 실행 안내, 하위 경로 배포 지원을 작은 작업 단위로 순차 개선한다.
 
 ## Product boundary
 
@@ -63,6 +63,7 @@
 - NUBO/GOAPI v1.2.26 태그와 통합 asset을 게시하고 `nuboctl update`로 nubohub.org의 공식 런타임과 커스텀 Web을 갱신했다.
 - 직접 게시판 관리 경로에서 비동기 그룹 로딩 전 UID 0을 저장하던 회귀를 수정했다. 폼은 게시판의 `config.groupUid`를 사용하고 GOAPI는 존재하지 않는 그룹과 게시판 ID–UID 불일치를 거부한다.
 - DB 부트스트랩은 기존 사이트의 첫 그룹을 재사용하고 그룹이 하나도 없을 때만 `boards`를 생성하도록 수정했다.
+- advance 블로그 진행률을 viewport 최상단에 고정하고 두 advance 스킨의 수정 링크를 실제 `/edit` 라우트로 바로잡았다. 갤러리 본문 탐색 버튼을 키우고 1:1 원본에 중앙 시작·스크롤·마우스 드래그 패닝을 추가했다.
 
 ## Open findings
 
@@ -91,9 +92,11 @@
 - 운영 전 백업은 `/var/backups/nubohub-nubo-pre-v1.2.26-20260823-225940.sql.gz`, `/var/backups/nubohub-upload-pre-v1.2.26-20260823-225940.tar.gz`와 SHA-256 영수증에 보존했다.
 - nubohub.org는 커스텀 릴리스 `e169646e59d6`(로컬 빌드 `f156b3639620`)에서 `nuboctl status` 16건, `/version`의 NUBO·GOAPI 1.2.26 exact commit, HTTPS와 readiness를 통과했다. 원본 API는 더 이상 404가 아니며 실제 JPEG byte range에 206을 반환했다.
 - 게시판 그룹 회귀 패치는 NUBO unit 40건, typecheck, ESLint 오류 0건(기존 경고 50), 1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다.
+- advance 스킨 UX 패치는 unit 36건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
 
 ## Next action
 
-1. sensta.me의 이탈한 게시판 `group_uid`를 원래 그룹으로 복구하고, 부트스트랩이 추가한 빈 `boards` 그룹을 백업 후 정리한다.
-2. 다음 세션에서 장기 로드맵을 현재 제품 상태에 맞춰 다시 검토하고 다음 bounded scope를 합의한다.
-3. 두 advance 스킨을 실제 콘텐츠로 추가 브라우저 QA한 뒤 필요한 UX 수정과 Market 게시 여부를 결정한다.
+1. 현재 Pretendard 파일과 공식 Pretendard GOV variable 배포본의 weight 축·브라우저 적용 차이를 확인하고 한글 굵기를 복구한다.
+2. 제한망에서도 이해하기 쉬운 수동 실행 절차와 선택형 런타임 준비 명령의 범위를 설계·구현한다.
+3. Nuxt `baseURL`과 동일 출처 API 경로를 환경 변수 기반으로 함께 정규화하고 하위 경로 배포를 검증한다.
+4. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.

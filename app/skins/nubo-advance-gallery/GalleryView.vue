@@ -23,27 +23,27 @@
 
         <div
           v-if="view.images.length > 1"
-          class="absolute inset-x-3 top-1/2 flex -translate-y-1/2 justify-between sm:inset-x-6"
+          class="pointer-events-none absolute inset-x-3 top-1/2 z-10 flex -translate-y-1/2 justify-between sm:inset-x-6"
         >
           <Button
             variant="secondary"
             size="icon"
-            class="rounded-full bg-background/75 backdrop-blur"
+            class="pointer-events-auto size-12 rounded-full bg-background/85 shadow-lg backdrop-blur sm:size-14"
             :disabled="imgIdx <= 0"
             aria-label="이전 사진"
-            @click="previous(false)"
+            @click.stop="previous(false)"
           >
-            <ChevronLeftIcon class="size-5" />
+            <ChevronLeftIcon class="size-7" />
           </Button>
           <Button
             variant="secondary"
             size="icon"
-            class="rounded-full bg-background/75 backdrop-blur"
+            class="pointer-events-auto size-12 rounded-full bg-background/85 shadow-lg backdrop-blur sm:size-14"
             :disabled="imgIdx >= view.images.length - 1"
             aria-label="다음 사진"
-            @click="next(false)"
+            @click.stop="next(false)"
           >
-            <ChevronRightIcon class="size-5" />
+            <ChevronRightIcon class="size-7" />
           </Button>
         </div>
 
@@ -137,7 +137,7 @@
             >
             <div class="flex gap-2">
               <Button v-if="isWriter || isAdmin" variant="outline" as-child
-                ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/modify`"
+                ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`"
                   >수정</NuxtLink
                 ></Button
               >
@@ -180,7 +180,7 @@
                 variant="secondary"
                 size="sm"
                 class="gap-2 bg-white/12 text-white hover:bg-white/20"
-                @click="fitToScreen = !fitToScreen"
+                @click="toggleFit"
                 ><ScanIcon class="size-4" />{{ fitToScreen ? "1:1" : "화면 맞춤" }}</Button
               >
               <Button
@@ -196,39 +196,49 @@
           </div>
 
           <div
-            class="flex h-full w-full items-center justify-center overflow-auto p-4 pt-20"
-            :class="fitToScreen ? '' : 'cursor-zoom-out'"
+            ref="viewerViewport"
+            class="h-full w-full overflow-auto p-4 pt-20"
             @click.self="closeViewer"
             @touchstart.passive="onTouchStart"
             @touchend.passive="onTouchEnd"
           >
             <div
               v-if="originalLoading"
-              class="flex flex-col items-center gap-3 text-sm text-white/70"
+              class="flex min-h-full flex-col items-center justify-center gap-3 text-sm text-white/70"
             >
               <LoaderCircleIcon class="size-7 animate-spin" />원본 이미지를 불러오는 중입니다
             </div>
             <div
               v-else-if="originalError"
-              class="max-w-sm rounded-xl border border-white/15 bg-white/10 p-5 text-center text-sm"
+              class="mx-auto mt-[35vh] max-w-sm -translate-y-1/2 rounded-xl border border-white/15 bg-white/10 p-5 text-center text-sm"
             >
               <p>{{ originalError }}</p>
               <Button variant="secondary" class="mt-4" @click="loadOriginal">다시 시도</Button>
             </div>
-            <img
+            <div
               v-else-if="originalUrl"
-              :src="originalUrl"
-              :alt="currentAlt"
-              draggable="false"
-              class="select-none [touch-action:pinch-zoom]"
-              :class="
-                fitToScreen
-                  ? 'max-h-full max-w-full cursor-zoom-in object-contain'
-                  : 'max-h-[none] max-w-[none] cursor-zoom-out'
-              "
-              @error="handleOriginalImageError"
-              @click.stop="toggleFit"
-            />
+              class="grid min-h-full min-w-full place-items-center"
+              :class="fitToScreen ? 'h-full w-full' : 'h-max w-max'"
+            >
+              <img
+                :src="originalUrl"
+                :alt="currentAlt"
+                draggable="false"
+                class="select-none"
+                :class="
+                  fitToScreen
+                    ? 'max-h-full max-w-full cursor-zoom-in object-contain [touch-action:pinch-zoom]'
+                    : 'max-h-[none] max-w-[none] cursor-grab [touch-action:pan-x_pan-y_pinch-zoom] active:cursor-grabbing'
+                "
+                @error="handleOriginalImageError"
+                @load="handleOriginalImageLoad"
+                @click.stop="toggleFit"
+                @pointerdown="startPan"
+                @pointermove="movePan"
+                @pointerup="endPan"
+                @pointercancel="endPan"
+              />
+            </div>
           </div>
 
           <Button
@@ -282,11 +292,13 @@ const originalError = ref("")
 let requestSequence = 0
 const previewButton = ref<HTMLElement | null>(null)
 const viewerDialog = ref<HTMLElement | null>(null)
+const viewerViewport = ref<HTMLElement | null>(null)
 const closeButton = ref<{ $el: HTMLElement } | null>(null)
 let returnFocus: HTMLElement | null = null
 let previousBodyOverflow = ""
 let touchStart: { x: number; y: number } | null = null
 let ignoreNextImageClick = false
+let panStart: { x: number; y: number; left: number; top: number; pointerId: number } | null = null
 
 const currentImage = computed(() => view.value.images[imgIdx.value])
 const previewSource = computed(() =>
@@ -343,6 +355,7 @@ const closeViewer = () => {
   originalLoading.value = false
   originalError.value = ""
   originalUrl.value = ""
+  panStart = null
   nextTick(() => returnFocus?.focus())
 }
 const previous = async (reload: boolean) => {
@@ -357,12 +370,55 @@ const next = async (reload: boolean) => {
     if (reload) await loadOriginal()
   }
 }
-const toggleFit = () => {
+const centerOriginal = () => {
+  const viewport = viewerViewport.value
+  if (!viewport) return
+  viewport.scrollLeft = Math.max(0, (viewport.scrollWidth - viewport.clientWidth) / 2)
+  viewport.scrollTop = Math.max(0, (viewport.scrollHeight - viewport.clientHeight) / 2)
+}
+const toggleFit = async () => {
   if (ignoreNextImageClick) {
     ignoreNextImageClick = false
     return
   }
   fitToScreen.value = !fitToScreen.value
+  await nextTick()
+  if (fitToScreen.value) viewerViewport.value?.scrollTo({ left: 0, top: 0 })
+  else centerOriginal()
+}
+const handleOriginalImageLoad = async () => {
+  if (fitToScreen.value) return
+  await nextTick()
+  centerOriginal()
+}
+const startPan = (event: PointerEvent) => {
+  const viewport = viewerViewport.value
+  if (fitToScreen.value || event.pointerType !== "mouse" || event.button !== 0 || !viewport)
+    return
+  panStart = {
+    x: event.clientX,
+    y: event.clientY,
+    left: viewport.scrollLeft,
+    top: viewport.scrollTop,
+    pointerId: event.pointerId,
+  }
+  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+  event.preventDefault()
+}
+const movePan = (event: PointerEvent) => {
+  const viewport = viewerViewport.value
+  if (!panStart || panStart.pointerId !== event.pointerId || !viewport) return
+  const dx = event.clientX - panStart.x
+  const dy = event.clientY - panStart.y
+  if (Math.abs(dx) + Math.abs(dy) > 4) ignoreNextImageClick = true
+  viewport.scrollLeft = panStart.left - dx
+  viewport.scrollTop = panStart.top - dy
+}
+const endPan = (event: PointerEvent) => {
+  if (!panStart || panStart.pointerId !== event.pointerId) return
+  const target = event.currentTarget as HTMLElement
+  if (target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId)
+  panStart = null
 }
 const handleOriginalImageError = () => {
   originalUrl.value = ""
