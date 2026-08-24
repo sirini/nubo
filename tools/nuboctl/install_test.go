@@ -70,6 +70,9 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 	if err != nil || !strings.Contains(string(webUnit), options.currentLink+"/web/.output/server/index.mjs") {
 		t.Fatalf("웹 unit이 current 링크를 사용하지 않습니다: %v", err)
 	}
+	if !strings.Contains(string(webUnit), "ProtectHome=true") {
+		t.Fatal("시스템 경로의 Node.js를 쓸 때 웹 unit이 홈 디렉터리를 숨기지 않습니다")
+	}
 	facade, err := os.ReadFile(filepath.Join(options.systemdDir, "nubo.service"))
 	if err != nil {
 		t.Fatal(err)
@@ -82,6 +85,31 @@ func TestInstallCreatesFilesAndIsIdempotent(t *testing.T) {
 
 	if err := runInstall(options, systemRunner{}, false); err != nil {
 		t.Fatalf("두 번째 설치 준비가 멱등적이지 않습니다: %v", err)
+	}
+}
+
+// 기존 환경 파일은 운영 설정을 보존하면서 새 릴리스 버전만 반영한다.
+func TestInstallRefreshesExistingRuntimeVersions(t *testing.T) {
+	options := installTestOptions(t)
+	if err := os.MkdirAll(filepath.Dir(options.envFile), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	original := "DB_PASS=operator-secret\nGOAPI_VERSION=1.1.0\nNUXT_PUBLIC_VERSION=1.1.0\nGOAPI_DOMAIN=https://community.example.com\nNUXT_PUBLIC_DOMAIN=https://community.example.com\nNUBO_UPLOAD_DIR=" + options.uploadDir + "\n"
+	if err := os.WriteFile(options.envFile, []byte(original), 0o640); err != nil {
+		t.Fatal(err)
+	}
+	if err := runInstall(options, systemRunner{}, false); err != nil {
+		t.Fatal(err)
+	}
+	contents, err := os.ReadFile(options.envFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	text := string(contents)
+	for _, expected := range []string{"DB_PASS=operator-secret", "GOAPI_VERSION=1.2.1", "NUXT_PUBLIC_VERSION=1.2.1"} {
+		if !strings.Contains(text, expected) {
+			t.Fatalf("기존 환경 파일에 %q가 없습니다", expected)
+		}
 	}
 }
 

@@ -49,13 +49,14 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	}
 
 	tokens := map[string]string{
-		"@NUBO_USER@":        options.serviceUser,
-		"@NUBO_GROUP@":       options.serviceGroup,
-		"@NUBO_RELEASE_DIR@": options.currentLink,
-		"@NUBO_STATE_DIR@":   options.stateDir,
-		"@NUBO_UPLOAD_DIR@":  options.uploadDir,
-		"@NUBO_ENV_FILE@":    options.envFile,
-		"@NODE_BINARY@":      nodeBinary,
+		"@NUBO_USER@":         options.serviceUser,
+		"@NUBO_GROUP@":        options.serviceGroup,
+		"@NUBO_RELEASE_DIR@":  options.currentLink,
+		"@NUBO_STATE_DIR@":    options.stateDir,
+		"@NUBO_UPLOAD_DIR@":   options.uploadDir,
+		"@NUBO_ENV_FILE@":     options.envFile,
+		"@NUBO_PROTECT_HOME@": protectHomeForNode(nodeBinary),
+		"@NODE_BINARY@":       nodeBinary,
 	}
 
 	files, err := renderInstallFiles(options, tokens, environmentContent, environmentExists)
@@ -124,8 +125,30 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	if err := ensureNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
 		return err
 	}
+	var environmentTransition environmentTransition
+	environmentUpdated := false
+	if environmentExists {
+		manifest, err := readManifest(options.releaseDir)
+		if err != nil {
+			return err
+		}
+		versions, err := candidateVersionValues(options.releaseDir, manifest)
+		if err != nil {
+			return err
+		}
+		environmentTransition, err = updateRuntimeVersions(options.envFile, versions)
+		if err != nil {
+			return fmt.Errorf("기존 환경 파일의 런타임 버전 갱신 실패: %w", err)
+		}
+		environmentUpdated = true
+	}
 	if options.activateServices {
 		if err := activateNuboServices(options, runner, waitForInstallReadiness); err != nil {
+			if environmentUpdated {
+				if restoreErr := restoreRuntimeEnvironment(options.envFile, environmentTransition); restoreErr != nil {
+					return fmt.Errorf("%v; 환경 파일 복원도 실패: %w", err, restoreErr)
+				}
+			}
 			return err
 		}
 	}
@@ -153,7 +176,7 @@ func printInstallPlan(options installOptions, files []installFile, environmentEx
 	printItem("데이터", "상태 %s · 업로드 %s", options.stateDir, options.uploadDir)
 	printIdentityPlan(options)
 	if environmentExists {
-		printItem("환경 설정", "기존 파일 유지: %s", options.envFile)
+		printItem("환경 설정", "기존 운영값 유지 · 런타임 버전 갱신: %s", options.envFile)
 	}
 	for _, file := range files {
 		if sameFileContent(file.path, file.content) {

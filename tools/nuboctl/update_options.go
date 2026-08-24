@@ -69,11 +69,28 @@ func parseUpdateOptions(args []string) (updateOptions, error) {
 
 // adoption 설치처럼 전용 nubo 계정이 아닌 경우 unit의 실행 계정을 자동 재사용한다.
 func installedServiceUser(systemdDir string) string {
-	directives, err := readUnitDirectives(filepath.Join(systemdDir, "nubo-goapi.service"))
-	if err == nil && namePattern.MatchString(directives["User"]) {
-		return directives["User"]
+	user, _ := installedServiceIdentity(systemdDir)
+	if user != "" {
+		return user
 	}
 	return "nubo"
+}
+
+// 기존 GOAPI unit의 실행 사용자와 그룹을 재설치 기본값으로 재사용한다.
+func installedServiceIdentity(systemdDir string) (string, string) {
+	directives, err := readUnitDirectives(filepath.Join(systemdDir, "nubo-goapi.service"))
+	if err != nil {
+		return "", ""
+	}
+	user := directives["User"]
+	group := directives["Group"]
+	if !namePattern.MatchString(user) {
+		user = ""
+	}
+	if !namePattern.MatchString(group) {
+		group = ""
+	}
+	return user, group
 }
 
 // 대화형 update는 백업 완료 후 Enter로 진행하고 다른 입력은 취소한다.

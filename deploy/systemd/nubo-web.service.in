@@ -16,7 +16,7 @@ TimeoutStopSec=30s
 UMask=0027
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectHome=true
+ProtectHome=@NUBO_PROTECT_HOME@
 ProtectSystem=strict
 
 [Install]

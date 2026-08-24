@@ -126,7 +126,7 @@ func createInstallTestReleaseVersion(t *testing.T, releaseDir, version string) {
 		"share/systemd/nubo-lifecycle.conf":   "[Unit]\nPartOf=nubo.service\n",
 		"share/systemd/nubo.target":           "[Unit]\nDescription=NUBO\n",
 		"share/systemd/nubo-goapi.service.in": "[Service]\nUser=@NUBO_USER@\nGroup=@NUBO_GROUP@\nWorkingDirectory=@NUBO_STATE_DIR@\nEnvironment=\"NUBO_ENV_FILE=@NUBO_ENV_FILE@\"\nExecStart=@NUBO_RELEASE_DIR@/bin/goapi\nReadWritePaths=@NUBO_UPLOAD_DIR@\n",
-		"share/systemd/nubo-web.service.in":   "[Service]\nUser=@NUBO_USER@\nGroup=@NUBO_GROUP@\nWorkingDirectory=@NUBO_RELEASE_DIR@/web\nExecStart=@NODE_BINARY@ --env-file=@NUBO_ENV_FILE@ @NUBO_RELEASE_DIR@/web/.output/server/index.mjs\n",
+		"share/systemd/nubo-web.service.in":   "[Service]\nUser=@NUBO_USER@\nGroup=@NUBO_GROUP@\nWorkingDirectory=@NUBO_RELEASE_DIR@/web\nExecStart=@NODE_BINARY@ --env-file=@NUBO_ENV_FILE@ @NUBO_RELEASE_DIR@/web/.output/server/index.mjs\nProtectHome=@NUBO_PROTECT_HOME@\n",
 		"share/nginx/nubo.conf.in":            "server {\n    server_name @NUBO_DOMAIN@;\n    client_max_body_size @NUBO_MAX_BODY_SIZE@;\n    location /upload/ { alias @NUBO_UPLOAD_DIR@/; }\n    location /@NUBO_GOAPI_PATH@/ { proxy_pass http://127.0.0.1:@NUBO_GOAPI_PORT@; }\n    location / { proxy_pass http://127.0.0.1:@NUBO_WEB_PORT@; }\n}\n",
 	}
 	for relative, contents := range files {

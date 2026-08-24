@@ -60,6 +60,12 @@ wrapper는 현재 공식 통합 릴리스를 내려받아 checksum을 검증하�
 NVM처럼 선택된 Node.js가 `/home` 또는 `/root` 아래에 있으면 `ProtectHome=true`인 unit에서도 실행되도록
 `/opt/nubo/runtime/node`에 복사하고 unit은 이 안정 경로를 사용한다.
 
+`install`을 기존 서버에서 다시 실행하면 설치된 GOAPI unit의 `User`와 `Group`을 기본값으로 재사용한다.
+명시적인 `--user`·`--group`은 이 값을 덮어쓴다. 기존 환경 파일은 비밀값과 운영 설정을 유지하면서
+`GOAPI_VERSION`·`NUXT_PUBLIC_VERSION`만 현재 릴리스에 맞추며, 이미 실행 중인 대표 unit이 있어도 GOAPI와
+Web을 명시적으로 재시작한다. Web unit은 Node.js가 `/root/.nvm`이나 `/home/...` 아래 있을 때만 홈을
+읽기 전용으로 노출하고 쓰기는 계속 차단하며, 시스템 경로의 Node.js를 쓰면 홈을 완전히 숨긴다.
+
 프로세스가 PM2, tmux, 기존 systemd 또는 수동 실행 중 어느 방식인지 추측하거나 프로세스를 종료하지
 않는다. dry-run은 내부 포트 `3000`·`3006`의 점유 여부와 종료 필요성을 안내하면서 나머지 계획을
 검증한다. 실제 실행은 두 포트 중 하나라도 점유되어 있으면 백업 확인이나 파일 생성 전에 중단한다.

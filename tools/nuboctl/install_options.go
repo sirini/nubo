@@ -16,6 +16,8 @@ type installOptions struct {
 	options
 	domain            string
 	serviceGroup      string
+	serviceUserSet    bool
+	serviceGroupSet   bool
 	currentLink       string
 	commandLink       string
 	uploadDir         string
@@ -93,6 +95,14 @@ func parseInstallOptions(args []string) (installOptions, error) {
 	if flags.NArg() != 0 {
 		return installOptions{}, fmt.Errorf("예상하지 못한 인자: %s", flags.Arg(0))
 	}
+	flags.Visit(func(item *flag.Flag) {
+		switch item.Name {
+		case "user":
+			defaults.serviceUserSet = true
+		case "group":
+			defaults.serviceGroupSet = true
+		}
+	})
 
 	for _, item := range []*string{&defaults.releaseDir, &defaults.envFile, &defaults.stateDir, &defaults.currentLink, &defaults.commandLink, &defaults.systemdDir} {
 		absolute, err := filepath.Abs(*item)
@@ -118,6 +128,13 @@ func parseInstallOptions(args []string) (installOptions, error) {
 		defaults.uploadDir = absolute
 	}
 	defaults.domain = strings.ToLower(defaults.domain)
+	installedUser, installedGroup := installedServiceIdentity(defaults.systemdDir)
+	if !defaults.serviceUserSet && installedUser != "" {
+		defaults.serviceUser = installedUser
+	}
+	if !defaults.serviceGroupSet && installedGroup != "" {
+		defaults.serviceGroup = installedGroup
+	}
 	return defaults, nil
 }
 

@@ -11,6 +11,14 @@ import (
 
 const installReadinessAttempts = 30
 
+// 홈 아래 Node.js만 읽기 가능하게 노출하고 시스템 경로에서는 홈을 완전히 숨긴다.
+func protectHomeForNode(nodeBinary string) string {
+	if nodeNeedsStaging(nodeBinary) {
+		return "read-only"
+	}
+	return "true"
+}
+
 // systemd 설정을 다시 읽고 NUBO 서비스를 부팅 시 자동 시작하도록 활성화한다.
 func activateNuboServices(options installOptions, runner commandRunner, readiness func(string) error) error {
 	if !commandExists(runner, "systemctl") {
@@ -21,6 +29,11 @@ func activateNuboServices(options installOptions, runner commandRunner, readines
 	}
 	if output, err := runner.run("systemctl", "enable", "--now", "nubo.service"); err != nil {
 		return fmt.Errorf("NUBO 서비스 시작 실패: %s", compactOutput(output, err))
+	}
+	// 이미 active인 대표 oneshot unit은 --now만으로 하위 프로세스를 새 설정으로
+	// 다시 띄우지 않으므로 두 애플리케이션 서비스를 항상 명시적으로 재시작한다.
+	if err := restartNuboServices(runner); err != nil {
+		return err
 	}
 	for _, service := range []string{"nubo-goapi.service", "nubo-web.service"} {
 		if output, err := runner.run("systemctl", "is-active", "--quiet", service); err != nil {

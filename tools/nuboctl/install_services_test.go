@@ -43,7 +43,7 @@ func TestActivateNuboServicesStartsTargetAndChecksReadiness(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	expected := "systemctl daemon-reload\nsystemctl enable --now nubo.service\nsystemctl is-active --quiet nubo-goapi.service\nsystemctl is-active --quiet nubo-web.service"
+	expected := "systemctl daemon-reload\nsystemctl enable --now nubo.service\nsystemctl restart nubo-goapi.service nubo-web.service\nsystemctl is-active --quiet nubo-goapi.service\nsystemctl is-active --quiet nubo-web.service"
 	if strings.Join(calls, "\n") != expected {
 		t.Fatalf("systemd 명령 순서가 올바르지 않습니다: %v", calls)
 	}
@@ -65,5 +65,17 @@ func TestActivateNuboServicesReturnsReadinessFailure(t *testing.T) {
 	})
 	if err == nil || !strings.Contains(err.Error(), "systemctl status") {
 		t.Fatalf("readiness 실패 안내 = %v", err)
+	}
+}
+
+func TestProtectHomeAllowsNodeBelowHomeReadOnly(t *testing.T) {
+	for path, expected := range map[string]string{
+		"/root/.nvm/versions/node/v24/bin/node": "read-only",
+		"/home/operator/.nvm/node":              "read-only",
+		"/usr/bin/node":                         "true",
+	} {
+		if actual := protectHomeForNode(path); actual != expected {
+			t.Fatalf("protectHomeForNode(%q) = %q, want %q", path, actual, expected)
+		}
 	}
 }
