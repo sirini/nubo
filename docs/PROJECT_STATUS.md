@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- NUBO/GOAPI 1.2.27 통합 릴리스와 공용 Tiptap 기반 공식 Market 스킨 6종을 게시한다.
+- NUBO/GOAPI 1.2.27과 Market 스킨 6종 게시 후 실제 작성·수정 UX를 제품 소유자가 확인한다.
 
 ## Product boundary
 
@@ -69,6 +69,7 @@
 - 제한망에서 외부 반입한 공식 bundle과 SHA-256을 다단계 검증해 `.nubo/releases`와 `./goapi-linux`를 준비하는 `server:manual`을 추가하고, `.env`를 명시한 GOAPI·Nuxt 수동 실행 절차를 README에 문서화했다.
 - Nuxt `app.baseURL` 기본값과 `%s` 제목 템플릿을 명시하고, 실행 시 `NUXT_APP_BASE_URL=/sample/`이면 브라우저 API·원본·다운로드와 nuboctl 상태 확인도 같은 하위 경로를 따르도록 했다.
 - 기본 board/blog/gallery/trade와 advance blog/gallery의 게시글 작성·수정, 기본 스킨 댓글 편집기를 플랫폼 공용 `NuboTiptapEditor`로 통합했다. 스킨 내부 Tiptap 복제본을 제거하고 표·링크·이미지·Markdown 기능과 제작자 사용 계약을 공용화했다.
+- NUBO/GOAPI v1.2.27 통합 릴리스와 상세 변경 노트를 게시하고, 공용 Tiptap 기반 기본 게시판 스킨 4종의 새 버전과 advance 스킨 2종의 최초 버전을 운영 Market에 공개했다.
 
 ## Open findings
 
@@ -104,9 +105,11 @@
 - `server:manual`은 unit 39건과 ESLint 오류 0건(기존 경고 50)을 통과했고, 로컬 NUBO 1.2.26 공식 asset으로 외부 SHA-256·압축 경로·manifest·내부 checksum 검증과 `goapi-linux` 준비를 실제 완료했다.
 - 하위 경로 패치는 NUBO 전체 50건, typecheck, ESLint 오류 0건(기존 경고 50), nuboctl 전체 Go test와 1536 MiB production build를 통과했다. 기본 빌드를 런타임 `/sample/`로 실행해 SSR·정적 asset·`/sample/api` 프록시와 readiness를 검증했다.
 - 공용 에디터 전환은 전체 Vitest 53건, typecheck, ESLint 오류 0건(기존 경고 50)과 1536 MiB production build를 통과했다.
+- NUBO/GOAPI v1.2.27은 로컬 NUBO 전체 53건, lint 오류 0건(경고 50), typecheck, 1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다. CI run `32755181797`에서 공식 Ubuntu 빌드, Ubuntu 22.04/24.04 fresh install과 asset·릴리스 노트 게시를 완료했다.
+- Market의 기본 board 0.2.1, blog 0.1.2, gallery 0.1.2, trade 0.1.4와 advance blog 0.1.0, gallery 0.2.0은 모두 최소 NUBO 1.2.27, Registry·다운로드·재현 archive SHA-256 일치를 확인했다.
 
 ## Next action
 
-1. NUBO/GOAPI 1.2.27 asset과 릴리스 노트를 게시하고 공식 Market 스킨 6종을 검증한다.
-2. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
+1. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
+2. Market 제출 시 게시판 스킨의 공용 Tiptap 사용을 검사하는 정책과 `nuboctl market update`는 후속 작업으로 진행한다.
 3. sensta.me의 이탈한 게시판 `group_uid`와 빈 `boards` 그룹은 백업 후 운영 정리한다.
