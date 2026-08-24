@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- sensta.me 복구를 막는 nuboctl의 Nginx 소유권 침범과 실패한 커스텀 릴리스 누적을 수정해 배포한다.
+- NUBO/GOAPI v1.2.28 hotfix를 sensta.me에 적용해 서비스를 복구하고 상태를 확인한다.
 
 ## Product boundary
 
@@ -16,7 +16,7 @@
 
 - NUBO와 GOAPI는 릴리스 전 machine-readable API contract version을 일치시킨다.
 - NUBO와 GOAPI는 하나의 통합 제품으로 배포하므로 공개 버전을 1.2.26부터 동일하게 맞춘다. 실제 소스 조합은 릴리스 manifest의 두 commit으로 계속 고정한다.
-- 다음 통합 릴리스는 NUBO/GOAPI 1.2.28 Nginx 비관리 hotfix이며 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
+- NUBO/GOAPI 1.2.28 Nginx 비관리 hotfix를 게시했으며 공용 Tiptap 공식 게시판 스킨의 최소 NUBO 버전은 1.2.27로 유지한다.
 - 공식 릴리스는 고정 GOAPI commit, Nuxt prebuilt, `nuboctl`, 두 libvips 변형과 SHA-256을 하나의 Linux amd64 asset으로 묶는다.
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용한다. 설정·업로드·사이트 전용 스킨은 릴리스 밖에 보존한다.
@@ -48,6 +48,7 @@
 ## Recent completion
 
 - nuboctl 0.14.2에서 install의 Nginx 파일 생성·충돌 검사·활성화 명령을 제거하고, update/customize의 미적용 공식·사이트 후보를 current/previous 보호 뒤 자동 정리하도록 수정했다.
+- NUBO/GOAPI v1.2.28 태그, 상세 릴리스 노트와 검증된 Linux amd64 통합 asset을 게시했다.
 - NUBO v1.2.25와 nuboctl 0.14.1을 상세 릴리스 노트로 게시하고 nubohub.org에 운영 반영했다.
 - 게시판·블로그·갤러리·중고거래 기본 스킨의 상호 소스 의존성을 제거하고 독립 Market 패키지로 게시했다.
 - 각 기본 스킨에 provider 변수·함수, 구성 요소 지도와 복사·확장 절차를 설명하는 주석과 README를 추가했다.
@@ -85,7 +86,7 @@
 
 ## Verification
 
-- NUBO/GOAPI v1.2.28 준비는 API contract v1 일치, NUBO 전체 Vitest 55건, lint 오류 0건(기존 경고 50), typecheck·1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다.
+- NUBO/GOAPI v1.2.28은 API contract v1 일치, NUBO 전체 Vitest 55건, lint 오류 0건(기존 경고 50), typecheck·1536 MiB production build와 GOAPI 전체 test/race/vet를 통과했다. CI run `32762151352`에서 공식 Ubuntu 빌드와 Ubuntu 22.04/24.04 fresh install 뒤 asset 2개를 게시했으며 공개 archive SHA-256은 `a346378e8e24fedd269ec3ec4c77251ef8b1e2ff54370e3a2949cccb1a16234b`다.
 - Nginx 비관리·실패 릴리스 정리 패치는 nuboctl 전체 Go test/vet, NUBO unit 47건, ESLint 오류 0건(기존 경고 50), Linux amd64 nuboctl 0.14.2 빌드와 Node/Bash 구문 검사를 통과했다.
 - NUBO v1.2.25는 API contract v1 일치, Vitest 35건, ESLint 오류 0건(기존 경고 50), typecheck·production build와 Ubuntu 22.04/24.04 fresh-install을 통과했다.
 - nubohub.org 커스텀 릴리스 `03030eab8c30`(로컬 스킨 빌드 `1b6427b75445`)은 `nuboctl status` 16건을 통과했고 NUBO·GOAPI·Market·Nginx가 active다.
@@ -114,6 +115,6 @@
 
 ## Next action
 
-1. Nginx 비관리 hotfix를 공식 통합 릴리스로 게시하고 sensta.me의 NUBO 서비스를 복구한다.
+1. sensta.me에서 v1.2.28을 설치해 NUBO 서비스를 복구하고 `nuboctl status`와 공개 HTTPS를 확인한다.
 2. 제품 소유자가 기본·advance 스킨에서 새 글, 기존 HTML 글 수정, 표·본문 이미지·링크와 댓글 편집을 브라우저 QA한다.
 3. Market 제출 시 게시판 스킨의 공용 Tiptap 사용 검사와 `nuboctl market update`, sensta.me 게시판 그룹 정리는 후속 작업으로 진행한다.
