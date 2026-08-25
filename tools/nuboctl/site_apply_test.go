@@ -98,6 +98,19 @@ func TestSiteApplyRejectsDifferentBaseOrChangedGoapi(t *testing.T) {
 	}
 }
 
+func TestSiteApplyExplainsHowToRecoverFromDifferentReleaseVersions(t *testing.T) {
+	options, runner := siteApplyTestSetup(t)
+	markTestSiteBuild(t, options.candidateDir, "1.3.0")
+
+	_, err := preflightSiteApply(options, runner, func(string) error { return nil })
+	if err == nil || !strings.Contains(err.Error(), "현재 운영 NUBO는 1.2.1") ||
+		!strings.Contains(err.Error(), "사이트 빌드에 사용한 NUBO 소스는 1.3.0") ||
+		!strings.Contains(err.Error(), "git pull --ff-only") ||
+		!strings.Contains(err.Error(), "nuboctl customize") {
+		t.Fatalf("버전 불일치 안내 = %v", err)
+	}
+}
+
 func siteApplyTestSetup(t *testing.T) (siteApplyOptions, fakeRunner) {
 	t.Helper()
 	update, runner := updateTestSetup(t)

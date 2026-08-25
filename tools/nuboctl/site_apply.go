@@ -89,7 +89,11 @@ func preflightSiteApply(options siteApplyOptions, runner commandRunner, readines
 		return siteApplyPreflight{}, fmt.Errorf("로컬 스킨 빌드의 기반 버전 정보가 올바르지 않습니다")
 	}
 	if previous.ReleaseVersion != candidate.ReleaseVersion {
-		return siteApplyPreflight{}, fmt.Errorf("현재 NUBO와 스킨 빌드의 기반 버전이 다릅니다: %s != %s", previous.ReleaseVersion, candidate.ReleaseVersion)
+		return siteApplyPreflight{}, fmt.Errorf(
+			"현재 운영 NUBO는 %s이지만 사이트 빌드에 사용한 NUBO 소스는 %s입니다; git status --short로 변경 파일을 확인하고 사이트 전용 스킨을 보존한 뒤, 공식 소스 변경을 정리하고 git pull --ff-only와 nuboctl customize를 차례로 실행하세요",
+			previous.ReleaseVersion,
+			candidate.ReleaseVersion,
+		)
 	}
 	if err := validateSiteBase(previousDir, candidateDir, previous, candidate); err != nil {
 		return siteApplyPreflight{}, err

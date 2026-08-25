@@ -1,9 +1,10 @@
-import { mkdtemp, mkdir, readlink, symlink, writeFile } from "node:fs/promises"
+import { mkdtemp, mkdir, readlink, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 
 import { copyTree, createSiteManifest, hashTree, siteReleaseName } from "../../scripts/site-release.mjs"
+import { assertDirectCustomizeBase } from "../../scripts/prepare-site-release.mjs"
 
 describe("local site release", () => {
   it("records the official base and local skin source", () => {
@@ -14,6 +15,21 @@ describe("local site release", () => {
     })
     expect(manifest.siteBuild).toEqual({ baseVersion: "1.2.8", sourceCommit: "abc123", skinsHash })
     expect(siteReleaseName("1.2.8", "b".repeat(64))).toBe("nubo-1.2.8-site-bbbbbbbbbbbb-linux-amd64")
+  })
+
+  it("rejects a direct customize before build when the checkout is older than the installed release", async () => {
+    const root = await mkdtemp(join(tmpdir(), "nubo-site-base-"))
+    try {
+      await writeFile(join(root, "manifest.json"), JSON.stringify({ releaseVersion: "1.2.30" }))
+
+      await expect(assertDirectCustomizeBase("1.2.28", root)).rejects.toThrow(
+        /현재 운영 NUBO는 1\.2\.30.*소스 checkout은 1\.2\.28/s,
+      )
+      await expect(assertDirectCustomizeBase("1.2.28", root)).rejects.toThrow("git pull --ff-only")
+      await expect(assertDirectCustomizeBase("1.2.30", root)).resolves.toBeUndefined()
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
   })
 
   it("hashes files and safe internal links but rejects links outside the build", async () => {
