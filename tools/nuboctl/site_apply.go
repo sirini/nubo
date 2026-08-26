@@ -121,14 +121,14 @@ func preflightSiteApply(options siteApplyOptions, runner commandRunner, readines
 
 // Web 이외의 실행 파일과 출처가 현재 공식 기반과 같은지 확인한다.
 func validateSiteBase(previousDir, candidateDir string, previous, candidate releaseManifest) error {
-	for _, component := range []string{"goapi", "nuboctl"} {
+	for _, component := range []string{"goapi", "nuboctl", "market"} {
 		left, leftOK := previous.Components[component]
 		right, rightOK := candidate.Components[component]
 		if !leftOK || !rightOK || left != right {
 			return fmt.Errorf("파생 릴리스의 %s 출처가 현재 릴리스와 다릅니다", component)
 		}
 	}
-	paths := []string{"bin/goapi", "nuboctl", "share/env.sample"}
+	paths := []string{"bin/goapi", "nuboctl", "nubo-market", "share/env.sample"}
 	for _, library := range previous.NativeLibraries {
 		for _, variant := range library.Variants {
 			paths = append(paths, variant.Path)

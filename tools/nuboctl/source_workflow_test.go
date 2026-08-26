@@ -79,3 +79,13 @@ func TestReleaseOptionSelectsInternalUpdate(t *testing.T) {
 		t.Fatal("공개 update 옵션을 내부 update로 잘못 분류했습니다")
 	}
 }
+
+func TestApplyRequiresExplicitReleaseDirectory(t *testing.T) {
+	options, err := parseApplyOptions([]string{"/opt/nubo/releases/1.3.0", "--dry-run"})
+	if err != nil || options.candidateDir != "/opt/nubo/releases/1.3.0" || !options.dryRun {
+		t.Fatalf("apply options = %+v, %v", options, err)
+	}
+	if _, err := parseApplyOptions([]string{"--dry-run"}); err == nil {
+		t.Fatal("apply가 명시적인 릴리스 경로 없이 실행됐습니다")
+	}
+}

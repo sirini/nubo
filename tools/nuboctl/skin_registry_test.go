@@ -33,6 +33,14 @@ func TestParseSkinRegistryOptions(t *testing.T) {
 	if _, err = parseSkinRegistryOptions([]string{"search", "--dry-run"}); err == nil {
 		t.Fatal("search accepted --dry-run")
 	}
+	update, err := parseSkinRegistryOptions([]string{"update", "nubo-gallery", "--version", "1.3.0", "--dry-run"})
+	if err != nil || update.key != "nubo-gallery" || update.version != "1.3.0" || !update.dryRun {
+		t.Fatalf("unexpected update options: %+v / %v", update, err)
+	}
+	fork, err := parseSkinRegistryOptions([]string{"fork", "nubo-gallery", "my-gallery", "--source", "/tmp/source"})
+	if err != nil || fork.key != "nubo-gallery" || fork.forkKey != "my-gallery" || fork.source != "/tmp/source" {
+		t.Fatalf("unexpected fork options: %+v / %v", fork, err)
+	}
 }
 
 func TestSearchSkins(t *testing.T) {
@@ -110,7 +118,7 @@ func TestInstallSkinVerifiesAndExtractsPackage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(contents), "gallery") || !strings.Contains(output.String(), "INSTALL COMPLETE") || !strings.Contains(output.String(), "nuboctl customize") {
+	if !strings.Contains(string(contents), "gallery") || !strings.Contains(output.String(), "INSTALL COMPLETE") || !strings.Contains(output.String(), "npm run build") {
 		t.Fatalf("unexpected installation: %s / %s", contents, output.String())
 	}
 	receipt, err := readSkinReceipt(filepath.Join(root, "app", "skins", "nubo-gallery"), "nubo-gallery")
@@ -137,7 +145,7 @@ func TestRemoveSkinPreviewsAndDeletesUnchangedInstall(t *testing.T) {
 	if err := removeSkin(options, &output); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(destination); !os.IsNotExist(err) || !strings.Contains(output.String(), "삭제 완료") || !strings.Contains(output.String(), "nuboctl customize") {
+	if _, err := os.Stat(destination); !os.IsNotExist(err) || !strings.Contains(output.String(), "삭제 완료") || !strings.Contains(output.String(), "npm run build") {
 		t.Fatalf("skin was not removed safely: %v / %s", err, output.String())
 	}
 }
@@ -276,70 +284,4 @@ func TestExtractSkinPackageRejectsReservedReceipt(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "예약 파일") {
 		t.Fatalf("expected reserved receipt refusal, got %v", err)
 	}
-}
-
-func skinTestSource(t *testing.T, version string) string {
-	t.Helper()
-	root := t.TempDir()
-	for _, directory := range []string{filepath.Join(root, "app", "skins"), filepath.Join(root, "deploy")} {
-		if err := os.MkdirAll(directory, 0755); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := os.WriteFile(filepath.Join(root, "package.json"), []byte(`{"name":"nubo"}`), 0644); err != nil {
-		t.Fatal(err)
-	}
-	sources := fmt.Sprintf(`{"channel":{"version":%q}}`, version)
-	if err := os.WriteFile(filepath.Join(root, "deploy", "release-sources.json"), []byte(sources), 0644); err != nil {
-		t.Fatal(err)
-	}
-	return root
-}
-
-func skinTestReceipt(t *testing.T) (string, string) {
-	t.Helper()
-	root := skinTestSource(t, "1.2.21")
-	destination := filepath.Join(root, "app", "skins", "nubo-gallery")
-	if err := os.Mkdir(destination, 0755); err != nil {
-		t.Fatal(err)
-	}
-	files := []skinReceiptFile{}
-	for name, body := range map[string]string{"skin.json": `{"key":"nubo-gallery"}`, "Home.vue": "<template />"} {
-		filename := filepath.Join(destination, name)
-		if err := os.WriteFile(filename, []byte(body), 0644); err != nil {
-			t.Fatal(err)
-		}
-		checksum, err := fileSHA256(filename)
-		if err != nil {
-			t.Fatal(err)
-		}
-		files = append(files, skinReceiptFile{Path: name, SHA256: checksum})
-	}
-	item := registrySkin{Key: "nubo-gallery", Version: "1.0.0", SHA256: strings.Repeat("a", 64)}
-	if err := writeSkinReceipt(destination, item, files); err != nil {
-		t.Fatal(err)
-	}
-	return root, destination
-}
-
-func skinTestArchive(t *testing.T, files map[string]string) []byte {
-	t.Helper()
-	var archive bytes.Buffer
-	gz := gzip.NewWriter(&archive)
-	writer := tar.NewWriter(gz)
-	for name, body := range files {
-		if err := writer.WriteHeader(&tar.Header{Name: name, Mode: 0644, Size: int64(len(body)), Typeflag: tar.TypeReg}); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := writer.Write([]byte(body)); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := writer.Close(); err != nil {
-		t.Fatal(err)
-	}
-	if err := gz.Close(); err != nil {
-		t.Fatal(err)
-	}
-	return archive.Bytes()
 }

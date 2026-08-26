@@ -15,19 +15,17 @@ var helpPages = map[string]helpPage{
 		title: "NUBO 서버 관리",
 		body: `사용법: nuboctl <명령> [옵션]
 
-처음에는 이 여섯 가지만 기억하면 됩니다.
+운영 중에는 이 세 명령을 사용합니다.
   status          지금 사이트가 잘 실행되는지 확인
   doctor          설치와 설정에서 문제 찾기
-  update          새 공식 버전으로 업데이트
-  customize       수정한 스킨을 빌드하고 적용
-  market          NUBO Market 스킨 검색·정보·설치·삭제
-  releases        설치된 릴리스 확인·안전한 정리
+  apply           준비된 공식 릴리스를 명시적으로 적용
 
 명령별 도움말:
   nuboctl help <명령>
   nuboctl <명령> --help
 
-예: nuboctl help customize`,
+스킨 소스는 nubo-market으로 관리하고 npm run build 뒤 운영자가 프로세스를 재시작합니다.
+기존 update·customize·market·releases 명령은 호환을 위해 유지합니다.`,
 	},
 	"status": {
 		title: "현재 상태 확인",
@@ -44,6 +42,15 @@ var helpPages = map[string]helpPage{
 
 사용법:
   nuboctl doctor`,
+	},
+	"apply": {
+		title: "준비된 릴리스 적용",
+		body: `다운로드하고 검증해 둔 공식 릴리스 디렉터리를 현재 서비스로 전환합니다.
+소스 갱신이나 Web 빌드는 하지 않으며, 대상 경로를 반드시 명시해야 합니다.
+
+사용법:
+  sudo nuboctl apply /opt/nubo/releases/nubo-1.3.0-linux-amd64 --dry-run
+  sudo nuboctl apply /opt/nubo/releases/nubo-1.3.0-linux-amd64`,
 	},
 	"update": {
 		title: "NUBO 업데이트",
@@ -101,14 +108,11 @@ Node heap은 기본 1536 MiB이며 기존 NODE_OPTIONS의 사용자 지정값을
 	},
 	"market": {
 		title: "NUBO Market 스킨",
-		body: `NUBO Market에서 스킨을 찾고 현재 소스 checkout의 app/skins에 안전하게 설치·삭제합니다.
-checksum과 패키지 경로를 검증하며 기존 스킨을 덮어쓰지 않습니다. 소스 변경 뒤 customize로 빌드·적용합니다.
+		body: `이 명령은 이전 버전과의 호환을 위해 유지합니다.
+새 작업에는 독립 명령 nubo-market을 사용하세요.
 
 사용법:
-  nuboctl market help [search|info|install|remove]
-
-명령별 옵션과 안전 경계는 위 도움말에서 확인할 수 있습니다.
-기존 nuboctl skin search/info/install도 호환 별칭으로 유지됩니다.`,
+  nubo-market help`,
 	},
 	"skin": {
 		title: "스킨 호환 명령",
@@ -130,24 +134,27 @@ var marketHelpPages = map[string]helpPage{
 		body: `웹에서 둘러보기: https://nubohub.org/market/
 
 사용법:
-  nuboctl market search [검색어]       이름·key·설명으로 스킨 찾기
-  nuboctl market info <스킨-key>      버전·제작자·호환성 확인
-  nuboctl market install <스킨-key>   검증한 스킨을 현재 소스에 설치
-  nuboctl market remove <스킨-key>    변경되지 않은 Market 스킨 삭제
+  nubo-market search [검색어]          이름·key·설명으로 스킨 찾기
+  nubo-market info <스킨-key>         버전·제작자·호환성 확인
+  nubo-market install <스킨-key>      검증한 스킨 소스 설치
+  nubo-market diff <스킨-key>         설치 뒤 로컬 변경 확인
+  nubo-market update <스킨-key>       변경 없는 설치만 안전하게 교체
+  nubo-market fork <기존-key> <새-key> 수정본을 사이트 소유 스킨으로 분리
+  nubo-market remove <스킨-key>       변경되지 않은 Market 스킨 삭제
 
 명령별 도움말:
-  nuboctl market help <명령>
-  nuboctl market <명령> --help
+  nubo-market help <명령>
+  nubo-market <명령> --help
 
-설치와 삭제는 소스만 바꿉니다. 실행 중인 사이트에 반영하려면 nuboctl customize를 실행하세요.`,
+Market은 소스만 관리합니다. npm run build와 프로세스 재시작은 운영자가 직접 수행합니다.`,
 	},
 	"search": {
 		title: "Market 스킨 찾기",
 		body: `공개 Market의 스킨을 이름·key·설명으로 검색합니다. 검색어를 생략하면 전체 목록을 봅니다.
 
 사용법:
-  nuboctl market search
-  nuboctl market search gallery
+  nubo-market search
+  nubo-market search gallery
 
 옵션:
   --registry URL   시험할 Registry URL`,
@@ -157,7 +164,7 @@ var marketHelpPages = map[string]helpPage{
 		body: `스킨의 최신 버전, 제작자, 요구 NUBO 버전, 기능과 설명을 확인합니다.
 
 사용법:
-  nuboctl market info nubo-awesome-gallery
+  nubo-market info nubo-awesome-gallery
 
 옵션:
   --registry URL   시험할 Registry URL`,
@@ -168,15 +175,51 @@ var marketHelpPages = map[string]helpPage{
 기존 폴더는 덮어쓰지 않으며 안전한 삭제를 위한 파일별 checksum 영수증을 함께 기록합니다.
 
 사용법:
-  nuboctl market install nubo-awesome-gallery
-  nuboctl market install nubo-awesome-gallery --version 1.0.0
+  nubo-market install nubo-awesome-gallery
+  nubo-market install nubo-awesome-gallery --version 1.0.0
 
 옵션:
   --version X.Y.Z  설치할 정확한 버전
   --source PATH    NUBO 소스 checkout 경로
   --registry URL   시험할 Registry URL
 
-설치 뒤 nuboctl customize로 빌드·적용하세요.`,
+설치 뒤 npm run build를 실행하고 운영 중인 프로세스를 재시작하세요.`,
+	},
+	"diff": {
+		title: "Market 스킨 변경 확인",
+		body: `설치 영수증과 현재 소스를 비교해 수정·추가·누락 파일을 표시합니다. 파일은 바꾸지 않습니다.
+
+사용법:
+  nubo-market diff nubo-awesome-gallery
+
+옵션:
+  --source PATH    NUBO 소스 checkout 경로`,
+	},
+	"update": {
+		title: "Market 스킨 안전 업데이트",
+		body: `설치 뒤 변경이 전혀 없는 스킨만 새 버전으로 원자적으로 교체합니다.
+현재 파일과 새 패키지를 모두 검증하며 --force와 자동 병합은 제공하지 않습니다.
+
+사용법:
+  nubo-market update nubo-awesome-gallery --dry-run
+  nubo-market update nubo-awesome-gallery
+
+옵션:
+  --version X.Y.Z  교체할 정확한 버전
+  --dry-run        새 패키지까지 검증하고 현재 소스는 유지
+  --source PATH    NUBO 소스 checkout 경로
+  --registry URL   시험할 Registry URL`,
+	},
+	"fork": {
+		title: "Market 스킨 수정본 분리",
+		body: `Market 설치본과 로컬 수정을 새 key의 사이트 소유 스킨으로 복사합니다.
+출처는 skin.json에 남기고 Market 영수증은 제거하므로 이후 변경은 운영자가 관리합니다.
+
+사용법:
+  nubo-market fork nubo-awesome-gallery my-gallery
+
+옵션:
+  --source PATH    NUBO 소스 checkout 경로`,
 	},
 	"remove": {
 		title: "Market 스킨 안전 삭제",
@@ -184,14 +227,14 @@ var marketHelpPages = map[string]helpPage{
 수정·추가·누락 파일, 링크, 손상되거나 없는 영수증은 삭제를 거부하며 --force는 제공하지 않습니다.
 
 사용법:
-  nuboctl market remove nubo-awesome-gallery --dry-run
-  nuboctl market remove nubo-awesome-gallery
+  nubo-market remove nubo-awesome-gallery --dry-run
+  nubo-market remove nubo-awesome-gallery
 
 옵션:
   --dry-run        검사 결과와 삭제 영향을 보고 실제 파일은 유지
   --source PATH    NUBO 소스 checkout 경로
 
-사용 중인 스킨은 관리화면에서 먼저 다른 스킨으로 전환하세요. 삭제 뒤 nuboctl customize로 반영합니다.`,
+사용 중인 스킨은 관리화면에서 먼저 다른 스킨으로 전환하세요. 삭제 뒤 다시 빌드하고 프로세스를 재시작합니다.`,
 	},
 }
 

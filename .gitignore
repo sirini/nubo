@@ -15,6 +15,9 @@ node_modules
 
 # GOAPI Backend
 goapi-linux
+nubo-market
+nubo-market-linux
+nuboctl-linux
 goapi-mac*
 
 # Logs

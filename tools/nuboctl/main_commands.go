@@ -75,6 +75,21 @@ func runUpdateCommand(args []string) int {
 	return 0
 }
 
+func runApplyCommand(args []string) int {
+	options, err := parseApplyOptions(args)
+	if err != nil {
+		return commandOptionError(err)
+	}
+	if !options.nonInteractive && !options.backupConfirmed {
+		options.confirmBackup = promptUpdateBackup(newTerminalPrompter(os.Stdin, os.Stdout))
+	}
+	if err := runUpdate(options, systemRunner{}, waitForInstallReadiness, true); err != nil {
+		printFailure("릴리스 적용 실패: %v", err)
+		return 1
+	}
+	return 0
+}
+
 func runCustomizeCommand(args []string) int {
 	if err := runSourceWorkflow("customize", args); err != nil {
 		printFailure("사이트 꾸미기 적용 실패: %v", err)

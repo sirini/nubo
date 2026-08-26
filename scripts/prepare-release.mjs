@@ -46,7 +46,7 @@ async function main() {
 
   if (command === "prepare" || command === "manual") {
     const link = await prepareGoapi(localRelease)
-    success(`NUBO 서버 파일 ${descriptor.version} 준비 완료 (GOAPI: ${link})`)
+    success(`NUBO 서버 파일 ${descriptor.version} 준비 완료 (GOAPI: ${link}, Market: ${join(process.cwd(), "nubo-market")})`)
     return
   }
 

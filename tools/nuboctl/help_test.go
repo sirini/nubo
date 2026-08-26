@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestHelpCoversPublicCommands(t *testing.T) {
-	for _, command := range []string{"", "status", "doctor", "update", "customize", "releases", "market", "skin", "install", "adopt"} {
+	for _, command := range []string{"", "status", "doctor", "apply", "update", "customize", "releases", "market", "skin", "install", "adopt"} {
 		page, ok := helpPages[command]
 		if !ok || page.title == "" || page.body == "" {
 			t.Fatalf("%q 도움말이 비어 있습니다", command)
@@ -12,11 +12,30 @@ func TestHelpCoversPublicCommands(t *testing.T) {
 	if _, ok := helpPages["unknown"]; ok {
 		t.Fatal("알 수 없는 명령에 도움말이 있습니다")
 	}
-	for _, command := range []string{"", "search", "info", "install", "remove"} {
+	for _, command := range []string{"", "search", "info", "install", "diff", "update", "fork", "remove"} {
 		page, ok := marketHelpPages[command]
 		if !ok || page.title == "" || page.body == "" {
 			t.Fatalf("Market %q 도움말이 비어 있습니다", command)
 		}
+	}
+}
+
+func TestMarketExecutableHasIndependentEntryPoint(t *testing.T) {
+	for _, args := range [][]string{nil, {"help"}, {"help", "update"}, {"--version"}} {
+		if code := runMarketExecutable(args); code != 0 {
+			t.Fatalf("nubo-market %v exit = %d", args, code)
+		}
+	}
+}
+
+func TestMarketExecutableRecognizesReleaseAndLocalNames(t *testing.T) {
+	for _, name := range []string{"nubo-market", "nubo-market-linux"} {
+		if !isMarketExecutable(name) {
+			t.Fatalf("Market 실행 이름을 인식하지 못했습니다: %s", name)
+		}
+	}
+	if isMarketExecutable("nuboctl") {
+		t.Fatal("nuboctl을 Market 실행 이름으로 분류했습니다")
 	}
 }
 

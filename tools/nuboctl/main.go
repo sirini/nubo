@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-const version = "0.14.4"
+const version = "0.15.0"
+const marketVersion = "0.1.0"
 
 type options struct {
 	releaseDir  string
@@ -21,7 +23,26 @@ type options struct {
 
 // 명령 실행 결과를 운영체제 종료 코드로 전달한다.
 func main() {
+	if isMarketExecutable(filepath.Base(os.Args[0])) {
+		os.Exit(runMarketExecutable(os.Args[1:]))
+	}
 	os.Exit(run(os.Args[1:]))
+}
+
+func isMarketExecutable(name string) bool {
+	return name == "nubo-market" || strings.HasPrefix(name, "nubo-market-")
+}
+
+func runMarketExecutable(args []string) int {
+	if len(args) == 0 {
+		printMarketHelp("")
+		return 0
+	}
+	if args[0] == "version" || args[0] == "--version" || args[0] == "-v" {
+		fmt.Printf("nubo-market %s\n", marketVersion)
+		return 0
+	}
+	return runMarketCommand(args)
 }
 
 // 하위 명령을 해석하고 사용자 오류와 검사 실패를 구분해 종료 코드를 반환한다.
@@ -43,6 +64,8 @@ func run(args []string) int {
 		return runInstallCommand(args[1:])
 	case "update":
 		return runUpdateCommand(args[1:])
+	case "apply":
+		return runApplyCommand(args[1:])
 	case "customize":
 		return runCustomizeCommand(args[1:])
 	case "releases":

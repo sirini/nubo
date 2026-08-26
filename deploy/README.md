@@ -4,7 +4,8 @@
 `/etc`에 직접 복사하지 않는다. 최소 지원 환경은 Ubuntu 22.04 amd64와 Node.js 22이며 이후 버전에는 별도 상한을 두지 않는다.
 GOAPI용 libvips와 이미지 코덱은 공식 릴리스의 `lib/`에 포함되며 별도 시스템 패키지가 필요 없다.
 
-릴리스 최상위의 `nuboctl install`은 unit을 렌더링하고 systemd 서비스를 활성화하지만 운영자 소유
+릴리스 최상위의 `nuboctl install`은 unit을 렌더링하고 systemd 서비스를 활성화하며 `nuboctl`과
+`nubo-market` PATH 링크를 등록한다. 운영자 소유
 Nginx/TLS 설정은 읽거나 생성·수정·reload하지 않는다.
 사람은 한국어 대화형 설치를, AI·자동화는 `INSTALL_GUIDE_FOR_AI.md`의 비대화형 설치를 사용한다.
 
@@ -42,7 +43,7 @@ systemd unit은 journal에 로그를 남기고 내부 `nubo.target`으로 묶이
 
 ### 기존 adoption 서버에서 대표 service 추가
 
-대표 `nubo.service`가 없는 과거 adoption 서버는 새 lifecycle 릴리스로 update하면 GOAPI·Web drop-in은
+대표 `nubo.service`가 없는 과거 adoption 서버는 새 lifecycle 릴리스를 apply하면 GOAPI·Web drop-in은
 자동으로 추가되지만 대표 unit 자체는 설치하지 않는다. 운영자가 대표 명령을 사용하려면 update 뒤
 다음 절차를 한 번만 실행한다. drop-in 재설치는 같은 내용일 때 멱등적이다.
 
@@ -58,5 +59,5 @@ sudo systemctl enable --now nubo.service
 
 이 과정은 이미 실행 중인 GOAPI·Web을 재시작하지 않는다. 이후 전체 lifecycle은
 `sudo systemctl restart nubo`로 제어하며 내부 `nubo.target` 파일은 호환성을 위해 삭제하지 않는다.
-새 lifecycle drop-in을 포함한 릴리스로 update할 때는 `nuboctl`이 같은 파일을 기존 unit을
+새 lifecycle drop-in을 포함한 릴리스를 apply할 때는 `nuboctl`이 같은 파일을 기존 unit을
 덮어쓰지 않고 자동으로 추가한다.

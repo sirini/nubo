@@ -92,8 +92,8 @@ func writeMarketInstall(output io.Writer, item registrySkin, destination string)
 	writeMarketField(output, "VERSION", paint(output, ansiGreen, item.Version))
 	writeMarketField(output, "LOCATION", destination)
 	writeMarketField(output, "VERIFIED", paint(output, ansiBoldGreen, "SHA-256 checksum"))
-	writeMarketField(output, "TRACKED", "안전한 삭제용 파일 영수증")
-	fmt.Fprintf(output, "\n  %s  %s\n", paint(output, ansiDim, "NEXT"), paint(output, ansiBoldCyan, "nuboctl customize"))
+	writeMarketField(output, "TRACKED", "안전한 변경 확인용 파일 영수증")
+	writeMarketBuildNext(output)
 }
 
 func writeMarketRemovePlan(output io.Writer, removal skinRemoval, dryRun bool) {
@@ -113,7 +113,61 @@ func writeMarketRemovePlan(output io.Writer, removal skinRemoval, dryRun bool) {
 
 func writeMarketRemoveComplete(output io.Writer, removal skinRemoval) {
 	fmt.Fprintf(output, "\n  %s\n", paint(output, ansiBoldGreen, "✓ 스킨 소스 삭제 완료"))
-	fmt.Fprintf(output, "\n  %s  %s\n", paint(output, ansiDim, "NEXT"), paint(output, ansiBoldCyan, "nuboctl customize"))
+	writeMarketBuildNext(output)
+}
+
+func writeMarketDiff(output io.Writer, receipt skinReceipt, destination string, issues []string) {
+	action := "UNCHANGED"
+	if len(issues) > 0 {
+		action = "LOCAL CHANGES"
+	}
+	writeMarketTitle(output, action, receipt.Key)
+	writeMarketField(output, "VERSION", receipt.Version)
+	writeMarketField(output, "LOCATION", destination)
+	if len(issues) == 0 {
+		writeMarketField(output, "STATUS", paint(output, ansiBoldGreen, "설치 뒤 변경 없음"))
+		return
+	}
+	for _, issue := range issues {
+		fmt.Fprintf(output, "  - %s\n", issue)
+	}
+}
+
+func writeMarketUpToDate(output io.Writer, receipt skinReceipt) {
+	writeMarketTitle(output, "UP TO DATE", receipt.Key)
+	writeMarketField(output, "VERSION", receipt.Version)
+}
+
+func writeMarketUpdatePlan(output io.Writer, change skinUpdate, dryRun bool) {
+	action := "UPDATE"
+	if dryRun {
+		action = "UPDATE PREVIEW"
+	}
+	writeMarketTitle(output, action, change.key)
+	writeMarketField(output, "VERSION", change.fromVersion+" → "+change.toVersion)
+	writeMarketField(output, "LOCATION", change.destination)
+	writeMarketField(output, "VERIFIED", paint(output, ansiBoldGreen, "현재 파일 및 새 패키지"))
+	if dryRun {
+		fmt.Fprintf(output, "\n  %s  실제 파일은 바꾸지 않았습니다\n", paint(output, ansiDim, "DRY RUN"))
+	}
+}
+
+func writeMarketUpdateComplete(output io.Writer, change skinUpdate) {
+	fmt.Fprintf(output, "\n  %s\n", paint(output, ansiBoldGreen, "✓ UPDATE COMPLETE"))
+	writeMarketBuildNext(output)
+}
+
+func writeMarketFork(output io.Writer, fork skinFork) {
+	writeMarketTitle(output, "FORK COMPLETE", fork.toKey)
+	writeMarketField(output, "DERIVED", fork.fromKey+"@"+fork.fromVersion)
+	writeMarketField(output, "LOCATION", fork.destination)
+	writeMarketField(output, "OWNERSHIP", "사이트 소유 스킨 · Market 영수증 없음")
+	writeMarketBuildNext(output)
+}
+
+func writeMarketBuildNext(output io.Writer) {
+	fmt.Fprintf(output, "\n  %s  %s\n", paint(output, ansiDim, "NEXT"), paint(output, ansiBoldCyan, "npm run build"))
+	fmt.Fprintln(output, "        빌드가 끝나면 운영 중인 Node·PM2·systemd·tmux 프로세스를 직접 재시작하세요.")
 }
 
 func writeMarketTitle(output io.Writer, action, subject string) {

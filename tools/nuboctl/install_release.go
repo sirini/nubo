@@ -23,7 +23,7 @@ func validateInstallRelease(releaseDir string) error {
 		return fmt.Errorf("내장 libvips: %w", err)
 	}
 	for _, relative := range []string{
-		"bin/goapi", "nuboctl", "web/.output/server/index.mjs", "share/env.sample",
+		"bin/goapi", "nuboctl", "nubo-market", "web/.output/server/index.mjs", "share/env.sample",
 		"share/systemd/nubo.target", "share/systemd/nubo-goapi.service.in",
 		"share/systemd/nubo-web.service.in", "share/nginx/nubo.conf.in",
 	} {

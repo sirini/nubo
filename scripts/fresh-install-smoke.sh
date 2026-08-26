@@ -128,10 +128,12 @@ SQL
 )
 run_root install -d -m 0755 /opt/nubo/releases
 run_root tar -xzf "${NUBO_ARCHIVE_PATH}" -C /opt/nubo/releases
-if [[ ! -x "${NUBO_RELEASE_DIR}/nuboctl" ]]; then
-  echo "압축 해제된 릴리스에 nuboctl이 없습니다: ${NUBO_RELEASE_DIR}" >&2
-  exit 1
-fi
+for NUBO_COMMAND in nuboctl nubo-market; do
+  if [[ ! -x "${NUBO_RELEASE_DIR}/${NUBO_COMMAND}" ]]; then
+    echo "압축 해제된 릴리스에 ${NUBO_COMMAND}이 없습니다: ${NUBO_RELEASE_DIR}" >&2
+    exit 1
+  fi
+done
 
 install -m 0600 /dev/null "${NUBO_INPUT_FILE}"
 cat >"${NUBO_INPUT_FILE}" <<'EOF'
@@ -158,6 +160,13 @@ run_root timeout --foreground 5m "${NUBO_RELEASE_DIR}/nuboctl" install \
   --release "${NUBO_RELEASE_DIR}" \
   --env-input "${NUBO_INPUT_FILE}" \
   --node "${NUBO_NODE_BINARY}"
+
+for NUBO_COMMAND in nuboctl nubo-market; do
+  if [[ ! -L "/usr/local/bin/${NUBO_COMMAND}" ]]; then
+    echo "${NUBO_COMMAND} PATH 링크가 설치되지 않았습니다." >&2
+    exit 1
+  fi
+done
 
 echo "[fresh-install] readiness와 version 검증"
 curl --fail --silent --show-error http://127.0.0.1:3000/ready >"${NUBO_READY_FILE}"

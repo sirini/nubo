@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type updateOptions struct {
@@ -21,6 +22,15 @@ type updateOptions struct {
 	nonInteractive  bool
 	backupConfirmed bool
 	confirmBackup   func() (bool, error)
+}
+
+func parseApplyOptions(args []string) (updateOptions, error) {
+	if len(args) == 0 || args[0] == "" || strings.HasPrefix(args[0], "-") {
+		return updateOptions{}, fmt.Errorf("사용법: nuboctl apply <릴리스-디렉터리> [옵션]")
+	}
+	releaseDir := args[0]
+	translated := append([]string{"--release", releaseDir}, args[1:]...)
+	return parseUpdateOptions(translated)
 }
 
 // update의 후보 릴리스와 기존 설치 경로를 읽는다.

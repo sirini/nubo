@@ -45,3 +45,16 @@ func TestNuboctlCommandLinkRefusesExistingPath(t *testing.T) {
 		t.Fatal("다른 대상을 가리키는 링크를 허용했습니다")
 	}
 }
+
+func TestMarketCommandLinkFollowsCurrent(t *testing.T) {
+	root := t.TempDir()
+	current := filepath.Join(root, "current")
+	command := filepath.Join(root, "bin", "nubo-market")
+	if err := ensureReleaseCommandLink(command, current, "nubo-market"); err != nil {
+		t.Fatal(err)
+	}
+	target, err := os.Readlink(command)
+	if err != nil || target != filepath.Join(current, "nubo-market") {
+		t.Fatalf("Market 명령 링크 = %s, %v", target, err)
+	}
+}

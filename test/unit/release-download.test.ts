@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto"
-import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises"
+import { mkdir, mkdtemp, readlink, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest"
 import {
   checksumFromFile,
   discardStagedSystemRelease,
+  ensureSourceLink,
   parseManualReleaseArgs,
   readSetting,
   releaseDescriptor,
@@ -59,6 +60,21 @@ describe("release download contract", () => {
     expect(() => parseManualReleaseArgs(["--archive", "release.tar.gz"])).toThrow(
       "--archive와 --checksum",
     )
+  })
+
+  it("creates an idempotent source command link", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "nubo-source-link-"))
+    const target = join(directory, "release", "nubo-market")
+    const link = join(directory, "nubo-market")
+    try {
+      await mkdir(join(directory, "release"))
+      await writeFile(target, "binary")
+      await ensureSourceLink(link, target, "nubo-market")
+      await ensureSourceLink(link, target, "nubo-market")
+      expect(await readlink(link)).toBe("release/nubo-market")
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
   })
 
   it("verifies a manually supplied release before extraction", async () => {

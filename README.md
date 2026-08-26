@@ -4,57 +4,48 @@
   <img src="https://img.shields.io/github/v/release/sirini/nubo?style=flat-square&color=E07A5F" alt="release">
   <img src="https://img.shields.io/github/license/sirini/nubo?style=flat-square&color=5D6D7E" alt="license">
   <img src="https://img.shields.io/github/stars/sirini/nubo?style=flat-square&color=F4D03F" alt="stars">
-  <img src="https://img.shields.io/github/last-commit/sirini/nubo?style=flat-square&color=2ECC71" alt="last commit">
 </p>
 
-NUBO는 사진 커뮤니티, 블로그, 게시판, 동아리 사이트를 한곳에서 만들 수 있는 오픈소스 커뮤니티 빌더입니다. Nuxt 4 기반 웹 화면과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi) 백엔드가 함께 동작하며, MySQL/MariaDB에 데이터를 저장합니다.
+NUBO는 사진 커뮤니티, 블로그, 게시판과 사내 커뮤니티를 만드는 오픈소스 커뮤니티 빌더입니다.
+Nuxt 4 웹과 GoFiber v3 기반 [GOAPI](https://github.com/sirini/goapi), MySQL/MariaDB를 함께 사용합니다.
 
-> 문서 기준: 2026-08-25 · 최신 정식 버전: NUBO/GOAPI 1.2.30
+> 문서 기준: 2026-08-27 · 통합 버전: NUBO/GOAPI 1.3.0
 
-최신 정식 버전은 상단 릴리스 배지와 [GitHub Releases](https://github.com/sirini/nubo/releases)에서 확인할 수 있습니다. 기본 스킨만으로 바로 운영할 수 있고, NUBO Market에서 다른 스킨을 찾거나 `/app/skins` 아래의 스킨을 수정해 사이트의 성격을 바꿀 수 있습니다.
+공식 릴리스는 NUBO·GOAPI·libvips·관리 도구를 하나의 검증된 bundle로 제공합니다. 버전과 실제 commit,
+API contract는 릴리스 manifest에 기록되므로 운영자가 프론트엔드와 백엔드 조합을 고를 필요가 없습니다.
 
-NUBO와 GOAPI는 하나의 공식 bundle로 설치되므로 v1.2.26부터 공개 버전을 동일하게 맞춥니다. 운영자는 두 저장소의 호환 조합을 직접 고를 필요가 없으며, 각 릴리스 manifest가 실제 NUBO·GOAPI commit과 API contract를 기록합니다.
+## 주요 기능
 
-## 어떤 프로젝트인가요?
+- 게시판, 사진 갤러리, 블로그, 웹진과 중고거래형 게시판
+- SSR 기반 공개 게시물과 반응형 light/dark UI
+- 회원·권한·댓글·알림·채팅·사진 업로드
+- Resend 기반 이메일 인증, 초대 전용 가입, 비밀번호 초기화와 단체 메일
+- Google·Naver·Kakao 소셜 로그인과 Android 클라이언트용 API v1
+- 소스 스킨과 [NUBO Market](https://nubohub.org/market/)을 통한 화면 확장
 
-- 게시판, 갤러리, 블로그, 웹진, 중고거래 게시판을 제공합니다.
-- Nuxt SSR을 사용해 공개 게시물의 검색 엔진 노출과 초기 표시 속도를 고려합니다.
-- 회원가입, 비밀번호 초기화, 댓글 알림 메일을 Resend로 보낼 수 있습니다.
-- 관리자가 Markdown으로 단체 메일을 작성하고 미리보기·테스트 발송 후 회원에게 보낼 수 있습니다.
-- 가입 정책을 이메일 인증, 초대 전용, 가입 중지 중에서 선택할 수 있습니다.
-- [NUBO Market](https://nubohub.org/market/)에서 스킨의 대표 이미지와 실제 화면을 둘러보고 `nuboctl` 한 줄로 설치할 수 있습니다.
-- Market 로그인 사용자는 스킨마다 리뷰 하나와 1~5점 별점을 작성·수정할 수 있고, 운영자는 리뷰를 숨김·복원할 수 있습니다.
-- 기본 블로그·갤러리를 유지하면서 읽기 중심 `nubo-advance-blog`와 원본 전체 화면 감상용 `nubo-advance-gallery`를 제공합니다.
-- 갤러리 원본은 저장 파일 URL을 공개하지 않고 게시물 권한을 다시 확인하는 단기 스트림으로 전달합니다.
-- TSBOARD 데이터베이스 구조와의 호환성을 유지합니다.
+두 프로세스는 기본적으로 다음 포트를 사용합니다.
 
-## 구성 이해하기
-
-NUBO는 두 프로세스로 실행됩니다.
-
-| 구성 | 기본 포트 | 역할 |
+| 구성 | 포트 | 역할 |
 | --- | ---: | --- |
-| Nuxt/Nitro | `3000` | 화면 렌더링, 브라우저 API 중계, 인증 쿠키 관리 |
-| GOAPI | `3006` | 데이터베이스, 회원·게시물·메일·파일 처리 |
+| Nuxt/Nitro | `3000` | SSR, 브라우저 API 중계, 인증 쿠키 |
+| GOAPI | `3006` | DB, 회원·게시물·메일·파일 처리 |
 
-소스 개발에서는 두 프로세스가 같은 프로젝트 디렉터리의 `.env` 설정을 사용합니다. `npm run server:prepare`가 공식 통합 릴리스에서 GOAPI와 libvips를 함께 내려받고 기존 `./goapi-linux` 실행 경로를 준비합니다. Prebuilt 배포에서는 같은 형식의 파일을 `/etc/nubo/nubo.env`처럼 릴리스 밖에 두고 GOAPI에는 `NUBO_ENV_FILE`로, Node에는 `--env-file`로 명시합니다.
-Prebuilt의 `nuboctl install`은 이 외부 설정을 이용해 DB와 최초 관리자까지 준비하므로 운영 서버에서 npm 설치나 Nuxt 빌드를 반복하지 않습니다.
+## 운영 방식 선택
 
-> `.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 외부에 공개하지 마세요.
+NUBO v1.3.0은 운영 방식을 명확히 나눕니다.
 
-## 빠른 설치
+| 방식 | 적합한 경우 | 빌드·재시작 |
+| --- | --- | --- |
+| 공식 릴리스 | 공개 서비스, systemd, 재현 가능한 설치 | prebuilt 사용, `nuboctl apply`가 전환 |
+| Source Mode | 스킨을 자주 수정하는 소규모·사내 운영 | 운영자가 `npm run build` 후 직접 재시작 |
 
-### 1. Ubuntu 서버에 설치
+`nuboctl`은 상태 점검과 준비된 릴리스 적용에 집중합니다. `nubo-market`은 스킨 소스만 관리하며 빌드,
+Git 변경, PM2·systemd·tmux 재시작을 수행하지 않습니다.
 
-- Ubuntu 22.04 이상 x86-64 Linux 서버
-- Node.js 22 이상과 npm
-- MySQL 8 또는 MariaDB
-- 운영 환경에서는 도메인, HTTPS 인증서, Nginx 같은 리버스 프록시
-- 기본 포트 `3000`, `3006`을 사용할 수 있는 환경
+## 공식 릴리스 설치
 
-이 환경에서는 GOAPI 저장소를 따로 clone하거나 Go·컴파일러·libvips를 설치할 필요가 없습니다.
-NUBO 저장소의 공식 no-build 설치가 Nuxt와 GOAPI, 이미지 처리 라이브러리, `nuboctl`, systemd unit을
-하나의 검증된 릴리스로 내려받습니다. 저장소의 npm 패키지를 설치하거나 서버에서 소스를 빌드하지도 않습니다.
+지원 범위는 Ubuntu 22.04 이상 x86-64, Node.js 22 이상, MySQL 8 또는 MariaDB입니다. GOAPI 저장소,
+Go toolchain과 시스템 libvips는 필요하지 않습니다. Nginx와 TLS는 운영자가 별도로 관리합니다.
 
 ```bash
 git clone --depth=1 https://github.com/sirini/nubo.git
@@ -62,140 +53,45 @@ cd nubo
 npm run server:install
 ```
 
-`server:install`은 현재 정식 릴리스의 통합 압축본과 SHA-256을 GitHub Releases에서 받아 검증하고,
-`/opt/nubo/releases`에 배치한 뒤 그 안의 `nuboctl install`을 실행합니다. sharp-libvips 기반 라이브러리와
-이미지 코덱도 같은 압축본에 있으므로 운영 서버에 libvips 패키지를 설치하지 않습니다.
-Nginx와 TLS 설정은 읽거나 생성·수정·reload하지 않으며 운영자가 기존 설정을 그대로 관리합니다.
-
-최초 설치와 v1.2.0 이전 사이트 전환 때만 아직 관리 명령이 없으므로 `npm run server:install` 또는
-`npm run server:adopt`를 사용합니다. 설치가 끝나면 `/usr/local/bin/nuboctl`이 등록되며 이후에는
-다음 명령만 기억하면 됩니다.
+설치가 끝나면 GOAPI와 Web은 `nubo.service` 아래에서 실행되고 두 명령이 PATH에 등록됩니다.
 
 ```bash
-nuboctl help
 nuboctl status
 nuboctl doctor
-nuboctl update
-nuboctl customize
-nuboctl market help
-```
-
-`nuboctl help customize`처럼 명령 이름을 붙이거나 `nuboctl customize --help`를 실행하면 해당 작업이
-무엇을 바꾸는지와 미리보기 방법을 한국어로 확인할 수 있습니다. 아무 인자 없이 `nuboctl`만 실행해도
-같은 입문 안내가 나옵니다.
-
-기존 `npm run server:update`, `npm run server:customize`는 자동화 호환을 위해 남아 있지만 새 안내에서는
-사용하지 않습니다. `update`와 `customize`는 NUBO 프로젝트 폴더에서 실행해야 하며, `update`가
-`git pull --ff-only`부터 릴리스 전환과 등록된 커스텀 Web 재적용까지 이어서 수행합니다.
-
-설치가 끝나면 GOAPI와 Web은 systemd의 `nubo.service`로 함께 관리합니다.
-GOAPI와 Web에는 `PartOf=nubo.service` drop-in이 설치되므로 대표 unit의 restart가 두 프로세스에
-직접 전파됩니다. `RESEND_*`처럼 GOAPI만 사용하는 설정은 해당 서비스만 재시작해도 됩니다.
-
-```bash
-sudo systemctl status nubo nubo-goapi nubo-web
+nubo-market help
 sudo systemctl restart nubo
-sudo systemctl restart nubo-goapi.service
 sudo journalctl -u nubo-goapi -u nubo-web -f
 ```
 
-### 2. 소스 개발
+### 공식 릴리스 업데이트
 
-화면이나 GOAPI 자체를 수정할 때만 소스 개발 환경을 준비합니다. Ubuntu 22.04 이상 x86-64에서는
-MySQL/MariaDB를 먼저 실행한 뒤 공식 GOAPI 런타임을 개발 디렉터리에 받을 수 있습니다.
-
-```bash
-npm install
-npm run server:prepare
-./goapi-linux
-```
-
-화면의 질문에 DB 접속 정보와 최초 관리자 이메일·비밀번호를 입력하면 다음 작업이 이루어집니다.
-
-1. `.env` 생성
-2. 데이터베이스와 기본 테이블 생성
-3. 관리자 계정 생성
-4. GOAPI 실행
-
-설치가 끝나면 `.env`에서 아래 값은 반드시 운영 환경에 맞게 확인하세요.
-
-```dotenv
-GOAPI_DOMAIN=https://example.com
-GOAPI_TITLE=My NUBO
-GOAPI_VERSION=1.2.30
-
-GOAPI_PORT=3006
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=nubo
-DB_TABLE_PREFIX=nubo_
-```
-
-`GOAPI_DOMAIN`은 사용자가 접속하는 공개 주소입니다. 운영 서버에서는 `http://localhost`를 그대로 두지 말고 `https://`가 포함된 실제 주소로 변경하세요.
-
-macOS, ARM Linux, Ubuntu가 아닌 Linux에서 개발하려면 `server:prepare`로 받는 Linux x86-64 바이너리 대신
-GOAPI를 해당 컴퓨터에서 빌드합니다. Go 1.25 이상, CGO용 C/C++ 컴파일러, pkg-config, libvips 8.14 이상이
-필요합니다. macOS에서는 Homebrew로 의존성을 준비할 수 있습니다.
+다운로드·검증·배치와 실제 서비스 변경을 분리합니다.
 
 ```bash
-brew install go pkg-config vips node@22 mysql
-export PATH="$(brew --prefix node@22)/bin:$PATH"
-brew services start mysql
-npm install
-git clone https://github.com/sirini/goapi.git ../goapi
-cd ../goapi
-export CGO_CFLAGS_ALLOW="-Xpreprocessor"
-go test ./...
-go build -trimpath -o ../nubo/goapi-local ./cmd
-cd ../nubo
-./goapi-local
+git pull --ff-only
+npm run server:stage
 ```
 
-다른 Linux 배포판도 같은 순서로 빌드하되 패키지 이름은 배포판에 맞게 바꿉니다. Windows에서는 네이티브
-GOAPI 빌드보다 WSL2의 Ubuntu 22.04 이상 환경을 권장합니다. WSL2 안에서는 Ubuntu 설치 또는 소스 개발
-절차를 그대로 사용하고 Windows 브라우저에서 `http://localhost:3000`에 접속할 수 있습니다. 네이티브
-Windows 빌드는 upstream govips가 정기적으로 검증하지 않아 NUBO도 공식 지원하지 않습니다.
-
-플랫폼별 GOAPI 소스 빌드와 실행 방법은 [GOAPI README](https://github.com/sirini/goapi#readme)를 참고하세요.
-
-### 3. 개발 서버에서 확인
-
-GOAPI를 실행한 상태에서 별도 터미널을 열어 Nuxt를 시작합니다.
+`server:stage`는 현재 버전의 asset과 SHA-256을 검증해 `/opt/nubo/releases`에 준비하고, 실행할 정확한
+`nuboctl apply` 명령을 출력합니다. 이 단계는 DB, `current` 링크와 실행 중인 서비스를 바꾸지 않습니다.
 
 ```bash
-npm run dev
+sudo /opt/nubo/releases/nubo-1.3.0-linux-amd64/nuboctl \
+  apply /opt/nubo/releases/nubo-1.3.0-linux-amd64 --dry-run
+sudo /opt/nubo/releases/nubo-1.3.0-linux-amd64/nuboctl \
+  apply /opt/nubo/releases/nubo-1.3.0-linux-amd64
 ```
 
-기본 접속 주소는 `http://localhost:3000`입니다. 로컬 환경에서는 Resend 메일보다 화면과 게시판 기능을 먼저 확인하는 것이 편합니다.
+`apply`는 명시한 후보의 manifest·checksum·플랫폼을 다시 검사하고, 필요한 DB migration, 원자적 전환,
+재시작과 readiness 확인만 수행합니다. 다운로드, `git pull`, npm 설치와 Nuxt 빌드는 하지 않습니다.
+GOAPI가 바뀌는 릴리스는 DB와 업로드를 서버 밖에 백업한 뒤 적용하세요.
 
-### 개발 검증
+기존 `nuboctl update`, `customize`, `market`과 `npm run server:update`는 호환을 위해 남아 있지만 새 운영
+절차의 기본 진입점은 아닙니다.
 
-```bash
-npm test
-npm run test:unit
-npm run test:nuxt
-npm run typecheck
-npm run build
-```
+### 제한망에서 릴리스 반입
 
-`npm test`는 빠른 Node 단위 테스트와 Nuxt 런타임 테스트를 모두 실행합니다. 브라우저 E2E와 테스트 DB는 다음 테스트 하네스 단계에서 별도로 추가합니다.
-
-### 4. 직접 빌드 실행
-
-아래 방식은 NUBO 또는 GOAPI 자체를 수정하는 개발·커스텀 운영 환경을 위한 것입니다. 일반 운영 서버는
-앞의 `server:install`을 사용하며 서버에서 Nuxt를 다시 빌드하지 않습니다.
-
-```bash
-npm run build
-node --env-file="$PWD/.env" .output/server/index.mjs
-```
-
-#### 제한망에서 수동으로 런타임 준비·실행
-
-`git pull`은 되지만 `npm run server:prepare`나 `server:install`의 Node `fetch`가 차단되는 환경에서는
-공식 릴리스의 압축 파일과 같은 이름의 `.sha256` 파일을 브라우저 또는 다운로드 가능한 PC에서 받아
-프로젝트 디렉터리로 옮깁니다. 인터넷 연결이 있는 셸에서 `curl`만 허용되는 경우에는 다음처럼 받을 수
-있습니다.
+외부 PC에서 같은 이름의 archive와 `.sha256`을 받아 서버로 옮깁니다.
 
 ```bash
 NUBO_VERSION=$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' env.sample)
@@ -205,381 +101,155 @@ curl -fLO "${NUBO_RELEASE_URL}/${NUBO_ASSET}"
 curl -fLO "${NUBO_RELEASE_URL}/${NUBO_ASSET}.sha256"
 ```
 
-반입한 두 파일은 `server:manual`로 검증합니다. 이 명령은 바깥쪽 SHA-256, 안전한 압축 경로,
-내부 manifest와 파일별 checksum을 모두 확인한 뒤 Git에서 제외된 `.nubo/releases/`에 풀고
-`./goapi-linux` 심볼릭 링크를 만듭니다. 바이너리와 `libvips`를 `bin/`, `lib/`에 커밋할 필요가 없습니다.
+반입한 파일을 검증·배치한 뒤 출력되는 `apply` 명령을 별도로 실행합니다.
+
+```bash
+npm run server:stage -- \
+  --archive "$PWD/$NUBO_ASSET" \
+  --checksum "$PWD/$NUBO_ASSET.sha256"
+```
+
+## Source Mode
+
+스킨이나 NUBO 코드를 자주 바꾸고 프로세스를 직접 관리한다면 소스 checkout을 그대로 실행할 수 있습니다.
 
 ```bash
 npm install
+npm run server:prepare
+./goapi-linux
+```
+
+`server:prepare`는 공식 bundle을 검증한 뒤 `./goapi-linux`와 `./nubo-market` 링크를 만듭니다. 별도 tmux
+창에서 Web을 빌드·실행합니다.
+
+```bash
+npm run build
+node --env-file="$PWD/.env" .output/server/index.mjs
+```
+
+PM2를 쓰면 같은 Node 명령을 PM2 설정에 넣고, 변경 뒤 `npm run build && pm2 restart <앱>`처럼 직접
+재시작합니다. tmux도 기존 프로세스를 종료하고 같은 명령을 다시 실행합니다. Market은 이 과정을 대신하지
+않으므로 실패 지점과 운영 책임이 분명합니다.
+
+Node `fetch`가 차단된 제한망의 Source Mode에서는 두 릴리스 asset을 반입한 뒤 다음 명령을 사용합니다.
+
+```bash
 npm run server:manual -- \
   --archive "$PWD/$NUBO_ASSET" \
   --checksum "$PWD/$NUBO_ASSET.sha256"
 npm run build
 ```
 
-그다음 두 터미널 또는 두 tmux 창에서 같은 `.env`를 명시해 각각 실행할 수 있습니다.
+재부팅 자동 시작과 장애 재시작이 중요하면 Source Mode보다 공식 systemd 설치를 권장합니다.
+
+## NUBO Market
+
+Market은 완성된 Web bundle 대신 검증한 스킨 소스를 제공합니다. 따라서 제작자는 독립적으로 스킨을
+배포할 수 있고, 사이트 운영자는 설치본을 살펴보거나 일부 수정한 뒤 자신의 NUBO 전체를 다시 빌드합니다.
 
 ```bash
-NUBO_ENV_FILE="$PWD/.env" ./goapi-linux
+./nubo-market search gallery
+./nubo-market info nubo-awesome-gallery
+./nubo-market install nubo-awesome-gallery
+npm run build
 ```
 
-```bash
-node --env-file="$PWD/.env" .output/server/index.mjs
-```
+공식 릴리스 설치에서는 `./nubo-market` 대신 PATH의 `nubo-market`을 사용합니다. 설치와 삭제는 실행 중인
+사이트를 바꾸지 않습니다. Source Mode라면 빌드 뒤 현재 Node·PM2·tmux 프로세스를 직접 재시작하세요.
 
-`goapi-linux`의 실제 대상은 공식 bundle의 `bin/goapi`이며, 그 형제 `lib/`를 RPATH로 참조합니다.
-소스 스킨을 바꾼 뒤에는 프론트엔드의 `npm run build`와 Node 프로세스 재시작만 필요합니다. tmux 수동
-실행은 제한망의 임시·소규모 운영에는 쓸 수 있지만 재부팅 자동 시작과 장애 재시작이 필요하면 공식
-`nuboctl`/systemd 설치를 사용하세요. 릴리스 파일을 다시 받을 수 없는 완전한 폐쇄망에서는 두 asset을
-함께 보관해야 이후 같은 검증 절차를 반복할 수 있습니다.
-
-빌드 서버에서 만든 `.output`만 운영 서버로 옮기는 no-build 배포 PoC와 런타임 환경 변수
-계약은 [Prebuilt Nuxt deployment PoC](./docs/PREBUILT_DEPLOYMENT.md)를 참고하세요.
-
-공식 설치에서는 PM2나 tmux로 별도 프로세스를 중복 실행하지 않습니다. 개발 중에는 `./goapi-linux`와
-`npm run dev`를 각각 실행하고, 운영에서는 `systemctl restart nubo`로 두 서비스를 함께 관리합니다.
-
-## NUBO 기반 Android 앱 개발
-
-NUBO와 GOAPI의 API v1을 이용하면 웹사이트와 같은 계정·게시판·사진 데이터를 사용하는 네이티브 Android
-앱을 별도 클라이언트로 개발할 수 있습니다. [Sensta Android](https://github.com/sirini/sensta)는 로그인과
-토큰 갱신, 사진 업로드, 프로필과 1:1 대화, 신고·차단·계정 삭제, Firebase 알림을 연결한 참고 구현입니다.
-
-새 앱은 Sensta를 그대로 복제하기보다 각 커뮤니티의 목적에 맞게 화면, 기능, 이름과 브랜드를 설계하는
-것을 권장합니다. 서버 연동 범위와 인증 방식은 [API v1 계약](./docs/API_CONTRACT_V1.md), 푸시 알림 설정은
-[env.sample](./env.sample)을 참고하세요.
-
-## 메일과 회원가입 설정
-
-NUBO의 메일 제공자는 **Resend 하나만 사용**합니다. Gmail 앱 비밀번호나 SMTP 설정은 사용하지 않습니다.
-
-1. [Resend](https://resend.com)에서 계정을 만들고 발신 도메인을 등록합니다.
-2. Resend가 안내하는 SPF/DKIM DNS 레코드를 도메인의 DNS 관리 화면에 그대로 등록합니다.
-3. 도메인이 `Verified`가 되면 API 키를 만들고 `.env`를 설정합니다.
-4. GOAPI를 다시 시작한 뒤 `관리자 → 대시보드 → 이메일 설정 안내`에서 상태를 확인합니다.
-
-```dotenv
-RESEND_API_KEY=re_xxxxxxxxx
-RESEND_FROM_EMAIL=noreply@example.com
-RESEND_FROM_NAME=My NUBO
-RESEND_REPLY_TO_EMAIL=admin@example.com
-```
-
-- `RESEND_FROM_EMAIL`은 Resend에서 인증한 도메인의 주소여야 합니다. 실제 메일함이 없어도 발신 전용 주소로 사용할 수 있습니다.
-- `RESEND_REPLY_TO_EMAIL`은 선택 사항이며, 답장을 받을 Gmail 등 개인 메일 주소도 사용할 수 있습니다.
-- 단체 메일까지 사용하려면 연락처·세그먼트·Broadcast를 만들 수 있는 Resend API 키 권한이 필요합니다.
-- 무료 플랜 한도와 정책은 변경될 수 있으므로 실제 발송 전 [Resend 요금 안내](https://resend.com/pricing)를 확인하세요.
-
-관리자 메일 화면은 회원가입 인증, 비밀번호 초기화, 댓글 알림의 발송 요청 이력을 NUBO 데이터베이스에 자체 보관합니다. 최근 30일 요약과 전체 기록을 페이지별로 볼 수 있으며 Resend의 조회 API나 웹훅에는 의존하지 않습니다. `발송 요청 완료`는 제공자가 요청을 접수했다는 뜻으로 실제 수신함 도착을 보장하지는 않으며, 메일 본문과 인증 코드는 저장하지 않습니다.
-
-가입 정책은 다음 중 하나입니다.
-
-```dotenv
-# verified_email | invite_only | disabled
-SIGNUP_MODE=verified_email
-```
-
-| 값 | 동작 |
+| 명령 | 동작 |
 | --- | --- |
-| `verified_email` | 기본값. Resend 이메일 인증 또는 설정된 소셜 로그인의 인증된 이메일로 가입합니다. |
-| `invite_only` | 관리자가 발급한 이메일별 초대 링크가 있어야 가입됩니다. |
-| `disabled` | 신규 가입을 즉시 중지합니다. |
+| `search`, `info` | 공개 카탈로그 탐색과 호환 버전 확인 |
+| `install` | checksum·경로·manifest를 검증해 `app/skins`에 소스 설치 |
+| `diff` | 설치 영수증과 현재 파일의 수정·추가·누락 비교 |
+| `update` | 로컬 변경이 전혀 없을 때만 새 버전으로 원자적 교체 |
+| `fork OLD NEW` | 수정본을 새 key의 사이트 소유 스킨으로 복사 |
+| `remove` | 변경이 없는 Market 설치본만 안전하게 삭제 |
 
-Resend를 설정하지 않았다면 일반 이메일 가입은 완료할 수 없지만, 설정된 Google 등 소셜 로그인으로는 신규 가입할 수 있습니다. `invite_only`와 `disabled`에서는 신규 소셜 가입도 차단되며 기존 회원의 소셜 로그인은 유지됩니다. 작은 비공개 사이트라면 `invite_only`를 선택하고 관리자 화면에서 초대를 발급할 수 있습니다.
-
-## 선택 환경 변수
-
-- `OAUTH_GOOGLE_*`, `OAUTH_NAVER_*`, `OAUTH_KAKAO_*`: 소셜 로그인 사용 시 설정. Android ID 토큰의 audience가 웹 로그인과 다르면 `OAUTH_GOOGLE_ANDROID_CLIENT_ID`를 별도로 설정
-- `NUXT_APP_BASE_URL`: 기본 `/`. `https://internal.example.com/sample/` 아래에 배포할 때는 `/sample/`로 지정. 별도 `NUXT_PUBLIC_API_BASE`를 지정하지 않으면 브라우저 API도 자동으로 `/sample/api`를 사용
-- `FIREBASE_PROJECT_ID`, `FIREBASE_CREDENTIALS_FILE`: Sensta Android 푸시 알림용 Firebase 프로젝트와 서비스 계정 JSON 경로. 비우면 DB 알림만 유지
-- `OPENAI_API_KEY`: OpenAI 연동 자격 증명. 키만 설정해도 AI 기능은 활성화되지 않음
-- `OPENAI_IMAGE_DESCRIPTION_ENABLED`: 업로드 이미지 설명 생성을 명시적으로 활성화 (`false`가 기본값)
-- `OPENAI_IMAGE_DESCRIPTION_MODEL`: 이미지 입력을 지원하는 모델 ID (`gpt-5.6-luna`가 기본값)
-- `OPENAI_IMAGE_DESCRIPTION_MAX_PER_POST`, `OPENAI_IMAGE_DESCRIPTION_CONCURRENCY`: 게시글당 생성 수와 서버 전체 동시 호출 상한
-- `SYNC_SECRET_KEY`: 외부 게시물 동기화 API 전용 비밀키. 자동 생성되며 공개하면 안 됨
-- 이미지 크기와 업로드 제한은 `GOAPI_*_SIZE`, `GOAPI_FILE_SIZE_LIMIT`로 조정
-
-전체 항목과 설명은 [env.sample](./env.sample)을 참고하세요.
-
-공식 prebuilt 운영 환경은 Ubuntu 22.04 이상 x86-64와 Node.js 22 이상입니다. 이후 Ubuntu와 Node.js
-버전에는 별도 상한을 두지 않으며 실제 `nuboctl doctor`와 readiness 결과로 실행 가능 여부를 확인합니다.
-GOAPI는 Ubuntu 22.04 Docker 환경에서 빌드하고, 내장 libvips로 Ubuntu 22.04/24.04에서 검증합니다.
-SSE4.2가 없는 구형 x86-64 CPU에는 호환판을, x86-64-v2 CPU에는 최적화판을 glibc가 자동 선택합니다.
-별도 libvips 설치는 필요 없습니다. ARM 서버, 다른 Linux 배포판, macOS, 네이티브 Windows는 공식
-prebuilt 운영 범위가 아니지만 공개 소스를 해당 환경에서 빌드해 개발·시험할 수 있습니다.
-
-## 업데이트
-
-### v1.2.0 이전 소스 설치를 새 체제로 전환
-
-기존 프로젝트에서 바로 `git pull`해 전환하기보다, 같은 서버의 옆 경로에 최신 NUBO를 새로 clone한 뒤
-환경 파일과 업로드를 옮겨 전환하는 방법을 권장합니다. 아래 예시는 기존 경로가
-`/var/www/nubo-old`, 새 경로가 `/var/www/nubo-new`인 경우입니다. 실제 경로는 서버에 맞게 바꾸세요.
-
-먼저 DB와 `upload`를 서버 밖에도 백업합니다. 그다음 기존 NUBO를 실행하던 계정으로 새 clone을 만들고
-파일을 복사합니다. 새 프로젝트 디렉터리의 소유자가 이후 systemd 서비스 계정이 되므로, root-only
-서버가 아니라면 `sudo git clone`은 사용하지 않는 편이 좋습니다.
+업데이트 전에는 새 패키지까지 검증하는 미리보기를 권장합니다.
 
 ```bash
-cd /var/www
-git clone --depth=1 https://github.com/sirini/nubo.git nubo-new
-cp /var/www/nubo-old/.env /var/www/nubo-new/.env
-cp -a /var/www/nubo-old/upload /var/www/nubo-new/upload
-cd /var/www/nubo-new
+./nubo-market diff nubo-awesome-gallery
+./nubo-market update nubo-awesome-gallery --dry-run
+./nubo-market update nubo-awesome-gallery
+npm run build
 ```
 
-복사한 `.env`의 `NUBO_UPLOAD_DIR`가 상대 경로이거나 비어 있으면 새 clone의 `upload`를 사용합니다.
-절대 경로가 적혀 있으면 그 경로를 계속 사용하므로, 방금 복사한 디렉터리를 쓰려면 값을
-`./upload` 또는 새 절대 경로로 바꾸세요. 기존 Nginx의 `location /upload/`에 설정된 `alias`도 같은
-경로를 가리켜야 합니다. `server:adopt`는 기존 Nginx/TLS 설정을 자동 수정하거나 reload하지 않습니다.
-
-이제 PM2, tmux, 기존 systemd 또는 수동 명령으로 실행 중인 NUBO 프론트엔드와 GOAPI를 직접
-종료합니다. 다른 서비스까지 함께 종료하지 말고 NUBO 프로세스만 내린 뒤 포트 `3000`과 `3006`이
-비었는지 확인합니다. 두 포트가 비어 있어야 실제 전환이 시작됩니다.
+설치본을 수정했다면 update와 remove는 중단됩니다. 수정본을 유지할 때는 fork합니다.
 
 ```bash
-sudo ss -ltnp | grep -E ':(3000|3006)\b' || true
-npm run server:adopt -- --dry-run
-npm run server:adopt
+./nubo-market fork nubo-awesome-gallery my-gallery
 ```
 
-새 clone에서는 `server:adopt`를 위해 `npm ci`나 `npm run build`를 실행할 필요가 없습니다. wrapper가
-공식 prebuilt 릴리스를 내려받아 검증하기 때문입니다. dry-run은 다운로드한 공식 릴리스와 복사한
-`.env`, 실제 사용할 업로드 경로를 검증하고 전체 계획만 보여줍니다. 실제 실행에서는
-외부 백업을 완료했다면 안내 문구에서 아무것도 입력하지 않고 Enter를 누릅니다. 다른 문자열을 입력하면
-변경 없이 취소합니다. 명령은 다음 원칙으로 동작합니다.
+fork는 `skin.json`에 원본 key·version을 `derived_from`으로 남기고 Market 영수증을 제거합니다. 이후
+`my-gallery`의 변경과 버전은 사이트 운영자가 관리합니다. `--force`와 자동 병합은 제공하지 않습니다.
 
-- 기존 프로젝트, `.env`, `upload`, 데이터베이스, Nginx/TLS 설정을 삭제하거나 이동하거나 덮어쓰지 않습니다.
-- 기존 `.env` 값을 새 `/etc/nubo/nubo.env` 형식으로 변환하며 원본 참고본도
-  `/var/lib/nubo/adoption/legacy.env`에 `0600` 권한으로 보관합니다.
-- 기존 프로젝트 소유 계정과 업로드 경로를 새 systemd 서비스에서도 그대로 사용합니다.
-- NVM처럼 Node.js가 사용자 홈 아래에 있으면 systemd가 읽을 수 있는 `/opt/nubo/runtime/node`에 현재
-  실행 파일을 복사하며, 시스템 경로의 Node.js는 그대로 사용합니다.
-- PM2, tmux, systemd 또는 수동 실행 여부를 추측하거나 기존 프로세스를 자동 종료하지 않습니다.
-- dry-run에서 포트 `3000`·`3006`의 사용 여부를 안내합니다. 실제 실행은 두 포트가 비어 있지 않으면
-  환경 파일·DB·current 링크·systemd 서비스를 변경하기 전에 중단합니다.
-- 기존 Nginx와 TLS는 이미 공개 트래픽을 처리하고 있으므로 생성, 수정, reload하지 않습니다.
-- DB에는 현재 릴리스의 additive migration을 적용합니다. 이 변경은 자동 rollback하지 않으므로 외부
-  백업 확인이 반드시 필요합니다.
-
-포트 `3000`/`3006`을 쓰는 기존 NUBO 프론트엔드와 백엔드는 운영자가 기존 실행 방식에 맞게 직접
-종료한 뒤 실제 명령을 다시 실행하면 됩니다. 새 서비스 전환이 실패해도 기존 프로세스를 임의로
-재시작하지 않으므로 출력에 따라 이전 실행 방식으로 직접 시작할 수 있습니다. adoption이 끝난 뒤부터는
-서버 관리 명령을 `nuboctl`로 통일합니다.
-Cafe24처럼 root 계정만 사용하는 기존 서버에서는 root 소유 프로젝트도 adoption할 수 있습니다.
-이 경우 실행 계획에 경고를 표시하고 서비스는 root로 실행하지만, systemd의 파일시스템 보호,
-권한 상승 차단과 업로드 외 쓰기 경로 제한은 그대로 유지합니다. 일반 계정 운영이 가능하면 해당 계정을
-사용하는 편을 권장하지만 필수 조건은 아닙니다.
-
-전환이 끝나면 전체 서비스는 다음처럼 관리합니다.
-
-```bash
-sudo systemctl restart nubo
-sudo systemctl status nubo nubo-goapi nubo-web
-```
-
-#### 커스텀 Vue 스킨을 사용하던 사이트
-
-`app/skins` 아래의 Vue 스킨과 `skin.json`은 런타임 플러그인이 아니라 Nuxt 빌드에 포함되는 소스입니다.
-커스텀 스킨 폴더는 새 clone의 같은 위치에 복사합니다.
-
-```bash
-cp -a /var/www/nubo-old/app/skins/my-custom-skin /var/www/nubo-new/app/skins/
-cd /var/www/nubo-new
-```
-
-adoption을 마친 뒤에는 아래의 `nuboctl customize`로 로컬 스킨을 공식 릴리스와 결합할 수 있습니다.
-명령이 의존성 설치, typecheck, production build, 파생 릴리스 checksum 생성, Web 재시작과 readiness
-검사를 수행합니다. 실패하면 이전 Web 빌드로 자동 복구하며 GOAPI, DB, 업로드, 환경 파일과 Nginx는
-변경하지 않습니다.
-
-```bash
-cd /var/www/nubo-new
-nuboctl customize
-```
-
-첫 실행이나 `package-lock.json`이 바뀐 경우에만 `npm ci`를 자동 실행하고, 이후 문구·스타일 수정에는
-준비된 의존성을 재사용합니다. 전환 전에 계획만 확인하려면 `--dry-run`을 붙일 수 있습니다. 이 경우에도
-빌드와 파생 릴리스 검증은 수행하지만 실행 중인 서비스는 바꾸지 않습니다.
-
-저사양 가상 CPU에서 Vite 8의 변환 작업이 멈추는 문제를 피하기 위해 현재 lockfile은
-`rolldown-vite@7.3.1`을 호환 빌더로 고정합니다. 운영자가 Vite를 따로 설치하거나 `NODE_OPTIONS`를
-지정할 필요는 없습니다. `nuboctl customize`와 자동 재적용은 기본 Node heap 1536 MiB를 사용하며,
-실제 OOM이 확인된 경우에만 서버 여유 메모리를 확인한 뒤 `NODE_OPTIONS=--max-old-space-size=<MiB>`를
-상향합니다.
-
-```bash
-nuboctl customize --dry-run
-```
-
-공식 prebuilt 디렉터리는 여전히 직접 수정하면 안 됩니다. 커스텀 결과는
-`/opt/nubo/releases/<버전>-site-<해시>`라는 별도 불변 릴리스로 배치되고 `current` 링크만 원자적으로
-전환됩니다.
-
-### v1.2.2 이후 공식 서버 설치 업데이트
-
-공식 서버 설치는 NUBO 프로젝트 폴더에서 한 명령으로 업데이트합니다.
-
-```bash
-nuboctl update --dry-run
-nuboctl update
-```
-
-명령은 먼저 checkout을 `git pull --ff-only`로 갱신하고 새 통합 릴리스를 검증·배치한 뒤 원자적
-`current` 전환, 재시작과 readiness 검사를 수행합니다. 공식 기본 스킨이나 다른 소스 파일의 수정이
-남아 있거나 브랜치가 원격과 갈라졌다면 덮어쓰지 않고 서버 변경 전에 중단합니다. 별도 key로 만든
-사이트 전용 스킨 폴더의 변경은 보존합니다. pull을 의도적으로 생략할 때만 `--no-pull`을 사용합니다.
-따라서 공개 `update --dry-run`도 checkout의 fast-forward와 후보 릴리스·커스텀 Web 준비는 수행하며,
-실행 중인 서비스·DB·`current` 링크만 변경하지 않습니다. 소스까지 그대로 둔 채 검증하려면
-`--dry-run --no-pull`을 함께 사용합니다.
-
-`nuboctl customize`를 한 번 적용한 설치는 커스텀 사용 상태를 기억합니다. 이후 `update`는 새 버전용
-커스텀 Web을 먼저 typecheck·빌드하고, 공식 릴리스 전환이 성공하면 자동으로 적용합니다. 빌드가
-실패하면 기존 사이트를 건드리지 않으며, 이번 업데이트에서만 건너뛰려면 `--no-customize`를 사용합니다.
-
-이전·후보 릴리스의 GOAPI commit이 같으면 DB migration과 반복적인 백업 질문을 생략합니다. GOAPI가
-바뀌는 업데이트만 기존처럼 외부 DB·업로드 백업을 확인하고 additive migration을 수행합니다. 소스 개발
-환경에서 GOAPI만 갱신하려면 `npm run server:prepare`를 다시 실행합니다.
-
-v1.2.7까지 adoption을 마친 서버는 v1.2.8로 update해도 systemd 구성을 자동 변경하지 않습니다.
-짧은 대표 명령을 원할 때만 다음 절차를 한 번 실행합니다. 실행 중인 GOAPI와 Web은 이 과정에서
-재시작되지 않으며 내부 `nubo.target` 파일은 삭제하지 않습니다.
-
-```bash
-sudo install -m 0644 /opt/nubo/current/share/systemd/nubo.service /etc/systemd/system/nubo.service
-sudo systemctl daemon-reload
-sudo systemctl disable nubo.target
-sudo systemctl enable --now nubo.service
-```
-
-## Nginx 예시
-
-아래 예시는 Nuxt를 공개하고, OAuth 콜백용 GOAPI 경로와 업로드 파일을 연결합니다. 인증서 경로와 프로젝트 경로는 자신의 서버에 맞게 바꾸세요.
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name example.com;
-
-    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
-
-    client_max_body_size 100M;
-
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /goapi/ {
-        proxy_pass http://127.0.0.1:3006/goapi/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /upload/ {
-        alias /var/www/nubo/upload/;
-        autoindex off;
-    }
-}
-```
-
-Cloudflare 같은 프록시를 추가로 사용한다면 원래 요청이 HTTPS였다는 정보가 `X-Forwarded-Proto`로 전달되는지 확인하세요.
-
-## NUBO Market에서 스킨 찾고 적용하기
-
-[NUBO Market](https://nubohub.org/market/)에서는 스킨의 대표 이미지, 제작자와 지원 NUBO 버전을 살펴보고, 제작자가 추가했다면 실제 화면 스크린샷까지 볼 수 있습니다. 마음에 드는 스킨은 JavaScript 패키지를 `npm install`로 받듯 운영 서버의 NUBO 소스 폴더에서 `nuboctl market install` 한 줄로 내려받습니다.
-
-로그인 사용자는 상세 화면에서 계정·스킨별 리뷰 하나를 작성·수정하고 1~5점 별점을 남길 수 있습니다. 운영자가 숨긴 리뷰는 공개 목록과 평점 집계에서 제외되며 영구 삭제 대신 복원할 수 있습니다.
-
-| 하고 싶은 일 | 웹·명령어 |
-| --- | --- |
-| 스킨 둘러보기 | [nubohub.org/market](https://nubohub.org/market/) |
-| 이름·기능으로 찾기 | `nuboctl market search` |
-| 제작자·버전·호환성 확인 | `nuboctl market info <스킨-key>` |
-| 검증해서 설치 | `nuboctl market install <스킨-key>` |
-| 변경 계획 확인·운영 적용 | `nuboctl customize --dry-run`, `nuboctl customize` |
-
-```bash
-nuboctl market search gallery
-SKIN_KEY="Market 상세에서 확인한 key"
-nuboctl market info "${SKIN_KEY}"
-nuboctl market install "${SKIN_KEY}"
-nuboctl customize --dry-run
-nuboctl customize
-```
-
-설치는 Registry SHA-256, manifest의 key·version과 NUBO 호환성, 압축 경로를 검증하고 기존 스킨 폴더를 덮어쓰지 않습니다. 설치만으로 실행 중인 사이트가 갑자기 바뀌지 않으며, `customize`가 typecheck와 production build를 통과한 뒤에만 새 Web을 적용합니다. 게시판 스킨은 게시판 관리에서, 레이아웃·홈·관리자·로그인·프로필 스킨은 관리 화면의 **스킨 관리**에서 마지막으로 선택합니다.
-
-사용하지 않는 Market 스킨은 먼저 관리 화면에서 다른 스킨으로 전환한 뒤 안전하게 삭제할 수 있습니다. 설치 당시 파일 영수증과 현재 파일이 모두 일치할 때만 삭제되므로 직접 수정한 스킨을 실수로 지우지 않습니다.
-
-```bash
-nuboctl market remove "${SKIN_KEY}" --dry-run
-nuboctl market remove "${SKIN_KEY}"
-nuboctl customize
-```
-
-명령별 설명은 `nuboctl market help`에서, 설치·업데이트와 함께 보는 전체 안내는 [nuboctl 소개](https://nubohub.org/market/nuboctl)와 [운영 문서](docs/NUBOCTL.md)에서 확인할 수 있습니다.
+SHA-256은 받은 파일이 Registry 기록과 같다는 뜻이지 코드가 안전하다는 보증은 아닙니다. 스킨 Vue 코드는
+NUBO와 같은 브라우저 권한으로 실행되므로 제작자·소스·변경 내역을 확인하고, 중요한 사이트에서는 별도
+검토 환경에서 빌드하세요. Market 패키지 자체의 npm script나 임의 의존성은 설치 과정에서 실행하지 않습니다.
 
 ## 스킨 개발
 
-- 기본 스킨은 `/app/skins` 아래에 기능별로 나뉘어 있습니다.
-- 게시판 스타일은 `nubo-basic-board`(표 게시판), `nubo-basic-blog`(블로그),
-  `nubo-basic-gallery`(사진 갤러리)로 분리되어 있어 만들려는 화면과 가장 가까운 폴더만 복사하면 됩니다.
-- `nubo-advance-blog`는 좁은 본문·목차·읽기 진행률과 큰 제목 편집 흐름을, `nubo-advance-gallery`는
-  masonry 목록·전체 화면 원본·화면 맞춤/1:1·키보드/스와이프 탐색을 제공합니다. 기존 basic 스킨은
-  호환 기준선으로 계속 유지합니다.
-- 세 게시판 스킨의 `README.md`에는 엔트리 파일 지도와 provider가 주입하는 상태·함수의 용도를
-  정리했습니다.
-- 각 스킨 패키지는 다른 스킨 폴더를 import하지 않고 독립적으로 목록·보기·쓰기 UI를 소유합니다.
-  여러 스킨이 공유하는 계약은 provider, 타입과 `/app/components`의 플랫폼 UI에만 둡니다.
-- 공통 UI는 Vue 3, Tailwind CSS, shadcn-vue 구성요소를 사용합니다.
-- 복잡한 데이터 처리는 composable/provider에 두고 스킨에서는 필요한 상태와 동작만 가져오는 구조를 지향합니다.
-- 새 스킨을 만들 때 기본 스킨을 직접 수정하지 말고 폴더를 복사한 뒤 `skin.json`의 `key`, 이름과 버전을
-  새 폴더에 맞게 바꾸는 방식을 권장합니다. 그래야 `git pull`과 공식 스킨 업데이트가 사이트 수정을
-  덮어쓰지 않습니다.
-- Market에 배포할 스킨은 `skin.json`의 `preview`가 가리키는 대표 PNG·JPEG·WebP 이미지 한 장을
-  패키지에 포함해야 합니다. 실제 사이트 화면을 더 보여주려면 선택 항목인 `screenshots` 배열에 최대
-  9개의 패키지 내부 이미지 경로를 지정할 수 있습니다.
-- 설치된 서버에서는 처음 수정한 뒤 `nuboctl customize`로 빌드·검증·적용합니다. 이후 공식 update가
-  커스텀 Web도 자동으로 다시 빌드합니다.
+기본 스킨은 `app/skins`에 기능별로 나뉘며 다른 스킨 폴더를 직접 import하지 않습니다. 공유 계약은
+provider, 타입과 `app/components`의 플랫폼 UI에 둡니다.
 
-예를 들어 사이트 전용 레이아웃과 홈을 만들려면 기본 폴더를 새 key로 복사합니다.
+새 스킨은 가장 가까운 기본 스킨을 복사하고 폴더명과 `skin.json`의 `key`를 함께 바꿉니다.
 
 ```bash
 cp -a app/skins/nubo-basic-layout app/skins/my-site-layout
-cp -a app/skins/nubo-basic-home app/skins/my-site-home
 ```
 
-각 폴더의 `skin.json`에서 `key`를 각각 `my-site-layout`, `my-site-home`으로 바꾸고 이름·버전·제작자
-정보를 수정합니다. Vue 파일의 문구·구조·버튼 스타일을 사이트에 맞게 편집한 뒤 적용합니다.
+Vue·CSS를 수정한 뒤 `npm run typecheck`와 `npm run build`로 확인합니다. Market 배포본은 대표 이미지와
+고유 key·semver·최소 NUBO 버전을 포함해야 합니다. 자세한 패키지 계약은 각 기본 스킨 README와
+[Market 문서](https://nubohub.org/market/)를 참고하세요.
+
+## 개발
 
 ```bash
-nuboctl customize
+npm install
+npm run server:prepare
+./goapi-linux
+# 다른 터미널
+npm run dev
 ```
 
-빌드가 적용되면 관리 화면의 레이아웃과 홈 선택 목록에서 새 스킨을 골라 **적용하기**를 누릅니다.
-이미 선택한 사이트 전용 스킨을 다시 수정한 경우에는 같은 명령만 재실행하면 됩니다.
+전체 검증 명령은 다음과 같습니다.
 
-## 문제를 확인할 때
+```bash
+npm test
+npm run lint
+npm run typecheck
+npm run build
+```
 
-- 화면이 API에 연결되지 않으면 Nuxt와 GOAPI가 모두 실행 중인지, `.env`의 포트와 `GOAPI_BASE`가 일치하는지 확인합니다.
-- 이미지가 보이지 않으면 `upload` 경로의 권한과 Nginx `alias`를 확인합니다.
-- advance gallery의 원본 확대가 실패하면 Web과 GOAPI가 같은 통합 버전인지 `/version`에서 확인합니다.
-  브라우저에는 실제 업로드 경로 대신 `/api/board/original`의 단기 스트림만 보여야 합니다.
-- 메일이 오지 않으면 관리자 이메일 설정 화면, Resend 도메인 상태, 발신 주소의 도메인을 차례로 확인합니다.
-- 공식 설치를 업데이트한 뒤 DB 오류가 나면 `/opt/nubo/current/nuboctl status`와 `doctor` 결과를 확인합니다.
-- 추가 도움이 필요하면 [nubohub.org](https://nubohub.org)에서 문의해 주세요.
+GOAPI 자체를 수정할 때는 형제 경로에 [GOAPI 저장소](https://github.com/sirini/goapi)를 clone합니다.
+공식 Ubuntu 바이너리는 반드시 GOAPI의 `./scripts/build-ubuntu22.sh`로 빌드합니다.
+
+## 설정과 운영
+
+- 전체 환경 변수와 설명: [env.sample](./env.sample)
+- API v1 계약: [docs/API_CONTRACT_V1.md](./docs/API_CONTRACT_V1.md)
+- 배포 구조와 Nginx 템플릿: [deploy/README.md](./deploy/README.md)
+- 기존 v1.2.0 이전 설치 전환: `npm run server:adopt -- --dry-run`, 이후 실제 실행
+- 메일: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_FROM_NAME` 설정 후 GOAPI 재시작
+- 가입 정책: `SIGNUP_MODE=verified_email|invite_only|disabled`
+
+`.env`와 `/etc/nubo/nubo.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 공개하지 마세요.
+Nginx/TLS는 NUBO 설치 도구가 생성·수정·reload하지 않습니다.
+
+문제가 생기면 먼저 아래 결과를 확인합니다.
+
+```bash
+nuboctl status
+nuboctl doctor
+curl -fsS http://127.0.0.1:3000/ready
+```
 
 ## 관련 프로젝트
 
-- [NUBO Market](https://nubohub.org/market/): 스킨 탐색·미리보기·안전한 설치를 위한 공식 카탈로그
+- [NUBO Market](https://nubohub.org/market/): 스킨 탐색·리뷰·배포 카탈로그
 - [GOAPI](https://github.com/sirini/goapi): NUBO 백엔드
+- [Sensta Android](https://github.com/sirini/sensta): API v1 Android 참고 구현
 - [TSBOARD](https://github.com/sirini/tsboard): NUBO가 계승한 이전 프로젝트
 
 ## 라이선스

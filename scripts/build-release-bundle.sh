@@ -59,12 +59,13 @@ cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
 cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
 install -m 0644 "${NUBO_PROJECT_ROOT}/INSTALL_GUIDE_FOR_AI.md" "${NUBO_STAGE_ROOT}/INSTALL_GUIDE_FOR_AI.md"
-"${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl"
+"${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl" "${NUBO_STAGE_ROOT}/nubo-market"
 "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" \
   "${NUBO_STAGE_ROOT}/bin/goapi" \
   "${NUBO_STAGE_ROOT}/lib" \
   "${NUBO_STAGE_ROOT}/licenses/sharp-libvips"
 NUBOCTL_VERSION="$("${NUBO_STAGE_ROOT}/nuboctl" version | awk '{print $2}')"
+NUBO_MARKET_VERSION="$("${NUBO_STAGE_ROOT}/nubo-market" version | awk '{print $2}')"
 
 NUBO_COMMIT="$(git -C "${NUBO_PROJECT_ROOT}" rev-parse HEAD)"
 GOAPI_COMMIT="$(git -C "${NUBO_GOAPI_ROOT}" rev-parse HEAD)"
@@ -102,8 +103,9 @@ writeFileSync(manifestPath, JSON.stringify({
     nubo: { version: "${NUBO_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
     goapi: { version: "${NUBO_GOAPI_VERSION}", commit: "${GOAPI_COMMIT}", dirty: ${GOAPI_DIRTY} },
     nuboctl: { version: "${NUBOCTL_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
+    market: { version: "${NUBO_MARKET_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
   },
-  entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi", nuboctl: "nuboctl" },
+  entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi", nuboctl: "nuboctl", market: "nubo-market" },
   configuration: { sample: "share/env.sample", externalPath: "/etc/nubo/nubo.env" },
   mutableData: { uploadDefault: "/var/lib/nubo/upload", uploadVariable: "NUBO_UPLOAD_DIR" },
   serviceTemplates: { systemd: "share/systemd", nginx: "share/nginx" },
@@ -146,6 +148,7 @@ docker run --rm \
   ! ldd bin/goapi | grep --quiet "not found"
   ldd bin/goapi | grep --quiet "lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3"
   ./nuboctl version
+  ./nubo-market version
 )
 node "${NUBO_PROJECT_ROOT}/scripts/prebuilt-smoke.mjs" "${NUBO_VERIFY_ROOT}/${NUBO_RELEASE_NAME}/web/.output"
 mv "${NUBO_TEMP_ROOT}/${NUBO_RELEASE_NAME}.tar.gz" "${NUBO_ARCHIVE_PATH}"

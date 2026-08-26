@@ -73,6 +73,9 @@ func preflightUpdate(options updateOptions, runner commandRunner, readiness func
 	if _, err := validateNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
 		return updatePreflight{}, err
 	}
+	if _, err := validateReleaseCommandLink(marketCommandLink(options.commandLink), options.currentLink, "nubo-market"); err != nil {
+		return updatePreflight{}, err
+	}
 	if !commandExists(runner, "systemctl") {
 		return updatePreflight{}, fmt.Errorf("서비스 전환에 필요한 systemctl을 찾을 수 없습니다")
 	}

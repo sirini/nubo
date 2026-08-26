@@ -31,6 +31,10 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 	if err != nil {
 		return err
 	}
+	marketLinkExisted, err := validateReleaseCommandLink(marketCommandLink(adopt.commandLink), adopt.currentLink, "nubo-market")
+	if err != nil {
+		return err
+	}
 	install := installOptions{
 		options: options{releaseDir: adopt.releaseDir, envFile: adopt.envFile, stateDir: adopt.stateDir, serviceUser: serviceUser},
 		domain:  domain, serviceGroup: serviceGroup, currentLink: adopt.currentLink, commandLink: adopt.commandLink,
@@ -77,7 +81,7 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 	if err := runInstall(install, runner, requireRoot); err != nil {
 		_, _ = runner.run("systemctl", "disable", "--now", "nubo.service")
 		_, _ = runner.run("systemctl", "disable", "--now", "nubo.target")
-		rollbackAdoptionFiles(adopt, commandLinkExisted)
+		rollbackAdoptionFiles(adopt, commandLinkExisted, marketLinkExisted)
 		_, _ = runner.run("systemctl", "daemon-reload")
 		removeStagedAdoptionNode(stagedNode, nodeCreated)
 		return fmt.Errorf("새 서비스 전환 실패: %w; 기존 프로세스는 자동으로 재시작하지 않았으므로 필요하면 이전 실행 방식으로 직접 시작하세요", err)
@@ -86,7 +90,7 @@ func runAdopt(adopt adoptOptions, runner commandRunner, requireRoot bool) error 
 		printWarning("기존 환경 참고본을 만들지 못했습니다: %v (원본 .env는 그대로입니다)", err)
 	}
 	printSuccess("기존 사이트를 NUBO 관리 체제로 전환했습니다.")
-	printItem("업데이트", "이제 nuboctl update를 사용하세요")
+	printItem("업데이트", "공식 릴리스를 준비한 뒤 nuboctl apply를 사용하세요")
 	printItem("보존 완료", "기존 소스, .env, 업로드, DB, Nginx")
 	printItem("환경 참고본", "%s", filepath.Join(adopt.stateDir, "adoption", "legacy.env"))
 	return nil
@@ -111,7 +115,7 @@ func validateAdoptDestination(options adoptOptions) error {
 	return nil
 }
 
-func rollbackAdoptionFiles(options adoptOptions, commandLinkExisted bool) {
+func rollbackAdoptionFiles(options adoptOptions, commandLinkExisted, marketLinkExisted bool) {
 	for _, path := range []string{
 		options.currentLink, options.envFile,
 		filepath.Join(options.systemdDir, "nubo.service"),
@@ -123,6 +127,9 @@ func rollbackAdoptionFiles(options adoptOptions, commandLinkExisted bool) {
 	}
 	if !commandLinkExisted {
 		_ = os.Remove(options.commandLink)
+	}
+	if !marketLinkExisted {
+		_ = os.Remove(marketCommandLink(options.commandLink))
 	}
 }
 

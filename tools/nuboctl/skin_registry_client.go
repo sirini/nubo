@@ -25,7 +25,7 @@ func fetchRegistryJSON(ctx context.Context, client *http.Client, endpoint string
 	if err != nil {
 		return err
 	}
-	request.Header.Set("User-Agent", "nuboctl/"+version)
+	request.Header.Set("User-Agent", "nubo-market/"+marketVersion)
 	response, err := client.Do(request)
 	if err != nil {
 		return fmt.Errorf("NUBO Market에 연결할 수 없습니다: %w", err)

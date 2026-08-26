@@ -30,33 +30,49 @@ type skinArchiveState struct {
 
 // 모든 파일을 격리 디렉터리에 푼 뒤 manifest까지 확인된 경우에만 최종 폴더로 전환한다.
 func extractSkinPackage(filename, skinsDir string, item registrySkin) error {
-	file, err := os.Open(filename)
+	staged, err := stageSkinPackage(filename, skinsDir, item)
 	if err != nil {
 		return err
+	}
+	defer os.RemoveAll(filepath.Dir(staged))
+	return os.Rename(staged, filepath.Join(skinsDir, item.Key))
+}
+
+// 패키지를 최종 경로와 같은 파일시스템에서 검증해 원자적 전환을 준비한다.
+func stageSkinPackage(filename, skinsDir string, item registrySkin) (string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return "", err
 	}
 	defer file.Close()
 	gz, err := gzip.NewReader(file)
 	if err != nil {
-		return fmt.Errorf("스킨 패키지가 gzip 형식이 아닙니다: %w", err)
+		return "", fmt.Errorf("스킨 패키지가 gzip 형식이 아닙니다: %w", err)
 	}
 	defer gz.Close()
 	temporary, err := os.MkdirTemp(skinsDir, ".nubo-skin-install-")
 	if err != nil {
-		return err
+		return "", err
 	}
-	defer os.RemoveAll(temporary)
+	succeeded := false
+	defer func() {
+		if !succeeded {
+			_ = os.RemoveAll(temporary)
+		}
+	}()
 	state := skinArchiveState{root: temporary, item: item}
 	if err := extractSkinEntries(tar.NewReader(gz), &state); err != nil {
-		return err
+		return "", err
 	}
 	if !state.manifestFound {
-		return fmt.Errorf("스킨 패키지에 skin.json이 없습니다")
+		return "", fmt.Errorf("스킨 패키지에 skin.json이 없습니다")
 	}
 	installed := filepath.Join(temporary, item.Key)
 	if err := writeSkinReceipt(installed, item, state.receiptFiles); err != nil {
-		return err
+		return "", err
 	}
-	return os.Rename(installed, filepath.Join(skinsDir, item.Key))
+	succeeded = true
+	return installed, nil
 }
 
 func extractSkinEntries(reader *tar.Reader, state *skinArchiveState) error {

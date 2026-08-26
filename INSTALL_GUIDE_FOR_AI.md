@@ -112,27 +112,26 @@ AI는 운영자의 명시적 승인 없이 `/etc/nginx` 파일이나 링크를 �
 
 ## update
 
-NUBO 소스 checkout을 관리 중이면 `git pull --ff-only && npm run server:update`가 새 릴리스의 다운로드,
-SHA-256 검증과 `/opt/nubo/releases` 배치를 수행한다. 직접 배치할 때는 새 릴리스를 현재 릴리스와 같은
-`/opt/nubo/releases` 아래에 먼저 압축 해제한다. DB와 업로드의 외부
-백업 완료를 사용자에게 확인받고 후보 릴리스의 `nuboctl`로 dry-run을 먼저 실행한다.
+소스 checkout에서 `git pull --ff-only && npm run server:stage`로 공식 릴리스를 다운로드·검증·배치한다.
+제한망에서는 archive와 `.sha256`을 반입해 `server:stage -- --archive ... --checksum ...`에 전달한다.
+staging은 실행 중인 서비스, DB와 `current` 링크를 바꾸지 않는다. 출력된 후보 경로의 `nuboctl`로
+dry-run을 먼저 실행한다.
 
 ```bash
-sudo /opt/nubo/releases/1.3.0/nuboctl update \
-  --release /opt/nubo/releases/1.3.0 \
-  --dry-run
+sudo /opt/nubo/releases/nubo-1.3.0-linux-amd64/nuboctl \
+  apply /opt/nubo/releases/nubo-1.3.0-linux-amd64 --dry-run
 ```
 
 dry-run과 백업이 모두 확인됐을 때만 자동화용 실행 플래그를 사용한다.
 
 ```bash
-sudo /opt/nubo/releases/1.3.0/nuboctl update \
-  --release /opt/nubo/releases/1.3.0 \
+sudo /opt/nubo/releases/nubo-1.3.0-linux-amd64/nuboctl \
+  apply /opt/nubo/releases/nubo-1.3.0-linux-amd64 \
   --non-interactive \
   --backup-confirmed
 ```
 
-`--backup-confirmed`를 추측으로 추가하지 않는다. update 실패 시 출력에 이전 릴리스 복구 성공 여부와
+`--backup-confirmed`를 추측으로 추가하지 않는다. apply 실패 시 출력에 이전 릴리스 복구 성공 여부와
 DB migration이 유지된다는 안내가 포함되므로, 추가 전환 전에 그대로 사용자에게 보고한다.
 
 DB 설치가 실패해도 기존 레코드를 덮어쓰지 않으므로 원인을 고친 뒤 같은 명령을 다시 실행한다.

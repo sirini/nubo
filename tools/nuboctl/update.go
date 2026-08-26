@@ -83,6 +83,9 @@ func runUpdate(options updateOptions, runner commandRunner, readiness func(strin
 	if err := ensureNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
 		return recoverPreviousRelease(options, preflight, environment, runner, readiness, fmt.Errorf("nuboctl 명령 등록 실패: %w", err))
 	}
+	if err := ensureReleaseCommandLink(marketCommandLink(options.commandLink), options.currentLink, "nubo-market"); err != nil {
+		return recoverPreviousRelease(options, preflight, environment, runner, readiness, fmt.Errorf("nubo-market 명령 등록 실패: %w", err))
+	}
 	if err := restartNuboServices(runner); err != nil {
 		return recoverPreviousRelease(options, preflight, environment, runner, readiness, err)
 	}

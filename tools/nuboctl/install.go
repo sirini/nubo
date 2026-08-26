@@ -26,6 +26,10 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	if err != nil {
 		return err
 	}
+	marketLink := marketCommandLink(options.commandLink)
+	if _, err := validateReleaseCommandLink(marketLink, options.currentLink, "nubo-market"); err != nil {
+		return err
+	}
 
 	nodeBinary, err := resolveNodeBinary(options.nodeBinary, runner)
 	if err != nil {
@@ -125,6 +129,9 @@ func runInstall(options installOptions, runner commandRunner, requireRoot bool) 
 	if err := ensureNuboctlCommandLink(options.commandLink, options.currentLink); err != nil {
 		return err
 	}
+	if err := ensureReleaseCommandLink(marketLink, options.currentLink, "nubo-market"); err != nil {
+		return err
+	}
 	var environmentTransition environmentTransition
 	environmentUpdated := false
 	if environmentExists {
@@ -172,6 +179,7 @@ func printInstallPlan(options installOptions, files []installFile, environmentEx
 	} else {
 		printItem("관리 명령", "%s → %s/nuboctl", options.commandLink, options.currentLink)
 	}
+	printItem("Market 명령", "%s → %s/nubo-market", marketCommandLink(options.commandLink), options.currentLink)
 	printItem("Node.js", "%s", nodeBinary)
 	printItem("데이터", "상태 %s · 업로드 %s", options.stateDir, options.uploadDir)
 	printIdentityPlan(options)

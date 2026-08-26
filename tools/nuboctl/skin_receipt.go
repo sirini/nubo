@@ -51,7 +51,7 @@ func readSkinReceipt(directory, key string) (skinReceipt, error) {
 	filename := filepath.Join(directory, skinReceiptName)
 	info, err := os.Lstat(filename)
 	if err != nil || !info.Mode().IsRegular() {
-		return skinReceipt{}, fmt.Errorf("Market 설치 영수증이 없어 자동 삭제할 수 없습니다: %s", filename)
+		return skinReceipt{}, fmt.Errorf("Market 설치 영수증이 없어 자동 작업할 수 없습니다: %s", filename)
 	}
 	contents, err := os.ReadFile(filename)
 	if err != nil {
