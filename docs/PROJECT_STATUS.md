@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- NUBO/GOAPI v1.3.0의 Market·운영 도구 경계 구현과 검증을 완료했다.
-- 제품 소유자 QA 뒤 공식 태그와 Linux amd64 asset 게시 여부를 결정한다.
+- NUBO/GOAPI v1.3.0의 Market·운영 도구 경계와 공식 릴리스 기준을 확정했다.
+- 공개 asset의 초기 설치·업데이트 결과와 운영 피드백을 관찰한다.
 
 ## Product boundary
 
@@ -43,6 +43,7 @@
 
 ## Recent completion
 
+- 제품 소유자가 v1.3.0 구현 결과를 검토하고 공식 태그와 Linux amd64 asset 게시를 승인했다.
 - NUBO/GOAPI v1.2.30을 게시하고 sensta.me의 site release에서 readiness와 nuboctl status를 확인했다.
 - 기본 board/blog/gallery/trade와 advance blog/gallery를 독립 스킨으로 정리하고 Market에 공개했다.
 - 게시판 편집기를 플랫폼 공용 `NuboTiptapEditor`로 통합했다.
@@ -62,6 +63,6 @@
 
 ## Next action
 
-1. 제품 소유자가 Source Mode의 Market install·수정·diff·fork·build 흐름을 QA한다.
-2. QA 승인 뒤 깨끗한 commit에서 공식 태그와 Linux amd64 asset을 빌드·게시한다.
+1. 공개 v1.3.0 asset의 checksum과 다운로드 가능 여부를 게시 직후 다시 확인한다.
+2. Source Mode의 Market install·수정·diff·fork·build 흐름을 실제 사이트에서 확인한다.
 3. sensta.me의 사이트 스킨과 `package-lock.json` 변경은 운영 source update 전에 별도로 정리한다.
