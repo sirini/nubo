@@ -137,9 +137,7 @@
             >
             <div class="flex gap-2">
               <Button v-if="isWriter || isAdmin" variant="outline" as-child
-                ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`"
-                  >수정</NuxtLink
-                ></Button
+                ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`">수정</NuxtLink></Button
               >
               <Button v-if="isLoggedIn" as-child
                 ><NuxtLink :to="`/board/${config.id}/write`">사진 올리기</NuxtLink></Button
@@ -393,8 +391,7 @@ const handleOriginalImageLoad = async () => {
 }
 const startPan = (event: PointerEvent) => {
   const viewport = viewerViewport.value
-  if (fitToScreen.value || event.pointerType !== "mouse" || event.button !== 0 || !viewport)
-    return
+  if (fitToScreen.value || event.pointerType !== "mouse" || event.button !== 0 || !viewport) return
   panStart = {
     x: event.clientX,
     y: event.clientY,
@@ -483,7 +480,10 @@ watch(viewerOpen, (open) => {
     document.body.style.overflow = "hidden"
   } else document.body.style.overflow = previousBodyOverflow
 })
-onMounted(() => window.addEventListener("keydown", onKeydown))
+onMounted(() => {
+  imgIdx.value = 0
+  window.addEventListener("keydown", onKeydown)
+})
 onBeforeUnmount(() => {
   window.removeEventListener("keydown", onKeydown)
   document.body.style.overflow = previousBodyOverflow
