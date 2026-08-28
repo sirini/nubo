@@ -42,6 +42,8 @@
 
 ## Recent completion
 
+- sensta.me `news`에서 현재 `status=-1`인 게시글 7,124건의 첨부 원본·썸네일 파일을
+  DB 레코드는 유지한 채 물리 정리했다. 실제 파일 16,653개를 제거해 609,669,120바이트를 회수했다.
 - TSBOARD v1.3.0의 Reddit형 정보 밀도를 NUBO에 맞게 발전시킨 독립 `nubo-advance-home` 0.1.0을
   추가했다. 통합 피드·게시판 레일·좋아요·검색·추가 로딩과 전체화면 미디어 감상을 제공한다.
 - sensta.me `news`의 구형 자동 번역 코호트 6,368건을 복구 가능한 백업 뒤 `status=-1`로 소프트
@@ -67,6 +69,11 @@
 
 ## Verification
 
+- 정리 후보 16,695경로에서 비대상 DB 레코드와 공유되는 경로·업로드 루트 이탈·심볼릭 링크·관계
+  불일치가 모두 0건임을 선검증했다. 기존 누락 42경로 외 실제 파일 16,653개를 오류 없이 삭제했고,
+  후보 잔존은 0건이며 활성 `news` 첨부 45경로는 모두 보존됐다. 감사 목록은
+  `/var/backups/sensta-news-status-minus1-attachments-20260829-025531.tsv.gz`에 두었고 SHA-256은
+  `952f99e34f3fcf442cde26ca6cd3e3fa0abaac2327fc921be37fa428f698d7d6`이다.
 - `nubo-advance-home` manifest 등록·독립성·전체화면 키보드 UX 회귀를 포함한 Vitest 64건,
   typecheck, lint 오류 0건(기존 경고 50)과 1536 MiB production build가 통과했다.
 - GOAPI에서 `status=-1`이 목록·검색·홈·직접 보기에서 제외됨을 코드와 운영 API로 재확인했다.
