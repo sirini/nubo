@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- 최신 NUBO와 GOAPI commit을 고정한 v1.3.0 Linux amd64 asset을 GitHub Actions로 검증·게시한다.
-- 게시 후 sensta.me의 `nuboctl update`와 이미지 설명 백필·검색을 운영 검증한다.
+- 공개 v1.3.0 asset의 sensta.me `nuboctl update` 결과와 초기 운영 피드백을 관찰한다.
+- GPT-5.6 Luna 이미지 설명 백필과 설명 표시·검색을 업무 사이트에서 운영 검증한다.
 
 ## Product boundary
 
@@ -43,6 +43,7 @@
 
 ## Recent completion
 
+- v1.3.0을 GitHub Actions로 빌드·검증해 Linux amd64 archive와 SHA-256을 공개 Release에 게시했다.
 - 설명이 없는 기존 첨부 이미지를 집계하고 Luna 예상 비용·개인정보·DB 쓰기를 안내한 뒤 `진행` 확인 후
   한 건씩 저장하는 재실행 안전 Python 백필 도구를 추가하고 다음 공식 릴리스 구성에 포함했다.
 - GPT-5.6 Luna의 한국어 평문 이미지 설명과 검색어를 500자 이내로 저장하고, advance/basic gallery의
@@ -74,6 +75,9 @@
 - GOAPI v1.3.0 commit `9617087`은 이미지 설명 저장·검색 회귀 테스트를 포함한 전체
   `go test ./...`와 `go vet ./...`를 통과해 `main`에 푸시했다.
 - GitHub self-hosted release runner는 별도 Actions 검증에서 checkout·용량·Docker 검사를 통과했다.
+- v1.3.0 Actions는 통합 빌드와 Ubuntu 22.04·24.04 fresh-install, Release 게시를 통과했다. 공개 archive를
+  다시 내려받아 SHA-256과 manifest의 NUBO `911dec7`·GOAPI `9617087`, 이미지 설명 백필 도구를 확인했다.
+- `nuboctl update`가 사용하는 릴리스 descriptor·checksum 경로로 공개 v1.3.0 archive를 정상 해석했다.
 - nuboctl Market update·diff·fork, 독립 실행명, apply와 설치 링크 변경은 전체 Go test와 vet를 통과했다.
 - NUBO 전체 Vitest 59건, lint 오류 0건(기존 경고 50), typecheck와 1536 MiB production build가 통과했다.
 - API contract v1, prebuilt smoke와 `server:stage`·Source Mode Market 링크 단위 계약이 통과했다.
@@ -82,7 +86,7 @@
 
 ## Next action
 
-1. v1.3.0 태그의 GitHub Actions 전체 검증과 Release asset 게시를 완료한다.
-2. sensta.me에서 `nuboctl update` 후 백필 도구를 `--scan-only`로 실행해 대상·예상 비용을 확인한다.
+1. sensta.me에서 `nuboctl update --dry-run`과 실제 update를 차례로 실행한다.
+2. 백필 도구를 `--scan-only`로 실행해 대상·예상 비용을 확인한다.
 3. 외부 DB 백업 뒤 `--limit 10`으로 처리하고 설명 표시와 `해변`, `노을` 검색을 확인한다.
 4. 운영 QA 뒤 advance gallery 0.2.2 패키지를 Market에 제출·승인한다.
