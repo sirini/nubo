@@ -1,16 +1,19 @@
 import type { Search } from "~/types/board"
-import type { HomePostItem, HomePostResult } from "~/types/home"
+import type { HomePostItem, HomePostResult, HomeSidebarGroupResult } from "~/types/home"
 
 // [홈] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboHomeContext {
   isLoggedIn: ComputedRef<boolean>
   isLanding: WritableComputedRef<boolean>
   isLastPost: ComputedRef<boolean>
+  menus: ComputedRef<HomeSidebarGroupResult[]>
   posts: ComputedRef<HomePostItem[]>
   option: ComputedRef<Search>
   optionLabels: ComputedRef<Record<number, string>>
   keyword: ComputedRef<string>
   loadMorePosts: () => Promise<void>
+  reloadPosts: () => Promise<void>
+  toggleLike: (post: HomePostItem) => Promise<void>
   getPostsById: (id: string, limit: number) => Promise<HomePostResult>
 }
 

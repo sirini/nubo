@@ -28,6 +28,17 @@ describe("built-in skin registry", () => {
     )
   })
 
+  it("registers the advance home as an independent home skin", () => {
+    const { installed } = useSkins()
+
+    expect(installed.value).toContainEqual(
+      expect.objectContaining({ type: "home", key: "nubo-advance-home" }),
+    )
+    expect(resolveSkinComponentPath("nubo-advance-home", "Home")).toMatch(
+      /\/skins\/nubo-advance-home\/Home\.vue$/,
+    )
+  })
+
   it("keeps legacy basic-board selections on their matching blog and gallery UI", () => {
     expect(resolveSkinComponentPath("nubo-basic-board", "BlogList", "DefaultList")).toMatch(
       /\/skins\/nubo-basic-blog\/BlogList\.vue$/,

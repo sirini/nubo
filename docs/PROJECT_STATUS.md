@@ -2,8 +2,7 @@
 
 ## Active goal
 
-- 공개 v1.3.0 asset의 sensta.me `nuboctl update` 결과와 초기 운영 피드백을 관찰한다.
-- GPT-5.6 Luna 이미지 설명 백필과 설명 표시·검색을 업무 사이트에서 운영 검증한다.
+- `nubo-advance-home` 구현과 운영 news 정리를 완료했으며 제품 소유자의 선택 적용·시각 QA를 기다린다.
 
 ## Product boundary
 
@@ -43,6 +42,10 @@
 
 ## Recent completion
 
+- TSBOARD v1.3.0의 Reddit형 정보 밀도를 NUBO에 맞게 발전시킨 독립 `nubo-advance-home` 0.1.0을
+  추가했다. 통합 피드·게시판 레일·좋아요·검색·추가 로딩과 전체화면 미디어 감상을 제공한다.
+- sensta.me `news`의 구형 자동 번역 코호트 6,368건을 복구 가능한 백업 뒤 `status=-1`로 소프트
+  삭제하고, 현재 품질 기준으로 작성한 Newsta 글 16건은 유지했다.
 - v1.3.0을 GitHub Actions로 빌드·검증해 Linux amd64 archive와 SHA-256을 공개 Release에 게시했다.
 - 설명이 없는 기존 첨부 이미지를 집계하고 Luna 예상 비용·개인정보·DB 쓰기를 안내한 뒤 `진행` 확인 후
   한 건씩 저장하는 재실행 안전 Python 백필 도구를 추가하고 다음 공식 릴리스 구성에 포함했다.
@@ -64,6 +67,12 @@
 
 ## Verification
 
+- `nubo-advance-home` manifest 등록·독립성·전체화면 키보드 UX 회귀를 포함한 Vitest 64건,
+  typecheck, lint 오류 0건(기존 경고 50)과 1536 MiB production build가 통과했다.
+- GOAPI에서 `status=-1`이 목록·검색·홈·직접 보기에서 제외됨을 코드와 운영 API로 재확인했다.
+  정리 뒤 `news` 공개 목록은 보존한 16건만 반환하며 구형 글 직접 조회와 중국어 검색도 노출되지 않는다.
+- 운영 백업 `/var/backups/sensta-news-legacy-soft-delete-20260829-021444.sql`은 6,368건을 포함하며
+  SHA-256은 `f90cd3a058162eb94ae9ad5002d96e343de46181a5932992caeb27453f7ca467`이다.
 - 백필 도구 Python 단위 테스트 7건, release shell 문법·설치 smoke와 실제 로컬 DB `--scan-only`가
   통과했으며 스캔 중 API 호출과 DB 변경은 없었다. NUBO Vitest 61건, lint 오류 0건과 typecheck도 통과했다.
 - 실제 `.env` 설정으로 GPT-5.6 Luna를 호출해 144자 완결 설명과 `해안, 해변, 폭포, 산, 바다` 등
@@ -86,7 +95,6 @@
 
 ## Next action
 
-1. sensta.me에서 `nuboctl update --dry-run`과 실제 update를 차례로 실행한다.
-2. 백필 도구를 `--scan-only`로 실행해 대상·예상 비용을 확인한다.
-3. 외부 DB 백업 뒤 `--limit 10`으로 처리하고 설명 표시와 `해변`, `노을` 검색을 확인한다.
-4. 운영 QA 뒤 advance gallery 0.2.2 패키지를 Market에 제출·승인한다.
+1. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
+   전체화면 미디어, 로그인·좋아요 동작을 시각 QA한다.
+2. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.

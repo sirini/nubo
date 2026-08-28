@@ -1,0 +1,20 @@
+{
+  "type": "home",
+  "key": "nubo-advance-home",
+  "name": "어드밴스 홈 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "Reddit형 정보 밀도와 NUBO의 미디어 감상 경험을 결합한 반응형 홈 피드 스킨입니다",
+  "preview": "preview.png",
+  "features": [
+    "Reddit형 통합 피드",
+    "전체화면 미디어 감상",
+    "화면 맞춤과 1:1",
+    "키보드·모바일 탐색",
+    "게시판 커뮤니티 레일",
+    "홈 좋아요·검색·더 보기",
+    "웜톤 라이트·다크"
+  ],
+  "min_nubo_version": "1.3.0"
+}
