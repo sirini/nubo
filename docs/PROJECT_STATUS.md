@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- nubo-advance-gallery 0.2.1과 GOAPI 태그 검색 수정본을 업무 사이트에서 운영 검증한다.
+- GPT-5.6 Luna 이미지 설명과 nubo-advance-gallery 0.2.2의 설명 표시·검색을 업무 사이트에서 운영 검증한다.
 - 공개 v1.3.0 asset의 초기 설치·업데이트 결과와 운영 피드백을 계속 관찰한다.
 
 ## Product boundary
@@ -35,6 +35,7 @@
 
 ## Open findings
 
+- 이미지 설명은 기능 활성화 뒤 새로 첨부한 이미지에만 생성되며 기존 첨부를 소급 처리하는 도구는 아직 없다.
 - sensta.me 소스 checkout의 의도된 사이트 스킨 변경과 서버 npm 실행으로 보이는 `package-lock.json`
   변경을 다음 source update 전에 구분·정리해야 한다.
 - Market 제작자 신원 확인, token 전달·복구와 운영자 SSO는 현재 수동 절차다.
@@ -43,6 +44,10 @@
 
 ## Recent completion
 
+- GPT-5.6 Luna의 한국어 평문 이미지 설명과 검색어를 500자 이내로 저장하고, advance/basic gallery의
+  현재 사진에 AI 설명을 표시하며 이미지 설명 검색으로 연결했다.
+- 이미지 설명 개수 조회 SQL의 게시물 상관관계를 수정해 `해변`, `노을` 같은 설명 단어가 목록과
+  전체 개수에 일관되게 반영되도록 했다.
 - 존재하지 않는 태그도 SQL 문법 오류 없이 빈 결과를 반환하고 `#태그` 입력도 검색하도록 GOAPI를
   수정했다.
 - advance gallery 0.2.1은 큰 화면에서 사진을 유지한 채 우측 상세 패널 안에서 본문·해시태그·댓글을
@@ -57,9 +62,12 @@
 
 ## Verification
 
-- GOAPI 태그 검색 회귀 테스트를 포함한 전체 `go test ./...`와 `go vet ./...`가 통과했다.
-- advance gallery 변경은 Vitest 60건, lint 오류 0건(기존 경고 50), typecheck와 production build를
-  통과했다.
+- 실제 `.env` 설정으로 GPT-5.6 Luna를 호출해 144자 완결 설명과 `해안, 해변, 폭포, 산, 바다` 등
+  검색어가 생성되는 것을 확인했다(키는 출력하지 않음).
+- 이미지 설명 정규화·500자 제한·`해변` 목록 검색·`노을` 개수 검색 회귀 테스트를 포함한 GOAPI
+  전체 `go test ./...`와 `go vet ./...`가 통과했다.
+- AI 설명 표시·검색 계약을 포함한 NUBO Vitest 61건, lint 오류 0건(기존 경고 50), typecheck와
+  production build가 통과했다.
 - GOAPI v1.3.0 commit `df9a973`은 전체 `go test ./...`와 `go vet ./...`를 통과해 `main`에 푸시했다.
 - nuboctl Market update·diff·fork, 독립 실행명, apply와 설치 링크 변경은 전체 Go test와 vet를 통과했다.
 - NUBO 전체 Vitest 59건, lint 오류 0건(기존 경고 50), typecheck와 1536 MiB production build가 통과했다.
@@ -70,7 +78,7 @@
 
 ## Next action
 
-1. 업무 사이트에 GOAPI 수정본과 advance gallery 0.2.1을 반영해 태그 검색, 큰 화면 우측 스크롤과
-   댓글 작성 흐름을 확인한다.
-2. 운영 QA 뒤 advance gallery 0.2.1 패키지를 Market에 제출·승인한다.
-3. sensta.me의 사이트 스킨과 `package-lock.json` 변경은 운영 source update 전에 별도로 정리한다.
+1. 업무 사이트에 GOAPI 수정본과 advance gallery 0.2.2를 반영하고 해변 노을 사진을 새로 첨부해
+   우측 설명 표시와 `해변`, `노을` 검색 결과·개수를 확인한다.
+2. 기존 첨부 이미지의 설명을 소급 생성하는 별도 운영 도구가 필요한지 결정한다.
+3. 운영 QA 뒤 advance gallery 0.2.2 패키지를 Market에 제출·승인한다.

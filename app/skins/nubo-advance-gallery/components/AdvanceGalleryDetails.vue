@@ -62,6 +62,8 @@
         <span>ISO {{ currentImage.exif.iso || 0 }}</span>
       </div>
 
+      <BoardImageDescription :description="currentImage?.description ?? ''" />
+
       <div class="nubo text-sm leading-7 text-foreground/90">
         <!-- eslint-disable-next-line vue/no-v-html -- 게시글 HTML은 provider에서 정제된 값을 사용합니다. -->
         <div v-html="sanitize(view.post.content)"></div>
@@ -109,6 +111,7 @@
 
 <script setup lang="ts">
 import { HashIcon, HeartIcon, ListIcon, Maximize2Icon } from "lucide-vue-next"
+import BoardImageDescription from "~/components/board/view/BoardImageDescription.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceGalleryComments from "./AdvanceGalleryComments.vue"
 

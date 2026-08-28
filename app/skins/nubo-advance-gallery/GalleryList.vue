@@ -81,8 +81,9 @@
             <option :value="SEARCH.TITLE">제목</option>
             <option :value="SEARCH.WRITER">작성자</option>
             <option :value="SEARCH.TAG">태그</option>
+            <option :value="SEARCH.IMAGEDESC">이미지</option>
           </select>
-          <Input v-model="keyword" aria-label="갤러리 검색어" placeholder="사진과 이야기를 검색하세요" />
+          <Input v-model="keyword" type="search" aria-label="갤러리 검색어" placeholder="제목·작성자·이미지 설명 검색" />
           <Button type="submit" size="icon" aria-label="검색"><SearchIcon class="size-4" /></Button>
         </form>
       </footer>

@@ -13,6 +13,7 @@
               <ViewMainContent />
             </div>
             <GalleryExif v-if="view.images[imgIdx]?.exif.make.length" />
+            <BoardImageDescription :description="view.images[imgIdx]?.description ?? ''" />
             <ViewWriterProfile class="rounded-2xl border border-border/70 bg-card/55 p-4" />
 
             <section class="rounded-2xl border border-border/70 bg-card/55 p-4">
@@ -38,6 +39,7 @@
 
 <script setup lang="ts">
 import { useNuboViewContext } from "~/providers/contexts/view"
+import BoardImageDescription from "~/components/board/view/BoardImageDescription.vue"
 import GalleryExif from "./components/view/GalleryExif.vue"
 import GalleryImageCarousel from "./components/view/GalleryImageCarousel.vue"
 import ViewCommentList from "./components/view/ViewCommentList.vue"

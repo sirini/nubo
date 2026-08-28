@@ -12,6 +12,13 @@ const galleryDetailsSource = () =>
     ),
     "utf8",
   )
+const galleryListSource = () =>
+  readFileSync(resolve(process.cwd(), "app/skins/nubo-advance-gallery/GalleryList.vue"), "utf8")
+const imageDescriptionSource = () =>
+  readFileSync(
+    resolve(process.cwd(), "app/components/board/view/BoardImageDescription.vue"),
+    "utf8",
+  )
 
 describe("advance skin UX contracts", () => {
   it("uses the actual edit route in both view skins", () => {
@@ -56,5 +63,17 @@ describe("advance skin UX contracts", () => {
     expect(details).toContain("<AdvanceGalleryComments />")
     expect(details).toContain('<Button variant="outline" class="gap-2" as-child>')
     expect(details).toContain("목록 보기")
+  })
+
+  it("shows and searches the current image description", () => {
+    const details = galleryDetailsSource()
+    const list = galleryListSource()
+    const description = imageDescriptionSource()
+
+    expect(details).toContain("<BoardImageDescription")
+    expect(details).toContain("currentImage?.description")
+    expect(description).toContain("AI 이미지 설명")
+    expect(list).toContain('SEARCH.IMAGEDESC')
+    expect(list).toContain("이미지 설명 검색")
   })
 })

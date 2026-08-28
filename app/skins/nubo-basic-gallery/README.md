@@ -11,6 +11,7 @@
 - `GalleryView.vue`: 큰 이미지와 오른쪽 정보 패널 배치
 - `components/view/GalleryImageCarousel.vue`: 이미지 선택·이동
 - `components/view/GalleryExif.vue`: 현재 이미지의 촬영 정보
+- 공용 `BoardImageDescription.vue`: 현재 이미지의 AI 생성 설명
 - `GalleryWrite.vue`, `GalleryModify.vue`: 갤러리가 직접 소유하는 작성·수정 엔트리
 - `components/view`: 댓글·좋아요·첨부를 포함한 갤러리 글보기 구성요소
 - `components/write`: 태그·첨부·글 옵션 등 에디터 주변 구성요소

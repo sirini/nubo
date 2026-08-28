@@ -2,7 +2,7 @@
   "type": "board",
   "key": "nubo-advance-gallery",
   "name": "어드밴스 갤러리 스킨",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "sirini",
   "website": "https://nubohub.org",
   "description": "정갈한 사진 목록과 권한 확인형 원본 전체화면 감상을 제공하는 NUBO 갤러리 스킨입니다",
@@ -12,6 +12,7 @@
     "화면 맞춤과 1:1",
     "키보드·모바일 탐색",
     "고정형 상세·댓글 패널",
+    "AI 이미지 설명·검색",
     "해시태그 검색 연결",
     "댓글 작성·관리",
     "웜톤 라이트·다크"
