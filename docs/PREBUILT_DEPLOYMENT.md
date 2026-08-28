@@ -86,6 +86,24 @@ source installs and existing upload symlinks keep working. A prebuilt install no
 `/var/www/example.org/upload`. Stored database and public HTTP paths remain `/upload/...` regardless
 of the filesystem location.
 
+## Image-description backfill
+
+The integrated release includes `share/tools/backfill_image_descriptions.py` for existing attachment images
+that have no stored description. It uses Python's standard library plus the MySQL/MariaDB CLI, reads the same
+external environment file as GOAPI, and never prints database or OpenAI credentials. Run its read-only scan
+first as the service account:
+
+```bash
+sudo -u nubo python3 /opt/nubo/current/share/tools/backfill_image_descriptions.py \
+  --env-file /etc/nubo/nubo.env --scan-only
+```
+
+After an external database backup and operator review, remove `--scan-only`. The tool prints the candidate and
+processable counts, a dated GPT-5.6 Luna token-cost estimate, the upload root, and privacy/write warnings. It
+requires the operator to type `진행` in an interactive terminal before any OpenAI request or database mutation.
+Each successful description is committed separately, so interruption and rerun preserve completed work and skip
+rows that already have a non-empty description. `--limit` can constrain the first batch.
+
 ## Upload ownership
 
 The replaceable `.output/` artifact never owns user uploads. GOAPI writes them to persistent storage,

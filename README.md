@@ -237,6 +237,29 @@ GOAPI 자체를 수정할 때는 형제 경로에 [GOAPI 저장소](https://gith
 `.env`와 `/etc/nubo/nubo.env`에는 DB 비밀번호와 API 키가 들어갑니다. Git에 커밋하거나 공개하지 마세요.
 Nginx/TLS는 NUBO 설치 도구가 생성·수정·reload하지 않습니다.
 
+### 기존 첨부 이미지 설명 소급 적용
+
+`OPENAI_IMAGE_DESCRIPTION_ENABLED=true`와 `OPENAI_API_KEY`를 설정한 사이트는 설명이 없는 기존 첨부
+이미지를 GPT-5.6 Luna로 한 번씩 처리할 수 있습니다. 먼저 읽기 전용 스캔으로 대상 개수와 비용을 확인합니다.
+
+```bash
+python3 scripts/backfill_image_descriptions.py --env-file .env --scan-only
+```
+
+공식 prebuilt 설치에서는 릴리스에 포함된 같은 도구를 서비스 계정으로 실행합니다.
+
+```bash
+sudo -u nubo python3 /opt/nubo/current/share/tools/backfill_image_descriptions.py \
+  --env-file /etc/nubo/nubo.env --scan-only
+```
+
+출력된 DB·업로드 경로와 대상 수를 확인하고 외부 백업을 마친 뒤 `--scan-only`를 제거합니다. 스크립트는
+2026-08-28 공식 Luna 단가(입력 `$0.20`/100만 토큰, 출력 `$1.20`/100만 토큰)와 보수적인 토큰 상한으로
+비용을 안내하고, 운영자가 `진행`을 직접 입력한 뒤에만 이미지 전송과 DB 저장을 시작합니다. `--limit 10`처럼
+작은 묶음으로 먼저 시험할 수 있으며, 중단·재실행 시 이미 설명이 있는 이미지는 건너뜁니다. Python 3와
+`mysql` 또는 `mariadb` CLI가 필요하고, 실제 가격이 바뀌면 안내된 공식 가격 링크를 확인해
+`--input-price`, `--output-price`로 조정합니다.
+
 문제가 생기면 먼저 아래 결과를 확인합니다.
 
 ```bash

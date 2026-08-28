@@ -29,6 +29,7 @@ for NUBO_REQUIRED_FILE in \
   "${NUBO_PROJECT_ROOT}/deploy/README.md" \
   "${NUBO_PROJECT_ROOT}/env.sample" \
   "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" \
+  "${NUBO_PROJECT_ROOT}/scripts/backfill_image_descriptions.py" \
   "${NUBO_PROJECT_ROOT}/scripts/verify-release-contract.mjs" \
   "${NUBO_API_CONTRACT_SOURCE}" \
   "${NUBO_RELEASE_SOURCES}" \
@@ -54,11 +55,12 @@ if [[ -z "${NUBO_VERSION}" || -z "${NUBO_GOAPI_VERSION}" ]]; then
   exit 1
 fi
 
-mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/lib" "${NUBO_STAGE_ROOT}/licenses" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/share"
+mkdir -p "${NUBO_STAGE_ROOT}/bin" "${NUBO_STAGE_ROOT}/lib" "${NUBO_STAGE_ROOT}/licenses" "${NUBO_STAGE_ROOT}/web" "${NUBO_STAGE_ROOT}/share/tools"
 cp -a "${NUBO_PROJECT_ROOT}/.output" "${NUBO_STAGE_ROOT}/web/.output"
 cp -a "${NUBO_PROJECT_ROOT}/deploy/." "${NUBO_STAGE_ROOT}/share/"
 install -m 0644 "${NUBO_PROJECT_ROOT}/env.sample" "${NUBO_STAGE_ROOT}/share/env.sample"
 install -m 0644 "${NUBO_PROJECT_ROOT}/INSTALL_GUIDE_FOR_AI.md" "${NUBO_STAGE_ROOT}/INSTALL_GUIDE_FOR_AI.md"
+install -m 0755 "${NUBO_PROJECT_ROOT}/scripts/backfill_image_descriptions.py" "${NUBO_STAGE_ROOT}/share/tools/backfill_image_descriptions.py"
 "${NUBO_PROJECT_ROOT}/scripts/build-nuboctl-linux.sh" "${NUBO_STAGE_ROOT}/nuboctl" "${NUBO_STAGE_ROOT}/nubo-market"
 "${NUBO_GOAPI_ROOT}/scripts/build-ubuntu22.sh" \
   "${NUBO_STAGE_ROOT}/bin/goapi" \
@@ -106,6 +108,7 @@ writeFileSync(manifestPath, JSON.stringify({
     market: { version: "${NUBO_MARKET_VERSION}", commit: "${NUBO_COMMIT}", dirty: ${NUBO_DIRTY} },
   },
   entrypoints: { web: "web/.output/server/index.mjs", goapi: "bin/goapi", nuboctl: "nuboctl", market: "nubo-market" },
+  operations: { imageDescriptionBackfill: "share/tools/backfill_image_descriptions.py" },
   configuration: { sample: "share/env.sample", externalPath: "/etc/nubo/nubo.env" },
   mutableData: { uploadDefault: "/var/lib/nubo/upload", uploadVariable: "NUBO_UPLOAD_DIR" },
   serviceTemplates: { systemd: "share/systemd", nginx: "share/nginx" },
@@ -144,6 +147,7 @@ docker run --rm \
   test -f licenses/sharp-libvips/compat-build.json
   test -f licenses/sharp-libvips/versions.json
   test -f share/install-input.sample
+  test -x share/tools/backfill_image_descriptions.py
   ldd bin/goapi
   ! ldd bin/goapi | grep --quiet "not found"
   ldd bin/goapi | grep --quiet "lib/glibc-hwcaps/x86-64-v2/libvips-cpp.so.8.18.3"

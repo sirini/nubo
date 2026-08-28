@@ -24,6 +24,10 @@ goapi-mac*
 logs
 *.log
 
+# Python operational tools
+__pycache__/
+*.py[cod]
+
 # Misc
 .DS_Store
 .fleet

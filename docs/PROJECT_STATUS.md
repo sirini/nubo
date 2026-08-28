@@ -2,7 +2,7 @@
 
 ## Active goal
 
-- GPT-5.6 Luna 이미지 설명과 nubo-advance-gallery 0.2.2의 설명 표시·검색을 업무 사이트에서 운영 검증한다.
+- GPT-5.6 Luna 이미지 설명 백필과 nubo-advance-gallery 0.2.2의 설명 표시·검색을 업무 사이트에서 운영 검증한다.
 - 공개 v1.3.0 asset의 초기 설치·업데이트 결과와 운영 피드백을 계속 관찰한다.
 
 ## Product boundary
@@ -35,7 +35,6 @@
 
 ## Open findings
 
-- 이미지 설명은 기능 활성화 뒤 새로 첨부한 이미지에만 생성되며 기존 첨부를 소급 처리하는 도구는 아직 없다.
 - sensta.me 소스 checkout의 의도된 사이트 스킨 변경과 서버 npm 실행으로 보이는 `package-lock.json`
   변경을 다음 source update 전에 구분·정리해야 한다.
 - Market 제작자 신원 확인, token 전달·복구와 운영자 SSO는 현재 수동 절차다.
@@ -44,6 +43,8 @@
 
 ## Recent completion
 
+- 설명이 없는 기존 첨부 이미지를 집계하고 Luna 예상 비용·개인정보·DB 쓰기를 안내한 뒤 `진행` 확인 후
+  한 건씩 저장하는 재실행 안전 Python 백필 도구를 추가하고 다음 공식 릴리스 구성에 포함했다.
 - GPT-5.6 Luna의 한국어 평문 이미지 설명과 검색어를 500자 이내로 저장하고, advance/basic gallery의
   현재 사진에 AI 설명을 표시하며 이미지 설명 검색으로 연결했다.
 - 이미지 설명 개수 조회 SQL의 게시물 상관관계를 수정해 `해변`, `노을` 같은 설명 단어가 목록과
@@ -62,6 +63,8 @@
 
 ## Verification
 
+- 백필 도구 Python 단위 테스트 7건, release shell 문법·설치 smoke와 실제 로컬 DB `--scan-only`가
+  통과했으며 스캔 중 API 호출과 DB 변경은 없었다. NUBO Vitest 61건, lint 오류 0건과 typecheck도 통과했다.
 - 실제 `.env` 설정으로 GPT-5.6 Luna를 호출해 144자 완결 설명과 `해안, 해변, 폭포, 산, 바다` 등
   검색어가 생성되는 것을 확인했다(키는 출력하지 않음).
 - 이미지 설명 정규화·500자 제한·`해변` 목록 검색·`노을` 개수 검색 회귀 테스트를 포함한 GOAPI
@@ -74,11 +77,10 @@
 - API contract v1, prebuilt smoke와 `server:stage`·Source Mode Market 링크 단위 계약이 통과했다.
 - 통합 bundle은 GOAPI 공식 Ubuntu 22.04 빌드, 구형 x86-64·x86-64-v2 libvips, Ubuntu 24.04 링크,
   nuboctl 0.15.0, nubo-market 0.1.0, 내부 checksum과 Nuxt prebuilt smoke를 통과했다.
-- 이번에 수정·추가한 코드 파일은 기능 변경 없는 최종 분리 뒤 모두 300줄 이하다.
 
 ## Next action
 
-1. 업무 사이트에 GOAPI 수정본과 advance gallery 0.2.2를 반영하고 해변 노을 사진을 새로 첨부해
-   우측 설명 표시와 `해변`, `노을` 검색 결과·개수를 확인한다.
-2. 기존 첨부 이미지의 설명을 소급 생성하는 별도 운영 도구가 필요한지 결정한다.
+1. sensta.me에서 백필 도구를 `--scan-only`로 실행해 실제 대상·처리 가능 개수와 예상 비용을 확인한다.
+2. 외부 DB 백업 뒤 `--limit 10`으로 첫 묶음을 처리하고 설명 표시와 `해변`, `노을` 검색을 확인한 뒤
+   나머지를 처리한다.
 3. 운영 QA 뒤 advance gallery 0.2.2 패키지를 Market에 제출·승인한다.
