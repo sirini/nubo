@@ -4,10 +4,18 @@ import { describe, expect, it } from "vitest"
 
 const skinSource = (skin: "blog" | "gallery") =>
   readFileSync(resolve(process.cwd(), `app/skins/nubo-advance-${skin}/${skin === "blog" ? "Blog" : "Gallery"}View.vue`), "utf8")
+const galleryDetailsSource = () =>
+  readFileSync(
+    resolve(
+      process.cwd(),
+      "app/skins/nubo-advance-gallery/components/AdvanceGalleryDetails.vue",
+    ),
+    "utf8",
+  )
 
 describe("advance skin UX contracts", () => {
   it("uses the actual edit route in both view skins", () => {
-    for (const source of [skinSource("blog"), skinSource("gallery")]) {
+    for (const source of [skinSource("blog"), skinSource("gallery") + galleryDetailsSource()]) {
       expect(source).toContain("/${view.post.uid}/edit`")
       expect(source).not.toContain("/${view.post.uid}/modify`")
     }
@@ -35,5 +43,18 @@ describe("advance skin UX contracts", () => {
     expect(source).toContain('@pointerdown="startPan"')
     expect(source).toContain("viewport.scrollLeft = panStart.left - dx")
     expect(source).toContain("centerOriginal()")
+  })
+
+  it("keeps gallery details, hashtags, comments, and list navigation in the side scroller", () => {
+    const view = skinSource("gallery")
+    const details = galleryDetailsSource()
+
+    expect(view).toContain("lg:h-[calc(100dvh-65px)]")
+    expect(view).toContain("<AdvanceGalleryDetails")
+    expect(details).toContain('<ScrollArea class="h-full">')
+    expect(details).toContain("advance-gallery-tags-title")
+    expect(details).toContain("<AdvanceGalleryComments />")
+    expect(details).toContain('<Button variant="outline" class="gap-2" as-child>')
+    expect(details).toContain("목록 보기")
   })
 })

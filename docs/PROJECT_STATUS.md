@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- NUBO/GOAPI v1.3.0의 Market·운영 도구 경계와 공식 릴리스 기준을 확정했다.
-- 공개 asset의 초기 설치·업데이트 결과와 운영 피드백을 관찰한다.
+- nubo-advance-gallery 0.2.1과 GOAPI 태그 검색 수정본을 업무 사이트에서 운영 검증한다.
+- 공개 v1.3.0 asset의 초기 설치·업데이트 결과와 운영 피드백을 계속 관찰한다.
 
 ## Product boundary
 
@@ -43,6 +43,10 @@
 
 ## Recent completion
 
+- 존재하지 않는 태그도 SQL 문법 오류 없이 빈 결과를 반환하고 `#태그` 입력도 검색하도록 GOAPI를
+  수정했다.
+- advance gallery 0.2.1은 큰 화면에서 사진을 유지한 채 우측 상세 패널 안에서 본문·해시태그·댓글을
+  스크롤하며, 해시태그 검색 링크와 outline 목록 보기 버튼을 제공한다.
 - 제품 소유자가 v1.3.0 구현 결과를 검토하고 공식 태그와 Linux amd64 asset 게시를 승인했다.
 - NUBO/GOAPI v1.2.30을 게시하고 sensta.me의 site release에서 readiness와 nuboctl status를 확인했다.
 - 기본 board/blog/gallery/trade와 advance blog/gallery를 독립 스킨으로 정리하고 Market에 공개했다.
@@ -53,6 +57,9 @@
 
 ## Verification
 
+- GOAPI 태그 검색 회귀 테스트를 포함한 전체 `go test ./...`와 `go vet ./...`가 통과했다.
+- advance gallery 변경은 Vitest 60건, lint 오류 0건(기존 경고 50), typecheck와 production build를
+  통과했다.
 - GOAPI v1.3.0 commit `df9a973`은 전체 `go test ./...`와 `go vet ./...`를 통과해 `main`에 푸시했다.
 - nuboctl Market update·diff·fork, 독립 실행명, apply와 설치 링크 변경은 전체 Go test와 vet를 통과했다.
 - NUBO 전체 Vitest 59건, lint 오류 0건(기존 경고 50), typecheck와 1536 MiB production build가 통과했다.
@@ -63,6 +70,7 @@
 
 ## Next action
 
-1. 공개 v1.3.0 asset의 checksum과 다운로드 가능 여부를 게시 직후 다시 확인한다.
-2. Source Mode의 Market install·수정·diff·fork·build 흐름을 실제 사이트에서 확인한다.
+1. 업무 사이트에 GOAPI 수정본과 advance gallery 0.2.1을 반영해 태그 검색, 큰 화면 우측 스크롤과
+   댓글 작성 흐름을 확인한다.
+2. 운영 QA 뒤 advance gallery 0.2.1 패키지를 Market에 제출·승인한다.
 3. sensta.me의 사이트 스킨과 `package-lock.json` 변경은 운영 source update 전에 별도로 정리한다.

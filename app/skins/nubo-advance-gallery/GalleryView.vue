@@ -1,8 +1,10 @@
 <template>
   <article class="min-h-[calc(100dvh-65px)] bg-background">
-    <section class="grid min-h-[62vh] bg-media lg:grid-cols-[minmax(0,1fr)_22rem]">
+    <section
+      class="grid min-h-[62vh] bg-media lg:h-[calc(100dvh-65px)] lg:grid-cols-[minmax(0,1fr)_25rem] lg:overflow-hidden"
+    >
       <div
-        class="relative flex min-h-[58vh] items-center justify-center overflow-hidden p-3 sm:p-6 lg:min-h-[calc(100dvh-65px)]"
+        class="relative flex min-h-[58vh] items-center justify-center overflow-hidden p-3 sm:p-6 lg:min-h-0"
       >
         <button
           ref="previewButton"
@@ -55,100 +57,10 @@
         </div>
       </div>
 
-      <aside class="border-l border-border/60 bg-background/96 p-5 sm:p-7">
-        <div class="sticky top-20 space-y-7">
-          <div>
-            <p
-              v-if="config.useCategory && view.post.category.name"
-              class="mb-2 text-xs font-semibold text-primary"
-            >
-              {{ recoverChars(view.post.category.name) }}
-            </p>
-            <h1 class="text-2xl font-semibold leading-tight tracking-[-0.035em]">
-              {{ recoverChars(view.post.title) }}
-            </h1>
-            <p class="mt-3 text-xs text-muted-foreground">
-              {{ dateFull(view.post.submitted) }} · 조회 {{ num(view.post.hit) }}
-            </p>
-          </div>
-
-          <div class="flex items-center gap-3">
-            <Avatar class="size-11 border border-border/70">
-              <AvatarImage
-                :src="view.post.writer.profile"
-                :alt="recoverChars(view.post.writer.name)"
-              />
-              <AvatarFallback>{{ recoverChars(view.post.writer.name).charAt(0) }}</AvatarFallback>
-            </Avatar>
-            <div class="min-w-0">
-              <NuxtLink
-                :to="`/user/${view.post.writer.uid}`"
-                class="font-semibold hover:text-primary"
-                >{{ recoverChars(view.post.writer.name) }}</NuxtLink
-              >
-              <p class="mt-1 truncate text-xs text-muted-foreground">
-                {{ recoverChars(view.post.writer.signature) }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              class="gap-2"
-              :disabled="!isLoggedIn"
-              @click="likePost(!view.post.liked)"
-            >
-              <HeartIcon
-                class="size-4"
-                :class="view.post.liked ? 'fill-current text-primary' : ''"
-              />
-              {{ num(view.post.like) }}
-            </Button>
-            <Button variant="outline" class="gap-2" :disabled="!currentImage" @click="openOriginal">
-              <Maximize2Icon class="size-4" /> 원본 보기
-            </Button>
-          </div>
-
-          <div
-            v-if="currentImage?.exif.make"
-            class="grid grid-cols-2 gap-x-4 gap-y-3 border-y border-border/60 py-5 font-mono text-xs text-muted-foreground"
-          >
-            <span>{{ currentImage.exif.make }} {{ currentImage.exif.model }}</span>
-            <span>{{ currentImage.exif.focalLength || "?" }}mm</span>
-            <span>f/{{ (currentImage.exif.aperture || 0) / 100 }}</span>
-            <span>ISO {{ currentImage.exif.iso || 0 }}</span>
-          </div>
-
-          <div class="nubo text-sm leading-7 text-foreground/90">
-            <!-- eslint-disable-next-line vue/no-v-html -- 게시글 HTML은 provider에서 정제된 값을 사용합니다. -->
-            <div v-html="sanitize(view.post.content)"></div>
-          </div>
-
-          <div class="flex flex-wrap gap-2">
-            <Badge v-for="tag in view.tags" :key="tag.uid" variant="secondary"
-              >#{{ recoverChars(tag.name) }}</Badge
-            >
-          </div>
-
-          <div class="flex flex-wrap justify-between gap-2 border-t border-border/60 pt-5">
-            <Button variant="ghost" as-child
-              ><NuxtLink :to="`/board/${config.id}/page/1`">목록</NuxtLink></Button
-            >
-            <div class="flex gap-2">
-              <Button v-if="isWriter || isAdmin" variant="outline" as-child
-                ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`">수정</NuxtLink></Button
-              >
-              <Button v-if="isLoggedIn" as-child
-                ><NuxtLink :to="`/board/${config.id}/write`">사진 올리기</NuxtLink></Button
-              >
-            </div>
-          </div>
-        </div>
+      <aside class="border-l border-border/60 bg-background/96 lg:max-h-[calc(100dvh-65px)]">
+        <AdvanceGalleryDetails @open-original="openOriginal" />
       </aside>
     </section>
-
-    <AdvanceGalleryComments />
 
     <ClientOnly>
       <Teleport to="body">
@@ -270,18 +182,14 @@
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  HeartIcon,
   LoaderCircleIcon,
-  Maximize2Icon,
   ScanIcon,
   XIcon,
 } from "lucide-vue-next"
 import { useNuboViewContext } from "~/providers/contexts/view"
-import AdvanceGalleryComments from "./components/AdvanceGalleryComments.vue"
+import AdvanceGalleryDetails from "./components/AdvanceGalleryDetails.vue"
 
-const { config, imgIdx, isAdmin, isLoggedIn, isWriter, likePost, originalImageUrl, view } =
-  useNuboViewContext()
-const { sanitize } = useSanitize()
+const { imgIdx, originalImageUrl, view } = useNuboViewContext()
 const viewerOpen = ref(false)
 const fitToScreen = ref(true)
 const originalLoading = ref(false)
