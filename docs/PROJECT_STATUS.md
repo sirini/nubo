@@ -2,9 +2,8 @@
 
 ## Active goal
 
-- v1.3.x에서 Source Mode 운영에 맞게 기존 `nuboctl`·`nubo-market`을 단일 `nubo` 명령으로 축소·통합하는
-  명령 계약을 정한다. 서비스 제어는 자동화하지 않고 공식 GOAPI·libvips 다운로드와 스킨 소스 관리를
-  핵심 책임으로 둔다.
+- v1.3.x에서 Source Mode 운영에 맞춘 새 단일 `./bin/nubo`의 Bubble Tea UI foundation과 공식
+  GOAPI·libvips `download`를 첫 작업 단위로 구현한다.
 - v1.3.x는 작고 안전한 기반과 완성도 높은 CLI 경험을 만들고, Market의 본격 활성화는 이 기반이
   안정된 v1.4에서 진행한다.
 
@@ -28,6 +27,10 @@
 - 새 `nubo`는 Git 변경, Nuxt 빌드, DB migration, Node·PM2·systemd·tmux 시작·중지·재시작을 자동
   실행하지 않고, 완료 화면에서 운영자가 다음에 수행할 명령과 이유를 안내한다.
 - 공개 패키지 좌표는 `skins/<key>` 복수형을 사용하고 실제 설치 위치 `app/skins/<key>`와 대응시킨다.
+- clone 뒤 첫 `./bin/nubo`는 작은 bootstrap launcher가 checksum으로 실제 Linux amd64 CLI를 검증해
+  내려받고 실행한다. runtime download는 checkout descriptor가 고정한 버전만 사용한다.
+- 제작자 인증은 nubohub.org 계정의 device-code 흐름으로 단순화하되, v1.3.x에서는 로컬 validate·pack과
+  서버 계약 기반을 만들고 실제 login·publish 활성화는 v1.4로 미룬다.
 - Market update는 영수증과 현재 파일이 완전히 같을 때만 허용하고, 새 패키지 검증 뒤 실제 전환 직전
   다시 검사한다. `--force`, downgrade와 자동 병합은 제공하지 않는다.
 - 수정한 Market 설치본은 `fork OLD NEW`로 사이트 소유 스킨에 분리하고 원본 key·version을 남긴다.
@@ -39,10 +42,6 @@
 
 ## Open findings
 
-- 새 CLI의 bootstrap 전달 방식, `download`의 runtime 버전 선택, `install skins/<key>`의 정확한 대상,
-  제작자 인증·key 최초 등록 흐름은 구현 전 제품 소유자 결정을 기다린다.
-- 운영 `nubohub.org` 루트 파일시스템은 2026-08-30 현재 36GiB 중 29GiB 사용, 가용 4.4GiB·사용률
-  88%다. journal이 3.5GiB이므로 실서버 빌드·대용량 artifact 작업 전 별도 용량 점검이 필요하다.
 - Mac 작업 트리에 `package-lock.json`의 플랫폼별 optional dependency 1,025줄 제거 변경과, 2026-08-14
   시점의 폐기된 로컬 상태판 `PROJECT_STATUS.md`가 미추적으로 남아 있다. 둘 다 이번 인수 점검에서는
   사용자 변경으로 보존했으며 의도를 확인하기 전 커밋하지 않는다.
@@ -59,6 +58,15 @@
 
 ## Recent completion
 
+- 제품 소유자가 bootstrap launcher, pinned runtime, device-code 제작자 인증과 UI foundation→download
+  우선 구현 권장안을 승인했다.
+- nubohub.org에서 미등록 중복 `/swapfile` 4GiB, 사용하지 않는 v1.2 `.nubo` 캐시 3,255,338,469바이트,
+  오래된 journal 약 3.0GiB를 제거했다. 활성 LVM swap 3.7GiB는 보존하고 journal 상한은 512MiB,
+  최소 여유 공간은 2GiB로 고정했다.
+- 운영 Market의 실행 파일·설정·패키지 데이터를 `/var/www/market/{bin,config,data}`로 모았다. systemd와
+  Nginx 등록 경로는 이 작업 공간의 config를 가리키는 링크이며 기존 `/opt/nubohub-market`,
+  `/etc/nubohub-market`, `/var/lib/nubohub-market`은 검증 뒤 제거했다. MySQL 물리 DB는 DB 서버 관리
+  경계에 그대로 두었다.
 - Market checkout `/Users/sirini/github/nubohub-market.git`의 깨끗한 `main`·`origin/main`이 `2b76a2f`로
   일치함을 확인했다. 공개 조회·다운로드, 제작자 token, key 소유권, 제출 심사, 리뷰·운영자 화면과
   패키지 검증 기반은 이미 구현되어 있으며 v1.4 활성화 전 단순한 CLI 흐름으로 재정리한다.
@@ -98,6 +106,12 @@
 
 ## Verification
 
+- 서버 정리 뒤 루트 파일시스템은 31,068,590,080바이트 사용·4,641,755,136바이트 가용(88%)에서
+  19,965,116,416바이트 사용·15,745,228,800바이트 가용(56%)으로 개선됐다. journal은 480MiB이며
+  `/dev/dm-0` LVM swap만 활성 상태다.
+- Market 이전 전후 패키지 데이터 39개 파일의 상대 경로별 콘텐츠 해시가 일치했다. 새 systemd 프로세스
+  실행 경로, 저장소 설정, Nginx config 링크와 재시작 뒤 내부 `/ready`, 외부 HTTPS `/market/ready`,
+  공개 catalog HTTP 200을 확인했고 config 비밀 경로는 HTTP 404다.
 - Mac mini 환경은 macOS 27.0 arm64, Node.js 24.11.1, npm 11.19.0이며 프로젝트의 Node.js 22+
   요구사항을 충족한다. `git diff --check`가 통과했고 fetch 뒤 `main...origin/main` 차이는 0/0이다.
 - 서버 정리 뒤 루트 파일시스템 가용 공간은 8,872,718,336바이트에서 27,800,780,800바이트로 늘고
@@ -137,11 +151,12 @@
 
 ## Next action
 
-1. 단일 `nubo` CLI의 bootstrap, `download`, self-`update`, `install skins/<key>`와 제작자 인증 계약을
-   합의한다.
-2. Bubble Tea v2·Lip Gloss v2를 기준으로 대화형/비대화형 이중 출력과 접근성·TTY fallback을 포함한
+1. Bubble Tea v2·Lip Gloss v2를 기준으로 대화형/비대화형 이중 출력과 접근성·TTY fallback을 포함한
    CLI UI foundation을 작은 독립 작업으로 구현한다.
-3. 로컬 `package-lock.json` 변경의 보존·정리 의도를 제품 소유자와 확인한다.
-4. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
+2. descriptor-pinned GOAPI·libvips를 원자적으로 검증·교체하고 다음 수동 작업을 안내하는 `download`를
+   구현한다.
+3. `search|info|install skins/<key>`에 기존 Market 패키지 검증 기반을 옮긴다.
+4. 로컬 `package-lock.json` 변경의 보존·정리 의도를 제품 소유자와 확인한다.
+5. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
    전체화면 미디어, 로그인·좋아요 동작을 시각 QA한다.
-5. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
+6. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
