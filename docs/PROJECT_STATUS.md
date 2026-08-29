@@ -2,10 +2,10 @@
 
 ## Active goal
 
-- v1.3.1의 Source Mode CLI foundation과 pinned runtime `download`는 공식 Ubuntu 검증까지 완료됐다.
-- 다음 작업 단위는 checksum 기반 CLI self-update이며, 이후 같은 UI·검증 기반에 Market의
-  `search|info|install skins/<key>`를 옮긴다. 제작자 `validate|pack` 기반은 v1.3.x,
-  device-code `login|publish` 활성화는 v1.4 범위다.
+- v1.3.1의 Source Mode CLI foundation, pinned runtime `download`, checksum 기반 CLI `update`는
+  공식 Ubuntu 22.04·24.04 검증까지 완료됐다.
+- 다음 작업 단위는 같은 UI·검증 기반의 Market `search|info|install skins/<key>`다. 제작자
+  `validate|pack` 기반은 v1.3.x, device-code `login|publish` 활성화는 v1.4 범위다.
 
 ## Current decisions
 
@@ -44,6 +44,8 @@
   commit을 `333459eb652a6170f452e17e777c2f5604ca5eff`으로 고정했다.
 - 새 `./bin/nubo` foundation과 runtime release pipeline을 NUBO `e6e3255`로 main에 push했다. offline
   WSL2 runner에 queued된 첫 검증은 취소하고 저장소 runner 변수를 hosted Ubuntu 22.04로 전환했다.
+- checksum 검증, Linux amd64 ELF·실행 버전 확인, 원자적 교체와 실패 시 보존을 갖춘 CLI self-update를
+  NUBO `5bca081`로 main에 push했다. `update`는 소스·runtime·DB·서비스를 변경하지 않는다.
 
 ## Verification
 
@@ -58,10 +60,14 @@
 - Actions artifact의 CLI는 7.8MiB 정적 Linux amd64 ELF, runtime archive는 30MiB다. 외부 SHA-256이
   일치하고 manifest는 NUBO/GOAPI 1.3.1, API contract 1, GOAPI `333459e`, libvips 8.18.3,
   `migrationRequired=false`를 기록한다.
+- Actions run `33265126877`은 self-update를 포함한 전체 release build와 Ubuntu 22.04·24.04 smoke를
+  통과했다. 두 환경 모두 손상시킨 설치 CLI를 공식 asset으로 복구한 뒤 재실행에서 최신 checksum임을
+  JSON으로 확인했으며, 수동 run이라 publish는 의도대로 skip됐다.
 
 ## Next action
 
-1. CLI 자체를 checksum으로 검증·교체하는 `./bin/nubo update`를 구현하고 launcher와의 버전 경계를
-   고정한다.
-2. Market `search|info|install skins/<key>`를 새 UI와 영수증·변경 감지 계약 위에 옮긴다.
-3. 제작자 관점의 로컬 `validate|pack skins/<key>`와 device-code 인증 서버 계약을 설계한다.
+1. `/Users/sirini/github/nubohub-market.git`의 현재 API·패키지 계약을 확인하고 CLI용 read-only
+   `search|info` 계약을 고정한다.
+2. `install skins/<key>`를 안전한 압축 검증, 원자적 설치, 영수증·로컬 변경 감지 위에 구현한다.
+3. 제작자 관점의 로컬 `validate|pack skins/<key>`를 설계한다. device-code 인증은 v1.4 활성화 전에
+   별도 작업 단위로 다룬다.
