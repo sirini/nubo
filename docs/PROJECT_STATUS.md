@@ -2,9 +2,9 @@
 
 ## Active goal
 
-- Windows/WSL 작업 뒤 Mac mini 작업 환경으로 복귀했으며, 저장소 이력과 로컬 상태 재점검을 마쳤다.
-- 제품 작업의 다음 경계는 `nubo-advance-home` 선택 적용·시각 QA이며, QA 전에는 새 대형 로드맵 항목을
-  시작하지 않는다.
+- v1.3.x에서 Source Mode 운영에 맞게 기존 `nuboctl`·`nubo-market`을 단일 `nubo` 명령으로 축소·통합하는
+  명령 계약을 정한다. 서비스 제어는 자동화하지 않고 공식 GOAPI·libvips 다운로드와 스킨 소스 관리를
+  핵심 책임으로 둔다.
 
 ## Product boundary
 
@@ -39,8 +39,9 @@
 - Mac 작업 트리에 `package-lock.json`의 플랫폼별 optional dependency 1,025줄 제거 변경과, 2026-08-14
   시점의 폐기된 로컬 상태판 `PROJECT_STATUS.md`가 미추적으로 남아 있다. 둘 다 이번 인수 점검에서는
   사용자 변경으로 보존했으며 의도를 확인하기 전 커밋하지 않는다.
-- 이 Mac의 현재 checkout에는 형제 `../goapi` 저장소가 없어 GOAPI `main`의 작업 트리와 원격 동기화는
-  교차 확인하지 못했다. v1.3.0 manifest가 고정한 GOAPI commit은 `9617087`이다.
+- `nubo download`가 내려받을 GOAPI는 임의의 최신 버전이 아니라 현재 NUBO checkout의 contract와 맞는
+  공식 Ubuntu 22.04 amd64 artifact여야 한다. checkout 수정 중 contract가 달라질 때의 선택·경고 규칙을
+  새 CLI 계약에서 확정해야 한다.
 - sensta.me `photo`의 활성 게시글 UID 767에서 첨부 파일 UID 826의 원본 한 경로가 이미 누락돼 있어
   표시 상태와 복구 필요성을 별도 확인해야 한다.
 - sensta.me 소스 checkout의 의도된 사이트 스킨 변경과 서버 npm 실행으로 보이는 `package-lock.json`
@@ -54,6 +55,8 @@
 - 2026-08-30 Mac 복귀 점검에서 NUBO `main`과 `origin/main`이 `78dbff3`으로 일치함을 fetch 뒤
   확인하고, v1.2.19 이후 커밋과 현재 상태 문서를 대조했다. 현행 기준 상태판은 이 파일이며 루트의
   미추적 `PROJECT_STATUS.md`는 8월 14일의 과거 스냅샷이다.
+- Mac의 GOAPI checkout이 `/Users/sirini/github/goapi.git`에 있고 깨끗한 `main`·`origin/main`이
+  `9617087`로 일치함을 확인했다.
 - sensta.me의 사이트·업로드를 보존하고 journal·개발 캐시·비활성 도구/Snap·구형 NUBO 릴리스와
   중복 swap 파일을 정리해 18,928,062,464바이트를 회수했다. journal 영구 상한은 512MiB로 두었다.
 - sensta.me `news`에서 현재 `status=-1`인 게시글 7,124건의 첨부 원본·썸네일 파일을
@@ -122,7 +125,9 @@
 
 ## Next action
 
-1. 로컬 `package-lock.json`과 루트 `PROJECT_STATUS.md`의 보존·정리 의도를 제품 소유자와 확인한다.
-2. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
+1. 단일 `nubo` CLI의 bootstrap, `download`, self-`update`, `install skin/<key>` 계약과 v1.2 호환 종료
+   방식을 합의한다.
+2. 로컬 `package-lock.json`과 루트 `PROJECT_STATUS.md`의 보존·정리 의도를 제품 소유자와 확인한다.
+3. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
    전체화면 미디어, 로그인·좋아요 동작을 시각 QA한다.
-3. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
+4. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
