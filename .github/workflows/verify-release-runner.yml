@@ -1,4 +1,4 @@
-name: Verify local release runner
+name: Verify configured release runner
 
 on:
   workflow_dispatch:
@@ -8,13 +8,13 @@ permissions:
 
 jobs:
   verify:
-    runs-on: ${{ fromJSON(vars.NUBO_RELEASE_BUILD_RUNNER || '["self-hosted","Linux","X64","nubo-release"]') }}
+    runs-on: ${{ fromJSON(vars.NUBO_RELEASE_BUILD_RUNNER || '["ubuntu-22.04"]') }}
     timeout-minutes: 10
     steps:
       - name: Check out NUBO
         uses: actions/checkout@v7
 
-      - name: Report local capacity
+      - name: Report runner capacity
         run: |
           uname -a
           printf 'CPU cores: '

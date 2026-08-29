@@ -2,10 +2,10 @@
 
 ## Active goal
 
-- v1.3.1의 첫 작업 단위로 Source Mode 전용 `./bin/nubo` UI foundation과 descriptor-pinned
-  GOAPI·libvips `download`를 완성하고 공식 Ubuntu 22.04/24.04 검증을 통과시킨다.
-- 다음 작업 단위에서 같은 UI·검증 기반에 Market의 `search|info|install skins/<key>`를 옮긴다.
-  제작자 `validate|pack` 기반은 v1.3.x, device-code `login|publish` 활성화는 v1.4 범위다.
+- v1.3.1의 Source Mode CLI foundation과 pinned runtime `download`는 공식 Ubuntu 검증까지 완료됐다.
+- 다음 작업 단위는 checksum 기반 CLI self-update이며, 이후 같은 UI·검증 기반에 Market의
+  `search|info|install skins/<key>`를 옮긴다. 제작자 `validate|pack` 기반은 v1.3.x,
+  device-code `login|publish` 활성화는 v1.4 범위다.
 
 ## Current decisions
 
@@ -24,13 +24,13 @@
   소스와 영수증만 관리하며 빌드·재시작은 운영자에게 명확히 안내한다.
 - 운영 Market의 실행 파일·설정·패키지 데이터는 nubohub.org의
   `/var/www/market/{bin,config,data}`에 모아 관리한다.
+- 릴리스 build는 개발 PC 상태와 분리하기 위해 GitHub-hosted Ubuntu 22.04를 기본으로 한다. WSL2
+  self-hosted runner는 online일 때 명시적으로 선택하는 cache 가속 수단이며 필수 인프라가 아니다.
 
 ## Open findings
 
 - Mac 작업 트리의 `package-lock.json`에는 이번 작업 전부터 플랫폼별 optional dependency가 대량 제거된
   사용자 변경이 있다. 의도가 확인될 때까지 보존하며 v1.3.1 커밋에서 제외한다.
-- 로컬 Mac에는 Docker가 없어 공식 Linux CLI/runtime build는 실행할 수 없다. 소스 검증 후 main에
-  커밋·푸시하고 `workflow_dispatch`로 공식 runner의 전체 빌드와 Ubuntu 22.04/24.04 smoke를 확인한다.
 - Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 Market CLI 작업 전에
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
@@ -42,20 +42,26 @@
   파일의 상대 경로별 hash 일치를 확인했다.
 - GOAPI 운영 문서를 Source Mode에 맞춰 `333459e`로 main에 push하고 v1.3.1 runtime의 GOAPI 기준
   commit을 `333459eb652a6170f452e17e777c2f5604ca5eff`으로 고정했다.
+- 새 `./bin/nubo` foundation과 runtime release pipeline을 NUBO `e6e3255`로 main에 push했다. offline
+  WSL2 runner에 queued된 첫 검증은 취소하고 저장소 runner 변수를 hosted Ubuntu 22.04로 전환했다.
 
 ## Verification
 
 - 새 Go CLI는 descriptor·download·archive traversal·checksum·atomic rollback·dry-run·취소 보존 단위
   테스트와 `go test -race ./...`, `go vet ./...`를 통과했다.
 - macOS에서 `CGO_ENABLED=0 GOOS=linux GOARCH=amd64` cross-build 결과가 정적 Linux amd64 ELF임을
-  확인했다. 공식 Docker build와 실제 Ubuntu 실행은 Actions 검증 대기 중이다.
-- GOAPI 문서 변경 외 backend contract와 pinned commit은 변하지 않았다.
+  확인했다.
+- Actions run `33264040728`은 NUBO 64개 테스트·lint 오류 0건(기존 경고 50)·typecheck·production
+  build, API contract, GOAPI 공식 Docker test/vet와 `build-ubuntu22.sh` runtime 생성을 통과했다.
+  Ubuntu 22.04·24.04에서 launcher bootstrap, 외부·내부 checksum, 원자적 runtime 설치와 libvips 링크를
+  각각 검증했으며 수동 run이라 publish는 의도대로 skip됐다.
+- Actions artifact의 CLI는 7.8MiB 정적 Linux amd64 ELF, runtime archive는 30MiB다. 외부 SHA-256이
+  일치하고 manifest는 NUBO/GOAPI 1.3.1, API contract 1, GOAPI `333459e`, libvips 8.18.3,
+  `migrationRequired=false`를 기록한다.
 
 ## Next action
 
-1. NUBO frontend test·lint·typecheck·production build, shell syntax와 release contract를 검증한다.
-2. NUBO/GOAPI의 v1.3.1 문서·CLI 작업을 각각 focused commit으로 main에 push한다.
-3. `Publish Linux release` workflow를 게시 없는 `workflow_dispatch(v1.3.1)`로 실행해 official asset과
-   Ubuntu 22.04/24.04 runtime smoke를 확인한다.
-4. CLI 자체를 checksum으로 교체하는 `./bin/nubo update`를 추가한 뒤 Market
-   `search|info|install skins/<key>` 작업 단위를 시작한다.
+1. CLI 자체를 checksum으로 검증·교체하는 `./bin/nubo update`를 구현하고 launcher와의 버전 경계를
+   고정한다.
+2. Market `search|info|install skins/<key>`를 새 UI와 영수증·변경 감지 계약 위에 옮긴다.
+3. 제작자 관점의 로컬 `validate|pack skins/<key>`와 device-code 인증 서버 계약을 설계한다.
