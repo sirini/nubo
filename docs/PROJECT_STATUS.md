@@ -5,6 +5,8 @@
 - v1.3.x에서 Source Mode 운영에 맞게 기존 `nuboctl`·`nubo-market`을 단일 `nubo` 명령으로 축소·통합하는
   명령 계약을 정한다. 서비스 제어는 자동화하지 않고 공식 GOAPI·libvips 다운로드와 스킨 소스 관리를
   핵심 책임으로 둔다.
+- v1.3.x는 작고 안전한 기반과 완성도 높은 CLI 경험을 만들고, Market의 본격 활성화는 이 기반이
+  안정된 v1.4에서 진행한다.
 
 ## Product boundary
 
@@ -21,10 +23,11 @@
 - 공식 GOAPI 바이너리는 GOAPI의 `./scripts/build-ubuntu22.sh`로만 만든다.
 - 운영 서버는 불변 릴리스와 `current` 링크를 사용하고 설정·업로드는 릴리스 밖에 둔다.
 - Nginx와 TLS는 운영자 소유이며 NUBO 도구가 읽거나 생성·수정·reload하지 않는다.
-- `nuboctl`의 기본 책임은 `status`, `doctor`, 명시적 후보의 `apply`다. 다운로드·Git·Nuxt 빌드는
-  apply와 분리한다. 기존 update·customize·market·skin은 호환 경로로 유지한다.
-- `nubo-market`은 스킨 소스의 검색·검증·설치·변경 확인·안전한 교체·fork·삭제만 담당한다. 빌드와
-  Node·PM2·systemd·tmux 재시작은 운영자가 명시적으로 수행한다.
+- v1.2의 서버 lifecycle 중심 `nuboctl`·별도 `nubo-market` 계약은 새 설계의 출발점으로 삼지 않는다.
+  v1.3.x의 새 `./bin/nubo`는 공식 runtime artifact 공급과 Market 소스 관리에만 집중한다.
+- 새 `nubo`는 Git 변경, Nuxt 빌드, DB migration, Node·PM2·systemd·tmux 시작·중지·재시작을 자동
+  실행하지 않고, 완료 화면에서 운영자가 다음에 수행할 명령과 이유를 안내한다.
+- 공개 패키지 좌표는 `skins/<key>` 복수형을 사용하고 실제 설치 위치 `app/skins/<key>`와 대응시킨다.
 - Market update는 영수증과 현재 파일이 완전히 같을 때만 허용하고, 새 패키지 검증 뒤 실제 전환 직전
   다시 검사한다. `--force`, downgrade와 자동 병합은 제공하지 않는다.
 - 수정한 Market 설치본은 `fork OLD NEW`로 사이트 소유 스킨에 분리하고 원본 key·version을 남긴다.
@@ -36,6 +39,10 @@
 
 ## Open findings
 
+- 새 CLI의 bootstrap 전달 방식, `download`의 runtime 버전 선택, `install skins/<key>`의 정확한 대상,
+  제작자 인증·key 최초 등록 흐름은 구현 전 제품 소유자 결정을 기다린다.
+- 운영 `nubohub.org` 루트 파일시스템은 2026-08-30 현재 36GiB 중 29GiB 사용, 가용 4.4GiB·사용률
+  88%다. journal이 3.5GiB이므로 실서버 빌드·대용량 artifact 작업 전 별도 용량 점검이 필요하다.
 - Mac 작업 트리에 `package-lock.json`의 플랫폼별 optional dependency 1,025줄 제거 변경과, 2026-08-14
   시점의 폐기된 로컬 상태판 `PROJECT_STATUS.md`가 미추적으로 남아 있다. 둘 다 이번 인수 점검에서는
   사용자 변경으로 보존했으며 의도를 확인하기 전 커밋하지 않는다.
@@ -52,6 +59,11 @@
 
 ## Recent completion
 
+- Market checkout `/Users/sirini/github/nubohub-market.git`의 깨끗한 `main`·`origin/main`이 `2b76a2f`로
+  일치함을 확인했다. 공개 조회·다운로드, 제작자 token, key 소유권, 제출 심사, 리뷰·운영자 화면과
+  패키지 검증 기반은 이미 구현되어 있으며 v1.4 활성화 전 단순한 CLI 흐름으로 재정리한다.
+- 운영 Market은 `/opt/nubohub-market/nubohub-market`, 설정은 `/etc/nubohub-market`, 패키지·상태는
+  `/var/lib/nubohub-market`에 있고 systemd 서비스가 정상 실행 중임을 읽기 전용으로 확인했다.
 - 2026-08-30 Mac 복귀 점검에서 NUBO `main`과 `origin/main`이 `78dbff3`으로 일치함을 fetch 뒤
   확인하고, v1.2.19 이후 커밋과 현재 상태 문서를 대조했다. 현행 기준 상태판은 이 파일이며 루트의
   미추적 `PROJECT_STATUS.md`는 8월 14일의 과거 스냅샷이다.
@@ -125,9 +137,11 @@
 
 ## Next action
 
-1. 단일 `nubo` CLI의 bootstrap, `download`, self-`update`, `install skin/<key>` 계약과 v1.2 호환 종료
-   방식을 합의한다.
-2. 로컬 `package-lock.json`과 루트 `PROJECT_STATUS.md`의 보존·정리 의도를 제품 소유자와 확인한다.
-3. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
+1. 단일 `nubo` CLI의 bootstrap, `download`, self-`update`, `install skins/<key>`와 제작자 인증 계약을
+   합의한다.
+2. Bubble Tea v2·Lip Gloss v2를 기준으로 대화형/비대화형 이중 출력과 접근성·TTY fallback을 포함한
+   CLI UI foundation을 작은 독립 작업으로 구현한다.
+3. 로컬 `package-lock.json` 변경의 보존·정리 의도를 제품 소유자와 확인한다.
+4. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
    전체화면 미디어, 로그인·좋아요 동작을 시각 QA한다.
-4. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
+5. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
