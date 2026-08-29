@@ -1,5 +1,8 @@
 # NUBO Linux 서비스 템플릿
 
+> v1.2 systemd bundle의 보존 자료입니다. v1.3.1 Source Mode와 새 `./bin/nubo`는 이 템플릿을 읽거나
+> 설치하지 않습니다. 현재 운영 계약은 [NUBO CLI](../docs/NUBO_CLI.md)를 따르세요.
+
 이 파일들은 `nuboctl install`이 사용하는 입력 템플릿이다. 모든 `@TOKEN@`이 치환되기 전에는
 `/etc`에 직접 복사하지 않는다. 최소 지원 환경은 Ubuntu 22.04 amd64와 Node.js 22이며 이후 버전에는 별도 상한을 두지 않는다.
 GOAPI용 libvips와 이미지 코덱은 공식 릴리스의 `lib/`에 포함되며 별도 시스템 패키지가 필요 없다.

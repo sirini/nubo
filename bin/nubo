@@ -1,0 +1,84 @@
+#!/bin/sh
+
+set -eu
+
+project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+real_cli="${project_root}/.nubo/bin/nubo"
+
+if [ -x "$real_cli" ]; then
+  exec "$real_cli" "$@"
+fi
+
+case "$(uname -s)-$(uname -m)" in
+  Linux-x86_64|Linux-amd64) ;;
+  *)
+    echo "NUBO CLI는 Ubuntu 22.04+ Linux amd64를 지원합니다: $(uname -s) $(uname -m)" >&2
+    exit 1
+    ;;
+esac
+
+version=$(awk -F= '$1 == "NUXT_PUBLIC_VERSION" { print $2; exit }' "${project_root}/env.sample")
+if [ -z "$version" ]; then
+  echo "env.sample에서 NUBO 버전을 찾을 수 없습니다." >&2
+  exit 1
+fi
+
+asset="nubo-linux-amd64"
+checksum_asset="${asset}.sha256"
+release_base=${NUBO_RELEASE_BASE_URL:-"https://github.com/sirini/nubo/releases/download/v${version}"}
+case "$release_base" in
+  https://*|http://127.0.0.1:*|http://localhost:*) ;;
+  *)
+    echo "NUBO release URL은 HTTPS여야 합니다(로컬 검증 서버 제외)." >&2
+    exit 1
+    ;;
+esac
+temporary_dir=$(mktemp -d "${TMPDIR:-/tmp}/nubo-bootstrap.XXXXXX")
+trap 'rm -rf -- "$temporary_dir"' EXIT HUP INT TERM
+
+download() {
+  source_url=$1
+  destination=$2
+  if command -v curl >/dev/null 2>&1; then
+    allowed_protocols='=https'
+    case "$source_url" in http://*) allowed_protocols='=http,https' ;; esac
+    curl --proto "$allowed_protocols" --proto-redir "$allowed_protocols" --tlsv1.2 --location --fail --silent --show-error \
+      "$source_url" --output "$destination"
+  elif command -v wget >/dev/null 2>&1; then
+    case "$source_url" in
+      https://*) wget --https-only --quiet --output-document="$destination" "$source_url" ;;
+      *) wget --quiet --output-document="$destination" "$source_url" ;;
+    esac
+  else
+    echo "NUBO CLI를 내려받으려면 curl 또는 wget이 필요합니다." >&2
+    exit 1
+  fi
+}
+
+echo "NUBO ${version} CLI를 처음 준비합니다..."
+download "${release_base}/${checksum_asset}" "${temporary_dir}/${checksum_asset}"
+download "${release_base}/${asset}" "${temporary_dir}/${asset}"
+
+checksum_size=$(wc -c <"${temporary_dir}/${checksum_asset}" | tr -d ' ')
+asset_size=$(wc -c <"${temporary_dir}/${asset}" | tr -d ' ')
+if [ "$checksum_size" -gt 16384 ] || [ "$asset_size" -gt 67108864 ]; then
+  echo "공식 CLI 파일이 허용 크기를 초과합니다." >&2
+  exit 1
+fi
+
+expected=$(awk -v name="$asset" '$2 == name || $2 == "*" name { print $1; exit }' "${temporary_dir}/${checksum_asset}")
+if [ -z "$expected" ]; then
+  echo "공식 CLI checksum 형식이 올바르지 않습니다." >&2
+  exit 1
+fi
+actual=$(sha256sum "${temporary_dir}/${asset}" | awk '{print $1}')
+if [ "$actual" != "$expected" ]; then
+  echo "공식 CLI checksum이 일치하지 않습니다." >&2
+  exit 1
+fi
+
+install -d -m 0755 "${project_root}/.nubo/bin"
+install -m 0755 "${temporary_dir}/${asset}" "${project_root}/.nubo/bin/nubo.new"
+mv -f "${project_root}/.nubo/bin/nubo.new" "$real_cli"
+echo "✓ CLI 준비 완료: .nubo/bin/nubo"
+exec "$real_cli" "$@"

@@ -39,7 +39,7 @@ export default defineNuxtConfig({
       // 빈 값이면 runtime-paths 플러그인이 현재 app.baseURL 아래의 /api로 계산합니다.
       apiBase: env.NUXT_PUBLIC_API_BASE || "",
       goapiBase: GOAPI_PATH,
-      version: env.NUXT_PUBLIC_VERSION || "1.3.0",
+      version: env.NUXT_PUBLIC_VERSION || "1.3.1",
       domain: env.NUXT_PUBLIC_DOMAIN || "https://nubohub.org",
       title: env.NUXT_PUBLIC_TITLE || "NUBO | A New Unified Board",
       adminId: env.NUXT_PUBLIC_ADMIN_ID || "example-admin@nubohub.org",

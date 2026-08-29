@@ -14,6 +14,9 @@ dist
 node_modules
 
 # GOAPI Backend
+/bin/goapi
+/lib/
+/licenses/sharp-libvips/
 goapi-linux
 nubo-market
 nubo-market-linux

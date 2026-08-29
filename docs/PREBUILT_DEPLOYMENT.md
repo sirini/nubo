@@ -1,5 +1,8 @@
 # Prebuilt Nuxt deployment PoC
 
+> Historical v1.2 design record. NUBO v1.3.1 no longer exposes this systemd/prebuilt lifecycle as the current
+> operating model. See [NUBO CLI](./NUBO_CLI.md) for the Source Mode contract.
+
 This document defines the artifact and runtime boundary proven by `S2-Q01`. It is not yet the
 combined NUBO/GOAPI release bundle planned for `S2-Q02`.
 

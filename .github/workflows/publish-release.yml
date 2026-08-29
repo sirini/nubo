@@ -80,7 +80,7 @@ jobs:
             goapi
           docker run --rm nubo-goapi-ci bash -lc 'go test ./... && go vet ./...'
 
-      - name: Build and verify integrated release
+      - name: Build and verify CLI and pinned runtime
         env:
           GOAPI_SOURCE_DIR: ${{ github.workspace }}/goapi
         run: npm run build:release
@@ -88,14 +88,16 @@ jobs:
       - name: Upload release candidate
         uses: actions/upload-artifact@v7
         with:
-          name: nubo-linux-amd64
+          name: nubo-v1.3-assets
           path: |
-            dist/nubo-*-linux-amd64.tar.gz
-            dist/nubo-*-linux-amd64.tar.gz.sha256
+            dist/nubo-linux-amd64
+            dist/nubo-linux-amd64.sha256
+            dist/nubo-runtime-*-linux-amd64.tar.gz
+            dist/nubo-runtime-*-linux-amd64.tar.gz.sha256
           if-no-files-found: error
           retention-days: 1
 
-  fresh-install:
+  runtime-smoke:
     needs: build-release
     timeout-minutes: 20
     strategy:
@@ -117,15 +119,15 @@ jobs:
       - name: Download release candidate
         uses: actions/download-artifact@v8
         with:
-          name: nubo-linux-amd64
+          name: nubo-v1.3-assets
           path: dist
 
-      - name: Fresh install and verify services
-        run: bash scripts/fresh-install-smoke.sh dist/nubo-*-linux-amd64.tar.gz
+      - name: Bootstrap and download runtime without service changes
+        run: bash scripts/nubo-runtime-smoke.sh dist
 
   publish:
     if: github.event_name == 'push'
-    needs: fresh-install
+    needs: runtime-smoke
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -136,7 +138,7 @@ jobs:
       - name: Download verified release candidate
         uses: actions/download-artifact@v8
         with:
-          name: nubo-linux-amd64
+          name: nubo-v1.3-assets
           path: dist
 
       - name: Publish immutable release assets
@@ -149,8 +151,10 @@ jobs:
             notes=(--notes-file "$notes_file")
           fi
           gh release create "$GITHUB_REF_NAME" \
-            dist/nubo-*-linux-amd64.tar.gz \
-            dist/nubo-*-linux-amd64.tar.gz.sha256 \
+            dist/nubo-linux-amd64 \
+            dist/nubo-linux-amd64.sha256 \
+            dist/nubo-runtime-*-linux-amd64.tar.gz \
+            dist/nubo-runtime-*-linux-amd64.tar.gz.sha256 \
             --verify-tag \
             "${notes[@]}" \
             --title "$GITHUB_REF_NAME" \

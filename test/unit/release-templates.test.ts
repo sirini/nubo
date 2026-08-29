@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest"
 const readProjectFile = (path: string) =>
   readFile(new URL(`../../${path}`, import.meta.url), "utf8")
 
-describe("Linux 릴리스 템플릿", () => {
+describe("v1.2 Linux 릴리스 보존 템플릿", () => {
   it("서비스 경로를 렌더링할 수 있고 웹 프로세스는 읽기 전용이다", async () => {
     const [goapi, web] = await Promise.all([
       readProjectFile("deploy/systemd/nubo-goapi.service.in"),
@@ -34,16 +34,14 @@ describe("Linux 릴리스 템플릿", () => {
     expect(nginx.match(/proxy_set_header X-Forwarded-Proto \$scheme/g)).toHaveLength(2)
   })
 
-  it("AI 설치 입력 예시가 비밀값을 CLI에서 분리한다", async () => {
-    const [guide, input] = await Promise.all([
-      readProjectFile("INSTALL_GUIDE_FOR_AI.md"),
-      readProjectFile("deploy/install-input.sample"),
-    ])
+  it("AI Source Mode 계약이 비밀값과 lifecycle을 CLI 경계 밖에 둔다", async () => {
+    const guide = await readProjectFile("INSTALL_GUIDE_FOR_AI.md")
 
-    expect(guide).toContain("--non-interactive")
-    expect(guide).toContain("--env-input")
-    expect(guide).toContain("--dry-run")
-    expect(input).toContain("DB_PASS=")
-    expect(input).toContain("ADMIN_PW=")
+    expect(guide).toContain("./bin/nubo download --dry-run --plain")
+    expect(guide).toContain("./bin/nubo download --yes --plain")
+    expect(guide).toContain("chmod 0600 .env")
+    expect(guide).toContain("DB migration, npm build 또는 프로세스 재시작")
+    expect(guide).not.toContain("--env-input")
+    expect(guide).not.toContain("systemctl restart nubo")
   })
 })
