@@ -2,7 +2,9 @@
 
 ## Active goal
 
-- `nubo-advance-home` 구현과 운영 news 정리를 완료했으며 제품 소유자의 선택 적용·시각 QA를 기다린다.
+- Windows/WSL 작업 뒤 Mac mini 작업 환경으로 복귀했으며, 저장소 이력과 로컬 상태 재점검을 마쳤다.
+- 제품 작업의 다음 경계는 `nubo-advance-home` 선택 적용·시각 QA이며, QA 전에는 새 대형 로드맵 항목을
+  시작하지 않는다.
 
 ## Product boundary
 
@@ -34,6 +36,11 @@
 
 ## Open findings
 
+- Mac 작업 트리에 `package-lock.json`의 플랫폼별 optional dependency 1,025줄 제거 변경과, 2026-08-14
+  시점의 폐기된 로컬 상태판 `PROJECT_STATUS.md`가 미추적으로 남아 있다. 둘 다 이번 인수 점검에서는
+  사용자 변경으로 보존했으며 의도를 확인하기 전 커밋하지 않는다.
+- 이 Mac의 현재 checkout에는 형제 `../goapi` 저장소가 없어 GOAPI `main`의 작업 트리와 원격 동기화는
+  교차 확인하지 못했다. v1.3.0 manifest가 고정한 GOAPI commit은 `9617087`이다.
 - sensta.me `photo`의 활성 게시글 UID 767에서 첨부 파일 UID 826의 원본 한 경로가 이미 누락돼 있어
   표시 상태와 복구 필요성을 별도 확인해야 한다.
 - sensta.me 소스 checkout의 의도된 사이트 스킨 변경과 서버 npm 실행으로 보이는 `package-lock.json`
@@ -44,6 +51,9 @@
 
 ## Recent completion
 
+- 2026-08-30 Mac 복귀 점검에서 NUBO `main`과 `origin/main`이 `78dbff3`으로 일치함을 fetch 뒤
+  확인하고, v1.2.19 이후 커밋과 현재 상태 문서를 대조했다. 현행 기준 상태판은 이 파일이며 루트의
+  미추적 `PROJECT_STATUS.md`는 8월 14일의 과거 스냅샷이다.
 - sensta.me의 사이트·업로드를 보존하고 journal·개발 캐시·비활성 도구/Snap·구형 NUBO 릴리스와
   중복 swap 파일을 정리해 18,928,062,464바이트를 회수했다. journal 영구 상한은 512MiB로 두었다.
 - sensta.me `news`에서 현재 `status=-1`인 게시글 7,124건의 첨부 원본·썸네일 파일을
@@ -73,6 +83,8 @@
 
 ## Verification
 
+- Mac mini 환경은 macOS 27.0 arm64, Node.js 24.11.1, npm 11.19.0이며 프로젝트의 Node.js 22+
+  요구사항을 충족한다. `git diff --check`가 통과했고 fetch 뒤 `main...origin/main` 차이는 0/0이다.
 - 서버 정리 뒤 루트 파일시스템 가용 공간은 8,872,718,336바이트에서 27,800,780,800바이트로 늘고
   사용률은 81%에서 40%로 낮아졌다. `/var/www/sensta.me` 8,115,499,008바이트와 `upload`
   6,708,236,288바이트·3,469파일은 작업 전후 동일하며 GOAPI·웹 프로세스와 HTTPS 200을 확인했다.
@@ -110,6 +122,7 @@
 
 ## Next action
 
-1. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
+1. 로컬 `package-lock.json`과 루트 `PROJECT_STATUS.md`의 보존·정리 의도를 제품 소유자와 확인한다.
+2. 테스트 사이트의 관리자 스킨 화면에서 `nubo-advance-home`을 선택해 데스크톱·모바일 피드와
    전체화면 미디어, 로그인·좋아요 동작을 시각 QA한다.
-2. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
+3. 범용 홈 스킨으로 배포할 경우 0.1.0 패키지를 NUBO Market 제출·심사한다.
