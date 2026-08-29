@@ -20,6 +20,7 @@ NUBO는 소스 checkout을 운영자가 직접 빌드하고 tmux 또는 PM2 등 
 기본으로 합니다. 새 `./bin/nubo`는 다음 경계만 책임집니다.
 
 - 현재 checkout과 맞는 공식 GOAPI·libvips 다운로드 및 검증
+- 현재 checkout과 맞는 NUBO CLI 자체 업데이트
 - 향후 `skins/<key>` 단위의 Market 검색·설치·게시
 - 실행 전에 변경 대상과 출처를 보여주고, 완료 뒤 운영자가 할 일을 안내
 
@@ -84,6 +85,8 @@ PM2를 사용한다면 같은 두 명령을 기존 PM2 설정에 등록합니다
 
 ```bash
 git pull --ff-only
+./bin/nubo update --dry-run
+./bin/nubo update
 ./bin/nubo download --dry-run
 ./bin/nubo download
 npm install
@@ -96,6 +99,7 @@ DB, Web build와 실행 중인 GOAPI·Node 프로세스를 건드리지 않습�
 자동화에서는 다음 옵션을 사용할 수 있습니다.
 
 ```bash
+./bin/nubo update --plain --json
 ./bin/nubo download --yes --plain
 ./bin/nubo download --yes --json
 ```

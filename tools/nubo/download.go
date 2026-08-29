@@ -68,7 +68,7 @@ func downloadRuntime(ctx context.Context, request runtimeRequest, emit func(task
 
 	emit(taskEvent{Kind: eventStage, Title: "릴리스 계약 확인", Detail: fmt.Sprintf("NUBO %s · API v%s", sources.Channel.Version, sources.APIContract)})
 	checksumURL := baseURL + "/" + sources.Runtime.Checksum
-	expected, err := fetchExpectedChecksum(ctx, client, checksumURL, sources.Runtime.Name)
+	expected, err := fetchExpectedChecksum(ctx, client, checksumURL, sources.Runtime.Name, "runtime")
 	if err != nil {
 		return result, err
 	}
@@ -80,7 +80,7 @@ func downloadRuntime(ctx context.Context, request runtimeRequest, emit func(task
 	if actual != expected {
 		_ = os.Remove(archivePath)
 		emit(taskEvent{Kind: eventStage, Title: "공식 runtime 다운로드", Detail: sources.Runtime.Name})
-		if err := fetchFile(ctx, client, baseURL+"/"+sources.Runtime.Name, archivePath, emit); err != nil {
+		if err := fetchFile(ctx, client, baseURL+"/"+sources.Runtime.Name, archivePath, maxRuntimeArchiveBytes, "공식 runtime", "공식 runtime 다운로드", emit); err != nil {
 			return result, err
 		}
 	} else {
@@ -140,7 +140,7 @@ func runtimeContextError(ctx context.Context) error {
 	return nil
 }
 
-func fetchExpectedChecksum(ctx context.Context, client *http.Client, url, name string) (string, error) {
+func fetchExpectedChecksum(ctx context.Context, client *http.Client, url, name, label string) (string, error) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return "", err
@@ -148,11 +148,11 @@ func fetchExpectedChecksum(ctx context.Context, client *http.Client, url, name s
 	request.Header.Set("User-Agent", "nubo/"+version)
 	response, err := client.Do(request)
 	if err != nil {
-		return "", fmt.Errorf("runtime checksum을 내려받지 못했습니다: %w", err)
+		return "", fmt.Errorf("%s checksum을 내려받지 못했습니다: %w", label, err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("runtime checksum 응답이 올바르지 않습니다: HTTP %d", response.StatusCode)
+		return "", fmt.Errorf("%s checksum 응답이 올바르지 않습니다: HTTP %d", label, response.StatusCode)
 	}
 	content, err := io.ReadAll(io.LimitReader(response.Body, 16<<10))
 	if err != nil {
@@ -169,7 +169,7 @@ func fetchExpectedChecksum(ctx context.Context, client *http.Client, url, name s
 	return "", fmt.Errorf("%s checksum을 찾을 수 없습니다", name)
 }
 
-func fetchFile(ctx context.Context, client *http.Client, url, destination string, emit func(taskEvent)) error {
+func fetchFile(ctx context.Context, client *http.Client, url, destination string, maxBytes int64, label, progressTitle string, emit func(taskEvent)) error {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
@@ -177,32 +177,36 @@ func fetchFile(ctx context.Context, client *http.Client, url, destination string
 	request.Header.Set("User-Agent", "nubo/"+version)
 	response, err := client.Do(request)
 	if err != nil {
-		return fmt.Errorf("공식 runtime을 내려받지 못했습니다: %w", err)
+		return fmt.Errorf("%s 다운로드에 실패했습니다: %w", label, err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("공식 runtime 응답이 올바르지 않습니다: HTTP %d", response.StatusCode)
+		return fmt.Errorf("%s 응답이 올바르지 않습니다: HTTP %d", label, response.StatusCode)
 	}
-	if response.ContentLength > maxRuntimeArchiveBytes {
-		return errors.New("공식 runtime 파일이 허용 크기를 초과합니다")
+	if response.ContentLength > maxBytes {
+		return fmt.Errorf("%s 파일이 허용 크기를 초과합니다", label)
 	}
-	temporary, err := os.CreateTemp(filepath.Dir(destination), ".runtime-*.part")
+	temporary, err := os.CreateTemp(filepath.Dir(destination), ".download-*.part")
 	if err != nil {
 		return err
 	}
 	temporaryPath := temporary.Name()
 	defer os.Remove(temporaryPath)
-	reader := &progressReader{reader: io.LimitReader(response.Body, maxRuntimeArchiveBytes+1), total: response.ContentLength, emit: emit}
+	reader := &progressReader{reader: io.LimitReader(response.Body, maxBytes+1), total: response.ContentLength, title: progressTitle, emit: emit}
 	written, copyErr := io.Copy(temporary, reader)
+	syncErr := temporary.Sync()
 	closeErr := temporary.Close()
 	if copyErr != nil {
 		return copyErr
 	}
+	if syncErr != nil {
+		return syncErr
+	}
 	if closeErr != nil {
 		return closeErr
 	}
-	if written > maxRuntimeArchiveBytes {
-		return errors.New("공식 runtime 파일이 허용 크기를 초과합니다")
+	if written > maxBytes {
+		return fmt.Errorf("%s 파일이 허용 크기를 초과합니다", label)
 	}
 	if err := os.Chmod(temporaryPath, 0644); err != nil {
 		return err
@@ -216,6 +220,7 @@ type progressReader struct {
 	read   int64
 	emit   func(taskEvent)
 	last   int64
+	title  string
 }
 
 func (reader *progressReader) Read(buffer []byte) (int, error) {
@@ -225,7 +230,7 @@ func (reader *progressReader) Read(buffer []byte) (int, error) {
 		percent := reader.read * 100 / reader.total
 		if percent != reader.last {
 			reader.last = percent
-			reader.emit(taskEvent{Kind: eventProgress, Title: "공식 runtime 다운로드", Current: reader.read, Total: reader.total})
+			reader.emit(taskEvent{Kind: eventProgress, Title: reader.title, Current: reader.read, Total: reader.total})
 		}
 	}
 	return count, err

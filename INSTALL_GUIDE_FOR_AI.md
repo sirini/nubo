@@ -27,6 +27,8 @@
 프로젝트 루트에서 현재 checkout에 고정된 asset을 검증한다.
 
 ```bash
+./bin/nubo update --dry-run --plain
+./bin/nubo update --plain
 ./bin/nubo download --dry-run --plain
 ```
 
@@ -36,6 +38,7 @@
 ./bin/nubo download --yes --plain
 ```
 
+`update`는 `.nubo/bin/nubo`만 원자적으로 교체한다. Git, runtime과 프로세스는 변경하지 않는다.
 자동화가 구조화된 결과를 필요로 할 때만 `--json`을 사용한다. 진행 로그는 stderr, 최종 JSON은 stdout에
 출력된다.
 

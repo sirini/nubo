@@ -8,11 +8,22 @@
 ```bash
 ./bin/nubo
 ./bin/nubo version
+./bin/nubo update --dry-run
+./bin/nubo update
 ./bin/nubo download --dry-run
 ./bin/nubo download
 ```
 
 인자 없이 TTY에서 실행하면 대화형 시작 화면을 표시한다. 비대화형 환경에서는 도움말을 출력한다.
+
+## update
+
+현재 checkout의 descriptor가 고정한 `nubo-linux-amd64`와 SHA-256을 확인한다. 새 파일은 64MiB로
+제한하고 Linux x86-64 ELF 형식과 `nubo <version>` 실행 결과까지 검증한 뒤 `.nubo/bin/nubo` 하나만
+원자적으로 교체한다. 이미 같은 공식 checksum이면 다운로드와 교체를 생략한다.
+
+`--dry-run`은 새 실행 파일을 staging에서 실제로 실행해 확인하되 현재 CLI를 유지한다. 소스, runtime,
+DB와 실행 중인 프로세스는 어떤 경우에도 변경하지 않는다.
 
 ## download
 
