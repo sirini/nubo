@@ -226,6 +226,52 @@ export type BoardListResult = {
   isAdmin: boolean
 }
 
+// JWT 사용자의 작품 스튜디오 정렬 방식
+export type BoardStudioSort = "recent" | "views" | "likes" | "comments"
+
+// JWT 사용자의 작품 스튜디오 요청 파라미터
+export type BoardStudioParam = {
+  id: string
+  page?: number
+  limit?: number
+  sort?: BoardStudioSort
+}
+
+// JWT 사용자의 작품 스튜디오 누적 성과
+export type BoardStudioSummary = {
+  postCount: number
+  photoCount: number
+  viewCount: number
+  likeCount: number
+  commentCount: number
+}
+
+// JWT 사용자의 작품 스튜디오 게시글
+export type BoardStudioPostItem = {
+  uid: number
+  title: string
+  cover: string
+  submitted: number
+  modified: number
+  status: Status
+  imageCount: number
+  hit: number
+  like: number
+  comment: number
+}
+
+// JWT 사용자의 작품 스튜디오 반환값
+export type BoardStudioResult = {
+  summary: BoardStudioSummary
+  posts: {
+    page: number
+    limit: number
+    totalCount: number
+    hasNext: boolean
+    items: BoardStudioPostItem[]
+  }
+}
+
 // 게시글 목록보기 결과 기본값 정의
 export const BOARD_LIST_RESULT: BoardListResult = {
   totalPostCount: 0,

@@ -1,7 +1,7 @@
 # NUBO API contract v1
 
-기준일: 2026-08-22
-기준 구현: NUBO `main`, GOAPI `85186af`
+기준일: 2026-08-30
+기준 구현: NUBO `main`, GOAPI `cb485a4`
 
 이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
 호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두
@@ -11,7 +11,8 @@
 
 - 브라우저와 SSR은 원칙적으로 NUBO의 `/api/*`를 호출한다.
 - Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
-- 현재 Nitro proxy는 method 기준 103개이며 GOAPI 121개 중 아래 18개를 제외하고 모두 대응한다.
+- 현재 GOAPI와 같은 경로의 Nitro proxy는 method 기준 106개이며 GOAPI 124개 중 아래 18개를 제외하고
+  모두 대응한다. NUBO 전용 `/api/market/user`는 별도로 `/auth/load` 결과를 최소 identity로 좁혀 전달한다.
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
 - NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
   실행 중인 버전·API contract가 manifest와 다르면 `status="degraded"`와 machine-readable `issues`를 반환한다.
@@ -100,8 +101,8 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}`; `PUT /auth/user/block`; `DELETE /auth/user/block` |
 | OAuth·네이티브 인증 | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/{google,refresh}` |
 | 네이티브 푸시 | JWT · Direct | `POST /push/device`; `DELETE /push/device` (Android `token` 필드에는 FCM 설치 ID(FID) 전달) |
-| 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer}` |
-| 게시판 보호 | JWT | `GET /board/{download,move/list}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
+| 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer,original,original/transfer}` |
+| 게시판 보호 | JWT | `GET /board/{download,move/list,my/studio}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
 | 최근 태그 | Public · Direct | `GET /board/tag/recent` |
 | RSS | Public · Direct | `GET /rss/:id` |
 | 쪽지 | JWT | `GET /chat/{list,history}`; `POST /chat/save` |
@@ -116,6 +117,32 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 거래 공개 | Public | `GET /trade/{list,view}` |
 | 거래 보호 | JWT | `GET /trade/load`; `PATCH /trade/{modify,status}`; `POST /trade/write` |
 | 동기화 | Secret · Direct | `GET /sync` (`SYNC_SECRET_KEY`) |
+
+## 내 작품 스튜디오
+
+`GET /board/my/studio`는 JWT 활성 사용자가 요청한 게시판에 직접 작성한 작품과 누적 성과를 한 번에
+조회하는 additive v1 endpoint다. NUBO에서는 같은 query로 `/api/board/my/studio`를 호출한다. 사용자 UID는
+JWT에서만 결정하며 query나 body의 UID는 받지 않는다.
+
+- query: 필수 `id`; 기본값 `page=1`, `limit=20`, `sort=recent`
+- 범위: `page >= 1`, `1 <= limit <= 50`; `sort`는 `recent | views | likes | comments`
+- 대상: 요청한 게시판과 JWT UID가 모두 일치하는 `CONTENT_NORMAL`·`CONTENT_SECRET` 게시물. 삭제글과
+  공지는 제외하며 본인 비밀글은 포함한다.
+- summary: 대상 게시물 수, preview thumbnail이 연결된 첨부 이미지 수, `post.hit` 합계,
+  `post_like.liked=1` 행 수, 삭제되지 않은 댓글 수를 각각 `postCount`, `photoCount`, `viewCount`,
+  `likeCount`, `commentCount`로 반환한다.
+- posts: `page`, `limit`, `totalCount`, `hasNext`, `items`를 반환한다. 각 item은 `uid`, `title`, 공개 preview
+  thumbnail인 `cover`, epoch-milliseconds `submitted`·`modified`, `status`, `imageCount`, `hit`, `like`,
+  `comment`만 포함한다. 원본과 서버 내부 경로, 사용자 개인정보와 token은 포함하지 않는다.
+- 정렬: recent는 `submitted DESC`, views는 `hit DESC`, likes와 comments는 각 집계값 `DESC`이며 모두
+  `post.uid DESC`를 최종 tie-breaker로 사용한다.
+- 빈 계정: 모든 summary 값과 `totalCount`는 0, `hasNext=false`, `items=[]`다.
+- 실패: JWT 없음·무효·정지 계정은 middleware의 HTTP 401, 잘못된 query는 `200 / code=3`, 조회 실패는
+  기존 envelope의 `200 / code=4`를 사용한다.
+
+기간별 추이, 고유 방문자, 증감률, engagement rate, follow, bookmark는 이 endpoint의 v1 계약에 포함하지
+않는다. 공개 사용자 작품 목록이 필요해질 때는 UID 노출·비밀글 제외 정책을 별도 명세하되 GOAPI의 내부
+사용자·게시판 범위 repository query를 재사용한다.
 
 ## 요청·응답 타입의 현재 source of truth
 

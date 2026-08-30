@@ -2,14 +2,14 @@
 
 ## Active goal
 
-- v1.3.1 Source Mode CLI의 pinned runtime `download`, checksum 기반 CLI `update`, Market
-  `search|info|install|validate|pack skins/<key>`까지 구현됐다. device-code `login|publish` 활성화는
-  v1.4 범위다.
-- 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검, TSBOARD의 공식 runtime
-  준비 명령까지 완료했고 제품 소유자 QA도 통과했다. 현재 진행 중인 bounded task는 없다.
+- 현재 진행 중인 bounded task는 없다.
 
 ## Current decisions
 
+- `GET /board/my/studio`는 API contract v1을 유지하는 additive JWT endpoint다. 사용자 UID는 token에서만
+  얻고 본인의 일반글·비밀글만 대상으로 DB aggregate와 page query를 실행한다.
+- 기존 필터 및 `post_uid` 인덱스로 범위를 효율적으로 제한할 수 있어 studio용 DB migration은 추가하지
+  않았다. 운영 데이터에서 병목이 확인될 때만 `EXPLAIN` 근거로 복합 인덱스를 검토한다.
 - NUBO는 소스 checkout을 운영자가 직접 빌드·실행하는 Source Mode를 기본으로 한다. CLI는 Git, npm,
   Nuxt build, DB migration, tmux·PM2·systemd·Nginx lifecycle을 자동 실행하지 않는다.
 - 공식 GOAPI는 `/Users/sirini/github/goapi.git`의 exact commit을 descriptor에 고정하고 반드시 GOAPI의
@@ -37,6 +37,9 @@
 
 ## Recent completion
 
+- Sensta Android용 `GET /board/my/studio`를 GOAPI `cb485a4`로 main에 push했다. JWT UID 격리, 본인 비밀글
+  포함, 삭제글·공지 제외, 실제 첨부 이미지와 liked/댓글 상태 집계, 네 정렬·paging·공개 cover 제한을
+  구현했고 NUBO에 동일 경로 proxy와 TypeScript 계약을 추가했다. 기존 release provenance는 변경하지 않았다.
 - nubohub.org에서 중복 `/swapfile`, 사용하지 않는 v1.2 `.nubo` cache와 오래된 journal을 안전하게
   정리해 루트 사용률을 88%에서 56%로 낮췄다. 활성 LVM swap은 보존하고 journal 상한은 512MiB로 뒀다.
 - 운영 Market을 `/var/www/market`으로 이전하고 systemd·Nginx·내부 및 외부 readiness, package 39개
@@ -68,6 +71,9 @@
 
 ## Verification
 
+- studio repository/service/handler/router 회귀 테스트와 GOAPI `go test ./...`, `go vet ./...`를 통과했다.
+  공식 `build-ubuntu22.sh`는 Ubuntu 22.04·24.04 및 x86-64 runtime 검증을 통과했다. NUBO는 전체 72개
+  테스트, lint 오류 0건(기존 경고 50), typecheck, production build, API contract v1 검증을 통과했다.
 - 새 Go CLI는 descriptor·download·archive traversal·checksum·atomic rollback·dry-run·취소 보존 단위
   테스트와 `go test -race ./...`, `go vet ./...`를 통과했다.
 - macOS에서 `CGO_ENABLED=0 GOOS=linux GOARCH=amd64` cross-build 결과가 정적 Linux amd64 ELF임을
@@ -106,4 +112,4 @@
 
 ## Next action
 
-1. 다음 세션에서 `main` 상태를 확인하고 새 bounded scope를 정한다.
+1. Sensta Android에서 새 DTO와 endpoint를 연결해 동명이인·다중 이미지·빈 계정·paging 실제 QA를 한다.

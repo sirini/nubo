@@ -154,4 +154,39 @@ describe("safeProxyRequest token refresh", () => {
     expect(refreshCalls).toBe(1)
     expect(fetchRaw).toHaveBeenCalledTimes(5)
   })
+
+  it("forwards the studio JWT and query contract to the matching GOAPI path", async () => {
+    const cookie = "nubo-auth-token=studio-access; nubo-refresh-token=studio-refresh"
+    const { event } = eventFor({
+      cookie,
+      url: "/api/board/my/studio?id=photo&page=2&limit=20&sort=likes",
+    })
+    fetchRaw.mockResolvedValueOnce(
+      response(200, {
+        success: true,
+        error: "",
+        code: 0,
+        result: {
+          summary: {
+            postCount: 0,
+            photoCount: 0,
+            viewCount: 0,
+            likeCount: 0,
+            commentCount: 0,
+          },
+          posts: { page: 2, limit: 20, totalCount: 0, hasNext: false, items: [] },
+        },
+      }),
+    )
+
+    await safeProxyRequest(event, "http://backend.test/board/my/studio")
+
+    expect(fetchRaw).toHaveBeenCalledTimes(1)
+    const [url, options] = fetchRaw.mock.calls[0]!
+    expect(url).toBe("http://backend.test/board/my/studio")
+    expect(options.method).toBe("GET")
+    expect(options.body).toBeUndefined()
+    expect(options.query).toEqual({ id: "photo", page: "2", limit: "20", sort: "likes" })
+    expect(options.headers.Authorization).toBe("Bearer studio-access")
+  })
 })
