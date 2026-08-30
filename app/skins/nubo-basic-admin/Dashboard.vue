@@ -19,8 +19,10 @@
               <p>API contract: Web <code>{{ runtimeVersion.apiContract }}</code> / GOAPI <code>{{ goapiContract }}</code></p>
             </div>
             <p class="mt-3 text-sm text-muted-foreground">
-              실행 중인 Web과 GOAPI가 같은 공식 릴리스 조합인지 확인하고, 필요하면
-              <code>nuboctl update</code>로 릴리스를 다시 전환하세요.
+              실행 중인 Web과 GOAPI가 같은 공식 릴리스 조합인지 확인하세요. NUBO 소스 폴더에서
+              <code>./bin/nubo download --dry-run</code>으로 고정된 runtime을 먼저 확인한 뒤 필요한 경우
+              <code>./bin/nubo download</code>와 Web 빌드를 수행하고, 운영 방식에 맞게 프로세스를 다시
+              시작하세요. <code>./bin/nubo</code>는 빌드나 재시작을 자동으로 수행하지 않습니다.
             </p>
           </div>
         </div>

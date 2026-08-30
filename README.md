@@ -130,6 +130,18 @@ Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 �
 없을 때만 새 버전으로 원자적으로 교체하며, 직접 만든 폴더나 수정된 스킨은 덮어쓰지 않습니다. CLI는
 설치 뒤 Nuxt build와 Web 프로세스 재시작을 자동 실행하지 않습니다.
 
+설치한 스킨을 사이트에 반영할 때는 같은 checkout에서 Web을 검증·빌드한 뒤 운영자가 사용하는 tmux나
+PM2 방식으로 Web 프로세스를 다시 시작합니다.
+
+```bash
+npm install
+npm run typecheck
+npm run build
+```
+
+현재 CLI는 스킨 삭제, Git 변경, Web 빌드와 프로세스 재시작을 대신하지 않습니다. 사용하지 않는 스킨은
+먼저 관리자 화면에서 다른 스킨으로 전환하고 Git 상태와 백업을 확인한 뒤 소스 폴더를 직접 정리하세요.
+
 `validate`는 `skin.json`, 지원 Vue entry, 이미지와 파일 수·크기·경로 한계를 실제 Market 계약으로
 검사합니다. `pack`은 같은 검증을 통과한 소스만 재현 가능한 tar.gz로 만들며 업로드나 publish는 하지
 않습니다.

@@ -23,6 +23,8 @@
   평문, 자동화에서는 JSON을 제공하고 취소·실패 시 기존 runtime을 보존한다.
 - Market 패키지 좌표는 실제 `app/skins/<key>`와 대응하는 `skins/<key>` 복수형을 사용한다. 스킨 설치는
   소스와 영수증만 관리하며 빌드·재시작은 운영자에게 명확히 안내한다.
+- 관리자 화면·README·Market의 현재 사용자 안내는 `./bin/nubo`만 사용한다. v1.2 `nuboctl` 자료는
+  과거 릴리스 보존 범위이며, Market의 기존 `/nuboctl` URL만 새 `/nubo` 페이지로 영구 리다이렉트한다.
 - 운영 Market의 실행 파일·설정·패키지 데이터는 nubohub.org의
   `/var/www/market/{bin,config,data}`에 모아 관리한다.
 - 릴리스 build는 개발 PC 상태와 분리하기 위해 GitHub-hosted Ubuntu 22.04를 기본으로 한다. WSL2
@@ -37,6 +39,9 @@
 
 ## Recent completion
 
+- 기본 관리자 스킨의 스킨 관리·runtime 경고와 NUBO/Market README를 새 CLI 및 Source Mode 계약으로
+  갱신했다. Market 카탈로그·상세·CLI 안내를 `/nubo`와 `./bin/nubo ... skins/<key>`로 전환하고,
+  관리 스킨은 `0.1.3`·최소 NUBO `1.3.1`로 올렸다. Market 변경은 `fa37809`로 main에 push했다.
 - Sensta 전용 Newsta를 private `sirini/newsta` 저장소로 이관하고 운영 checkout을 `a79a2a7`에 맞췄다.
   활성·만료·비활성 후보와 최근 실행을 보여주는 `status`, heuristic `filtered` 상태, 오류 후에도 지속되는
   60분 daemon과 `scripts/newsta-tmux` 관리 도구를 추가했다. 운영 `.env`·SQLite는 보존했으며 systemd
@@ -80,6 +85,10 @@
 
 ## Verification
 
+- 현재 CLI 안내 회귀 테스트를 포함한 NUBO 전체 79개 테스트, lint 오류 0건(기존 경고 50), typecheck,
+  production build, release contract와 `tools/nubo` test·vet를 통과했다. 관리자 스킨 package도 새 CLI로
+  검증했다. Market은 `go test ./...`, `go vet ./...`, 임시 MySQL 및 새 CLI 실제 설치 통합 smoke,
+  Ubuntu 22.04 정적 Linux amd64 빌드를 통과했다.
 - Newsta 전체 35개 테스트와 서버의 동일 테스트·offline doctor를 통과했다. private 저장소 전용 read-only
   deploy key, clean checkout, 첫 daemon cycle의 8개 feed 성공·오류 0·negative 후보 filtered 처리와 다음
   실행 대기, systemd unit not-found 및 tmux running 상태를 확인했다.
