@@ -5,8 +5,8 @@
 - v1.3.1 Source Mode CLI의 pinned runtime `download`, checksum 기반 CLI `update`, Market
   `search|info|install|validate|pack skins/<key>`까지 구현됐다. device-code `login|publish` 활성화는
   v1.4 범위다.
-- 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검을 마쳤다. 다음 작업 단위는
-  TSBOARD의 공식 runtime 준비 명령이다.
+- 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검, TSBOARD의 공식 runtime
+  준비 명령까지 완료했다. 다음 단계는 제품 소유자 QA 뒤 새 범위를 정하는 것이다.
 
 ## Current decisions
 
@@ -27,13 +27,11 @@
   `/var/www/market/{bin,config,data}`에 모아 관리한다.
 - 릴리스 build는 개발 PC 상태와 분리하기 위해 GitHub-hosted Ubuntu 22.04를 기본으로 한다. WSL2
   self-hosted runner는 online일 때 명시적으로 선택하는 cache 가속 수단이며 필수 인프라가 아니다.
+- TSBOARD 1.3.0은 NUBO 1.3.0 Linux amd64 릴리스의 GOAPI 1.3.0·libvips 8.18.3 조합을 descriptor에
+  고정하고, `npm run runtime:download`로 `bin/goapi`, `lib`, `licenses/sharp-libvips`에 준비한다.
 
 ## Open findings
 
-- Mac 작업 트리의 `package-lock.json`에는 이번 작업 전부터 플랫폼별 optional dependency가 대량 제거된
-  사용자 변경이 있다. 의도가 확인될 때까지 보존하며 v1.3.1 커밋에서 제외한다.
-- TSBOARD v1.3.0도 NUBO처럼 공식 GOAPI와 libvips 의존성을 `bin/goapi`, `lib/*`에 준비하는 npm 명령이
-  필요하다. GOAPI 계약과 공식 Ubuntu 22.04 빌드 출처를 공유하되 TSBOARD의 SPA 구조는 유지한다.
 - Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 인증 CLI 작업 전에
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
@@ -59,6 +57,9 @@
 - advance gallery·blog와 basic blog에 작성자 또는 게시판 권한 관리자가 볼 수 있는 공통 게시글 삭제
   버튼·확인창을 연결했다. basic blog 수정도 관리자에게 허용했으며, basic board·gallery·trade의 기존
   관리 메뉴까지 포함해 여섯 게시판형 스킨의 노출과 API 연결을 회귀 테스트로 고정했다.
+- TSBOARD에 공식 runtime의 외부·내부 checksum, manifest, Linux amd64 ELF와 안전한 archive 경로를
+  검증하는 `runtime:download`를 추가해 `3ecfe14`로 main에 push했다. 영수증 기반 원자적 설치·업데이트와
+  `goapi-runtime` 보존, NUBO와 같은 `bin/goapi`·`lib` 구조를 제공한다.
 - storage root 이전 뒤에도 DB의 과거 절대 경로에 의존하지 않도록 Market의 package download·preview
   경로를 불변 identity에서 재계산하고 `99aad10`으로 Market main에 push했다.
 - Market `99aad10`을 공식 Ubuntu 22.04 컨테이너로 빌드해 운영 배포했다. 이전 바이너리는
@@ -93,6 +94,10 @@
   typecheck·production build와 GOAPI board service 테스트를 통과했다. GOAPI는 작성자 또는
   최고·그룹·게시판 관리자만 수정·삭제를 허용하고 상세 응답의 `isAdmin`도 같은
   `CheckPermissionByUid` 결과임을 대조했다.
+- TSBOARD runtime 합성 archive의 신규·current·dry-run·관리 업데이트·수정 감지·위험 경로·manifest와
+  checksum 거부·cache 테스트를 포함해 전체 22개 테스트, format, lint, typecheck와 production build를
+  통과했다. 공식 NUBO 1.3.0 archive의 실제 다운로드·설치·재실행도 검증했고 GOAPI가
+  `$ORIGIN/../lib`의 glibc-hwcaps libvips를 정상 해석했다.
 - 운영 이전 바이너리에서 `HTTP 500 package file unavailable`을 재현한 뒤 Market `99aad10` 배포로
   복구했다. `nubo-advance-gallery@0.2.0`의 외부·내부 download SHA-256
   `46611c10da263b9b125c01be5559af75216e527dbccb2cb098533c882bae25cc`과 preview를 확인했고, 실제 CLI
@@ -100,5 +105,6 @@
 
 ## Next action
 
-1. TSBOARD의 공식 GOAPI·libvips runtime을 `bin/goapi`, `lib/*`에 준비하는 npm 명령을 독립된 작업
-   단위로 구현한다.
+1. 제품 소유자가 작성자·관리자 계정으로 PC와 모바일의 여섯 게시판형 스킨 삭제 동작을 QA한다.
+2. TSBOARD의 깨끗한 Linux amd64 checkout에서 `npm run runtime:download`와 GOAPI 기동을 QA한 뒤 다음
+   bounded scope를 정한다.
