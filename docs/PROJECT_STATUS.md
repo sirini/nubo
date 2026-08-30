@@ -2,7 +2,8 @@
 
 ## Active goal
 
-- 현재 진행 중인 bounded task는 없다.
+- NUBO `v1.3.1` exact tag의 비게시 사전 검증을 통과시킨 뒤 공식 GitHub Release와 immutable asset을
+  게시하고 provenance를 확인한다.
 
 ## Current decisions
 
@@ -12,7 +13,7 @@
   않았다. 운영 데이터에서 병목이 확인될 때만 `EXPLAIN` 근거로 복합 인덱스를 검토한다.
 - NUBO는 소스 checkout을 운영자가 직접 빌드·실행하는 Source Mode를 기본으로 한다. CLI는 Git, npm,
   Nuxt build, DB migration, tmux·PM2·systemd·Nginx lifecycle을 자동 실행하지 않는다.
-- 공식 GOAPI는 `/Users/sirini/github/goapi.git`의 exact commit을 descriptor에 고정하고 반드시 GOAPI의
+- 공식 GOAPI는 형제 `goapi.git`의 exact commit을 descriptor에 고정하고 반드시 GOAPI의
   `./scripts/build-ubuntu22.sh`를 통해 만든다. runtime에는 Ubuntu 22.04 amd64 GOAPI와 libvips·license만
   포함한다.
 - clone에 tracked bootstrap `./bin/nubo`를 포함한다. 첫 실행은 Linux amd64 CLI와 SHA-256을 검증해
@@ -58,8 +59,8 @@
   정리해 루트 사용률을 88%에서 56%로 낮췄다. 활성 LVM swap은 보존하고 journal 상한은 512MiB로 뒀다.
 - 운영 Market을 `/var/www/market`으로 이전하고 systemd·Nginx·내부 및 외부 readiness, package 39개
   파일의 상대 경로별 hash 일치를 확인했다.
-- GOAPI 운영 문서를 Source Mode에 맞춰 `333459e`로 main에 push하고 v1.3.1 runtime의 GOAPI 기준
-  commit을 `333459eb652a6170f452e17e777c2f5604ca5eff`으로 고정했다.
+- v1.3.1 runtime은 Source Mode 운영 문서와 작품 스튜디오 endpoint를 모두 포함한 GOAPI
+  `cb485a4fab5dd87b0b5f7a847d82c0700f8a18e0`을 exact commit으로 고정하며 DB migration은 요구하지 않는다.
 - 새 `./bin/nubo` foundation과 runtime release pipeline을 NUBO `e6e3255`로 main에 push했다. offline
   WSL2 runner에 queued된 첫 검증은 취소하고 저장소 runner 변수를 hosted Ubuntu 22.04로 전환했다.
 - checksum 검증, Linux amd64 ELF·실행 버전 확인, 원자적 교체와 실패 시 보존을 갖춘 CLI self-update를
@@ -107,9 +108,9 @@
   build, API contract, GOAPI 공식 Docker test/vet와 `build-ubuntu22.sh` runtime 생성을 통과했다.
   Ubuntu 22.04·24.04에서 launcher bootstrap, 외부·내부 checksum, 원자적 runtime 설치와 libvips 링크를
   각각 검증했으며 수동 run이라 publish는 의도대로 skip됐다.
-- Actions artifact의 CLI는 7.8MiB 정적 Linux amd64 ELF, runtime archive는 30MiB다. 외부 SHA-256이
-  일치하고 manifest는 NUBO/GOAPI 1.3.1, API contract 1, GOAPI `333459e`, libvips 8.18.3,
-  `migrationRequired=false`를 기록한다.
+- 이전 비게시 Actions 후보의 CLI는 7.8MiB 정적 Linux amd64 ELF, runtime archive는 30MiB였다. 외부
+  SHA-256과 Ubuntu smoke를 확인했으며, 최종 후보는 작품 스튜디오를 포함한 GOAPI `cb485a4`로 다시
+  생성해 검증한다.
 - Actions run `33265126877`은 self-update를 포함한 전체 release build와 Ubuntu 22.04·24.04 smoke를
   통과했다. 두 환경 모두 손상시킨 설치 CLI를 공식 asset으로 복구한 뒤 재실행에서 최신 checksum임을
   JSON으로 확인했으며, 수동 run이라 publish는 의도대로 skip됐다.
