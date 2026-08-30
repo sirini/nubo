@@ -2,8 +2,7 @@
 
 ## Active goal
 
-- NUBO `v1.3.1` exact tag의 비게시 사전 검증을 통과시킨 뒤 공식 GitHub Release와 immutable asset을
-  게시하고 provenance를 확인한다.
+- 없음. NUBO `v1.3.1` 공식 GitHub Release와 immutable Linux amd64 asset 게시를 완료했다.
 
 ## Current decisions
 
@@ -28,8 +27,9 @@
   과거 릴리스 보존 범위이며, Market의 기존 `/nuboctl` URL만 새 `/nubo` 페이지로 영구 리다이렉트한다.
 - 운영 Market의 실행 파일·설정·패키지 데이터는 nubohub.org의
   `/var/www/market/{bin,config,data}`에 모아 관리한다.
-- 릴리스 build는 개발 PC 상태와 분리하기 위해 GitHub-hosted Ubuntu 22.04를 기본으로 한다. WSL2
-  self-hosted runner는 online일 때 명시적으로 선택하는 cache 가속 수단이며 필수 인프라가 아니다.
+- 릴리스 build는 개발 PC 상태와 분리하기 위해 GitHub-hosted Ubuntu 22.04를 기본으로 한다. `v1.3.1`
+  공개 asset도 hosted runner에서 만들었으며 WSL2 PC는 사용하지 않았다. self-hosted runner는 명시적으로
+  전환할 때만 사용하는 선택 사항이다.
 - TSBOARD 1.3.0은 NUBO 1.3.0 Linux amd64 릴리스의 GOAPI 1.3.0·libvips 8.18.3 조합을 descriptor에
   고정하고, `npm run runtime:download`로 `bin/goapi`, `lib`, `licenses/sharp-libvips`에 준비한다.
 
@@ -59,8 +59,10 @@
   정리해 루트 사용률을 88%에서 56%로 낮췄다. 활성 LVM swap은 보존하고 journal 상한은 512MiB로 뒀다.
 - 운영 Market을 `/var/www/market`으로 이전하고 systemd·Nginx·내부 및 외부 readiness, package 39개
   파일의 상대 경로별 hash 일치를 확인했다.
-- v1.3.1 runtime은 Source Mode 운영 문서와 작품 스튜디오 endpoint를 모두 포함한 GOAPI
-  `cb485a4fab5dd87b0b5f7a847d82c0700f8a18e0`을 exact commit으로 고정하며 DB migration은 요구하지 않는다.
+- annotated tag `v1.3.1`을 NUBO `afb6ff2`에 붙이고
+  [GitHub Release](https://github.com/sirini/nubo/releases/tag/v1.3.1)를 게시했다. runtime은 작품 스튜디오를
+  포함한 GOAPI `cb485a4fab5dd87b0b5f7a847d82c0700f8a18e0`, API contract v1, libvips 8.18.3을 고정하며
+  DB migration은 요구하지 않는다.
 - 새 `./bin/nubo` foundation과 runtime release pipeline을 NUBO `e6e3255`로 main에 push했다. offline
   WSL2 runner에 queued된 첫 검증은 취소하고 저장소 runner 변수를 hosted Ubuntu 22.04로 전환했다.
 - checksum 검증, Linux amd64 ELF·실행 버전 확인, 원자적 교체와 실패 시 보존을 갖춘 CLI self-update를
@@ -104,16 +106,13 @@
   테스트와 `go test -race ./...`, `go vet ./...`를 통과했다.
 - macOS에서 `CGO_ENABLED=0 GOOS=linux GOARCH=amd64` cross-build 결과가 정적 Linux amd64 ELF임을
   확인했다.
-- Actions run `33264040728`은 NUBO 64개 테스트·lint 오류 0건(기존 경고 50)·typecheck·production
-  build, API contract, GOAPI 공식 Docker test/vet와 `build-ubuntu22.sh` runtime 생성을 통과했다.
-  Ubuntu 22.04·24.04에서 launcher bootstrap, 외부·내부 checksum, 원자적 runtime 설치와 libvips 링크를
-  각각 검증했으며 수동 run이라 publish는 의도대로 skip됐다.
-- 이전 비게시 Actions 후보의 CLI는 7.8MiB 정적 Linux amd64 ELF, runtime archive는 30MiB였다. 외부
-  SHA-256과 Ubuntu smoke를 확인했으며, 최종 후보는 작품 스튜디오를 포함한 GOAPI `cb485a4`로 다시
-  생성해 검증한다.
-- Actions run `33265126877`은 self-update를 포함한 전체 release build와 Ubuntu 22.04·24.04 smoke를
-  통과했다. 두 환경 모두 손상시킨 설치 CLI를 공식 asset으로 복구한 뒤 재실행에서 최신 checksum임을
-  JSON으로 확인했으며, 수동 run이라 publish는 의도대로 skip됐다.
+- 비게시 preflight Actions run `33297210116`과 tag publish run `33298138773`이 전체 NUBO 검증, GOAPI
+  공식 Docker test·vet 및 `build-ubuntu22.sh`, Ubuntu 22.04·24.04 runtime smoke를 통과했다. 공개 CLI는
+  8,683,682-byte 정적 Linux amd64 ELF이며 SHA-256은
+  `c86a37d930080348791ef3eefecebc31b8d4b2db19946e9276e8702cd3782de0`, runtime archive는
+  30,974,972 bytes이며 SHA-256은 `c91b0d7fa46bc98822f14e84b11327a934a6ac8e402e6ead9943e56057e2fc02`다.
+  공개 자산을 다시 내려받아 외부·내부 checksum, `nubo 1.3.1`, GOAPI commit과 libvips 동적 링크를 확인했고
+  preflight 자산과 byte-identical임을 확인했다.
 - Market CLI 단위 테스트와 `go test -race ./...`, `go vet ./...`를 통과했고 운영
   `https://nubohub.org/market/v1` 응답에 대한 실제 조회도 확인했다.
 - install 신규·업데이트·current·dry-run, checksum·traversal·예약 파일, unmanaged·수정·추가·누락·동시
