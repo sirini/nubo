@@ -6,7 +6,7 @@
   `search|info|install|validate|pack skins/<key>`까지 구현됐다. device-code `login|publish` 활성화는
   v1.4 범위다.
 - 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검, TSBOARD의 공식 runtime
-  준비 명령까지 완료했다. 다음 단계는 제품 소유자 QA 뒤 새 범위를 정하는 것이다.
+  준비 명령까지 완료했고 제품 소유자 QA도 통과했다. 현재 진행 중인 bounded task는 없다.
 
 ## Current decisions
 
@@ -94,6 +94,7 @@
   typecheck·production build와 GOAPI board service 테스트를 통과했다. GOAPI는 작성자 또는
   최고·그룹·게시판 관리자만 수정·삭제를 허용하고 상세 응답의 `isAdmin`도 같은
   `CheckPermissionByUid` 결과임을 대조했다.
+- 제품 소유자 QA에서 작성자·관리자 게시글 관리 동작이 실제 화면에서도 정상임을 확인했다.
 - TSBOARD runtime 합성 archive의 신규·current·dry-run·관리 업데이트·수정 감지·위험 경로·manifest와
   checksum 거부·cache 테스트를 포함해 전체 22개 테스트, format, lint, typecheck와 production build를
   통과했다. 공식 NUBO 1.3.0 archive의 실제 다운로드·설치·재실행도 검증했고 GOAPI가
@@ -105,6 +106,4 @@
 
 ## Next action
 
-1. 제품 소유자가 작성자·관리자 계정으로 PC와 모바일의 여섯 게시판형 스킨 삭제 동작을 QA한다.
-2. TSBOARD의 깨끗한 Linux amd64 checkout에서 `npm run runtime:download`와 GOAPI 기동을 QA한 뒤 다음
-   bounded scope를 정한다.
+1. 다음 세션에서 `main` 상태를 확인하고 새 bounded scope를 정한다.
