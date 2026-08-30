@@ -2,7 +2,8 @@
 
 ## Active goal
 
-- 현재 진행 중인 bounded task는 없다.
+- JWT 본인에게만 누적 작품 성과를 보여주는 `nubo-advance-profile` MVP를 구현한다. 기존 공개 프로필과
+  대화·수정 기능은 유지하고, 게시판별 studio 조회를 제공한다.
 
 ## Current decisions
 
@@ -37,6 +38,8 @@
 
 ## Recent completion
 
+- 게시글 상세의 공통 좋아요 상태가 성공 직후 숫자까지 반영되도록 고쳤다. 모든 기본·advance 상세 스킨에
+  함께 적용되며 게시글·댓글 모두 진행 중 중복 요청과 음수 count를 방지한다.
 - Sensta Android용 `GET /board/my/studio`를 GOAPI `cb485a4`로 main에 push했다. JWT UID 격리, 본인 비밀글
   포함, 삭제글·공지 제외, 실제 첨부 이미지와 liked/댓글 상태 집계, 네 정렬·paging·공개 cover 제한을
   구현했고 NUBO에 동일 경로 proxy와 TypeScript 계약을 추가했다. 기존 release provenance는 변경하지 않았다.
@@ -71,6 +74,8 @@
 
 ## Verification
 
+- 좋아요 상태 전이 단위 테스트를 포함한 frontend unit 64개, lint 오류 0건(기존 경고 50), typecheck를
+  통과했다.
 - studio repository/service/handler/router 회귀 테스트와 GOAPI `go test ./...`, `go vet ./...`를 통과했다.
   공식 `build-ubuntu22.sh`는 Ubuntu 22.04·24.04 및 x86-64 runtime 검증을 통과했다. NUBO는 전체 72개
   테스트, lint 오류 0건(기존 경고 50), typecheck, production build, API contract v1 검증을 통과했다.

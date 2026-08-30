@@ -13,6 +13,7 @@ import {
 } from "~/types/board"
 import type { TradeListResult, TradeViewResult } from "~/types/trade"
 import { HomeSearchOptions } from "~/types/home"
+import { likeCountAfterTransition } from "~/utils/like"
 
 export const useBoardStore = defineStore("board", () => {
   const config = useRuntimeConfig()
@@ -52,6 +53,7 @@ export const useBoardStore = defineStore("board", () => {
   const keyword = ref<string>("")
   const readingProgressController = ref<AbortController | null>(null)
   const removeTargetUid = ref<number>(0)
+  let isPostLikePending = false
 
   // 게시글 본문 내용 가져오기
   const getInitView = async (id: string, postUid: number, needUpdateHit: boolean) => {
@@ -144,7 +146,11 @@ export const useBoardStore = defineStore("board", () => {
 
   // 게시글에 좋아요 누르기
   const likePost = async (isLiked: boolean) => {
+    const previouslyLiked = view.value.post.liked
+    if (isPostLikePending || previouslyLiked === isLiked) return
+
     try {
+      isPostLikePending = true
       const response = await like({
         boardUid: view.value.config.uid,
         postUid: view.value.post.uid,
@@ -158,9 +164,16 @@ export const useBoardStore = defineStore("board", () => {
       if (isLiked) {
         toast(`✅ 이 게시글에 좋아요를 남겼습니다`)
       }
+      view.value.post.like = likeCountAfterTransition(
+        view.value.post.like,
+        previouslyLiked,
+        isLiked,
+      )
       view.value.post.liked = isLiked
     } catch (e) {
       toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${e}`)
+    } finally {
+      isPostLikePending = false
     }
   }
 

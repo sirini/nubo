@@ -10,6 +10,7 @@ import {
   type CommentWriteParam,
 } from "~/types/comment"
 import type { UserMyResult } from "~/types/user"
+import { likeCountAfterTransition } from "~/utils/like"
 
 export const useCommentStore = defineStore("comment", () => {
   const { loadInitCommentList, write, reply, remove, modify, like } = useComment()
@@ -21,6 +22,7 @@ export const useCommentStore = defineStore("comment", () => {
   const limit = ref<number>(20)
   const view = ref<BoardViewResult | null>(null)
   const target = ref({ reply: 0, remove: 0, modify: 0 })
+  const pendingLikes = new Set<number>()
 
   // 변수들 초기화하기
   const clear = () => {
@@ -62,20 +64,26 @@ export const useCommentStore = defineStore("comment", () => {
 
   // 댓글에 좋아요 남기기
   const likeComment = async (param: CommentLikeParam) => {
+    const current = comments.value.find((comment) => comment.uid === param.commentUid)
+    if (!current || current.liked === param.liked || pendingLikes.has(param.commentUid)) return
+
     try {
+      pendingLikes.add(param.commentUid)
       const response = await like(param)
       if (!response.success) {
         toast(`❌ 댓글에 좋아요를 남기지 못했습니다: ${response.error}`)
         return
       }
 
-      const target = comments.value.find((c) => c.uid === param.commentUid)
-      if (target) {
-        target.liked = param.liked
-        target.like += param.liked ? 1 : -1
+      const latest = comments.value.find((comment) => comment.uid === param.commentUid)
+      if (latest && latest.liked !== param.liked) {
+        latest.like = likeCountAfterTransition(latest.like, latest.liked, param.liked)
+        latest.liked = param.liked
       }
     } catch (e) {
       toast(`❌ 댓글에 좋아요를 남기지 못했습니다: ${e}`)
+    } finally {
+      pendingLikes.delete(param.commentUid)
     }
   }
 
