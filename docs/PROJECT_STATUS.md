@@ -2,9 +2,9 @@
 
 ## Active goal
 
-- v1.3.1의 Source Mode CLI foundation, pinned runtime `download`, checksum 기반 CLI `update`는
-  공식 Ubuntu 22.04·24.04 검증까지 완료됐다.
-- 다음 작업 단위는 같은 UI·검증 기반의 Market `search|info|install skins/<key>`다. 제작자
+- v1.3.1의 Source Mode CLI foundation, pinned runtime `download`, checksum 기반 CLI `update`와 Market
+  read-only `search|info`까지 구현됐다.
+- 다음 작업 단위는 같은 UI·검증 기반의 `install skins/<key>`다. 제작자
   `validate|pack` 기반은 v1.3.x, device-code `login|publish` 활성화는 v1.4 범위다.
 
 ## Current decisions
@@ -31,7 +31,12 @@
 
 - Mac 작업 트리의 `package-lock.json`에는 이번 작업 전부터 플랫폼별 optional dependency가 대량 제거된
   사용자 변경이 있다. 의도가 확인될 때까지 보존하며 v1.3.1 커밋에서 제외한다.
-- Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 Market CLI 작업 전에
+- 모바일에서 관리자로 로그인하면 `nubo-advance-gallery` 게시글 삭제 동작이 보이지 않는다. 광고글을
+  즉시 처리할 수 있도록 advance 및 기본 제공 스킨 전체의 모바일 게시글 관리 affordance와 실제 권한
+  호출을 함께 점검한다.
+- TSBOARD v1.3.0도 NUBO처럼 공식 GOAPI와 libvips 의존성을 `bin/goapi`, `lib/*`에 준비하는 npm 명령이
+  필요하다. GOAPI 계약과 공식 Ubuntu 22.04 빌드 출처를 공유하되 TSBOARD의 SPA 구조는 유지한다.
+- Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 인증 CLI 작업 전에
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
@@ -46,6 +51,9 @@
   WSL2 runner에 queued된 첫 검증은 취소하고 저장소 runner 변수를 hosted Ubuntu 22.04로 전환했다.
 - checksum 검증, Linux amd64 ELF·실행 버전 확인, 원자적 교체와 실패 시 보존을 갖춘 CLI self-update를
   NUBO `5bca081`로 main에 push했다. `update`는 소스·runtime·DB·서비스를 변경하지 않는다.
+- Market 저장소와 운영 API를 대조해 v1 read-only 계약을 고정하고 `search [query]`와
+  `info skins/<key>`를 구현했다. package namespace, pagination, 응답 크기·identity 검증과 현재 NUBO
+  버전 호환성, 평문·JSON 출력을 포함한다.
 
 ## Verification
 
@@ -63,11 +71,13 @@
 - Actions run `33265126877`은 self-update를 포함한 전체 release build와 Ubuntu 22.04·24.04 smoke를
   통과했다. 두 환경 모두 손상시킨 설치 CLI를 공식 asset으로 복구한 뒤 재실행에서 최신 checksum임을
   JSON으로 확인했으며, 수동 run이라 publish는 의도대로 skip됐다.
+- Market CLI 단위 테스트와 `go test -race ./...`, `go vet ./...`를 통과했고 운영
+  `https://nubohub.org/market/v1` 응답에 대한 실제 조회도 확인했다.
 
 ## Next action
 
-1. `/Users/sirini/github/nubohub-market.git`의 현재 API·패키지 계약을 확인하고 CLI용 read-only
-   `search|info` 계약을 고정한다.
-2. `install skins/<key>`를 안전한 압축 검증, 원자적 설치, 영수증·로컬 변경 감지 위에 구현한다.
-3. 제작자 관점의 로컬 `validate|pack skins/<key>`를 설계한다. device-code 인증은 v1.4 활성화 전에
+1. `install skins/<key>`를 안전한 압축 검증, 원자적 설치, 영수증·로컬 변경 감지 위에 구현한다.
+2. 제작자 관점의 로컬 `validate|pack skins/<key>`를 설계한다. device-code 인증은 v1.4 활성화 전에
    별도 작업 단위로 다룬다.
+3. 모바일 관리자 게시글 삭제 UX와 TSBOARD runtime 준비 명령은 위 CLI 작업 뒤 독립된 후속 단위로
+   진행한다.

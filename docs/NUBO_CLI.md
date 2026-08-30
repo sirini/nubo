@@ -8,6 +8,10 @@
 ```bash
 ./bin/nubo
 ./bin/nubo version
+./bin/nubo search gallery
+./bin/nubo search --json gallery
+./bin/nubo info skins/nubo-advance-gallery
+./bin/nubo info --json skins/nubo-advance-gallery
 ./bin/nubo update --dry-run
 ./bin/nubo update
 ./bin/nubo download --dry-run
@@ -15,6 +19,22 @@
 ```
 
 인자 없이 TTY에서 실행하면 대화형 시작 화면을 표시한다. 비대화형 환경에서는 도움말을 출력한다.
+
+## search와 info
+
+공식 Market의 공개 스킨을 읽기 전용으로 조회한다. package 좌표는 실제 소스 경로와 대응하는
+`skins/<key>`만 허용한다.
+
+- `search [검색어]`: 이름·key·설명·기능 검색. 검색어를 생략하면 전체 최신 스킨을 조회한다.
+- `search --limit 20 --offset 20`: 최대 100개 단위의 명시적 offset pagination.
+- `info skins/<key>`: 최신 공개 버전, 제작자, 기능, 크기, SHA-256과 현재 checkout 호환성 확인.
+- `--json`: `status`, checkout의 `nuboVersion`, package 좌표와 `compatible`을 포함한 JSON 출력.
+
+CLI가 소비하는 Market v1 read-only 계약은 `GET /v1/skins?q=&limit=&offset=`와
+`GET /v1/skins/:key`다. 응답의 `key`, `version`, `min_nubo_version`, `sha256`, `size_bytes`,
+`published_at`, `download_url`을 검증하며 2MiB보다 큰 응답은 거부한다. 기본 주소는
+`https://nubohub.org/market`이고 개발·통합 테스트에서는 `NUBO_MARKET_BASE_URL`로 HTTPS 또는 loopback
+HTTP 주소만 지정할 수 있다. 조회 명령은 소스, package, runtime과 Market 다운로드 수를 변경하지 않는다.
 
 ## update
 
@@ -76,5 +96,5 @@ Ctrl+C 취소는 다운로드 임시 파일과 staging만 정리한다. 기존 r
 
 ## 다음 단계
 
-v1.3.x에서 같은 UI·검증 기반에 `search|info|install skins/<key>`와 로컬 `validate|pack`을 추가한다.
+v1.3.x에서 같은 UI·검증 기반에 `install skins/<key>`와 로컬 `validate|pack`을 추가한다.
 Market login·publish는 device-code 인증과 운영 심사 흐름을 완성한 v1.4에서 활성화한다.

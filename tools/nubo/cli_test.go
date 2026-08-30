@@ -15,7 +15,7 @@ func TestCLIHelpIsUsefulWithoutTTY(t *testing.T) {
 	if code := application.run(nil); code != 0 {
 		t.Fatalf("exit = %d, stderr = %s", code, errors.String())
 	}
-	for _, expected := range []string{"./bin/nubo download", "./bin/nubo update", "자동으로 변경하지 않습니다"} {
+	for _, expected := range []string{"./bin/nubo search", "./bin/nubo info skins/<key>", "./bin/nubo download", "./bin/nubo update", "자동으로 변경하지 않습니다"} {
 		if !strings.Contains(output.String(), expected) {
 			t.Fatalf("help missing %q:\n%s", expected, output.String())
 		}

@@ -68,6 +68,7 @@ type menuModel struct {
 }
 
 var menuItems = []struct{ key, title, description string }{
+	{"search", "Market 둘러보기", "공개 스킨을 찾고 현재 NUBO와의 호환성을 확인합니다."},
 	{"download", "Runtime 준비", "공식 GOAPI와 libvips를 검증해 내려받습니다."},
 	{"update", "CLI 업데이트", "NUBO CLI 자체만 검증해 안전하게 교체합니다."},
 	{"help", "명령 안내", "지원하는 작업과 안전 경계를 확인합니다."},

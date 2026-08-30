@@ -36,6 +36,8 @@ func (c *cli) run(args []string) int {
 				return c.runDownload(nil)
 			case "update":
 				return c.runUpdate(nil)
+			case "search":
+				return c.runSearch(nil)
 			case "help":
 				c.printHelp()
 			}
@@ -46,6 +48,10 @@ func (c *cli) run(args []string) int {
 	}
 
 	switch args[0] {
+	case "search":
+		return c.runSearch(args[1:])
+	case "info":
+		return c.runInfo(args[1:])
 	case "download":
 		return c.runDownload(args[1:])
 	case "update":
@@ -61,6 +67,114 @@ func (c *cli) run(args []string) int {
 		c.printHelpTo(c.errOut)
 		return 2
 	}
+}
+
+type searchFlags struct {
+	root   string
+	limit  int
+	offset int
+	json   bool
+}
+
+func (c *cli) runSearch(args []string) int {
+	flags := flag.NewFlagSet("search", flag.ContinueOnError)
+	flags.SetOutput(c.errOut)
+	options := searchFlags{}
+	flags.StringVar(&options.root, "root", "", "NUBO 프로젝트 루트")
+	flags.IntVar(&options.limit, "limit", 20, "한 번에 표시할 결과 수 (1~100)")
+	flags.IntVar(&options.offset, "offset", 0, "건너뛸 결과 수")
+	flags.BoolVar(&options.json, "json", false, "결과를 JSON으로 출력")
+	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if options.limit < 1 || options.limit > 100 || options.offset < 0 {
+		return c.invalid(errors.New("--limit은 1~100, --offset은 0 이상이어야 합니다"))
+	}
+	root, err := c.projectRoot(options.root)
+	if err != nil {
+		return c.fail(err)
+	}
+	descriptor, err := loadReleaseSources(root, c.getenv)
+	if err != nil {
+		return c.fail(err)
+	}
+	client, err := newMarketClient(c.getenv("NUBO_MARKET_BASE_URL"), nil)
+	if err != nil {
+		return c.fail(err)
+	}
+	query := strings.TrimSpace(strings.Join(flags.Args(), " "))
+	response, err := client.search(context.Background(), query, options.limit, options.offset)
+	if err != nil {
+		return c.fail(err)
+	}
+	items := make([]marketSkin, len(response.Items))
+	for index := range response.Items {
+		items[index] = prepareMarketSkin(response.Items[index], descriptor.Channel.Version)
+	}
+	result := marketSearchResult{Status: "ok", Query: query, NUBOVersion: descriptor.Channel.Version, Items: items, Total: response.Total, Limit: response.Limit, Offset: response.Offset}
+	if options.json {
+		payload, _ := json.MarshalIndent(result, "", "  ")
+		fmt.Fprintln(c.out, string(payload))
+		return 0
+	}
+	printMarketSearch(c.out, result, c.colorEnabled() && c.interactive())
+	return 0
+}
+
+type infoFlags struct {
+	root string
+	json bool
+}
+
+func (c *cli) runInfo(args []string) int {
+	flags := flag.NewFlagSet("info", flag.ContinueOnError)
+	flags.SetOutput(c.errOut)
+	options := infoFlags{}
+	flags.StringVar(&options.root, "root", "", "NUBO 프로젝트 루트")
+	flags.BoolVar(&options.json, "json", false, "결과를 JSON으로 출력")
+	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	if flags.NArg() != 1 {
+		return c.invalid(errors.New("package 좌표 하나가 필요합니다: skins/<key>"))
+	}
+	key, err := parseSkinCoordinate(flags.Arg(0))
+	if err != nil {
+		return c.invalid(err)
+	}
+	root, err := c.projectRoot(options.root)
+	if err != nil {
+		return c.fail(err)
+	}
+	descriptor, err := loadReleaseSources(root, c.getenv)
+	if err != nil {
+		return c.fail(err)
+	}
+	client, err := newMarketClient(c.getenv("NUBO_MARKET_BASE_URL"), nil)
+	if err != nil {
+		return c.fail(err)
+	}
+	item, err := client.info(context.Background(), key)
+	if errors.Is(err, errMarketNotFound) {
+		return c.fail(fmt.Errorf("Market에서 package를 찾을 수 없습니다: skins/%s", key))
+	}
+	if err != nil {
+		return c.fail(err)
+	}
+	result := marketInfoResult{Status: "ok", NUBOVersion: descriptor.Channel.Version, Skin: prepareMarketSkin(item, descriptor.Channel.Version)}
+	if options.json {
+		payload, _ := json.MarshalIndent(result, "", "  ")
+		fmt.Fprintln(c.out, string(payload))
+		return 0
+	}
+	printMarketInfo(c.out, result, c.colorEnabled() && c.interactive())
+	return 0
 }
 
 type updateFlags struct {
@@ -295,9 +409,16 @@ func (c *cli) printHelpTo(writer io.Writer) {
 
 사용법
   ./bin/nubo                     대화형 시작 화면
+  ./bin/nubo search [검색어]     Market 스킨 검색
+  ./bin/nubo info skins/<key>    Market 스킨 상세 확인
   ./bin/nubo download            GOAPI와 libvips 준비
   ./bin/nubo update              NUBO CLI 자체 업데이트
   ./bin/nubo version             CLI 버전 확인
+
+Market 옵션
+  --limit                        검색 결과 수 (기본 20, 최대 100)
+  --offset                       검색 시작 위치
+  --json                         자동화를 위한 JSON 결과
 
 download 옵션
   --dry-run                      다운로드와 검증만 수행
