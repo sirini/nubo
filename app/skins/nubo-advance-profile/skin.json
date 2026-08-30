@@ -1,0 +1,11 @@
+{
+  "key": "nubo-advance-profile",
+  "name": "어드밴스 프로필 스킨",
+  "version": "0.1.0",
+  "author": "sirini",
+  "website": "https://nubohub.org",
+  "description": "공개 프로필과 본인 전용 작품 성과 스튜디오를 결합한 반응형 프로필 스킨입니다",
+  "preview": "preview.svg",
+  "features": ["본인 전용 작품 통계", "게시판별 작품 정렬", "공개 활동", "프로필과 대화 관리"],
+  "min_nubo_version": "1.3.1"
+}

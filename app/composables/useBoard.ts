@@ -3,6 +3,8 @@ import type {
   BoardListParam,
   BoardListResult,
   BoardOriginalImageResult,
+  BoardStudioParam,
+  BoardStudioResult,
   BoardViewDownloadResult,
   BoardViewLikeParam,
   BoardMovePostParam,
@@ -16,6 +18,7 @@ import type { TradeListResult, TradeViewResult } from "~/types/trade"
 
 export const useBoard = () => {
   const config = useRuntimeConfig()
+  const requestFetch = useRequestFetch()
 
   // 첨부파일 다운로드 하기
   const download = async (boardUid: number, fileUid: number) => {
@@ -74,6 +77,15 @@ export const useBoard = () => {
     return data.value
   }
 
+  // JWT 사용자가 선택한 게시판에 작성한 작품과 누적 성과 가져오기
+  const loadMyStudio = async (param: BoardStudioParam) => {
+    return await requestFetch<Resp<BoardStudioResult>>("/board/my/studio", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: param,
+    })
+  }
+
   // 게시글에 좋아요 남기기 (혹은 취소하기)
   const like = async (param: BoardViewLikeParam) => {
     return await $fetch<Resp<null>>("/board/like", {
@@ -121,6 +133,7 @@ export const useBoard = () => {
     loadInitBoardView,
     loadInitBoardList,
     loadInitUserLatestContent,
+    loadMyStudio,
     like,
     loadMoveTargets,
     movePost,

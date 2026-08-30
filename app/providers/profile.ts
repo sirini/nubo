@@ -5,12 +5,22 @@ export const useProfileProvider = (): NuboProfileContext => {
   const auth = useAuthStore()
   const chat = useChatStore()
   const report = useReportStore()
+  const home = useHomeStore()
+  const { loadMyStudio } = useBoard()
 
   return {
     isLoggedIn: computed(() => auth.isLoggedIn),
     userLatestPosts: computed(() => (report.isBannedByMe ? [] : auth.userLatestPosts)),
     userLatestComments: computed(() => (report.isBannedByMe ? [] : auth.userLatestComments)),
     profileUser: computed(() => auth.otherUser),
+    profileBoards: computed(() => {
+      const seen = new Set<string>()
+      return home.menus.flatMap((group) => group.boards).filter((board) => {
+        if (seen.has(board.id)) return false
+        seen.add(board.id)
+        return true
+      })
+    }),
     myPoint: computed(() => auth.user.point),
     isMe: computed(() => auth.otherUser.uid === auth.user.uid),
     isOpenReportForm: computed({
@@ -66,6 +76,7 @@ export const useProfileProvider = (): NuboProfileContext => {
       }
       await chat.send(auth.user.uid)
     },
+    loadMyStudio,
     changeProfileImage: (event: Event) => {
       const target = event.target as HTMLInputElement
       if (target.files && target.files[0]) {

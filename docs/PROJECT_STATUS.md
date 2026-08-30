@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- JWT 본인에게만 누적 작품 성과를 보여주는 `nubo-advance-profile` MVP를 구현한다. 기존 공개 프로필과
-  대화·수정 기능은 유지하고, 게시판별 studio 조회를 제공한다.
+- Sensta의 Newsta 자동 게시기를 별도 private 저장소로 이관하고 후보 선택 가시성과 전체 pipeline 테스트를
+  보강한 뒤, 운영을 systemd timer에서 수동 관리 가능한 tmux 상주 세션으로 전환한다.
 
 ## Current decisions
 
@@ -38,6 +38,9 @@
 
 ## Recent completion
 
+- `nubo-advance-profile` 0.1.0을 추가했다. 공개 프로필·최근 활동·프로필 관리·신고·차단·대화를 유지하면서
+  본인에게만 게시판별 작품·사진·조회·좋아요·댓글 누계와 정렬·paging 작품 목록을 보여준다. Sensta에서는
+  `photo`를 우선 선택하지만 다른 NUBO 배포에서는 실제 메뉴의 첫 게시판으로 fallback한다.
 - 게시글 상세의 공통 좋아요 상태가 성공 직후 숫자까지 반영되도록 고쳤다. 모든 기본·advance 상세 스킨에
   함께 적용되며 게시글·댓글 모두 진행 중 중복 요청과 음수 count를 방지한다.
 - Sensta Android용 `GET /board/my/studio`를 GOAPI `cb485a4`로 main에 push했다. JWT UID 격리, 본인 비밀글
@@ -74,6 +77,8 @@
 
 ## Verification
 
+- advance profile의 JWT 자기 프로필 제한, 네 정렬, 공개 cover 유지, secret 표시와 기존 프로필 기능 보존
+  계약 테스트 및 skin package 격리 테스트를 통과했다.
 - 좋아요 상태 전이 단위 테스트를 포함한 frontend unit 64개, lint 오류 0건(기존 경고 50), typecheck를
   통과했다.
 - studio repository/service/handler/router 회귀 테스트와 GOAPI `go test ./...`, `go vet ./...`를 통과했다.

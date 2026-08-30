@@ -1,5 +1,12 @@
-import type { BoardWriterLatestComment, BoardWriterLatestPost } from "~/types/board"
+import type {
+  BoardStudioParam,
+  BoardStudioResult,
+  BoardWriterLatestComment,
+  BoardWriterLatestPost,
+} from "~/types/board"
 import type { ChatHistory } from "~/types/chat"
+import type { Resp } from "~/types/common"
+import type { HomeSidebarBoardResult } from "~/types/home"
 import type { EditProfileParam, UserInfoResult } from "~/types/user"
 
 // [프로필] 화면에서 필요한 변수 & 함수들 정의
@@ -16,6 +23,7 @@ export interface NuboProfileContext {
   isReportedUser: ComputedRef<boolean>
   myPoint: ComputedRef<number>
   profileUser: ComputedRef<UserInfoResult>
+  profileBoards: ComputedRef<HomeSidebarBoardResult[]>
   reportDescription: WritableComputedRef<string>
   reportReason: WritableComputedRef<string>
   reportReasons: ComputedRef<{ label: string; description: string }[]>
@@ -27,6 +35,7 @@ export interface NuboProfileContext {
   openReportForm: (userUid: number) => void
   reportBadUser: () => Promise<void>
   sendChatMessage: () => Promise<void>
+  loadMyStudio: (param: BoardStudioParam) => Promise<Resp<BoardStudioResult>>
   updateMyProfile: () => Promise<void>
 }
 
