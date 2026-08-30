@@ -3,9 +3,9 @@
 ## Active goal
 
 - v1.3.1 Source Mode CLI의 pinned runtime `download`, checksum 기반 CLI `update`, Market
-  `search|info|install skins/<key>`까지 구현됐다.
-- 다음 제작자 작업 단위는 같은 manifest·archive 검증 기반의 로컬 `validate|pack`이다. device-code
-  `login|publish` 활성화는 v1.4 범위다.
+  `search|info|install|validate|pack skins/<key>`까지 구현됐다. device-code `login|publish` 활성화는
+  v1.4 범위다.
+- 다음 작업 단위는 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검이다.
 
 ## Current decisions
 
@@ -31,9 +31,9 @@
 
 - Mac 작업 트리의 `package-lock.json`에는 이번 작업 전부터 플랫폼별 optional dependency가 대량 제거된
   사용자 변경이 있다. 의도가 확인될 때까지 보존하며 v1.3.1 커밋에서 제외한다.
-- 모바일에서 관리자로 로그인하면 `nubo-advance-gallery` 게시글 삭제 동작이 보이지 않는다. 광고글을
-  즉시 처리할 수 있도록 advance 및 기본 제공 스킨 전체의 모바일 게시글 관리 affordance와 실제 권한
-  호출을 함께 점검한다.
+- PC와 모바일 모두 `nubo-advance-gallery` 게시글 삭제 동작이 보이지 않는다. 기기별 문제가 아닌 상세
+  액션 권한 문제로 보고 작성자 본인의 수정·삭제, 관리자의 모든 글 삭제, 일반 타인의 비노출을 advance 및
+  기본 제공 게시판형 스킨 전체에서 실제 API 호출과 함께 점검한다.
 - TSBOARD v1.3.0도 NUBO처럼 공식 GOAPI와 libvips 의존성을 `bin/goapi`, `lib/*`에 준비하는 npm 명령이
   필요하다. GOAPI 계약과 공식 Ubuntu 22.04 빌드 출처를 공유하되 TSBOARD의 SPA 구조는 유지한다.
 - Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 인증 CLI 작업 전에
@@ -56,6 +56,8 @@
   버전 호환성, 평문·JSON 출력을 포함하며 NUBO `ee589cd`로 main에 push했다.
 - `install skins/<key>`에 cache SHA-256, 안전한 archive·manifest·asset 검증, 기존 nubo-market 호환
   파일별 영수증, unmanaged·로컬/동시 변경 감지와 원자적 상위 버전 교체를 구현했다.
+- `validate|pack skins/<key>`에 실제 Market manifest·asset·경로·크기 계약, 설치 영수증 제외, source
+  동시 변경 감지와 고정 metadata 기반의 재현 가능한 원자적 package 생성을 구현했다.
 - storage root 이전 뒤에도 DB의 과거 절대 경로에 의존하지 않도록 Market의 package download·preview
   경로를 불변 identity에서 재계산하고 `99aad10`으로 Market main에 push했다.
 - Market `99aad10`을 공식 Ubuntu 22.04 컨테이너로 빌드해 운영 배포했다. 이전 바이너리는
@@ -83,6 +85,9 @@
 - install 신규·업데이트·current·dry-run, checksum·traversal·예약 파일, unmanaged·수정·추가·누락·동시
   변경과 NUBO 비호환 거부 테스트가 race에서 통과했다. Market storage 이전 회귀 테스트와 MySQL 통합
   smoke도 통과했다.
+- validate·pack의 unsafe source/output, deterministic checksum, 기존 파일 보존과 생성 package의 install
+  계약 테스트를 통과했다. 실제 `nubo-advance-gallery@0.2.2` 10개 파일을 검증해 1,896,743-byte package와
+  SHA-256 `5b4988f9d5aece34954c026964e962fc4dcaec924d240728c67d5df37a76efe6`을 재현했다.
 - 운영 이전 바이너리에서 `HTTP 500 package file unavailable`을 재현한 뒤 Market `99aad10` 배포로
   복구했다. `nubo-advance-gallery@0.2.0`의 외부·내부 download SHA-256
   `46611c10da263b9b125c01be5559af75216e527dbccb2cb098533c882bae25cc`과 preview를 확인했고, 실제 CLI
@@ -90,7 +95,6 @@
 
 ## Next action
 
-1. 제작자 관점의 로컬 `validate|pack skins/<key>`를 설계한다. device-code 인증은 v1.4 활성화 전에
-   별도 작업 단위로 다룬다.
-2. 모바일 관리자 게시글 삭제 UX와 TSBOARD runtime 준비 명령은 위 CLI 작업 뒤 독립된 후속 단위로
-   진행한다.
+1. 게시글 상세의 작성자·관리자 수정/삭제 UX와 권한 호출을 모든 게시판형 스킨에서 점검하고 보완한다.
+2. TSBOARD의 공식 GOAPI·libvips runtime을 `bin/goapi`, `lib/*`에 준비하는 npm 명령을 독립된 작업
+   단위로 구현한다.

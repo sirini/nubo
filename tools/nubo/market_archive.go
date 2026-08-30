@@ -203,6 +203,21 @@ func extractMarketSkinFile(reader *tar.Reader, header *tar.Header, target, clean
 }
 
 func verifyMarketSkinManifest(filename string, item marketSkin) (marketSkinPackageManifest, error) {
+	manifest, err := readMarketSkinManifest(filename)
+	if err != nil {
+		return manifest, err
+	}
+	matches := manifest.Key == item.Key && manifest.Name == item.Name && manifest.Version == item.Version &&
+		manifest.Author == item.Author && manifest.Website == item.Website && manifest.Description == item.Description &&
+		manifest.Preview == item.Preview && slices.Equal(manifest.Screenshots, item.Screenshots) &&
+		slices.Equal(manifest.Features, item.Features) && manifest.MinNUBOVersion == item.MinNUBOVersion
+	if !matches {
+		return manifest, errors.New("package skin.json과 Market 메타데이터가 다릅니다")
+	}
+	return manifest, nil
+}
+
+func readMarketSkinManifest(filename string) (marketSkinPackageManifest, error) {
 	info, err := os.Stat(filename)
 	if err != nil || info.Size() > maxMarketSkinManifestBytes {
 		return marketSkinPackageManifest{}, errors.New("skin.json이 없거나 허용 크기를 초과합니다")
@@ -219,13 +234,6 @@ func verifyMarketSkinManifest(filename string, item marketSkin) (marketSkinPacka
 	}
 	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
 		return manifest, errors.New("skin.json 뒤에 예상하지 못한 값이 있습니다")
-	}
-	matches := manifest.Key == item.Key && manifest.Name == item.Name && manifest.Version == item.Version &&
-		manifest.Author == item.Author && manifest.Website == item.Website && manifest.Description == item.Description &&
-		manifest.Preview == item.Preview && slices.Equal(manifest.Screenshots, item.Screenshots) &&
-		slices.Equal(manifest.Features, item.Features) && manifest.MinNUBOVersion == item.MinNUBOVersion
-	if !matches {
-		return manifest, errors.New("package skin.json과 Market 메타데이터가 다릅니다")
 	}
 	return manifest, nil
 }

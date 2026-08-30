@@ -14,6 +14,8 @@
 ./bin/nubo info --json skins/nubo-advance-gallery
 ./bin/nubo install skins/nubo-advance-gallery --dry-run
 ./bin/nubo install skins/nubo-advance-gallery
+./bin/nubo validate skins/nubo-advance-gallery
+./bin/nubo pack skins/nubo-advance-gallery
 ./bin/nubo update --dry-run
 ./bin/nubo update
 ./bin/nubo download --dry-run
@@ -60,6 +62,25 @@ HTTP 주소만 지정할 수 있다. 조회 명령은 소스, package, runtime�
 
 `--dry-run`은 cache 다운로드와 전체 staging 검증은 수행하지만 `app/skins`를 바꾸지 않는다. 설치 완료
 뒤에도 Git, npm, Nuxt build와 실행 중인 프로세스는 변경하지 않는다.
+
+## validate와 pack
+
+`validate skins/<key>`는 로컬 `app/skins/<key>`를 서버의 Market package 계약과 같은 경계로 검사한다.
+엄격한 `skin.json`, package 좌표와 key 일치, 최상위 Vue entry, PNG/JPEG/WebP preview·screenshots,
+안전한 상대 경로, 일반 파일만 허용하며 1,000개 파일·100MiB source 상한을 적용한다. Market 설치
+영수증 `.nubo-market.json`은 로컬에 있어도 검증 결과에 표시한 뒤 package에서는 제외한다.
+
+`pack skins/<key>`는 검증을 먼저 통과한 파일을 정렬된 순서와 고정된 metadata로 묶어 동일한 source에서
+항상 같은 SHA-256의 tar.gz를 생성한다. 기본 출력은
+`.nubo/packages/<key>-<version>.tar.gz`이며 20MiB를 넘으면 중단한다. 읽는 동안 source의 inode·크기나
+checksum이 바뀌어도 중단하며, source 내부 출력과 심볼릭 링크·특수 파일은 허용하지 않는다.
+
+- `--output <path>`: checkout 기준 상대 경로나 절대 출력 경로 지정
+- `--force`: 같은 경로에 있는 내용이 다른 일반 package 파일을 원자적으로 교체
+- `--json`: checksum, 크기, 파일 수와 실제 출력 경로를 JSON으로 출력
+
+같은 package가 이미 있으면 다시 쓰지 않는다. `--force`도 심볼릭 링크나 디렉터리를 교체하지 않으며,
+두 명령 모두 Market 업로드·publish, Git, Nuxt build와 실행 중인 프로세스를 변경하지 않는다.
 
 ## update
 
@@ -121,5 +142,4 @@ Ctrl+C 취소는 다운로드 임시 파일과 staging만 정리한다. 기존 r
 
 ## 다음 단계
 
-v1.3.x에서 같은 manifest·archive 검증 기반에 로컬 `validate|pack`을 추가한다.
 Market login·publish는 device-code 인증과 운영 심사 흐름을 완성한 v1.4에서 활성화한다.

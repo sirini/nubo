@@ -115,7 +115,7 @@ TTY에서는 Bubble Tea 기반의 warm-tone 진행 화면을 사용합니다. �
 ## NUBO Market
 
 Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 배포합니다. v1.3.1 CLI는 공개 package를
-검색하고 검증·설치하며, 제작자 검증·게시 흐름은 후속 v1.3.x와 v1.4에서 단계적으로 활성화합니다.
+검색·설치하고, 로컬 스킨을 Market 계약에 맞춰 검증·패키징합니다. 인증·게시 흐름은 v1.4에서 활성화합니다.
 
 ```text
 ./bin/nubo search gallery
@@ -123,12 +123,16 @@ Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 �
 ./bin/nubo install skins/nubo-advance-gallery
 ./bin/nubo install skins/nubo-advance-gallery --dry-run
 ./bin/nubo validate skins/my-gallery
-./bin/nubo publish skins/my-gallery
+./bin/nubo pack skins/my-gallery
 ```
 
 설치는 Market SHA-256, manifest, 압축 경로와 파일별 영수증을 검증합니다. 기존 Market 설치는 로컬 변경이
 없을 때만 새 버전으로 원자적으로 교체하며, 직접 만든 폴더나 수정된 스킨은 덮어쓰지 않습니다. CLI는
 설치 뒤 Nuxt build와 Web 프로세스 재시작을 자동 실행하지 않습니다.
+
+`validate`는 `skin.json`, 지원 Vue entry, 이미지와 파일 수·크기·경로 한계를 실제 Market 계약으로
+검사합니다. `pack`은 같은 검증을 통과한 소스만 재현 가능한 tar.gz로 만들며 업로드나 publish는 하지
+않습니다.
 
 현재 스킨은 `app/skins`에서 직접 개발할 수 있습니다. 스킨끼리 다른 스킨 폴더를 import하지 않으며 공유
 경계는 provider, 타입과 `app/components`의 플랫폼 UI입니다.

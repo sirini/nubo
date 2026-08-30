@@ -54,6 +54,10 @@ func (c *cli) run(args []string) int {
 		return c.runInfo(args[1:])
 	case "install":
 		return c.runInstall(args[1:])
+	case "validate":
+		return c.runValidate(args[1:])
+	case "pack":
+		return c.runPack(args[1:])
 	case "download":
 		return c.runDownload(args[1:])
 	case "update":
@@ -71,6 +75,110 @@ func (c *cli) run(args []string) int {
 	}
 }
 
+type validateFlags struct {
+	root string
+	json bool
+}
+
+func (c *cli) runValidate(args []string) int {
+	flags := flag.NewFlagSet("validate", flag.ContinueOnError)
+	flags.SetOutput(c.errOut)
+	options := validateFlags{}
+	flags.StringVar(&options.root, "root", "", "NUBO 프로젝트 루트")
+	flags.BoolVar(&options.json, "json", false, "결과를 JSON으로 출력")
+	coordinate, remaining := leadingCoordinate(args)
+	if err := flags.Parse(remaining); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	positional := appendCoordinate(coordinate, flags.Args())
+	if len(positional) != 1 {
+		return c.invalid(errors.New("package 좌표 하나가 필요합니다: skins/<key>"))
+	}
+	key, err := parseSkinCoordinate(positional[0])
+	if err != nil {
+		return c.invalid(err)
+	}
+	root, descriptor, err := c.validatedProject(options.root)
+	if err != nil {
+		return c.fail(err)
+	}
+	local, err := validateLocalMarketSkin(root, key, descriptor.Channel.Version)
+	if err != nil {
+		return c.fail(err)
+	}
+	if options.json {
+		payload, _ := json.MarshalIndent(local.result, "", "  ")
+		fmt.Fprintln(c.out, string(payload))
+		return 0
+	}
+	printMarketValidation(c.out, local.result, c.colorEnabled() && c.interactive())
+	return 0
+}
+
+type packFlags struct {
+	root   string
+	output string
+	force  bool
+	json   bool
+}
+
+func (c *cli) runPack(args []string) int {
+	flags := flag.NewFlagSet("pack", flag.ContinueOnError)
+	flags.SetOutput(c.errOut)
+	options := packFlags{}
+	flags.StringVar(&options.root, "root", "", "NUBO 프로젝트 루트")
+	flags.StringVar(&options.output, "output", "", "package 출력 경로")
+	flags.BoolVar(&options.force, "force", false, "기존의 다른 package 파일을 원자적으로 교체")
+	flags.BoolVar(&options.json, "json", false, "결과를 JSON으로 출력")
+	coordinate, remaining := leadingCoordinate(args)
+	if err := flags.Parse(remaining); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	positional := appendCoordinate(coordinate, flags.Args())
+	if len(positional) != 1 {
+		return c.invalid(errors.New("package 좌표 하나가 필요합니다: skins/<key>"))
+	}
+	key, err := parseSkinCoordinate(positional[0])
+	if err != nil {
+		return c.invalid(err)
+	}
+	root, descriptor, err := c.validatedProject(options.root)
+	if err != nil {
+		return c.fail(err)
+	}
+	result, err := packLocalMarketSkin(root, key, descriptor.Channel.Version, options.output, options.force)
+	if err != nil {
+		return c.fail(err)
+	}
+	if options.json {
+		payload, _ := json.MarshalIndent(result, "", "  ")
+		fmt.Fprintln(c.out, string(payload))
+		return 0
+	}
+	printMarketPack(c.out, result, c.colorEnabled() && c.interactive())
+	return 0
+}
+
+func leadingCoordinate(args []string) (string, []string) {
+	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+		return args[0], args[1:]
+	}
+	return "", args
+}
+
+func appendCoordinate(coordinate string, positional []string) []string {
+	if coordinate == "" {
+		return positional
+	}
+	return append([]string{coordinate}, positional...)
+}
+
 type installFlags struct {
 	root   string
 	dryRun bool
@@ -86,20 +194,14 @@ func (c *cli) runInstall(args []string) int {
 	flags.BoolVar(&options.dryRun, "dry-run", false, "다운로드·검증만 하고 스킨 소스를 변경하지 않음")
 	flags.BoolVar(&options.plain, "plain", false, "애니메이션 없는 평문 출력")
 	flags.BoolVar(&options.json, "json", false, "결과를 JSON으로 출력")
-	leading := ""
-	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
-		leading, args = args[0], args[1:]
-	}
-	if err := flags.Parse(args); err != nil {
+	coordinate, remaining := leadingCoordinate(args)
+	if err := flags.Parse(remaining); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return 0
 		}
 		return 2
 	}
-	positional := flags.Args()
-	if leading != "" {
-		positional = append([]string{leading}, positional...)
-	}
+	positional := appendCoordinate(coordinate, flags.Args())
 	if len(positional) != 1 {
 		return c.invalid(errors.New("package 좌표 하나가 필요합니다: skins/<key>"))
 	}
@@ -156,6 +258,18 @@ func (c *cli) runInstall(args []string) int {
 	}
 	printMarketInstallResult(c.out, result, c.colorEnabled() && c.interactive())
 	return 0
+}
+
+func (c *cli) validatedProject(explicit string) (string, releaseSources, error) {
+	root, err := c.projectRoot(explicit)
+	if err != nil {
+		return "", releaseSources{}, err
+	}
+	descriptor, err := loadReleaseSources(root, c.getenv)
+	if err != nil {
+		return "", releaseSources{}, err
+	}
+	return root, descriptor, nil
 }
 
 type searchFlags struct {
@@ -501,6 +615,8 @@ func (c *cli) printHelpTo(writer io.Writer) {
   ./bin/nubo search [검색어]     Market 스킨 검색
   ./bin/nubo info skins/<key>    Market 스킨 상세 확인
   ./bin/nubo install skins/<key> Market 스킨 설치 또는 안전한 업데이트
+  ./bin/nubo validate skins/<key> 로컬 스킨의 Market 계약 검증
+  ./bin/nubo pack skins/<key>    검증된 Market package 생성
   ./bin/nubo download            GOAPI와 libvips 준비
   ./bin/nubo update              NUBO CLI 자체 업데이트
   ./bin/nubo version             CLI 버전 확인
@@ -513,6 +629,11 @@ Market 옵션
 install 옵션
   --dry-run                      다운로드와 전체 검증만 수행
   --plain                        애니메이션 없는 출력
+  --json                         자동화를 위한 JSON 결과
+
+pack 옵션
+  --output                       출력 경로 (기본 .nubo/packages/<key>-<version>.tar.gz)
+  --force                        기존의 다른 package 파일 교체
   --json                         자동화를 위한 JSON 결과
 
 download 옵션
