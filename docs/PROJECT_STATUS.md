@@ -5,7 +5,8 @@
 - v1.3.1 Source Mode CLI의 pinned runtime `download`, checksum 기반 CLI `update`, Market
   `search|info|install|validate|pack skins/<key>`까지 구현됐다. device-code `login|publish` 활성화는
   v1.4 범위다.
-- 다음 작업 단위는 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검이다.
+- 게시글 상세의 작성자·관리자 수정/삭제 affordance와 실제 권한 호출 점검을 마쳤다. 다음 작업 단위는
+  TSBOARD의 공식 runtime 준비 명령이다.
 
 ## Current decisions
 
@@ -31,9 +32,6 @@
 
 - Mac 작업 트리의 `package-lock.json`에는 이번 작업 전부터 플랫폼별 optional dependency가 대량 제거된
   사용자 변경이 있다. 의도가 확인될 때까지 보존하며 v1.3.1 커밋에서 제외한다.
-- PC와 모바일 모두 `nubo-advance-gallery` 게시글 삭제 동작이 보이지 않는다. 기기별 문제가 아닌 상세
-  액션 권한 문제로 보고 작성자 본인의 수정·삭제, 관리자의 모든 글 삭제, 일반 타인의 비노출을 advance 및
-  기본 제공 게시판형 스킨 전체에서 실제 API 호출과 함께 점검한다.
 - TSBOARD v1.3.0도 NUBO처럼 공식 GOAPI와 libvips 의존성을 `bin/goapi`, `lib/*`에 준비하는 npm 명령이
   필요하다. GOAPI 계약과 공식 Ubuntu 22.04 빌드 출처를 공유하되 TSBOARD의 SPA 구조는 유지한다.
 - Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 인증 CLI 작업 전에
@@ -58,6 +56,9 @@
   파일별 영수증, unmanaged·로컬/동시 변경 감지와 원자적 상위 버전 교체를 구현했다.
 - `validate|pack skins/<key>`에 실제 Market manifest·asset·경로·크기 계약, 설치 영수증 제외, source
   동시 변경 감지와 고정 metadata 기반의 재현 가능한 원자적 package 생성을 구현했다.
+- advance gallery·blog와 basic blog에 작성자 또는 게시판 권한 관리자가 볼 수 있는 공통 게시글 삭제
+  버튼·확인창을 연결했다. basic blog 수정도 관리자에게 허용했으며, basic board·gallery·trade의 기존
+  관리 메뉴까지 포함해 여섯 게시판형 스킨의 노출과 API 연결을 회귀 테스트로 고정했다.
 - storage root 이전 뒤에도 DB의 과거 절대 경로에 의존하지 않도록 Market의 package download·preview
   경로를 불변 identity에서 재계산하고 `99aad10`으로 Market main에 push했다.
 - Market `99aad10`을 공식 Ubuntu 22.04 컨테이너로 빌드해 운영 배포했다. 이전 바이너리는
@@ -88,6 +89,10 @@
 - validate·pack의 unsafe source/output, deterministic checksum, 기존 파일 보존과 생성 package의 install
   계약 테스트를 통과했다. 실제 `nubo-advance-gallery@0.2.2` 10개 파일을 검증해 1,896,743-byte package와
   SHA-256 `5b4988f9d5aece34954c026964e962fc4dcaec924d240728c67d5df37a76efe6`을 재현했다.
+- 게시글 관리 액션 단위 계약을 포함한 frontend unit 60개와 Nuxt 9개, lint 오류 0건(기존 경고 50),
+  typecheck·production build와 GOAPI board service 테스트를 통과했다. GOAPI는 작성자 또는
+  최고·그룹·게시판 관리자만 수정·삭제를 허용하고 상세 응답의 `isAdmin`도 같은
+  `CheckPermissionByUid` 결과임을 대조했다.
 - 운영 이전 바이너리에서 `HTTP 500 package file unavailable`을 재현한 뒤 Market `99aad10` 배포로
   복구했다. `nubo-advance-gallery@0.2.0`의 외부·내부 download SHA-256
   `46611c10da263b9b125c01be5559af75216e527dbccb2cb098533c882bae25cc`과 preview를 확인했고, 실제 CLI
@@ -95,6 +100,5 @@
 
 ## Next action
 
-1. 게시글 상세의 작성자·관리자 수정/삭제 UX와 권한 호출을 모든 게시판형 스킨에서 점검하고 보완한다.
-2. TSBOARD의 공식 GOAPI·libvips runtime을 `bin/goapi`, `lib/*`에 준비하는 npm 명령을 독립된 작업
+1. TSBOARD의 공식 GOAPI·libvips runtime을 `bin/goapi`, `lib/*`에 준비하는 npm 명령을 독립된 작업
    단위로 구현한다.

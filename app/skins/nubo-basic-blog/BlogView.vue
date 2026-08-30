@@ -35,8 +35,9 @@
     <div class="my-10 flex items-center justify-between gap-3">
       <ViewListButton />
 
-      <div class="inline-flex gap-3 items-center">
+      <div class="flex flex-wrap items-center justify-end gap-3">
         <ViewModifyButton />
+        <BoardPostDeleteButton />
         <ViewWriteButton />
       </div>
     </div>
@@ -44,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import BoardPostDeleteButton from "~/components/board/view/BoardPostDeleteButton.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import BlogHeader from "./components/view/BlogHeader.vue"
 import BlogTableOfContent from "./components/view/BlogTableOfContent.vue"

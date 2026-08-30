@@ -96,10 +96,11 @@
             <ListIcon class="size-4" /> 목록 보기
           </NuxtLink>
         </Button>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap justify-end gap-2">
           <Button v-if="isWriter || isAdmin" variant="outline" as-child>
             <NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`">수정</NuxtLink>
           </Button>
+          <BoardPostDeleteButton />
           <Button v-if="isLoggedIn" as-child>
             <NuxtLink :to="`/board/${config.id}/write`">사진 올리기</NuxtLink>
           </Button>
@@ -111,6 +112,7 @@
 
 <script setup lang="ts">
 import { HashIcon, HeartIcon, ListIcon, Maximize2Icon } from "lucide-vue-next"
+import BoardPostDeleteButton from "~/components/board/view/BoardPostDeleteButton.vue"
 import BoardImageDescription from "~/components/board/view/BoardImageDescription.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceGalleryComments from "./AdvanceGalleryComments.vue"

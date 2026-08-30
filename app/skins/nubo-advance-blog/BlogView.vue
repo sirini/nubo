@@ -174,12 +174,14 @@
       <Button variant="ghost" as-child
         ><NuxtLink :to="`/board/${config.id}/page/1`">목록으로</NuxtLink></Button
       >
-      <div class="flex gap-2">
-        <Button v-if="isWriter || isAdmin" variant="outline" as-child
-          ><NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`">수정</NuxtLink></Button
-        ><Button v-if="isLoggedIn" as-child
-          ><NuxtLink :to="`/board/${config.id}/write`">새 글 쓰기</NuxtLink></Button
-        >
+      <div class="flex flex-wrap justify-end gap-2">
+        <Button v-if="isWriter || isAdmin" variant="outline" as-child>
+          <NuxtLink :to="`/board/${config.id}/${view.post.uid}/edit`">수정</NuxtLink>
+        </Button>
+        <BoardPostDeleteButton />
+        <Button v-if="isLoggedIn" as-child>
+          <NuxtLink :to="`/board/${config.id}/write`">새 글 쓰기</NuxtLink>
+        </Button>
       </div>
     </footer>
   </article>
@@ -187,6 +189,7 @@
 
 <script setup lang="ts">
 import { ArrowLeftIcon, HeartIcon, MessageCircleIcon, PaperclipIcon } from "lucide-vue-next"
+import BoardPostDeleteButton from "~/components/board/view/BoardPostDeleteButton.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceBlogComments from "./components/AdvanceBlogComments.vue"
 import AdvanceBlogContent from "./components/AdvanceBlogContent.vue"
