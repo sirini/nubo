@@ -94,7 +94,7 @@ func newMarketClient(override string, client *http.Client) (*marketClient, error
 		return nil, errors.New("NUBO_MARKET_BASE_URL은 HTTPS 주소여야 합니다")
 	}
 	if client == nil {
-		client = &http.Client{Timeout: 15 * time.Second}
+		client = &http.Client{Timeout: 60 * time.Second}
 	}
 	return &marketClient{baseURL: baseURL, client: client}, nil
 }

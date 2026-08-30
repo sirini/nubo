@@ -209,6 +209,8 @@ type taskClosedMsg struct{}
 type taskModel struct {
 	palette   palette
 	spinner   spinner.Model
+	label     string
+	safeState string
 	events    <-chan taskEvent
 	cancel    context.CancelFunc
 	lines     []taskEvent
@@ -242,7 +244,7 @@ func (m taskModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			if !m.cancelled {
 				m.cancelled = true
 				m.cancel()
-				m.current = taskEvent{Kind: eventStage, Title: "안전하게 취소하는 중", Detail: "기존 runtime 유지"}
+				m.current = taskEvent{Kind: eventStage, Title: "안전하게 취소하는 중", Detail: m.safeState}
 			}
 			return m, nil
 		}
@@ -270,7 +272,7 @@ func (m taskModel) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m taskModel) View() tea.View {
 	var body strings.Builder
-	body.WriteString(render(m.palette.accent, "● NUBO Runtime"))
+	body.WriteString(render(m.palette.accent, "● "+m.label))
 	body.WriteString("\n\n")
 	for _, line := range m.lines {
 		body.WriteString(render(m.palette.success, "✓ "))
@@ -292,18 +294,22 @@ func (m taskModel) View() tea.View {
 		body.WriteString("\n")
 	}
 	body.WriteString("\n")
-	body.WriteString(render(m.palette.muted, "ctrl+c 취소 · 기존 runtime은 설치가 끝날 때까지 유지됩니다."))
+	body.WriteString(render(m.palette.muted, "ctrl+c 취소 · "+m.safeState))
 	return tea.NewView(body.String())
 }
 
 func runTaskUI(cancel context.CancelFunc, in io.Reader, out io.Writer, color bool, task func(func(taskEvent))) error {
+	return runTaskUIWithLabel(cancel, in, out, color, "NUBO Runtime", "기존 runtime은 설치가 끝날 때까지 유지됩니다.", task)
+}
+
+func runTaskUIWithLabel(cancel context.CancelFunc, in io.Reader, out io.Writer, color bool, label, safeState string, task func(func(taskEvent))) error {
 	events := make(chan taskEvent, 256)
 	go func() {
 		defer close(events)
 		task(func(event taskEvent) { events <- event })
 	}()
 	indicator := spinner.New(spinner.WithSpinner(spinner.MiniDot), spinner.WithStyle(newPalette(color).accent))
-	_, err := tea.NewProgram(taskModel{palette: newPalette(color), spinner: indicator, events: events, cancel: cancel}, tea.WithInput(in), tea.WithOutput(out)).Run()
+	_, err := tea.NewProgram(taskModel{palette: newPalette(color), spinner: indicator, label: label, safeState: safeState, events: events, cancel: cancel}, tea.WithInput(in), tea.WithOutput(out)).Run()
 	return err
 }
 

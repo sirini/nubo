@@ -21,7 +21,7 @@ NUBO는 소스 checkout을 운영자가 직접 빌드하고 tmux 또는 PM2 등 
 
 - 현재 checkout과 맞는 공식 GOAPI·libvips 다운로드 및 검증
 - 현재 checkout과 맞는 NUBO CLI 자체 업데이트
-- 향후 `skins/<key>` 단위의 Market 검색·설치·게시
+- `skins/<key>` 단위의 Market 검색·설치와 향후 제작자 게시
 - 실행 전에 변경 대상과 출처를 보여주고, 완료 뒤 운영자가 할 일을 안내
 
 Git 변경, npm 설치, Nuxt 빌드, DB migration과 프로세스 시작·중지·재시작은 자동으로 수행하지 않습니다.
@@ -114,16 +114,21 @@ TTY에서는 Bubble Tea 기반의 warm-tone 진행 화면을 사용합니다. �
 
 ## NUBO Market
 
-Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 배포합니다. 공개 카탈로그와 패키지 검증
-서버는 운영 중이며, 단일 CLI의 다음 명령은 v1.3.x에서 기반을 검증한 뒤 v1.4에 활성화합니다.
+Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 배포합니다. v1.3.1 CLI는 공개 package를
+검색하고 검증·설치하며, 제작자 검증·게시 흐름은 후속 v1.3.x와 v1.4에서 단계적으로 활성화합니다.
 
 ```text
-./bin/nubo search skins gallery
+./bin/nubo search gallery
 ./bin/nubo info skins/nubo-advance-gallery
 ./bin/nubo install skins/nubo-advance-gallery
+./bin/nubo install skins/nubo-advance-gallery --dry-run
 ./bin/nubo validate skins/my-gallery
 ./bin/nubo publish skins/my-gallery
 ```
+
+설치는 Market SHA-256, manifest, 압축 경로와 파일별 영수증을 검증합니다. 기존 Market 설치는 로컬 변경이
+없을 때만 새 버전으로 원자적으로 교체하며, 직접 만든 폴더나 수정된 스킨은 덮어쓰지 않습니다. CLI는
+설치 뒤 Nuxt build와 Web 프로세스 재시작을 자동 실행하지 않습니다.
 
 현재 스킨은 `app/skins`에서 직접 개발할 수 있습니다. 스킨끼리 다른 스킨 폴더를 import하지 않으며 공유
 경계는 provider, 타입과 `app/components`의 플랫폼 UI입니다.

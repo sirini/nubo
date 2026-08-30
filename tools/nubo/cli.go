@@ -52,6 +52,8 @@ func (c *cli) run(args []string) int {
 		return c.runSearch(args[1:])
 	case "info":
 		return c.runInfo(args[1:])
+	case "install":
+		return c.runInstall(args[1:])
 	case "download":
 		return c.runDownload(args[1:])
 	case "update":
@@ -67,6 +69,93 @@ func (c *cli) run(args []string) int {
 		c.printHelpTo(c.errOut)
 		return 2
 	}
+}
+
+type installFlags struct {
+	root   string
+	dryRun bool
+	plain  bool
+	json   bool
+}
+
+func (c *cli) runInstall(args []string) int {
+	flags := flag.NewFlagSet("install", flag.ContinueOnError)
+	flags.SetOutput(c.errOut)
+	options := installFlags{}
+	flags.StringVar(&options.root, "root", "", "NUBO 프로젝트 루트")
+	flags.BoolVar(&options.dryRun, "dry-run", false, "다운로드·검증만 하고 스킨 소스를 변경하지 않음")
+	flags.BoolVar(&options.plain, "plain", false, "애니메이션 없는 평문 출력")
+	flags.BoolVar(&options.json, "json", false, "결과를 JSON으로 출력")
+	leading := ""
+	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
+		leading, args = args[0], args[1:]
+	}
+	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return 0
+		}
+		return 2
+	}
+	positional := flags.Args()
+	if leading != "" {
+		positional = append([]string{leading}, positional...)
+	}
+	if len(positional) != 1 {
+		return c.invalid(errors.New("package 좌표 하나가 필요합니다: skins/<key>"))
+	}
+	key, err := parseSkinCoordinate(positional[0])
+	if err != nil {
+		return c.invalid(err)
+	}
+	if options.json {
+		options.plain = true
+	}
+	root, err := c.projectRoot(options.root)
+	if err != nil {
+		return c.fail(err)
+	}
+	descriptor, err := loadReleaseSources(root, c.getenv)
+	if err != nil {
+		return c.fail(err)
+	}
+	client, err := newMarketClient(c.getenv("NUBO_MARKET_BASE_URL"), nil)
+	if err != nil {
+		return c.fail(err)
+	}
+	item, err := client.info(context.Background(), key)
+	if errors.Is(err, errMarketNotFound) {
+		return c.fail(fmt.Errorf("Market에서 package를 찾을 수 없습니다: skins/%s", key))
+	}
+	if err != nil {
+		return c.fail(err)
+	}
+	request := marketInstallRequest{Root: root, Item: item, Client: client, NUBOVersion: descriptor.Channel.Version, DryRun: options.dryRun}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var result marketInstallResult
+	var runErr error
+	task := func(emit func(taskEvent)) {
+		result, runErr = installMarketSkin(ctx, request, emit)
+	}
+	if options.plain || !c.interactive() {
+		taskOutput := c.out
+		if options.json {
+			taskOutput = c.errOut
+		}
+		runPlainTask(taskOutput, task)
+	} else if err := runTaskUIWithLabel(cancel, c.in, c.out, c.colorEnabled(), "NUBO Market", "기존 스킨은 전환이 끝날 때까지 유지됩니다.", task); err != nil {
+		return c.fail(err)
+	}
+	if runErr != nil {
+		return c.fail(runErr)
+	}
+	if options.json {
+		payload, _ := json.MarshalIndent(result, "", "  ")
+		fmt.Fprintln(c.out, string(payload))
+		return 0
+	}
+	printMarketInstallResult(c.out, result, c.colorEnabled() && c.interactive())
+	return 0
 }
 
 type searchFlags struct {
@@ -229,7 +318,7 @@ func (c *cli) runUpdate(args []string) int {
 			taskOutput = c.errOut
 		}
 		runPlainTask(taskOutput, task)
-	} else if err := runTaskUI(cancel, c.in, c.out, c.colorEnabled(), task); err != nil {
+	} else if err := runTaskUIWithLabel(cancel, c.in, c.out, c.colorEnabled(), "NUBO CLI", "현재 CLI는 검증과 전환이 끝날 때까지 유지됩니다.", task); err != nil {
 		return c.fail(err)
 	}
 	if runErr != nil {
@@ -411,6 +500,7 @@ func (c *cli) printHelpTo(writer io.Writer) {
   ./bin/nubo                     대화형 시작 화면
   ./bin/nubo search [검색어]     Market 스킨 검색
   ./bin/nubo info skins/<key>    Market 스킨 상세 확인
+  ./bin/nubo install skins/<key> Market 스킨 설치 또는 안전한 업데이트
   ./bin/nubo download            GOAPI와 libvips 준비
   ./bin/nubo update              NUBO CLI 자체 업데이트
   ./bin/nubo version             CLI 버전 확인
@@ -418,6 +508,11 @@ func (c *cli) printHelpTo(writer io.Writer) {
 Market 옵션
   --limit                        검색 결과 수 (기본 20, 최대 100)
   --offset                       검색 시작 위치
+  --json                         자동화를 위한 JSON 결과
+
+install 옵션
+  --dry-run                      다운로드와 전체 검증만 수행
+  --plain                        애니메이션 없는 출력
   --json                         자동화를 위한 JSON 결과
 
 download 옵션

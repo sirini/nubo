@@ -12,6 +12,8 @@
 ./bin/nubo search --json gallery
 ./bin/nubo info skins/nubo-advance-gallery
 ./bin/nubo info --json skins/nubo-advance-gallery
+./bin/nubo install skins/nubo-advance-gallery --dry-run
+./bin/nubo install skins/nubo-advance-gallery
 ./bin/nubo update --dry-run
 ./bin/nubo update
 ./bin/nubo download --dry-run
@@ -35,6 +37,29 @@ CLI가 소비하는 Market v1 read-only 계약은 `GET /v1/skins?q=&limit=&offse
 `published_at`, `download_url`을 검증하며 2MiB보다 큰 응답은 거부한다. 기본 주소는
 `https://nubohub.org/market`이고 개발·통합 테스트에서는 `NUBO_MARKET_BASE_URL`로 HTTPS 또는 loopback
 HTTP 주소만 지정할 수 있다. 조회 명령은 소스, package, runtime과 Market 다운로드 수를 변경하지 않는다.
+
+## install
+
+`install skins/<key>`는 최신 공개 package를 `.nubo/downloads`에 내려받아 staging에서 검증한 뒤
+`app/skins/<key>`에 소스와 `.nubo-market.json` 영수증만 설치한다. cache에 같은 SHA-256 package가
+있으면 다시 다운로드하지 않는다.
+
+검증 순서:
+
+1. 현재 checkout이 package의 `min_nubo_version` 이상인지 확인
+2. Market 응답의 package 크기와 SHA-256 확인
+3. 20MiB archive, 100MiB 압축 해제, 1,000개 entry 상한
+4. 경로 이탈, 중복 경로, 링크·특수 파일과 예약 영수증 거부
+5. `skin.json` 전체와 Market metadata 일치, 지원 Vue entry와 PNG/JPEG/WebP asset 확인
+6. 모든 source 파일의 SHA-256을 기록한 설치 영수증 생성
+
+처음 설치하는 경로는 존재하지 않아야 한다. 기존 폴더는 유효한 Market 영수증이 있고 기록된 파일이
+수정·추가·누락되지 않았을 때만 상위 버전으로 원자적으로 교체한다. unmanaged 폴더, 로컬 변경, 같은
+버전의 다른 checksum과 버전 역행은 강제 덮어쓰기 옵션 없이 중단한다. 다운로드 중 로컬 파일이 바뀐
+경우에도 마지막 재검사에서 전환하지 않는다.
+
+`--dry-run`은 cache 다운로드와 전체 staging 검증은 수행하지만 `app/skins`를 바꾸지 않는다. 설치 완료
+뒤에도 Git, npm, Nuxt build와 실행 중인 프로세스는 변경하지 않는다.
 
 ## update
 
@@ -96,5 +121,5 @@ Ctrl+C 취소는 다운로드 임시 파일과 staging만 정리한다. 기존 r
 
 ## 다음 단계
 
-v1.3.x에서 같은 UI·검증 기반에 `install skins/<key>`와 로컬 `validate|pack`을 추가한다.
+v1.3.x에서 같은 manifest·archive 검증 기반에 로컬 `validate|pack`을 추가한다.
 Market login·publish는 device-code 인증과 운영 심사 흐름을 완성한 v1.4에서 활성화한다.

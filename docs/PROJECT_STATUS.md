@@ -2,10 +2,10 @@
 
 ## Active goal
 
-- v1.3.1의 Source Mode CLI foundation, pinned runtime `download`, checksum 기반 CLI `update`와 Market
-  read-only `search|info`까지 구현됐다.
-- 다음 작업 단위는 같은 UI·검증 기반의 `install skins/<key>`다. 제작자
-  `validate|pack` 기반은 v1.3.x, device-code `login|publish` 활성화는 v1.4 범위다.
+- v1.3.1 Source Mode CLI의 pinned runtime `download`, checksum 기반 CLI `update`, Market
+  `search|info|install skins/<key>`까지 구현됐다.
+- 다음 제작자 작업 단위는 같은 manifest·archive 검증 기반의 로컬 `validate|pack`이다. device-code
+  `login|publish` 활성화는 v1.4 범위다.
 
 ## Current decisions
 
@@ -53,7 +53,14 @@
   NUBO `5bca081`로 main에 push했다. `update`는 소스·runtime·DB·서비스를 변경하지 않는다.
 - Market 저장소와 운영 API를 대조해 v1 read-only 계약을 고정하고 `search [query]`와
   `info skins/<key>`를 구현했다. package namespace, pagination, 응답 크기·identity 검증과 현재 NUBO
-  버전 호환성, 평문·JSON 출력을 포함한다.
+  버전 호환성, 평문·JSON 출력을 포함하며 NUBO `ee589cd`로 main에 push했다.
+- `install skins/<key>`에 cache SHA-256, 안전한 archive·manifest·asset 검증, 기존 nubo-market 호환
+  파일별 영수증, unmanaged·로컬/동시 변경 감지와 원자적 상위 버전 교체를 구현했다.
+- storage root 이전 뒤에도 DB의 과거 절대 경로에 의존하지 않도록 Market의 package download·preview
+  경로를 불변 identity에서 재계산하고 `99aad10`으로 Market main에 push했다.
+- Market `99aad10`을 공식 Ubuntu 22.04 컨테이너로 빌드해 운영 배포했다. 이전 바이너리는
+  `/var/www/market/bin/nubohub-market.pre-99aad10`에 보존했고 service readiness와 외부 package·preview를
+  확인했다.
 
 ## Verification
 
@@ -73,11 +80,17 @@
   JSON으로 확인했으며, 수동 run이라 publish는 의도대로 skip됐다.
 - Market CLI 단위 테스트와 `go test -race ./...`, `go vet ./...`를 통과했고 운영
   `https://nubohub.org/market/v1` 응답에 대한 실제 조회도 확인했다.
+- install 신규·업데이트·current·dry-run, checksum·traversal·예약 파일, unmanaged·수정·추가·누락·동시
+  변경과 NUBO 비호환 거부 테스트가 race에서 통과했다. Market storage 이전 회귀 테스트와 MySQL 통합
+  smoke도 통과했다.
+- 운영 이전 바이너리에서 `HTTP 500 package file unavailable`을 재현한 뒤 Market `99aad10` 배포로
+  복구했다. `nubo-advance-gallery@0.2.0`의 외부·내부 download SHA-256
+  `46611c10da263b9b125c01be5559af75216e527dbccb2cb098533c882bae25cc`과 preview를 확인했고, 실제 CLI
+  `install --dry-run`은 파일 9개를 검증한 뒤 `app/skins`를 변경하지 않았다.
 
 ## Next action
 
-1. `install skins/<key>`를 안전한 압축 검증, 원자적 설치, 영수증·로컬 변경 감지 위에 구현한다.
-2. 제작자 관점의 로컬 `validate|pack skins/<key>`를 설계한다. device-code 인증은 v1.4 활성화 전에
+1. 제작자 관점의 로컬 `validate|pack skins/<key>`를 설계한다. device-code 인증은 v1.4 활성화 전에
    별도 작업 단위로 다룬다.
-3. 모바일 관리자 게시글 삭제 UX와 TSBOARD runtime 준비 명령은 위 CLI 작업 뒤 독립된 후속 단위로
+2. 모바일 관리자 게시글 삭제 UX와 TSBOARD runtime 준비 명령은 위 CLI 작업 뒤 독립된 후속 단위로
    진행한다.
