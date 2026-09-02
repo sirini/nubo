@@ -1,7 +1,10 @@
 <template>
-  <component :is="selectedSkin">
-    <slot ></slot>
-  </component>
+  <div class="contents">
+    <component :is="selectedSkin">
+      <slot></slot>
+    </component>
+    <UserAchievementCelebration />
+  </div>
 </template>
 
 <script setup lang="ts">

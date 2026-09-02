@@ -14,6 +14,7 @@ import { likeCountAfterTransition } from "~/utils/like"
 
 export const useCommentStore = defineStore("comment", () => {
   const { loadInitCommentList, write, reply, remove, modify, like } = useComment()
+  const { notifyAchievementCheck } = useAchievementInbox()
   const comments = ref<CommentResult[]>([])
   const isLoading = ref<boolean>(false)
   const isConfirmDialog = ref<boolean>(false)
@@ -148,6 +149,7 @@ export const useCommentStore = defineStore("comment", () => {
         toast(`❌ 답글을 남기지 못했습니다: ${response.error}`)
         return false
       }
+      notifyAchievementCheck()
       const comment = { ...COMMENT_RESULT }
       comment.uid = response.result
       comment.replyUid = param.replyTargetUid
@@ -192,6 +194,7 @@ export const useCommentStore = defineStore("comment", () => {
       comment.postUid = param.postUid
       comment.submitted = Date.now()
       comments.value.push(comment)
+      notifyAchievementCheck()
 
       toast(`✅ 댓글을 성공적으로 작성하였습니다`)
       clear()

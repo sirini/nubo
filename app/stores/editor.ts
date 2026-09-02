@@ -27,6 +27,7 @@ import { useLocalStorage, useDebounceFn } from "#imports"
 
 export const useEditorStore = defineStore("editor", () => {
   const trade = useTradeStore()
+  const { notifyAchievementCheck } = useAchievementInbox()
   const nuxtConfig = useRuntimeConfig()
   const {
     getBoardConfig,
@@ -537,6 +538,7 @@ export const useEditorStore = defineStore("editor", () => {
       const writtenPostUid =
         typeof response.result === "number" ? response.result : response.result?.postUid
       if (writtenPostUid > 0) {
+        notifyAchievementCheck()
         clear()
         trade.resetForm()
         navigateTo(`/board/${config.value.id}/${writtenPostUid}`)

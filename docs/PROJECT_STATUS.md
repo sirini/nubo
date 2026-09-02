@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- 영구 업적 배지의 관리자 생성·수여를 마무리하고, 미확인 업적 축하 알림과 Sensta Android 전체 업적
-  진열장을 구현한다.
+- 영구 업적 배지의 웹·Sensta Android 획득 알림과 프로필 진열장을 마무리하고,
+  `nubo-advance-gallery` 댓글 작성자 인라인 업적까지 연결한다.
 
 ## Current decisions
 
@@ -52,6 +52,11 @@
 
 ## Recent completion
 
+- GOAPI에 사용자별 미확인 업적 조회·확인 API와 `announced_at` 원장을 추가했다. 기존 획득·소급 업적은
+  migration 시 확인 완료로 처리해 새 기능 배포 직후 과거 업적 알림이 몰리지 않는다. NUBO는 글·댓글
+  작성 및 화면 이동 뒤 새 업적을 확인하고, 접근성 동작 축소를 존중하는 순차 축하 연출과 프로필 이동을
+  제공한다. Sensta Android에도 같은 확인 계약, 전역 축하 다이얼로그, 본인·다른 사용자 프로필 전체
+  업적 진열장을 연결했다.
 - GOAPI에 관리자 전용 업적 정의 조회·생성·수정과 사용자별 조회·멱등 수여 API를 추가했다. 내장 자동
   업적은 수정 불가이고 사용자 정의 업적은 안전한 공용 아이콘 카탈로그만 사용한다. NUBO 기본 관리자
   스킨에는 업적 배지 메뉴와 사용자 수정 화면의 2단계 수여 UI를 연결했다.
@@ -107,6 +112,9 @@
 
 ## Verification
 
+- 미확인 업적 schema/repository 테스트와 GOAPI 전체 test·vet·Ubuntu 22.04 Docker build, NUBO 업적 계약
+  테스트·typecheck·lint(오류 0, 기존 경고 50)·production build, Sensta Android 전체 Gradle test를
+  통과했다. NUBO 전체 unit의 기존 Windows 전용 실패는 배포 스크립트의 symlink·CRLF 가정에 한정된다.
 - 업적 schema/repository를 포함한 GOAPI `go test ./...`, `go vet ./...`와 공식 `build-ubuntu22.sh`의
   Ubuntu 22.04·24.04 및 x86-64 호환 검증을 통과했다. NUBO 관련 unit 15개, lint 오류 0건(기존 경고
   50), typecheck와 production build를 통과했고 Sensta Android 전체 Gradle test도 통과했다.
@@ -159,6 +167,5 @@
 
 ## Next action
 
-1. 사용자별 미확인 업적 조회·확인 계약을 추가하고 NUBO 축하 애니메이션을 연결한다.
-2. Sensta Android 프로필에 전체 업적 진열장을 추가하고 같은 미확인 업적 축하 흐름을 연결한다.
-3. `nubo-advance-gallery` 댓글 작성자에도 서버가 선별한 인라인 업적을 표시한다.
+1. `nubo-advance-gallery` 댓글 작성자에도 서버가 선별한 인라인 업적을 표시한다.
+2. 세 저장소 배포 후 관리자 수동 수여, 새 획득 연출, 웹·Android 진열장을 운영 환경에서 확인한다.

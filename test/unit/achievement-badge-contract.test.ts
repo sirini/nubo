@@ -42,4 +42,16 @@ describe("achievement badge contract", () => {
     expect(userManager).toContain("선택한 업적 수여")
     expect(userManager).not.toContain("revoke")
   })
+
+  it("shows each newly acquired achievement once and supports reduced motion", () => {
+    const inbox = read("app/composables/useAchievementInbox.ts")
+    const celebration = read("app/components/user/UserAchievementCelebration.client.vue")
+    const layout = read("app/layouts/default.vue")
+
+    expect(inbox).toContain('method: "GET"')
+    expect(inbox).toContain('method: "PATCH"')
+    expect(layout).toContain("<UserAchievementCelebration />")
+    expect(celebration).toContain("새로운 업적")
+    expect(celebration).toContain("prefers-reduced-motion: reduce")
+  })
 })
