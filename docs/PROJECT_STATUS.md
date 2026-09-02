@@ -2,10 +2,19 @@
 
 ## Active goal
 
-- 없음. NUBO `v1.3.1` 공식 GitHub Release와 immutable Linux amd64 asset 게시를 완료했다.
+- 없음. 영구 업적 배지 MVP 구현과 저장소별 검증을 완료했다.
 
 ## Current decisions
 
+- 배지는 한 번 획득하면 유지되는 업적만 다룬다. 만료·구독·활성 상태는 넣지 않으며 관리자 표시는 기존
+  `admin` 상태와 권한 응답을 계속 사용한다.
+- 첫 내장 업적은 `first-post`, `first-comment`, `sensta-app` 세 개다. 프로필은 전체 업적을 받고,
+  작성자 이름 옆에는 GOAPI가 `show_inline`으로 선별한 업적만 전달한다. 현재 인라인 표시는 사진 중심
+  `nubo-advance-gallery`와 Sensta Android 피드·상세에 적용한다.
+- 기존 글·댓글은 내장 업적별 최초 설치 시 한 번만 소급하고 완료 시점을 기록한다. 이후 작성 경로는
+  사용자·배지 유니크 키에 `INSERT IGNORE`하여 매번 활동량을 세지 않는다.
+- Sensta Android 출처 헤더는 앱 활동 업적용 공개 표식이며 보안 자격 증명이나 사용자 인증 수단으로
+  취급하지 않는다. 실제 사진 첨부 저장이 성공한 게시글만 출처와 `sensta-app` 업적을 기록한다.
 - `GET /board/my/studio`는 API contract v1을 유지하는 additive JWT endpoint다. 사용자 UID는 token에서만
   얻고 본인의 일반글·비밀글만 대상으로 DB aggregate와 page query를 실행한다.
 - 기존 필터 및 `post_uid` 인덱스로 범위를 효율적으로 제한할 수 있어 studio용 DB migration은 추가하지
@@ -35,11 +44,18 @@
 
 ## Open findings
 
+- 관리자 임의 업적 생성·수동 수여 UI는 후속 범위다. 현재 스키마의 정의 metadata, `grant_source`,
+  `granted_by`를 사용하되 아이콘은 안전한 공용 카탈로그 선택 방식으로 시작하고 수여 감사 이력을
+  유지하는 방향을 검토한다.
 - Market 제작자 device-code token 발급·폐기와 제출 심사 API의 최종 계약은 인증 CLI 작업 전에
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
 
+- GOAPI에 일반화된 업적 정의·사용자 획득 원장·게시글 출처 테이블과 첫 글·첫 댓글 소급 및 실시간 수여,
+  프로필 전체/작성자 인라인 조회를 추가해 `1302514`로 main에 push했다. NUBO에는 공용 배지 아이콘·
+  툴팁·프로필 진열장과 advance gallery 연결을 추가했다. Sensta Android는 앱·버전 출처 헤더, DTO와
+  피드·상세 작성자 배지를 `51792ff`로 main에 push했다.
 - 기본 관리자 스킨의 스킨 관리·runtime 경고와 NUBO/Market README를 새 CLI 및 Source Mode 계약으로
   갱신했다. Market 카탈로그·상세·CLI 안내를 `/nubo`와 `./bin/nubo ... skins/<key>`로 전환하고,
   관리 스킨은 `0.1.3`·최소 NUBO `1.3.1`로 올렸다. Market 변경은 `fa37809`로 main에 push했다.
@@ -88,6 +104,9 @@
 
 ## Verification
 
+- 업적 schema/repository를 포함한 GOAPI `go test ./...`, `go vet ./...`와 공식 `build-ubuntu22.sh`의
+  Ubuntu 22.04·24.04 및 x86-64 호환 검증을 통과했다. NUBO 관련 unit 15개, lint 오류 0건(기존 경고
+  50), typecheck와 production build를 통과했고 Sensta Android 전체 Gradle test도 통과했다.
 - 현재 CLI 안내 회귀 테스트를 포함한 NUBO 전체 79개 테스트, lint 오류 0건(기존 경고 50), typecheck,
   production build, release contract와 `tools/nubo` test·vet를 통과했다. 관리자 스킨 package도 새 CLI로
   검증했다. Market은 `go test ./...`, `go vet ./...`, 임시 MySQL 및 새 CLI 실제 설치 통합 smoke,
@@ -137,4 +156,5 @@
 
 ## Next action
 
-1. Sensta Android에서 새 DTO와 endpoint를 연결해 동명이인·다중 이미지·빈 계정·paging 실제 QA를 한다.
+1. 배포 시 `goapi install`로 업적 테이블과 기존 글·댓글 소급을 적용한 뒤, Sensta Android에서 사진 한 장을
+   올려 목록·상세의 인라인 배지와 NUBO 프로필의 세 업적 진열을 실제 QA한다.

@@ -26,6 +26,8 @@
       <ProfileSimpleInfoBox v-if="isMe" title="포인트" :content="num(myPoint)">
         <CoinsIcon class="w-4 h-4" />
       </ProfileSimpleInfoBox>
+
+      <UserAchievementShelf class="md:col-span-4" :badges="profileUser.badges ?? []" />
     </div>
   </section>
 

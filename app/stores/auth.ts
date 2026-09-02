@@ -53,6 +53,7 @@ export const useAuthStore = defineStore("auth", () => {
         return
       }
       otherUser.value = response.result
+      otherUser.value.badges = response.result.badges ?? []
       editProfile.value.nickname = recoverChars(otherUser.value.name)
       editProfile.value.profile = otherUser.value.profile
       editProfile.value.signature = recoverChars(otherUser.value.signature)

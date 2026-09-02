@@ -20,6 +20,16 @@ export const USER_INFO_RESULT: UserInfoResult = {
   signin: Date.now(),
   admin: false,
   blocked: false,
+  badges: [],
+}
+
+// 한 번 획득하면 유지되는 사용자 업적입니다. 관리자 여부 같은 현재 상태는 포함하지 않습니다.
+export type UserBadge = {
+  key: string
+  name: string
+  description: string
+  iconKey: string
+  earnedAt: number
 }
 
 // (로그인 한) 내 정보 타입 기본값
@@ -36,6 +46,7 @@ export type UserBasicInfo = {
   uid: number
   name: string
   profile: string
+  badges?: UserBadge[]
 }
 
 // 사용자의 최소 기본 정보 기본값 정의
@@ -62,6 +73,7 @@ export type UserInfoResult = {
   signin: number
   admin: boolean
   blocked: boolean
+  badges: UserBadge[]
 }
 
 // 사용자 정보 수정에 필요한 파라미터 정의

@@ -25,9 +25,12 @@
           <AvatarFallback>{{ recoverChars(view.post.writer.name).charAt(0) }}</AvatarFallback>
         </Avatar>
         <div class="min-w-0">
-          <NuxtLink :to="`/user/${view.post.writer.uid}`" class="font-semibold hover:text-primary">
-            {{ recoverChars(view.post.writer.name) }}
-          </NuxtLink>
+          <div class="flex items-center gap-1.5">
+            <NuxtLink :to="`/user/${view.post.writer.uid}`" class="truncate font-semibold hover:text-primary">
+              {{ recoverChars(view.post.writer.name) }}
+            </NuxtLink>
+            <UserInlineBadges :badges="view.post.writer.badges" />
+          </div>
           <p class="mt-1 truncate text-xs text-muted-foreground">
             {{ recoverChars(view.post.writer.signature) }}
           </p>

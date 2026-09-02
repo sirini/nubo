@@ -76,4 +76,12 @@ describe("advance skin UX contracts", () => {
     expect(list).toContain('SEARCH.IMAGEDESC')
     expect(list).toContain("이미지 설명 검색")
   })
+
+  it("shows server-provided inline achievements beside gallery writer names", () => {
+    const details = galleryDetailsSource()
+    const list = galleryListSource()
+
+    expect(list).toContain('<UserInlineBadges :badges="post.writer.badges" />')
+    expect(details).toContain('<UserInlineBadges :badges="view.post.writer.badges" />')
+  })
 })

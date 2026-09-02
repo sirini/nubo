@@ -36,4 +36,10 @@ describe("advance profile studio contracts", () => {
     expect(profile).toContain("AdvanceProfileConversation")
     expect(profile).toContain("AdvanceProfileReportDialog")
   })
+
+  it("shows the user's permanent achievement shelf", () => {
+    const profile = readProfile("Profile.vue")
+
+    expect(profile).toContain('<UserAchievementShelf :badges="profileUser.badges ?? []" />')
+  })
 })

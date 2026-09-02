@@ -51,7 +51,10 @@
                     <LockIcon class="size-3" /> 비밀글
                   </p>
                   <h2 class="truncate text-sm font-semibold">{{ recoverChars(post.title) }}</h2>
-                  <p class="mt-1 truncate text-xs text-white/70">{{ recoverChars(post.writer.name) }}</p>
+                  <p class="mt-1 flex items-center gap-1 text-xs text-white/70">
+                    <span class="truncate">{{ recoverChars(post.writer.name) }}</span>
+                    <UserInlineBadges :badges="post.writer.badges" />
+                  </p>
                 </div>
                 <span class="inline-flex shrink-0 items-center gap-1 text-xs text-white/80">
                   <HeartIcon class="size-3.5" :class="post.liked ? 'fill-current' : ''" />{{ num(post.like) }}

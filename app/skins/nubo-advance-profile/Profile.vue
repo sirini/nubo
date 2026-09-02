@@ -2,6 +2,8 @@
   <section class="container mx-auto max-w-6xl space-y-6 px-4 py-6 sm:py-10">
     <AdvanceProfileHeader />
 
+    <UserAchievementShelf :badges="profileUser.badges ?? []" />
+
     <Tabs :default-value="isMe ? 'studio' : 'activity'" class="space-y-5">
       <TabsList class="grid w-full max-w-md" :class="isMe ? 'grid-cols-2' : 'grid-cols-2'">
         <TabsTrigger v-if="isMe" value="studio">내 작품 스튜디오</TabsTrigger>
@@ -34,5 +36,5 @@ import AdvanceProfileStudio from "./components/AdvanceProfileStudio.vue"
 
 defineOptions({ name: "NuboAdvanceProfilePage" })
 
-const { isMe, isOpenReportForm } = useNuboProfileContext()
+const { isMe, isOpenReportForm, profileUser } = useNuboProfileContext()
 </script>
