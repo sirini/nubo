@@ -10,6 +10,7 @@ Nuxt 4 웹, [GOAPI](https://github.com/sirini/goapi), MySQL/MariaDB를 함께 �
 - 게시판, 사진 갤러리, 블로그, 웹진과 중고거래형 게시판
 - SSR 기반 공개 게시물과 반응형 light/dark UI
 - 회원·권한·댓글·알림·채팅·사진 업로드
+- 한 번 획득하면 유지되는 업적 배지, 관리자 수동 수여, 프로필 진열장과 새 업적 축하 화면
 - 이메일 인증, 초대 가입, 비밀번호 초기화와 소셜 로그인
 - 독립적인 소스 스킨과 [NUBO Market](https://nubohub.org/market/)
 - AI 이미지 설명과 설명·해시태그 통합 검색

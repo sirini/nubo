@@ -51,9 +51,9 @@
 
 ## 업적 배지
 
-목록의 `post.writer.badges`와 상세의 `view.post.writer.badges`에는 서버가 작성자 이름 옆에
-노출하도록 선별한 업적만 들어온다. 스킨은 규칙이나 특정 배지 key를 다시 판정하지 않고
-`<UserInlineBadges :badges="post.writer.badges" />` 공용 컴포넌트로 표시한다. 공개 프로필의
+목록의 `post.writer.badges`, 상세의 `view.post.writer.badges`와 댓글의 `comment.writer.badges`에는
+서버가 작성자 이름 옆에 노출하도록 선별한 업적만 들어온다. 스킨은 규칙이나 특정 배지 key를 다시
+판정하지 않고 `<UserInlineBadges :badges="post.writer.badges" />` 공용 컴포넌트로 표시한다. 공개 프로필의
 `profileUser.badges`에는 그 사용자가 획득한 전체 업적이 들어오며 `UserAchievementShelf`로
 표시할 수 있다. 관리자 여부는 업적이 아니라 기존 `isAdmin`·`profileUser.admin` 상태를 계속
 사용한다.

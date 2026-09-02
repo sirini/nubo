@@ -1,9 +1,9 @@
 # NUBO API contract v1
 
-기준일: 2026-08-30
-기준 구현: NUBO `main`, GOAPI `cb485a4`
+기준일: 2026-09-03
+기준 구현: NUBO `main`, GOAPI `5b17f51`
 
-이 문서는 현재 배포된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
+이 문서는 현재 구현된 v1 계약을 설명한다. 이상적인 새 API 규칙이 아니라, NUBO와 GOAPI가 실제로
 호환성을 유지해야 하는 경계를 기록한다. 계약을 깨는 변경은 `/version`의 `apiContract`를 올리고 두
 저장소를 함께 검증한다.
 
@@ -11,7 +11,7 @@
 
 - 브라우저와 SSR은 원칙적으로 NUBO의 `/api/*`를 호출한다.
 - Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
-- 현재 GOAPI와 같은 경로의 Nitro proxy는 method 기준 106개이며 GOAPI 124개 중 아래 18개를 제외하고
+- 현재 GOAPI와 같은 경로의 Nitro proxy는 method 기준 113개이며 GOAPI 131개 중 아래 18개를 제외하고
   모두 대응한다. NUBO 전용 `/api/market/user`는 별도로 `/auth/load` 결과를 최소 identity로 좁혀 전달한다.
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
 - NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
@@ -93,12 +93,14 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 관리자 최신글 | Admin | `GET /admin/latest/{comments,posts}`; `DELETE /admin/latest/{comment,post}` |
 | 관리자 메일 | Admin | `GET /admin/mail/{deliveries,campaigns,campaign/:uid}`; `POST /admin/mail/{preview,campaign,campaign/:uid/test,campaign/:uid/prepare,campaign/:uid/send}` |
 | 관리자 신고 | Admin | `GET /admin/report/reports`; `PUT /admin/report/resolve` |
+| 관리자 업적 | Admin | `GET /admin/badge/{definitions,user}`; `POST /admin/badge/{definition,grant}`; `PUT /admin/badge/definition` |
 | 관리자 스킨·시스템 | Admin | `PUT /admin/skin/setting`; `GET /admin/system/mail` |
 | 관리자 회원 | Admin | `GET /admin/user/{list,load,invites}`; `POST /admin/user/{create,modify,invite}`; `DELETE /admin/user/{remove,invite/:uid}` |
 | 인증 공개 | Public | `POST /auth/{signin,signup,reset-password,refresh,checkemail,checkname,verify,logout}`; `GET /auth/signup/status` |
 | 인증 계정 | JWT | `GET /auth/load`; `PATCH /auth/update`; `DELETE /auth/account` |
 | 사용자 공개 | Public | `GET /auth/user/info`; `POST /auth/user/change-password` |
 | 사용자 보호 | JWT | `GET /auth/user/{report,permission}`; `POST /auth/user/{report,manage}`; `PUT /auth/user/block`; `DELETE /auth/user/block` |
+| 사용자 업적 | JWT | `GET /auth/user/achievements`; `PATCH /auth/user/achievements` |
 | OAuth·네이티브 인증 | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/{google,refresh}` |
 | 네이티브 푸시 | JWT · Direct | `POST /push/device`; `DELETE /push/device` (Android `token` 필드에는 FCM 설치 ID(FID) 전달) |
 | 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer,original,original/transfer}` |
@@ -143,6 +145,39 @@ JWT에서만 결정하며 query나 body의 UID는 받지 않는다.
 기간별 추이, 고유 방문자, 증감률, engagement rate, follow, bookmark는 이 endpoint의 v1 계약에 포함하지
 않는다. 공개 사용자 작품 목록이 필요해질 때는 UID 노출·비밀글 제외 정책을 별도 명세하되 GOAPI의 내부
 사용자·게시판 범위 repository query를 재사용한다.
+
+## 영구 업적 배지
+
+업적은 한 번 수여되면 유지되는 additive v1 계약이다. 만료·구독·활성 상태는 이 계약에 포함하지 않고,
+관리자 여부는 기존 `admin`·권한 필드로 계속 판정한다.
+
+```ts
+type UserBadge = {
+  key: string
+  name: string
+  description: string
+  iconKey: string
+  earnedAt: number // epoch milliseconds
+}
+```
+
+- `GET /auth/user/info`의 `badges`에는 그 사용자의 활성 업적 전체가 들어간다. 게시물 목록·상세와 댓글
+  작성자의 `writer.badges`에는 서버가 `show_inline`으로 선별한 업적만 들어간다. 클라이언트는 특정 key나
+  달성 규칙을 다시 판정하지 않고 서버 결과를 표시한다.
+- `GET /auth/user/achievements`는 JWT 사용자의 아직 확인하지 않은 활성 업적을 오래된 순으로 최대 10개
+  반환한다. `PATCH /auth/user/achievements`는 body `{ keys: string[] }`의 소유 업적을 확인 처리하며 한 번에
+  1~10개 key를 받는다. 이미 확인했거나 소유하지 않은 key는 새 상태를 만들지 않는다.
+- 내장 자동 업적은 `first-post`, `first-comment`, `sensta-app`이다. 첫 글·첫 댓글은 최초 schema 설치 때
+  기존 이력을 한 번만 소급한다. `sensta-app`은 JWT 사용자가 Sensta Android 출처 헤더와 함께 사진이
+  첨부된 게시글 저장을 성공했을 때 수여한다.
+- `X-Nubo-Client: sensta-android`와 `X-Nubo-App-Version`은 앱 출처를 기록하는 공개 표식이며 인증 정보가
+  아니다. 서버는 사용자 신원을 반드시 JWT에서 얻는다.
+- 관리자는 `GET /admin/badge/definitions`로 정의를, `GET /admin/badge/user?userUid=...`로 보유 업적을
+  조회한다. `POST /admin/badge/definition`은 허용된 아이콘 key로 수동 업적을 만들고,
+  `PUT /admin/badge/definition`은 수동 정의만 수정한다. `POST /admin/badge/grant`의 body는
+  `{ userUid, badgeKey }`이며 result는 새로 수여했으면 `true`, 이미 보유했으면 `false`다.
+- 내장 자동 업적 정의는 관리자 UI에서 수정할 수 없고 현재 v1에는 수여 취소 endpoint가 없다. 기존
+  획득·소급분은 migration에서 확인 완료로 표시해 기능 배포 직후 과거 축하 알림이 몰리지 않게 한다.
 
 ## 요청·응답 타입의 현재 source of truth
 

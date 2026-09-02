@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- 영구 업적 배지의 관리자 수여, 웹·Sensta Android 획득 알림과 프로필 진열장,
-  `nubo-advance-gallery` 작성자 인라인 표시를 운영 배포해 확인한다.
+- 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
+  프로필 반영까지 확인했다. 남은 목표는 Sensta 2.1.3 Play 제출과 웹·Android 최종 표시 점검이다.
 
 ## Current decisions
 
@@ -52,6 +52,9 @@
 
 ## Recent completion
 
+- 세 저장소의 업적 작업을 GOAPI `5b17f51`, NUBO `4f2d01d`, Sensta Android `2024fa8`까지 `main`에
+  반영했다. Sensta 2.1.3(`versionCode 26`)은 `작품·정보·업적` 3탭 프로필과 2열 진열장으로 정리했고,
+  서명된 AAB의 SHA-256은 `34d73c001ae09f8e8043387eb21cd75944fa9f4484e0f6d0a194dbe9e777cf4d`다.
 - 댓글 목록 API도 작성자 UID를 중복 제거해 인라인 업적을 한 번에 배치 조회한다.
   `nubo-advance-gallery`는 댓글 작성자 이름 옆에 서버가 `show_inline`으로 선별한 업적만 표시하며,
   별도 Sensta 전용 스킨이나 단계형·현재 상태 배지는 추가하지 않았다.
@@ -172,6 +175,8 @@
 
 ## Next action
 
-1. 세 저장소 배포 후 관리자 수동 수여, 새 획득 연출, 웹·Android 진열장과 갤러리 댓글 배지를 운영
-   환경에서 확인한다.
-2. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI와 추가 자동 업적은 확장하지 않는다.
+1. Sensta 2.1.3 AAB를 Play Console에 올리고 내부 테스트 또는 단계적 배포에서 로그인·업로드·업적 흐름을
+   확인한다.
+2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
+   `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
+3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
