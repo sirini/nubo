@@ -1,4 +1,7 @@
 import type {
+  AdminBadgeDefinition,
+  AdminBadgeDefinitionParam,
+  AdminBadgeGrantParam,
   AdminBoardCreateParam,
   AdminBoardModifyParam,
   AdminBoardResult,
@@ -22,11 +25,51 @@ import type {
   AdminUserModifyParam,
   AdminUserParam,
 } from "~/types/admin"
+import type { UserBadge } from "~/types/user"
 import type { Resp } from "~/types/common"
 import type { BoardWriter } from "~/types/board"
 
 export const useAdmin = () => {
   const config = useRuntimeConfig()
+
+  const loadBadgeDefinitions = async () => {
+    return await $fetch<Resp<AdminBadgeDefinition[]>>("/admin/badge/definitions", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+    })
+  }
+
+  const createBadgeDefinition = async (param: AdminBadgeDefinitionParam) => {
+    return await $fetch<Resp<AdminBadgeDefinition>>("/admin/badge/definition", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body: param,
+    })
+  }
+
+  const modifyBadgeDefinition = async (param: AdminBadgeDefinitionParam) => {
+    return await $fetch<Resp<AdminBadgeDefinition>>("/admin/badge/definition", {
+      baseURL: config.public.apiBase,
+      method: "PUT",
+      body: param,
+    })
+  }
+
+  const loadUserBadges = async (userUid: number) => {
+    return await $fetch<Resp<UserBadge[]>>("/admin/badge/user", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: { userUid },
+    })
+  }
+
+  const grantBadge = async (param: AdminBadgeGrantParam) => {
+    return await $fetch<Resp<boolean>>("/admin/badge/grant", {
+      baseURL: config.public.apiBase,
+      method: "POST",
+      body: param,
+    })
+  }
 
   // 간단 통계 데이터 가져오기
   const loadGeneralStatistic = async (days: number) => {
@@ -321,10 +364,12 @@ export const useAdmin = () => {
   }
 
   return {
+    createBadgeDefinition,
     createNewBoard,
     createNewGroup,
     createUserAccount,
     loadBoardConfig,
+    loadBadgeDefinitions,
     loadAdminCandidates,
     loadCommentList,
     loadGeneralItem,
@@ -339,8 +384,10 @@ export const useAdmin = () => {
     loadPostList,
     loadReportList,
     loadUserInfo,
+    loadUserBadges,
     loadUserList,
     modifyExistBoard,
+    modifyBadgeDefinition,
     modifyGroupAdmin,
     modifyUserInfo,
     prepareMailCampaign,
@@ -352,5 +399,6 @@ export const useAdmin = () => {
     sendMailCampaign,
     sendMailCampaignTest,
     updateGroupId,
+    grantBadge,
   }
 }

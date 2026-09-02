@@ -29,4 +29,16 @@ describe("achievement badge contract", () => {
     expect(inline).toContain('v-for="badge in badges"')
     expect(inline).not.toContain("sensta-app")
   })
+
+  it("lets administrators create permanent achievements and grant them from a user profile", () => {
+    const api = read("app/composables/useAdmin.ts")
+    const badgeAdmin = read("app/skins/nubo-basic-admin/Badge.vue")
+    const userManager = read("app/skins/nubo-basic-admin/components/UserBadgeManager.vue")
+
+    expect(api).toContain('"/admin/badge/definition"')
+    expect(api).toContain('"/admin/badge/grant"')
+    expect(badgeAdmin).toContain("단계형 활동 수치나 현재 상태가 아닌, 영구적인 업적만")
+    expect(userManager).toContain("선택한 업적 수여")
+    expect(userManager).not.toContain("revoke")
+  })
 })

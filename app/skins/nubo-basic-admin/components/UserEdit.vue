@@ -1,5 +1,6 @@
 <template>
-  <form id="modifyUserAccount" class="p-4 sm:p-6" @submit="onEditSubmit">
+  <div class="p-4 sm:p-6">
+    <form id="modifyUserAccount" @submit="onEditSubmit">
     <FieldSet>
       <FieldLegend class="text-xl">사용자 계정 수정하기</FieldLegend>
       <FieldDescription>사용자 계정 정보를 수정하거나 삭제할 수 있습니다</FieldDescription>
@@ -44,7 +45,9 @@
         </CommonVTooltip>
       </div>
     </div>
-  </form>
+    </form>
+    <UserBadgeManager v-if="user.uid" :user-uid="user.uid" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -56,6 +59,7 @@ import type { UserPermissionManageParam } from "~/types/user"
 import UserFieldGroup from "./UserFieldGroup.vue"
 import { useUserFormSchema } from "./userFormSchema"
 import UserPermissionFieldGroup from "./UserPermissionFieldGroup.vue"
+import UserBadgeManager from "./UserBadgeManager.vue"
 
 const props = defineProps<{
   selectedUserUid: number

@@ -80,6 +80,7 @@
 <script setup lang="ts">
 import {
   CogIcon,
+  AwardIcon,
   ExternalLinkIcon,
   FileTextIcon,
   LayoutDashboardIcon,
@@ -90,7 +91,7 @@ import {
   UsersIcon,
 } from "lucide-vue-next"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
-import { ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_MAIL, ADMIN_REPORT, ADMIN_SKIN, ADMIN_USER } from "~/types/admin"
+import { ADMIN_BADGE, ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_MAIL, ADMIN_REPORT, ADMIN_SKIN, ADMIN_USER } from "~/types/admin"
 
 defineOptions({ name: "NuboAdmin" })
 
@@ -100,6 +101,7 @@ const menuItems = [
   { label: "대시보드", value: ADMIN_DASHBOARD, icon: LayoutDashboardIcon },
   { label: "게시판 관리", value: ADMIN_BOARD, icon: FileTextIcon },
   { label: "사용자 관리", value: ADMIN_USER, icon: UsersIcon },
+  { label: "업적 배지", value: ADMIN_BADGE, icon: AwardIcon },
   { label: "신고 관리", value: ADMIN_REPORT, icon: MessageCircleWarningIcon },
   { label: "단체 메일", value: ADMIN_MAIL, icon: MailIcon },
   { label: "스킨 관리", value: ADMIN_SKIN, icon: PaletteIcon },

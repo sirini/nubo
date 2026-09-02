@@ -9,10 +9,10 @@ import {
   type Status,
 } from "./board"
 import type { Pair } from "./common"
-import type { UserBasicInfo } from "./user"
+import type { UserBadge, UserBasicInfo } from "./user"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
-export type AdminMenu = "Dashboard" | "Board" | "User" | "Report" | "Skin" | "Mail" | "System"
+export type AdminMenu = "Dashboard" | "Board" | "User" | "Badge" | "Report" | "Skin" | "Mail" | "System"
 
 // 스킨 타입 정의
 export type AdminSkinType =
@@ -29,6 +29,7 @@ export type AdminSkinType =
 export const ADMIN_DASHBOARD: AdminMenu = "Dashboard"
 export const ADMIN_BOARD: AdminMenu = "Board"
 export const ADMIN_USER: AdminMenu = "User"
+export const ADMIN_BADGE: AdminMenu = "Badge"
 export const ADMIN_REPORT: AdminMenu = "Report"
 export const ADMIN_SKIN: AdminMenu = "Skin"
 export const ADMIN_MAIL: AdminMenu = "Mail"
@@ -315,6 +316,33 @@ export type AdminUserInfo = BoardWriter & {
   level: number
   point: number
 }
+
+export type AdminBadgeDefinition = {
+  key: string
+  name: string
+  description: string
+  iconKey: string
+  active: boolean
+  showInline: boolean
+  sortOrder: number
+  system: boolean
+  created: number
+  updated: number
+}
+
+export type AdminBadgeDefinitionParam = Pick<
+  AdminBadgeDefinition,
+  "name" | "description" | "iconKey" | "showInline" | "sortOrder"
+> & {
+  key?: string
+}
+
+export type AdminBadgeGrantParam = {
+  userUid: number
+  badgeKey: string
+}
+
+export type AdminUserBadge = UserBadge
 
 // 스킨 페이지에서 카테고리 정의
 export type AdminSkinCategory = {
