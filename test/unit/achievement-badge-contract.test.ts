@@ -37,6 +37,7 @@ describe("achievement badge contract", () => {
 
     expect(api).toContain('"/admin/badge/definition"')
     expect(api).toContain('"/admin/badge/grant"')
+    expect(read("server/api/admin/badge/grant.post.ts")).toContain("/admin/badge/grant")
     expect(badgeAdmin).toContain("단계형 활동 수치나 현재 상태가 아닌, 영구적인 업적만")
     expect(userManager).toContain("선택한 업적 수여")
     expect(userManager).not.toContain("revoke")
