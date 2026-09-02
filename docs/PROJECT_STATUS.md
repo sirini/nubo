@@ -2,8 +2,8 @@
 
 ## Active goal
 
-- 영구 업적 배지의 웹·Sensta Android 획득 알림과 프로필 진열장을 마무리하고,
-  `nubo-advance-gallery` 댓글 작성자 인라인 업적까지 연결한다.
+- 영구 업적 배지의 관리자 수여, 웹·Sensta Android 획득 알림과 프로필 진열장,
+  `nubo-advance-gallery` 작성자 인라인 표시를 운영 배포해 확인한다.
 
 ## Current decisions
 
@@ -52,6 +52,9 @@
 
 ## Recent completion
 
+- 댓글 목록 API도 작성자 UID를 중복 제거해 인라인 업적을 한 번에 배치 조회한다.
+  `nubo-advance-gallery`는 댓글 작성자 이름 옆에 서버가 `show_inline`으로 선별한 업적만 표시하며,
+  별도 Sensta 전용 스킨이나 단계형·현재 상태 배지는 추가하지 않았다.
 - GOAPI에 사용자별 미확인 업적 조회·확인 API와 `announced_at` 원장을 추가했다. 기존 획득·소급 업적은
   migration 시 확인 완료로 처리해 새 기능 배포 직후 과거 업적 알림이 몰리지 않는다. NUBO는 글·댓글
   작성 및 화면 이동 뒤 새 업적을 확인하고, 접근성 동작 축소를 존중하는 순차 축하 연출과 프로필 이동을
@@ -112,6 +115,8 @@
 
 ## Verification
 
+- 댓글 작성자 인라인 업적 배치·중복 제거 서비스 테스트와 NUBO 렌더링 계약 테스트를 추가했고,
+  GOAPI 전체 test·vet 및 NUBO typecheck·lint를 통과했다.
 - 미확인 업적 schema/repository 테스트와 GOAPI 전체 test·vet·Ubuntu 22.04 Docker build, NUBO 업적 계약
   테스트·typecheck·lint(오류 0, 기존 경고 50)·production build, Sensta Android 전체 Gradle test를
   통과했다. NUBO 전체 unit의 기존 Windows 전용 실패는 배포 스크립트의 symlink·CRLF 가정에 한정된다.
@@ -167,5 +172,6 @@
 
 ## Next action
 
-1. `nubo-advance-gallery` 댓글 작성자에도 서버가 선별한 인라인 업적을 표시한다.
-2. 세 저장소 배포 후 관리자 수동 수여, 새 획득 연출, 웹·Android 진열장을 운영 환경에서 확인한다.
+1. 세 저장소 배포 후 관리자 수동 수여, 새 획득 연출, 웹·Android 진열장과 갤러리 댓글 배지를 운영
+   환경에서 확인한다.
+2. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI와 추가 자동 업적은 확장하지 않는다.

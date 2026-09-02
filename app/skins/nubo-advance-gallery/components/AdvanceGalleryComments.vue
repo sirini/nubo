@@ -23,8 +23,11 @@
         >
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <strong class="text-sm">{{ comment.writer.name }}</strong
-            ><span class="text-xs text-muted-foreground">{{ dateFull(comment.submitted) }}</span>
+            <div class="flex min-w-0 items-center gap-1.5">
+              <strong class="truncate text-sm">{{ comment.writer.name }}</strong>
+              <UserInlineBadges :badges="comment.writer.badges" />
+            </div>
+            <span class="text-xs text-muted-foreground">{{ dateFull(comment.submitted) }}</span>
           </div>
           <!-- eslint-disable vue/no-v-html -- 댓글 HTML은 화면 출력 전에 정제합니다. -->
           <div

@@ -54,4 +54,13 @@ describe("achievement badge contract", () => {
     expect(celebration).toContain("새로운 업적")
     expect(celebration).toContain("prefers-reduced-motion: reduce")
   })
+
+  it("shows API-selected inline achievements beside advance-gallery comment writers", () => {
+    const comments = read(
+      "app/skins/nubo-advance-gallery/components/AdvanceGalleryComments.vue",
+    )
+
+    expect(comments).toContain('<UserInlineBadges :badges="comment.writer.badges" />')
+    expect(comments).not.toContain("sensta-app")
+  })
 })
