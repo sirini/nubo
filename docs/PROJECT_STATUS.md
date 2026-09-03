@@ -4,9 +4,14 @@
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. 남은 목표는 Sensta 2.1.3 Play 제출과 웹·Android 최종 표시 점검이다.
+- Sensta iOS는 별도 공개 저장소와 Xcode 27 beta 개발 환경·사전 준비 문서까지만 마련했다. Apple
+  Developer Program 재가입 승인 후 GOAPI 선행 계약과 SwiftUI 앱 골격을 순서대로 시작한다.
 
 ## Current decisions
 
+- Sensta iOS는 `sirini/sensta-ios`에서 SwiftUI·Swift concurrency와 Apple 기본 프레임워크를 우선해
+  개발한다. Android의 데이터·제품 동작은 유지하되 iOS 관례에 맞추고, beta Xcode는 현재 개발에만
+  사용하며 제출 전 당시 허용되는 안정판 Xcode로 다시 검증한다.
 - 배지는 한 번 획득하면 유지되는 업적만 다룬다. 만료·구독·활성 상태는 넣지 않으며 관리자 표시는 기존
   `admin` 상태와 권한 응답을 계속 사용한다.
 - 첫 내장 업적은 `first-post`, `first-comment`, `sensta-app` 세 개다. 프로필은 전체 업적을 받고,
@@ -52,6 +57,9 @@
 
 ## Recent completion
 
+- Sensta iOS 공개 저장소를 만들고 Xcode 27.0·Swift 6.4·iOS 27 simulator 환경 점검, 멤버십 심사 대기
+  상태, GOAPI의 iOS 인증·푸시·HEIC·출처·UGC 선행 작업과 Firebase/APNs/App Store 준비 체크리스트를
+  문서화했다. 앱 프로젝트와 기능 구현은 아직 시작하지 않았다.
 - 세 저장소의 업적 작업을 GOAPI `5b17f51`, NUBO `4f2d01d`, Sensta Android `2024fa8`까지 `main`에
   반영했다. Sensta 2.1.3(`versionCode 26`)은 `작품·정보·업적` 3탭 프로필과 2열 진열장으로 정리했고,
   서명된 AAB의 SHA-256은 `34d73c001ae09f8e8043387eb21cd75944fa9f4484e0f6d0a194dbe9e777cf4d`다.
@@ -118,6 +126,8 @@
 
 ## Verification
 
+- Sensta iOS 환경 점검 스크립트가 `/Applications/Xcode-beta.app`의 Xcode 27.0(`27A5252f`), Swift 6.4,
+  iOS 27.0 SDK와 simulator runtime을 확인했고 shell syntax 및 Git whitespace 검사를 통과했다.
 - 댓글 작성자 인라인 업적 배치·중복 제거 서비스 테스트와 NUBO 렌더링 계약 테스트를 추가했고,
   GOAPI 전체 test·vet 및 NUBO typecheck·lint를 통과했다.
 - 미확인 업적 schema/repository 테스트와 GOAPI 전체 test·vet·Ubuntu 22.04 Docker build, NUBO 업적 계약
@@ -180,3 +190,5 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
+4. Apple Developer Program 승인 뒤 Sensta iOS bundle ID·Signing Team을 확정하고, GOAPI의 iOS 인증·푸시·
+   HEIC 선행 계약부터 보안 회귀 테스트와 함께 구현한다.
