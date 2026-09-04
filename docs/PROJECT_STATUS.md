@@ -61,7 +61,8 @@
   기기를 정리하고 운영 `me.sensta.ios`·개발 `me.sensta.ios.debug` App ID에 Associated Domains,
   Push Notifications와 Sign in with Apple을 활성화했다. App Store Connect에는 `SENSTA`(Apple ID
   `6808687447`)를 만들고 무료·대한민국 배포, 사진 및 비디오/소셜 네트워킹 카테고리, 수동 출시로
-  설정했으며 미검증 Mac·Vision Pro 배포는 껐다.
+  설정했으며 미검증 Mac·Vision Pro 배포는 껐다. 개인 개발자 계정의 대한민국 연락처 및
+  사업자등록번호 보유 여부 확인도 완료했다.
 - Sensta iOS 공개 저장소를 만들고 Xcode 27.0·Swift 6.4·iOS 27 simulator 환경과 라이선스·초기 구성을
   확인했다. Apple Developer Program 재가입은 승인됐으며, GOAPI의 iOS 인증·푸시·HEIC·출처·UGC 선행
   작업과 Firebase/APNs/App Store 준비 체크리스트를 문서화했다. Team·코드서명과 앱 프로젝트는 아직
@@ -198,5 +199,4 @@
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
 4. Sensta iOS의 최소 지원 버전을 확정하고 Xcode에 Team `WKPCU58CWL`을 연결한다. 최소 SwiftUI 앱을
    실제 iPhone에 자동 서명해 실행한 뒤 GOAPI의 공용 mobile Google 인증·refresh 및 Google ID token
-   검증 강화부터 보안 회귀 테스트와 함께 구현한다. App Store 대한민국 규정 준수 정보는 공개 연락처
-   이메일과 국내 사업자등록번호 보유 여부를 확인한 뒤 등록한다.
+   검증 강화부터 보안 회귀 테스트와 함께 구현한다.
