@@ -4,15 +4,17 @@
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. 남은 목표는 Sensta 2.1.3 Play 제출과 웹·Android 최종 표시 점검이다.
-- Sensta iOS는 Apple Developer Program·App Store Connect 등록, 최소 SwiftUI 프로젝트와 실제 iPhone
-  자동 서명·설치·실행을 마쳤다. 다음은 응답 fixture와 decoding test부터 첫 공개 피드 수직 기능을
-  시작한다.
+- Sensta iOS는 Apple 등록과 최소 SwiftUI 기반에 이어 fixture·계약 테스트와 첫 공개 사진 피드를 실제
+  iPhone에 설치·실행했다. 다음은 게시글 상세 fixture와 화면 이동을 구현한다.
 
 ## Current decisions
 
 - Sensta iOS는 `sirini/sensta-ios`에서 SwiftUI·Swift concurrency와 Apple 기본 프레임워크를 우선해
   개발한다. Android의 데이터·제품 동작은 유지하되 iOS 관례에 맞추고, beta Xcode는 현재 개발에만
   사용하며 제출 전 당시 허용되는 안정판 Xcode로 다시 검증한다.
+- Sensta iOS 공개 피드는 `GET /board/list`를 인증 헤더 없이 호출하고 Android와 같은 차단 목록 필터 및
+  `cover` 미리보기 경로 변환을 적용한다. API 기능은 fixture와 Swift 요청·decoding 회귀 테스트를 먼저
+  고정한다.
 - 배지는 한 번 획득하면 유지되는 업적만 다룬다. 만료·구독·활성 상태는 넣지 않으며 관리자 표시는 기존
   `admin` 상태와 권한 응답을 계속 사용한다.
 - 첫 내장 업적은 `first-post`, `first-comment`, `sensta-app` 세 개다. 프로필은 전체 업적을 받고,
@@ -58,6 +60,9 @@
 
 ## Recent completion
 
+- Sensta iOS 첫 공개 피드에 GOAPI 목록 DTO·fixture, 익명 요청·오류 envelope·상태 회귀 테스트와
+  로딩·빈 상태·오류·재시도·당겨서 새로고침 UI를 추가했다. 운영 사진으로 라이트·다크·큰 글자 화면,
+  Debug test build·Release build·정적 분석, unit 9개·UI 1개를 통과하고 실제 iPhone 설치·실행을 확인했다.
 - Sensta iOS의 Xcode에 Team `WKPCU58CWL`을 연결하고 iPhone 17에서 개발자 모드를 활성화했다. 자동
   서명으로 기기를 계정에 등록하고 Apple Development 인증서와 `me.sensta.ios.debug` provisioning
   profile을 생성했으며, 실제 기기 빌드·설치·실행과 실행 중 프로세스를 확인했다.
@@ -205,5 +210,5 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. Sensta iOS의 공개 게시글 fixture·Swift decoding test와 첫 사진 피드를 만들고, GOAPI의 공용 mobile
-   Google 인증·refresh 및 Google ID token 검증 강화도 보안 회귀 테스트와 함께 진행한다.
+4. Sensta iOS의 게시글 상세 fixture·화면 이동과 공개 피드 페이지 추가 로딩을 진행하고, GOAPI의 공용
+   mobile Google 인증·refresh 및 Google ID token 검증 강화도 보안 회귀 테스트와 함께 진행한다.
