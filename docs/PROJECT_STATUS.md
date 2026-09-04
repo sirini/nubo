@@ -4,8 +4,8 @@
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. 남은 목표는 Sensta 2.1.3 Play 제출과 웹·Android 최종 표시 점검이다.
-- Sensta iOS는 Apple 등록과 최소 SwiftUI 기반에 이어 fixture·계약 테스트와 첫 공개 사진 피드를 실제
-  iPhone에 설치·실행했다. 다음은 게시글 상세 fixture와 화면 이동을 구현한다.
+- Sensta iOS는 Apple 등록과 최소 SwiftUI 기반에 이어 공개 사진 피드와 게시글 상세를 실제 iPhone에
+  설치·실행했다. 다음은 공개 피드 페이지 추가 로딩을 구현한다.
 
 ## Current decisions
 
@@ -15,6 +15,9 @@
 - Sensta iOS 공개 피드는 `GET /board/list`를 인증 헤더 없이 호출하고 Android와 같은 차단 목록 필터 및
   `cover` 미리보기 경로 변환을 적용한다. API 기능은 fixture와 Swift 요청·decoding 회귀 테스트를 먼저
   고정한다.
+- Sensta iOS 게시글 상세도 익명 `GET /board/view` 계약을 사용한다. 사진별 EXIF·AI 설명, 본문·태그·
+  첨부 정보와 시스템 공유를 네이티브 SwiftUI로 표시하고 원격 이미지 크기가 화면 폭을 넓히지 않도록
+  Geometry 기반으로 제약한다.
 - 배지는 한 번 획득하면 유지되는 업적만 다룬다. 만료·구독·활성 상태는 넣지 않으며 관리자 표시는 기존
   `admin` 상태와 권한 응답을 계속 사용한다.
 - 첫 내장 업적은 `first-post`, `first-comment`, `sensta-app` 세 개다. 프로필은 전체 업적을 받고,
@@ -60,6 +63,10 @@
 
 ## Recent completion
 
+- Sensta iOS에 `GET /board/view` 응답 fixture와 익명 요청·decoding·오류 envelope·상태 테스트를 추가하고
+  피드 카드에서 게시글 상세로 이동하도록 연결했다. 여러 사진 넘김, EXIF·AI 설명, 본문·태그·첨부 정보·
+  통계·공유를 제공하며 목록과 상세의 좌우 폭을 UI test로 고정했다. unit 14개·UI 3개, Release build와
+  정적 분석을 통과하고 실제 iPhone에 새 Debug 앱을 설치·실행했다.
 - Sensta iOS 첫 공개 피드에 GOAPI 목록 DTO·fixture, 익명 요청·오류 envelope·상태 회귀 테스트와
   로딩·빈 상태·오류·재시도·당겨서 새로고침 UI를 추가했다. 운영 사진으로 라이트·다크·큰 글자 화면,
   Debug test build·Release build·정적 분석, unit 9개·UI 1개를 통과하고 실제 iPhone 설치·실행을 확인했다.
@@ -146,6 +153,9 @@
 
 ## Verification
 
+- Sensta iOS 운영 `GET /board/view` 응답을 Android·GOAPI 계약과 대조했고 상세 fixture·익명 요청·오류·
+  상태 및 목록/상세 폭 회귀를 포함한 전체 17개 테스트, Release build와 정적 분석을 통과했다. 실제
+  iPhone용 Debug 자동 서명, 설치와 실행도 확인했다.
 - Sensta iOS 환경 점검 스크립트가 `/Applications/Xcode-beta.app`의 Xcode 27.0(`27A5252f`), Swift 6.4,
   iOS 27.0 SDK와 simulator runtime을 확인했고 shell syntax 및 Git whitespace 검사를 통과했다.
 - 댓글 작성자 인라인 업적 배치·중복 제거 서비스 테스트와 NUBO 렌더링 계약 테스트를 추가했고,
@@ -210,5 +220,5 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. Sensta iOS의 게시글 상세 fixture·화면 이동과 공개 피드 페이지 추가 로딩을 진행하고, GOAPI의 공용
-   mobile Google 인증·refresh 및 Google ID token 검증 강화도 보안 회귀 테스트와 함께 진행한다.
+4. Sensta iOS 공개 피드 페이지 추가 로딩을 진행하고, GOAPI의 공용 mobile Google 인증·refresh 및
+   Google ID token 검증 강화도 보안 회귀 테스트와 함께 진행한다.
