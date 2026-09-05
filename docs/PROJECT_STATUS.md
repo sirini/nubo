@@ -84,6 +84,11 @@
   22.04·24.04 및 qemu64/max runtime 검증을 통과했다. 교체용
   `goapi.git/dist/nubo-runtime/bin/goapi`의 SHA-256은
   `5a647b3094bdd3358a4724d0f17aad2bd7fab600b2650c777c0ee685c7cda38d`다.
+- Sensta iOS `271227c`는 첫 피드 하단 작성자·제목·좋아요·댓글 묶음을 20pt 내려 중앙 업로드 버튼과
+  자연스럽게 붙이고 등록일을 제거했다. 탐색 버튼은 상단에서 제목 행 우측으로 옮겨 제목과 수평 중심을
+  맞췄으며, 상단에는 계정과 로그인 시 알림만 남긴다. 전체 단위 105개와 피드 배치·알림·업로드,
+  카드 상세 진입, 탐색→검색 결과→상세 UI 흐름, Debug 정적 분석과 Release 기기 빌드를 통과했다.
+  최종 화면을 시뮬레이터에서 확인하고 Release 앱을 실제 iPhone에 설치·실행했다. GOAPI 변경은 없다.
 
 ## Current decisions
 
