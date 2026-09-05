@@ -12,7 +12,7 @@
   제품 소유자가 탐색의 디자인과 실기기 동작을 승인했다. 이어 공개 프로필·최근 작품 그리드를 추가했고
   사진가 업적과 작품·사진·좋아요 공개 통계를 iOS `34a86f7`에 추가했다. 단위 48개·UI 10개와 Debug/Release
   빌드를 통과하고 iPhone에 설치했다. GOAPI `934d836`의 새 공개 통계 endpoint는
-  운영 반영이 필요하며, 기존 Android 본인 스튜디오 계약은 유지한다. Go 전체 테스트·vet를 통과했다.
+  운영 반영을 2026-09-05 완료했으며, 기존 Android 본인 스튜디오 계약은 유지한다. Go 전체 테스트·vet를 통과했다.
 
 ## Current decisions
 
@@ -72,6 +72,12 @@
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
+
+- 2026-09-05 Sensta Ubuntu 22.04 VM에서 Docker Buildx를 설치하고 공식 스크립트로 GOAPI를 빌드·배포했다.
+  GOAPI `1cf4b1d`는 x86-64-v2 미지원 빌드 호스트에서도 호환판 선택을 허용하고 QEMU `qemu64`·`max`로
+  두 변형의 자동 선택과 JPEG→WebP 변환을 검증한다. Ubuntu 22.04·24.04 이미지 테스트와 외부
+  health·ready, Nuxt HTTP 200을 확인했다. 이전 runtime은 `/var/backups/sensta-goapi-20260905-170051`에
+  보관했고, 전용 Docker 빌드 캐시를 제거해 서버 여유 공간을 약 21GiB로 복구했다.
 
 - Sensta iOS 공개 피드를 Android의 대표 화면처럼 사진 한 장이 노치·홈 인디케이터 영역까지 채우는
   세로 paging으로 바꿨다. 좌상단 `SENSTA` 워드마크는 Android의 Oleo Script Bold 원본 glyph·18pt 크기·
