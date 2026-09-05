@@ -21,7 +21,12 @@
   추가했고 단위 64개·관련 UI 2개, Debug/Release 빌드와 캡처를 확인해 iPhone에 설치·실행했다.
   iOS `a4a89b0`에서 인증 기반 게시글 좋아요·취소와 피드 수치 공유를 추가했다. 동시 refresh·로그아웃
   경합·응답 유실 재조회까지 단위 73개·UI 13개와 Debug/Release 빌드를 확인했고 iPhone에 설치·실행했다.
-  로그인 아이콘은 `ea9bac2`의 고정 방향 `ipad.and.arrow.forward`다. 다음은 댓글 참여 기능이다.
+  로그인 아이콘은 `ea9bac2`의 고정 방향 `ipad.and.arrow.forward`다. 제품 소유자가 아이콘과 실제 좋아요
+  동작을 확인했다. iOS `22b3689`에서 본문 아래 댓글 작성·답글, 초안 보존·중복 전송 방지·응답 유실
+  확인과 피드 댓글 수 공유를 추가했다. 기존 `/comment/write`, `/comment/reply` 계약을 재사용하므로
+  GOAPI 변경·교체는 없다. 단위 80개·UI 14개(기존 13개+신규 1개), Debug/Release와 캡처를 확인했고
+  Swift `-O` 서명 앱을 iPhone 17에 설치·실행했다. 실제 댓글 등록 QA는 제품 소유자가 진행한다.
+  다음은 댓글 좋아요·본인 댓글 관리다.
 
 ## Current decisions
 
