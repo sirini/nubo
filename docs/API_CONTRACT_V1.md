@@ -168,9 +168,10 @@ type UserBadge = {
   반환한다. `PATCH /auth/user/achievements`는 body `{ keys: string[] }`의 소유 업적을 확인 처리하며 한 번에
   1~10개 key를 받는다. 이미 확인했거나 소유하지 않은 key는 새 상태를 만들지 않는다.
 - 내장 자동 업적은 `first-post`, `first-comment`, `sensta-app`이다. 첫 글·첫 댓글은 최초 schema 설치 때
-  기존 이력을 한 번만 소급한다. `sensta-app`은 JWT 사용자가 Sensta Android 출처 헤더와 함께 사진이
-  첨부된 게시글 저장을 성공했을 때 수여한다.
-- `X-Nubo-Client: sensta-android`와 `X-Nubo-App-Version`은 앱 출처를 기록하는 공개 표식이며 인증 정보가
+  기존 이력을 한 번만 소급한다. `sensta-app`은 JWT 사용자가 Sensta Android 또는 iOS 출처 헤더와 함께
+  사진이 첨부된 게시글 저장을 성공했을 때 같은 업적으로 수여한다.
+- Android는 `X-Nubo-Client: sensta-android`, iOS는 `X-Nubo-Client: sensta-ios`를 보내며 두 플랫폼 모두
+  `X-Nubo-App-Version`을 함께 보낼 수 있다. 플랫폼 값은 앱 출처를 기록하는 공개 표식이며 인증 정보가
   아니다. 서버는 사용자 신원을 반드시 JWT에서 얻는다.
 - 관리자는 `GET /admin/badge/definitions`로 정의를, `GET /admin/badge/user?userUid=...`로 보유 업적을
   조회한다. `POST /admin/badge/definition`은 허용된 아이콘 key로 수동 업적을 만들고,
