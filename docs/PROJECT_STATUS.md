@@ -73,6 +73,12 @@
 
 ## Recent completion
 
+- 2026-09-05 M4 Pro Mac mini에 Homebrew Colima·Buildx와 VZ/Rosetta Linux VM(CPU 6개, RAM 8GiB,
+  디스크 최대 60GiB)을 준비했다. GOAPI 공식 스크립트가 Ubuntu 22.04·24.04 이미지 테스트와
+  QEMU `qemu64`·`max` 검증을 통과했고, 생성된 바이너리는 같은 날 Sensta 서버 빌드와 SHA-256이
+  일치했다. `goapi.git/dist/nubo-runtime/`과 검증된 업로드용 tar.gz·체크섬을 만들었다.
+  캐시는 보존하고 Colima는 중지했다. 다음 빌드는 `colima start` 후 공식 스크립트를 실행한다.
+
 - 2026-09-05 Sensta Ubuntu 22.04 VM에서 Docker Buildx를 설치하고 공식 스크립트로 GOAPI를 빌드·배포했다.
   GOAPI `1cf4b1d`는 x86-64-v2 미지원 빌드 호스트에서도 호환판 선택을 허용하고 QEMU `qemu64`·`max`로
   두 변형의 자동 선택과 JPEG→WebP 변환을 검증한다. Ubuntu 22.04·24.04 이미지 테스트와 외부
