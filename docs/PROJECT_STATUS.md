@@ -47,11 +47,23 @@
   라이트·다크·큰 글자 캡처, 전체 단위 91개·관련 UI 2개, Release build와 정적 분석을 통과하고 서명 앱을
   iPhone에 설치했다.
 
+- Sensta iOS `dd47cf0`에 Apple 기본 로그인 버튼과 서버 nonce, 신규 로그인 및 기존 계정의 명시적
+  Apple ID 연결 흐름을 추가했다. GOAPI `f37b088`은 Apple JWKS·RS256, issuer, bundle audience,
+  만료·발급 시각·nonce·이메일 검증을 확인하고 provider subject를 별도 identity 테이블에 저장한다.
+  같은 이메일만으로 계정을 병합하지 않으며 기존 사용자가 인증된 세션에서 직접 연결해야 한다. iOS
+  단위 95개·핵심 UI 4개, Debug/Release·정적 분석·캡처를 통과했고 서명 앱을 iPhone에 설치·실행했다.
+  GOAPI 전체 test·vet와 공식 Ubuntu 22.04·24.04 및 x86-64 Docker runtime 검증을 통과했다. 운영 반영에는
+  `OAUTH_APPLE_CLIENT_IDS` 설정과 `./bin/goapi install` migration이 필요하며, 교체용 바이너리 SHA-256은
+  `b84075a8f135fb86a310232da3719cd7768c48d0a3d3140bdd28b6db21668025`다.
+
 ## Current decisions
 
 - Sensta iOS는 `sirini/sensta-ios`에서 SwiftUI·Swift concurrency와 Apple 기본 프레임워크를 우선해
   개발한다. Android의 데이터·제품 동작은 유지하되 iOS 관례에 맞추고, beta Xcode는 현재 개발에만
   사용하며 제출 전 당시 허용되는 안정판 Xcode로 다시 검증한다.
+- Apple 로그인 계정 키는 Apple의 provider subject로 고정한다. 서버 발급 nonce는 5분 안에 한 번만
+  소비하고 원문 대신 digest를 저장한다. 이메일이 같아도 자동 병합하지 않고 기존 세션에서 Apple ID를
+  다시 인증한 경우에만 연결한다.
 - Sensta iOS 공개 피드는 `GET /board/list`를 인증 헤더 없이 호출하고 Android와 같은 차단 목록 필터 및
   `cover` 미리보기 경로 변환을 적용한다. API 기능은 fixture와 Swift 요청·decoding 회귀 테스트를 먼저
   고정한다.
@@ -294,6 +306,11 @@
   빌드, 라이트/다크/큰 글자 및 검색 캡처 QA를 통과했고 iPhone 17에 새 서명 앱을 설치·실행했다.
   GOAPI·Android 변경이나 서버 재시작은 필요 없다.
 
+- Apple 로그인 변경은 GOAPI unit·integration 전체와 `go vet ./...`, Ubuntu 22.04·24.04 및 qemu64/max
+  runtime smoke를 통과했다. Sensta iOS 전체 단위 95개, 신규 로그인·기존 계정 연결·Google 회귀·
+  다크/큰 글자 핵심 UI 4개, Debug/Release 빌드와 정적 분석을 통과했다. 캡처에서 절반 높이 시트의
+  Apple·Google 전체 폭 버튼과 이메일 입력, 접근성 전체 높이, 연결 완료 상태를 확인했다.
+
 ## Next action
 
 1. Sensta 2.1.3 AAB를 Play Console에 올리고 내부 테스트 또는 단계적 배포에서 로그인·업로드·업적 흐름을
@@ -301,7 +318,9 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. 실제 iPhone Google 로그인은 확인했다. GOAPI `7210f65`를 운영 반영한 뒤 Google 세션 복원과 Android
-   로그인을 회귀 확인하고, Apple provider subject·nonce·기존 계정 명시적 연결 계약을 구현한다.
-   인증 토큰 갱신과 익명 사진 감상은 구현된 공용 경로를 유지한다. GOAPI 변경이 필요하면 로컬 Colima와 공식
-   `./scripts/build-ubuntu22.sh`로 빌드하고 제품 소유자가 SFTP로 운영 백엔드를 교체한다.
+4. 제품 소유자가 GOAPI `f37b088` runtime 전체를 SFTP로 staging하고
+   `OAUTH_APPLE_CLIENT_IDS=me.sensta.ios.debug,me.sensta.ios`를 설정한다. 기존 runtime을 백업한 뒤
+   새 runtime의 `./bin/goapi install`을 한 번 실행해 OAuth identity·nonce 테이블을 만들고 서버를
+   재시작한다. 이후 실제 iPhone에서 Apple 신규 로그인·로그아웃 후 재로그인·앱 재실행 세션 복원과
+   기존 이메일/Google 계정의 명시적 Apple ID 연결을 확인한다. 기존 Google·Android 로그인도 한 번
+   회귀 확인한다.
