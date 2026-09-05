@@ -69,6 +69,22 @@
   기존 migration과 `OAUTH_APPLE_CLIENT_IDS`는 그대로 사용하므로 이번 runtime 교체에는 `install`을
   다시 실행할 필요가 없다.
 
+- 제품 소유자가 Sensta iOS 이메일 회원가입의 메일 인증과 실제 계정 생성을 포함한 전체 흐름을
+  실기기에서 확인했다. iOS `c412484`는 프로필 없는 피드 작성자의 기본 아바타와 목록 조회수를 숨기고,
+  프로필 없는 로그인 계정은 흰색 선형 인물 아이콘으로 표시한다. 하단 정보 영역을 올린 뒤 중앙에
+  58pt glass 업로드 버튼을 추가해 첫 피드의 전체 화면 감상을 유지했다.
+- 같은 iOS 변경에서 Android와 같은 `/home/noti/load`·`/home/noti/checked` 계약을 사용하는 알림 목록,
+  게시글 딥 링크, 전체 읽음과 미확인 종·빨간 점을 추가했다. 사진 업로드는 서버 editor config를 읽어
+  최대 9장을 기존 `/editor/write` multipart 계약으로 보낸다. JPEG/HEIC 방향을 정규화하고 긴 변을
+  4096px로 제한하며 GPS를 제거하고 임시 파일을 성공·실패·취소 때 정리한다. 전체 단위 105개, 신규
+  피드·알림·업로드 UI 흐름, Debug 정적 분석과 Release 기기 빌드를 통과했고 서명 앱을 iPhone 17에
+  설치·실행했다. 실사진 다중 업로드와 운영 알림은 제품 소유자 QA로 남겼다.
+- GOAPI `f7729cf`는 `X-Nubo-Client: sensta-ios`도 Sensta 앱 업로드로 인식해 게시글 출처와 앱 업적을
+  기록한다. API·DB 계약은 그대로이고 migration·환경 변수 변경은 없다. 전체 test·vet와 공식 Ubuntu
+  22.04·24.04 및 qemu64/max runtime 검증을 통과했다. 교체용
+  `goapi.git/dist/nubo-runtime/bin/goapi`의 SHA-256은
+  `5a647b3094bdd3358a4724d0f17aad2bd7fab600b2650c777c0ee685c7cda38d`다.
+
 ## Current decisions
 
 - Sensta iOS는 `sirini/sensta-ios`에서 SwiftUI·Swift concurrency와 Apple 기본 프레임워크를 우선해
