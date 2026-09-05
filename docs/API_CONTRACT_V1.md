@@ -204,3 +204,14 @@ JSON result의 필드명은 일치하며, request는 handler가 실제 읽는 JS
 - `/admin/group/admin`: 실제 프런트 호출과 GOAPI route 사이에 빠져 있던 Nitro proxy 추가
 - `/board/move/apply`: Nitro `PUT`을 GOAPI와 같은 `POST`로 정정
 - `/admin/dashboard/latest`: GOAPI route와 프런트 호출부가 없는 잔존 Nitro proxy 제거
+
+### 공개 사진가 누적 통계
+
+- `GET /board/user/summary?id=<board id>&targetUserUid=<positive uid>`는 인증 없이 공개 집계를 반환한다.
+- `result`는 `postCount`, `photoCount`, `viewCount`, `likeCount`, `commentCount` 숫자 필드다.
+- 지정 게시판의 list/view 권한이 익명에게 열려 있어야 하며, 존재하지 않거나 차단된 사용자는 거부한다.
+- 지정 사용자·게시판의 `CONTENT_NORMAL` 작품만 집계한다. 사진 수는 썸네일이 생성된 첨부 사진,
+  좋아요는 현재 `liked=1`인 반응이다. 비공개·삭제·기타 상태 작품은 포함하지 않는다.
+- 기존 `GET /board/my/studio`는 JWT 본인 기준과 비공개 작품 포함 집계를 그대로 유지한다.
+- 추가 endpoint이며 기존 웹·Android 요청/응답과 DB 스키마 변경은 없다. iOS는 서버 미배포·오류 시
+  숫자를 0으로 대체하지 않고 통계 미조회 상태를 표시한다.
