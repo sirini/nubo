@@ -35,6 +35,15 @@
   44pt 이상의 `수정`·`삭제` 버튼으로 옮겼다. 관련 UI·Debug/Release와 iPhone 설치·실행을 다시 확인했다.
   GOAPI·Android 변경이나 서버 교체는 없다.
 
+- Sensta iOS `3f24de9`에 GoogleSignIn-iOS 9.2.0 공식 인증 흐름과 48pt 버튼을 추가했다. iOS client ID는
+  Git에서 제외한 configuration별 xcconfig로 주입하고, Android와 같은 Web server client ID를 audience로
+  하는 ID token을 기존 `/auth/android/google` 계약에 보낸다. 전체 단위 91개와 관련 UI 3개,
+  Debug/Release 및 서명된 iPhone 설치·실행을 확인했다. GOAPI `7210f65`는 경로·응답을 유지하면서
+  Google 공개키 기반 공식 validator로 서명·만료·audience·이메일 인증을 검증한다. 전체 test·vet와 공식
+  Ubuntu 22.04 Docker 빌드를 통과했고 교체용 바이너리 SHA-256은
+  `c1653d19ccdce515f3eef5e647e80a9624f911556a35317443bdc2e81dc05788`이다. 실제 로그인 QA에는 개발·운영
+  iOS OAuth client 생성과 로컬 설정, 운영 GOAPI 교체가 남아 있다.
+
 ## Current decisions
 
 - Sensta iOS는 `sirini/sensta-ios`에서 SwiftUI·Swift concurrency와 Apple 기본 프레임워크를 우선해
@@ -289,7 +298,9 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. Sensta iOS의 본인 댓글 수정·삭제와 답글이 있는 원댓글의 자리 보존을 운영 계정으로 확인한다.
+4. Sensta iOS용 개발·운영 Google OAuth client를 생성하고 GOAPI `7210f65`를 운영 반영한 뒤 실제 Google
+   로그인·세션 복원과 Android 로그인을 회귀 확인한다. 이후 Apple provider subject·nonce·기존 계정
+   명시적 연결 계약을 구현한다.
    인증 토큰 갱신과 익명 사진 감상은 구현된 공용 경로를 유지한다. 다음은 Google·Apple 로그인 계약과
    설정을 준비한다. GOAPI 변경이 필요하면 로컬 Colima와 공식
    `./scripts/build-ubuntu22.sh`로 빌드하고 제품 소유자가 SFTP로 운영 백엔드를 교체한다.
