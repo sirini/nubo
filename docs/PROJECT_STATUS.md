@@ -56,6 +56,19 @@
   `OAUTH_APPLE_CLIENT_IDS` 설정과 `./bin/goapi install` migration이 필요하며, 교체용 바이너리 SHA-256은
   `b84075a8f135fb86a310232da3719cd7768c48d0a3d3140bdd28b6db21668025`다.
 
+- 첫 운영 Apple 인증에서 Face ID 뒤 로그인이 완료되지 않는 현상을 조사했다. 운영 nonce 발급, OAuth
+  가입 허용 상태와 Debug 앱 entitlement는 정상이었다. 가장 가능성 높은 원인은 같은 이메일의 기존
+  Google 계정이 있어 안전한 자동 병합 대신 명시적 Apple ID 연결을 요구한 경우이며, 기존 안내가 절반
+  높이 시트 아래쪽에 있어 보이지 않았다. iOS `d015b48`은 Apple·Google 버튼을 같은 48pt 캡슐 형태로
+  통일하고 Apple 오류를 버튼 바로 아래에 표시한다. 같은 이메일 계정, audience, nonce와 이메일 검증
+  실패를 구분하되 토큰이나 내부 오류는 노출하지 않는다. 전체 단위 테스트 96개와 관련 UI 테스트 5개,
+  Release build·Debug 정적 분석·서명 실기기 빌드 및 설치를 통과했다.
+- GOAPI `28d5728`은 토큰을 기록하지 않고 Apple 검증 실패 원인을 서버 로그에 남기며 앱에는 allowlist로
+  제한한 진단만 반환한다. 전체 test·vet와 Ubuntu 22.04·24.04 및 qemu64/max runtime build를 통과했다.
+  새 `bin/goapi` SHA-256은 `969c67953912d28668110cec897fc80cc4b218c4619c37158a75baabcfe56d61`이다.
+  기존 migration과 `OAUTH_APPLE_CLIENT_IDS`는 그대로 사용하므로 이번 runtime 교체에는 `install`을
+  다시 실행할 필요가 없다.
+
 ## Current decisions
 
 - Sensta iOS는 `sirini/sensta-ios`에서 SwiftUI·Swift concurrency와 Apple 기본 프레임워크를 우선해
@@ -306,10 +319,10 @@
   빌드, 라이트/다크/큰 글자 및 검색 캡처 QA를 통과했고 iPhone 17에 새 서명 앱을 설치·실행했다.
   GOAPI·Android 변경이나 서버 재시작은 필요 없다.
 
-- Apple 로그인 변경은 GOAPI unit·integration 전체와 `go vet ./...`, Ubuntu 22.04·24.04 및 qemu64/max
-  runtime smoke를 통과했다. Sensta iOS 전체 단위 95개, 신규 로그인·기존 계정 연결·Google 회귀·
-  다크/큰 글자 핵심 UI 4개, Debug/Release 빌드와 정적 분석을 통과했다. 캡처에서 절반 높이 시트의
-  Apple·Google 전체 폭 버튼과 이메일 입력, 접근성 전체 높이, 연결 완료 상태를 확인했다.
+- Apple 로그인 변경과 후속 진단은 GOAPI unit·integration 전체와 `go vet ./...`, Ubuntu 22.04·24.04
+  및 qemu64/max runtime smoke를 통과했다. Sensta iOS 전체 단위 96개, 신규 로그인·기존 계정 연결·
+  연결 안내·Google 회귀·다크/큰 글자 관련 UI 5개, Debug/Release 빌드와 정적 분석을 통과했다. 캡처에서
+  Apple·Google 캡슐 버튼과 버튼 바로 아래 오류 안내, 접근성 전체 높이와 연결 완료 상태를 확인했다.
 
 ## Next action
 
@@ -318,9 +331,9 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. 제품 소유자가 GOAPI `f37b088` runtime 전체를 SFTP로 staging하고
-   `OAUTH_APPLE_CLIENT_IDS=me.sensta.ios.debug,me.sensta.ios`를 설정한다. 기존 runtime을 백업한 뒤
-   새 runtime의 `./bin/goapi install`을 한 번 실행해 OAuth identity·nonce 테이블을 만들고 서버를
-   재시작한다. 이후 실제 iPhone에서 Apple 신규 로그인·로그아웃 후 재로그인·앱 재실행 세션 복원과
-   기존 이메일/Google 계정의 명시적 Apple ID 연결을 확인한다. 기존 Google·Android 로그인도 한 번
-   회귀 확인한다.
+4. 제품 소유자가 GOAPI `28d5728` runtime 전체를 SFTP로 교체하고 서버를 재시작한다. migration과
+   `OAUTH_APPLE_CLIENT_IDS`는 이미 반영돼 `install`은 다시 실행하지 않는다. 실제 iPhone에서 Apple
+   인증 뒤 버튼 아래 결과를 확인한다. 같은 이메일 계정 안내가 나오면 Google 또는 이메일로 로그인한
+   뒤 내 계정의 Apple 계정 섹션에서 Apple ID를 연결하고, 로그아웃 후 Apple 직접 로그인과 앱 재실행
+   세션 복원을 확인한다. 실패가 계속되면 서버의 `apple oauth: identity token verification failed`
+   로그에 표시되는 안전한 원인을 확인한다.
