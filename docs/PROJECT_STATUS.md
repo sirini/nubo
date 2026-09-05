@@ -238,6 +238,10 @@
 - Market `99aad10`을 공식 Ubuntu 22.04 컨테이너로 빌드해 운영 배포했다. 이전 바이너리는
   `/var/www/market/bin/nubohub-market.pre-99aad10`에 보존했고 service readiness와 외부 package·preview를
   확인했다.
+- Sensta iOS `2d3e608`에서 기존 GOAPI의 가입 정책·이메일 가입·6자리 인증 계약을 네이티브 Form으로
+  연결했다. 운영 가입 정책은 `verified_email`이며 메일 발송 가능 상태다. iOS 공개 SDK에는 타사 앱이
+  시스템 배경화면을 직접 지정하는 API가 없어 첫 피드 롱터치 배경화면 지정은 구현하지 않았다. GOAPI·
+  Android·NUBO runtime 변경과 서버 재시작은 필요 없다.
 
 ## Verification
 
@@ -323,6 +327,9 @@
   및 qemu64/max runtime smoke를 통과했다. Sensta iOS 전체 단위 96개, 신규 로그인·기존 계정 연결·
   연결 안내·Google 회귀·다크/큰 글자 관련 UI 5개, Debug/Release 빌드와 정적 분석을 통과했다. 캡처에서
   Apple·Google 캡슐 버튼과 버튼 바로 아래 오류 안내, 접근성 전체 높이와 연결 완료 상태를 확인했다.
+- Sensta iOS 이메일 회원가입 계약을 포함한 전체 단위 99개, 회원가입 UI 1개와 기존 이메일·Google·
+  Apple 로그인 및 다크/큰 글자 UI 회귀 5개, Release build와 정적 분석을 통과했다. 최신 자동 서명
+  Debug 앱을 iPhone 17에 설치·실행했다.
 
 ## Next action
 
@@ -331,9 +338,5 @@
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. 제품 소유자가 GOAPI `28d5728` runtime 전체를 SFTP로 교체하고 서버를 재시작한다. migration과
-   `OAUTH_APPLE_CLIENT_IDS`는 이미 반영돼 `install`은 다시 실행하지 않는다. 실제 iPhone에서 Apple
-   인증 뒤 버튼 아래 결과를 확인한다. 같은 이메일 계정 안내가 나오면 Google 또는 이메일로 로그인한
-   뒤 내 계정의 Apple 계정 섹션에서 Apple ID를 연결하고, 로그아웃 후 Apple 직접 로그인과 앱 재실행
-   세션 복원을 확인한다. 실패가 계속되면 서버의 `apple oauth: identity token verification failed`
-   로그에 표시되는 안전한 원인을 확인한다.
+4. 실제 iPhone에서 사용하지 않은 이메일로 Sensta iOS 회원가입 → 6자리 이메일 인증 → 로그인 → 앱
+   재실행 세션 복원을 확인한다. QA가 끝나면 비밀번호 재설정을 다음 iOS 수직 기능으로 구현한다.
