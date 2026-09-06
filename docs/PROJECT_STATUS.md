@@ -456,13 +456,19 @@
   delegate bridge가 background 상태 복원 완료를 cooperative executor에서 호출해 발생하던 main-thread
   assertion을 iOS `d835162`에서 completion-handler delegate로 교체했고, 관련 단위 3개·서명 실기기
   Debug build·재설치 및 실제 push 수신을 통과했다.
+- 제품 소유자가 실제 iPhone의 댓글·좋아요 사진 활동 push 수신과 알림 선택 시 해당 사진 상세 deep
+  link를 확인했고, 운영 사진 업로드도 성공했다. Sensta iOS `642cee6`은 업로드의 쉼표 문자열 태그를
+  콤마·스페이스·Return으로 확정하고 눌러 삭제하는 칩으로 바꾸며 기존 인증
+  `GET /editor/suggestion/tag`의 유사 태그·사용 횟수 추천을 연결했다. 전체 단위 127개, 로그인부터 태그
+  생성·추천 선택·삭제까지의 UI 회귀, Release simulator build와 Debug 정적 분석을 통과했고 서명 앱을
+  iPhone 17에 설치·실행했다. 공통 API와 Android·NUBO runtime 변경은 없다.
 
 ## Next action
 
-1. 실제 iPhone에서 foreground·종료 상태, 사진 활동 알림과 사진·1:1 메시지 push deep link를 추가
-   검증한다.
-2. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 마무리 확인한다.
-3. Sensta iOS 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
+1. 실제 iPhone에서 알림 미확인·읽음 처리와 JPEG·HEIC 다중 업로드 조합을 마무리 확인한다.
+2. Sensta iOS 업로드에 자르기·회전·필터 편집을 iOS 방식으로 연결한다.
+3. Sensta iOS 신고·차단을 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
    NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
-4. iOS UGC 심사 시나리오, 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다.
-5. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
+4. Sensta iOS 본인 게시글 수정·삭제와 앱 내 계정 삭제·Apple token 폐기를 연결한다.
+5. iOS UGC 심사 시나리오, 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다.
+6. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
