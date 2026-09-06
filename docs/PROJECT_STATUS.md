@@ -177,6 +177,13 @@
 
 ## Recent completion
 
+- 2026-09-06 NUBO 웹의 기본·고급 프로필 대화에 공통 하단 자동 스크롤을 적용했다. 페이지 전체의 첫
+  ScrollArea를 찾던 기본 스킨 구현을 제거하고 각 대화 컴포넌트 내부 viewport만 사용한다. 최초 진입은
+  즉시, 내가 보내거나 12초 polling으로 받은 새 메시지는 마지막 UID 변경 뒤 부드럽게 하단으로 이동하며
+  읽음 시각만 바뀐 경우에는 사용자 위치를 흔들지 않는다. 활성 대화·브라우저 visibility에 한정한 기존
+  polling과 GOAPI 계약은 그대로 유지한다. 전체 테스트 106개, typecheck, lint(기존 warning 50개),
+  production build를 통과했으며 GOAPI 변경은 없다.
+
 - 2026-09-06 NUBO 웹의 기본·고급 프로필 대화를 GOAPI `f6250c1` 계약에 맞췄다. 기본 프로필에서는 대화
   영역이 보이는 동안, 고급 프로필에서는 대화 탭을 실제로 선택한 동안에만 브라우저 visibility와 함께
   12초 polling을 실행한다. 마지막 수신 메시지를 `PATCH /chat/read`로 확인하고 마지막 발신 메시지 한

@@ -1,51 +1,56 @@
 <template>
   <ClientOnly>
     <Card class="flex w-full h-full overflow-hidden p-0 border-0 rounded-none relative">
-      <ScrollArea class="flex-1 px-4">
-        <div class="space-y-4 h-20">
-          <div
-            v-for="history in chatHistories"
-            :key="history.uid"
-            :class="[
-              'flex items-end gap-2',
-              history.userUid === chatMyUid ? 'justify-end' : 'justify-start',
-            ]"
-          >
-            <Avatar v-if="history.userUid !== chatMyUid" class="size-9 shrink-0 border">
-              <AvatarImage
-                :src="profileUser.profile"
-                :alt="`${recoverChars(profileUser.name)}님의 프로필 이미지`"
-              />
-              <AvatarFallback><CircleUserRoundIcon class="size-6" /></AvatarFallback>
-            </Avatar>
+      <div ref="chatAreaRoot" class="min-h-0 flex-1">
+        <ScrollArea class="h-full px-4">
+          <div class="space-y-4 h-20">
             <div
+              v-for="history in chatHistories"
+              :key="history.uid"
               :class="[
-                'max-w-[80%] rounded-2xl px-3 py-2 text-sm',
-                history.userUid === chatMyUid
-                  ? 'bg-primary text-foreground rounded-tr-none'
-                  : 'bg-muted text-foreground rounded-tl-none',
+                'flex items-end gap-2',
+                history.userUid === chatMyUid ? 'justify-end' : 'justify-start',
               ]"
             >
-              <ChatMessageText
-                :message="history.message"
-                :inverted="history.userUid === chatMyUid"
-              />
-              <div class="text-[10px] opacity-70 mt-1 text-right">
-                {{ dateFull(history.timestamp) }}
-                <span v-if="history.uid === latestOutgoingUid">
-                  · {{ history.readAt > 0 ? "읽음" : "전송됨" }}
-                </span>
+              <Avatar v-if="history.userUid !== chatMyUid" class="size-9 shrink-0 border">
+                <AvatarImage
+                  :src="profileUser.profile"
+                  :alt="`${recoverChars(profileUser.name)}님의 프로필 이미지`"
+                />
+                <AvatarFallback><CircleUserRoundIcon class="size-6" /></AvatarFallback>
+              </Avatar>
+              <div
+                :class="[
+                  'max-w-[80%] rounded-2xl px-3 py-2 text-sm',
+                  history.userUid === chatMyUid
+                    ? 'bg-primary text-foreground rounded-tr-none'
+                    : 'bg-muted text-foreground rounded-tl-none',
+                ]"
+              >
+                <ChatMessageText
+                  :message="history.message"
+                  :inverted="history.userUid === chatMyUid"
+                />
+                <div class="text-[10px] opacity-70 mt-1 text-right">
+                  {{ dateFull(history.timestamp) }}
+                  <span v-if="history.uid === latestOutgoingUid">
+                    · {{ history.readAt > 0 ? "읽음" : "전송됨" }}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="h-20"></div>
+            <div class="h-20"></div>
 
-          <div v-if="chatHistories.length < 1" class="flex justify-center items-center text-muted">
-            {{ recoverChars(profileUser.name) }}님과의 대화 기록이 없습니다
+            <div
+              v-if="chatHistories.length < 1"
+              class="flex justify-center items-center text-muted"
+            >
+              {{ recoverChars(profileUser.name) }}님과의 대화 기록이 없습니다
+            </div>
           </div>
-        </div>
-      </ScrollArea>
+        </ScrollArea>
+      </div>
 
       <div
         class="absolute bottom-0 w-full h-18 backdrop-blur-md flex gap-2 items-center p-4 border-t"
@@ -86,32 +91,8 @@
 
 <script setup lang="ts">
 import { CircleUserRoundIcon, SendIcon } from "lucide-vue-next"
-import type { ScrollArea } from "~/components/ui/scroll-area"
 import { useNuboProfileContext } from "~/providers/contexts/profile"
 import { latestOutgoingMessageUid } from "~/utils/chat"
-
-// 채팅 메시지 전송 시 스크롤을 하단으로 옮기기
-const scrollToBottom = useDebounceFn(() => {
-  nextTick(() => {
-    const chatArea = document.querySelector("[data-reka-scroll-area-viewport]")
-    if (chatArea) {
-      chatArea.scrollTo({
-        top: chatArea.scrollHeight,
-        behavior: "smooth",
-      })
-    }
-  })
-})
-
-// 대화 목록을 아래로 스크롤
-onMounted(() => {
-  scrollToBottom()
-  watch(
-    () => chatHistories.value,
-    () => scrollToBottom(),
-    { deep: true },
-  )
-})
 
 const {
   isLoggedIn,
@@ -124,7 +105,10 @@ const {
   sendChatMessage,
 } = useNuboProfileContext()
 
+const chatAreaRoot = ref<HTMLElement | null>(null)
+const latestMessageUid = computed(() => chatHistories.value.at(-1)?.uid)
 const latestOutgoingUid = computed(() =>
   latestOutgoingMessageUid(chatHistories.value, chatMyUid.value),
 )
+useChatAutoScroll(chatAreaRoot, latestMessageUid)
 </script>
