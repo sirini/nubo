@@ -496,11 +496,19 @@
   SHA-256은 `8b400bc609fd60185d2b1bf919cd9f3848f66ddcb07f4cdd017326de971643f1`이다. DB migration은
   없고 운영 환경에 Apple Team ID·Key ID·Sign in with Apple `.p8` private key 설정과 runtime 교체가
   필요하다. 실기기 삭제는 최종 통합 QA에서 전용 테스트 계정으로 한 번만 확인한다.
+- Sensta iOS `4ed7c19`는 Android·NUBO 웹의 공통 웜톤을 동적 라이트·다크 테마로 옮겼다. 라이트 배경
+  `#F8F3EB`, 다크 배경 `#1C1612`, 라이트 주색 `#B2583A`, 다크 주색 `#DB8F6C`와 surface·container·
+  outline·on-primary 계층을 계정·탐색·상세·알림·메시지·스튜디오·업로드·편집·신고·탈퇴 화면에
+  일관되게 적용하되, 사진 감상과 자르기 작업 공간은 검은 캔버스를 유지했다. 라이트·다크·큰 글자
+  캡처를 확인했고 전체 단위 147개가 통과했다. UI는 전체 묶음 32개 중 30개 통과 뒤 자동화 문제 2개를
+  보정해 각각 재실행·통과했으며 Release simulator build와 Debug 정적 분석도 통과했다. 기능 구현은
+  마감했고 실제 iPhone의 한 번짜리 최종 통합 QA만 남았다.
 
 ## Next action
 
-1. Android·NUBO 웹의 웜톤 라이트/다크 룩앤필을 iOS 전체 화면에 맞게 적용한다.
-2. 남은 기능을 모아 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 UGC·계정·테마를
-   한 번의 최종 통합 QA로 확인한다.
-3. QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
+1. 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 신고·차단·게시글 관리·계정 삭제·
+   라이트/다크 테마를 한 번의 최종 통합 QA로 확인한다. 삭제는 복구 가능한 전용 테스트 계정만 사용한다.
+2. Apple 연결 계정 삭제를 확인하기 전에 운영 GOAPI를 `24bcc4d` runtime으로 교체하고 Apple Team ID·
+   Key ID·Sign in with Apple `.p8` private key 환경 변수를 설정한다.
+3. 통합 QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
    요구 전에는 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적을 확장하지 않는다.
