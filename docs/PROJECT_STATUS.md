@@ -461,12 +461,18 @@
   콤마·스페이스·Return으로 확정하고 눌러 삭제하는 칩으로 바꾸며 기존 인증
   `GET /editor/suggestion/tag`의 유사 태그·사용 횟수 추천을 연결했다. 전체 단위 127개, 로그인부터 태그
   생성·추천 선택·삭제까지의 UI 회귀, Release simulator build와 Debug 정적 분석을 통과했고 서명 앱을
-  iPhone 17에 설치·실행했다. 공통 API와 Android·NUBO runtime 변경은 없다.
+  iPhone 17에 설치·실행했다. 제품 소유자가 실제 iPhone에서 Android에 가까운 태그 칩 사용성을 확인했다.
+  공통 API와 Android·NUBO runtime 변경은 없다.
+- Sensta iOS `8e64aa0`은 업로드 사진별 회전·좌우 반전·초기화와 원본·선명·따뜻함·차가움·필름·흑백
+  필터 및 강도 조절을 추가했다. 원본을 보존하다 완료할 때만 최종 JPEG를 렌더링하고 EXIF는 유지하되
+  GPS와 이전 orientation을 제거한다. 전체 단위 129개와 편집·기존 태그 UI 회귀, Release simulator
+  build·Debug 정적 분석을 통과했고 서명 Debug 앱을 Wi-Fi iPhone 17에 설치·실행했다. 공통 API와
+  Android·NUBO runtime 변경은 없고 자유 비율 자르기는 다음 수직 작업으로 남겼다.
 
 ## Next action
 
 1. 실제 iPhone에서 알림 미확인·읽음 처리와 JPEG·HEIC 다중 업로드 조합을 마무리 확인한다.
-2. Sensta iOS 업로드에 자르기·회전·필터 편집을 iOS 방식으로 연결한다.
+2. Sensta iOS 업로드의 자유 비율 자르기를 iOS 방식으로 연결하고 회전·반전과 조합한 좌표를 검증한다.
 3. Sensta iOS 신고·차단을 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
    NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
 4. Sensta iOS 본인 게시글 수정·삭제와 앱 내 계정 삭제·Apple token 폐기를 연결한다.
