@@ -450,12 +450,17 @@
   통과했다. 새 교체용 binary SHA-256은
   `be57e3fc9486f95e6df186aece0737068af14a8beb58d3db84525b2f1be91d2e`다. iOS `64128c2`는 token 값을
   노출하지 않는 Debug 등록 단계 로그를 추가했으며 실기기에서 세 등록 단계 성공을 확인했다.
+- 제품 소유자가 운영 서버에 Firebase service-account JSON 경로와 `FIREBASE_PROJECT_ID`,
+  `FIREBASE_CREDENTIALS_FILE`을 설정하고 GOAPI `1ccf15a` runtime을 배포했다. 이후 Wi-Fi 전용 iPhone
+  15 Pro Max에서 실제 1:1 메시지 원격 push 수신을 확인했다. 수신 검증 중 iOS 27 beta의 async 알림
+  delegate bridge가 background 상태 복원 완료를 cooperative executor에서 호출해 발생하던 main-thread
+  assertion을 iOS `d835162`에서 completion-handler delegate로 교체했고, 관련 단위 3개·서명 실기기
+  Debug build·재설치 및 실제 push 수신을 통과했다.
 
 ## Next action
 
-1. GOAPI `1ccf15a` runtime을 운영에 교체·재시작하고 새 1:1 메시지 한 건으로 Firebase의 설치별 발송
-   결과를 서버 로그에서 확인한다. 원인을 보정한 뒤 실제 iPhone에서 foreground·background·종료 상태 및
-   사진·1:1 메시지 push deep link를 검증한다.
+1. 실제 iPhone에서 foreground·종료 상태, 사진 활동 알림과 사진·1:1 메시지 push deep link를 추가
+   검증한다.
 2. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 마무리 확인한다.
 3. Sensta iOS 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
    NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
