@@ -7,10 +7,17 @@
     <CardContent>
       <ScrollArea class="h-80 rounded-lg border bg-muted/20 p-4">
         <div class="space-y-3">
-          <div v-for="(history, index) in chatHistories" :key="index" :class="['flex', history.userUid === chatMyUid ? 'justify-end' : 'justify-start']">
+          <div v-for="history in chatHistories" :key="history.uid" :class="['flex items-end gap-2', history.userUid === chatMyUid ? 'justify-end' : 'justify-start']">
+            <Avatar v-if="history.userUid !== chatMyUid" class="size-9 shrink-0 border">
+              <AvatarImage :src="profileUser.profile" :alt="`${recoverChars(profileUser.name)}님의 프로필 이미지`" />
+              <AvatarFallback><CircleUserRoundIcon class="size-6" /></AvatarFallback>
+            </Avatar>
             <div :class="['max-w-[82%] rounded-2xl px-3 py-2 text-sm', history.userUid === chatMyUid ? 'bg-primary text-primary-foreground' : 'bg-background shadow-sm']">
-              {{ recoverChars(history.message) }}
-              <div class="mt-1 text-right text-[10px] opacity-70">{{ dateFull(history.timestamp) }}</div>
+              <ChatMessageText :message="history.message" :inverted="history.userUid === chatMyUid" />
+              <div class="mt-1 text-right text-[10px] opacity-70">
+                {{ dateFull(history.timestamp) }}
+                <span v-if="history.uid === latestOutgoingUid"> · {{ history.readAt > 0 ? "읽음" : "전송됨" }}</span>
+              </div>
             </div>
           </div>
           <p v-if="!chatHistories.length" class="py-24 text-center text-sm text-muted-foreground">아직 대화 기록이 없습니다.</p>
@@ -27,8 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { MessagesSquareIcon, SendIcon } from "lucide-vue-next"
+import { CircleUserRoundIcon, MessagesSquareIcon, SendIcon } from "lucide-vue-next"
 import { useNuboProfileContext } from "~/providers/contexts/profile"
+import { latestOutgoingMessageUid } from "~/utils/chat"
 
 const { chatHistories, chatMessage, chatMyUid, isBlockedByMe, isLoading, isLoggedIn, profileUser, sendChatMessage } = useNuboProfileContext()
+const latestOutgoingUid = computed(() => latestOutgoingMessageUid(chatHistories.value, chatMyUid.value))
 </script>

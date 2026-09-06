@@ -1,4 +1,4 @@
-import type { ChatHistory, ChatItem } from "~/types/chat"
+import type { ChatHistory, ChatItem, ChatReadResult } from "~/types/chat"
 import type { Resp } from "~/types/common"
 
 export const useChat = () => {
@@ -25,6 +25,18 @@ export const useChat = () => {
     })
   }
 
+  // 현재 대화 화면에서 확인한 상대방 메시지를 읽음 처리한다.
+  const markChatRead = async (targetUserUid: number, throughUid: number) => {
+    return await $fetch<Resp<ChatReadResult>>("/chat/read", {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+      body: {
+        targetUserUid,
+        throughUid,
+      },
+    })
+  }
+
   // 상대방에게 채팅 메시지 보내기
   const sendChatMessage = async (targetUserUid: number, message: string) => {
     return await $fetch<Resp<number>>("/chat/save", {
@@ -40,6 +52,7 @@ export const useChat = () => {
   return {
     loadChatList,
     loadChatHistory,
+    markChatRead,
     sendChatMessage,
   }
 }

@@ -51,4 +51,6 @@ watch(
   },
   { immediate: true },
 )
+
+useChatConversation(computed(() => !isMe.value && selectedTab.value === "conversation"))
 </script>

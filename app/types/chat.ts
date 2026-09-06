@@ -14,4 +14,11 @@ export type ChatHistory = {
   userUid: number
   message: string
   timestamp: number
+  readAt: number
+}
+
+export type ChatReadResult = {
+  throughUid: number
+  readAt: number
+  updatedCount: number
 }

@@ -47,4 +47,5 @@ import ProfileUserReportDialog from "./components/ProfileUserReportDialog.vue"
 defineOptions({ name: "NuboProfilePage" })
 
 const { profileUser, myPoint, isMe, isOpenReportForm } = useNuboProfileContext()
+useChatConversation(computed(() => !isMe.value))
 </script>

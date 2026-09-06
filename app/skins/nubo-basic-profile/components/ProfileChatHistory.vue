@@ -4,10 +4,20 @@
       <ScrollArea class="flex-1 px-4">
         <div class="space-y-4 h-20">
           <div
-            v-for="(history, index) in chatHistories"
-            :key="index"
-            :class="['flex', history.userUid === chatMyUid ? 'justify-end' : 'justify-start']"
+            v-for="history in chatHistories"
+            :key="history.uid"
+            :class="[
+              'flex items-end gap-2',
+              history.userUid === chatMyUid ? 'justify-end' : 'justify-start',
+            ]"
           >
+            <Avatar v-if="history.userUid !== chatMyUid" class="size-9 shrink-0 border">
+              <AvatarImage
+                :src="profileUser.profile"
+                :alt="`${recoverChars(profileUser.name)}님의 프로필 이미지`"
+              />
+              <AvatarFallback><CircleUserRoundIcon class="size-6" /></AvatarFallback>
+            </Avatar>
             <div
               :class="[
                 'max-w-[80%] rounded-2xl px-3 py-2 text-sm',
@@ -16,9 +26,15 @@
                   : 'bg-muted text-foreground rounded-tl-none',
               ]"
             >
-              {{ recoverChars(history.message) }}
+              <ChatMessageText
+                :message="history.message"
+                :inverted="history.userUid === chatMyUid"
+              />
               <div class="text-[10px] opacity-70 mt-1 text-right">
                 {{ dateFull(history.timestamp) }}
+                <span v-if="history.uid === latestOutgoingUid">
+                  · {{ history.readAt > 0 ? "읽음" : "전송됨" }}
+                </span>
               </div>
             </div>
           </div>
@@ -69,9 +85,10 @@
 </template>
 
 <script setup lang="ts">
-import { SendIcon } from "lucide-vue-next"
+import { CircleUserRoundIcon, SendIcon } from "lucide-vue-next"
 import type { ScrollArea } from "~/components/ui/scroll-area"
 import { useNuboProfileContext } from "~/providers/contexts/profile"
+import { latestOutgoingMessageUid } from "~/utils/chat"
 
 // 채팅 메시지 전송 시 스크롤을 하단으로 옮기기
 const scrollToBottom = useDebounceFn(() => {
@@ -106,4 +123,8 @@ const {
   profileUser,
   sendChatMessage,
 } = useNuboProfileContext()
+
+const latestOutgoingUid = computed(() =>
+  latestOutgoingMessageUid(chatHistories.value, chatMyUid.value),
+)
 </script>

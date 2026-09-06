@@ -36,10 +36,10 @@
   44pt 이상의 `수정`·`삭제` 버튼으로 옮겼다. 관련 UI·Debug/Release와 iPhone 설치·실행을 다시 확인했다.
   GOAPI·Android 변경이나 서버 교체는 없다.
 
-- 1:1 메시지 공통 백엔드는 GOAPI `f6250c1`에 읽음 시각과 수신자 범위의 일괄 확인 API를 추가하고,
-  기존 2,000자 handler 검증과 1,000자 DB 컬럼 불일치를 수정했다. 운영 DB backup 뒤 migration과 runtime
-  교체를 기다리는 상태다. 배포 확인 후 Sensta iOS에는 활성 대화의 가벼운 polling, 상대 프로필 이미지,
-  마지막 발신 메시지 읽음 표시와 해시태그 탐색 연결을 순차 적용한다.
+- 1:1 메시지 공통 백엔드 GOAPI `f6250c1`의 운영 migration과 runtime 교체를 완료했다. Sensta iOS
+  `2f756ce`, Android `6428f37`과 NUBO 웹은 이 계약으로 활성 대화의 12초 polling, 수신 메시지 읽음 처리,
+  상대 프로필 이미지와 기본 아이콘, 마지막 발신 메시지의 읽음 표시, 해시태그 사진 탐색을 동일하게
+  제공한다. 일일 이메일·WebSocket·사진 첨부는 범위에서 제외했다.
 
 - Sensta iOS `3f24de9`에 GoogleSignIn-iOS 9.2.0 공식 인증 흐름과 48pt 버튼을 추가했다. iOS client ID는
   Git에서 제외한 configuration별 xcconfig로 주입하고, Android와 같은 Web server client ID를 audience로
@@ -176,6 +176,13 @@
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
+
+- 2026-09-06 NUBO 웹의 기본·고급 프로필 대화를 GOAPI `f6250c1` 계약에 맞췄다. 기본 프로필에서는 대화
+  영역이 보이는 동안, 고급 프로필에서는 대화 탭을 실제로 선택한 동안에만 브라우저 visibility와 함께
+  12초 polling을 실행한다. 마지막 수신 메시지를 `PATCH /chat/read`로 확인하고 마지막 발신 메시지 한
+  건에 `전송됨`·`읽음`을 표시한다. 상대 프로필은 등록 이미지를 쓰고 미등록·로드 실패 시 기본 아이콘을
+  보이며, 메시지의 Unicode 해시태그는 안전한 Vue 노드로 `/search/tag/...` 탐색에 연결한다. 전체
+  테스트 103개, typecheck, lint(기존 warning 50개), production build를 통과했다.
 
 - 2026-09-06 GOAPI `f6250c1`에 additive `readAt` 대화 이력과 수신자 전용 `PATCH /chat/read`를 추가했다.
   읽음 갱신은 JWT 수신자·상대 발신자·마지막 표시 UID로 제한하고 차단 관계를 유지한다. `chat.message`를
