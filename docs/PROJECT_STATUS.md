@@ -97,6 +97,10 @@
 - Sensta Android 2.1.5(`versionCode 28`)는 전체 화면 피드 상단의 계정·알림, 하단 중앙 업로드·탐색을
   정리하고 사진 롱터치로 홈·잠금 배경화면을 적용한다. 전체 test·lint와 Debug·QA·Release APK, Release
   AAB build를 통과했고 Release APK v2 서명과 AAB 서명을 확인했다.
+- Sensta iOS `09ae317`은 Android와 같은 인증된 `/board/my/studio` 계약으로 내 작품 스튜디오를 추가했다.
+  JWT 본인의 공개·비공개 작품, 집계와 네 정렬·페이지 추가 로드를 표시하고, 비공개 상세는 인증 세션으로
+  읽는다. 전체 단위 111개와 관련 UI 회귀 5개, Release simulator build·Debug 정적 분석을 통과했으며
+  자동 서명 Debug 앱을 iPhone 17에 설치했다. GOAPI·Android·운영 서버 변경은 없다.
 
 ## Current decisions
 
@@ -369,6 +373,10 @@
 - Sensta iOS는 기존 `POST /auth/reset-password` 공개 JSON 계약으로 비밀번호 재설정을 연결했다. 계정
   존재 여부를 숨기는 동일 완료 안내를 제공하며 전체 단위 106개·계정 UI 8개, Release build와 정적
   분석을 통과하고 서명 Debug 앱을 iPhone 17에 설치했다. 서버·Android·웹 계약 변경은 없다.
+- Sensta iOS `09ae317`의 내 작품 스튜디오는 호출자 UID 없이 인증 세션으로 본인 범위를 정하고 공개·
+  비공개 작품, 집계·네 정렬·페이지 추가 로드와 인증된 비공개 상세를 제공한다. 전체 단위 111개와
+  스튜디오·계정·피드·좋아요·업로드·큰 글자 UI 회귀 5개, Release simulator build와 Debug 정적 분석을
+  통과했고 자동 서명 Debug 앱을 iPhone 17에 설치했다.
 
 ## Next action
 
@@ -378,5 +386,5 @@
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
 4. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 확인한다.
-5. Sensta iOS 내 작품 스튜디오, 업적 축하/확인, 1:1 대화·push, 신고·차단·계정 삭제를 순서대로 작은
-   수직 기능 단위로 구현한다.
+5. Sensta iOS 업적 축하/확인, 1:1 대화·push, 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로
+   구현한다.
