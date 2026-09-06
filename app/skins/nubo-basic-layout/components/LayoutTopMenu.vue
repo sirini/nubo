@@ -84,6 +84,11 @@
         </DropdownMenuGroup>
         <DropdownMenuGroup>
           <DropdownMenuItem as-child class="w-full cursor-pointer">
+            <NuxtLink to="/support" class="inline-flex gap-3 items-center">
+              <LifeBuoyIcon class="h-4 w-4 text-muted-foreground" /> 고객 지원
+            </NuxtLink>
+          </DropdownMenuItem>
+          <DropdownMenuItem as-child class="w-full cursor-pointer">
             <NuxtLink to="/privacy" class="inline-flex gap-3 items-center">
               <ShieldCheckIcon class="w-4 h-4" /> 개인정보 보호정책</NuxtLink
             >
@@ -118,6 +123,7 @@ import {
   FolderOpenIcon,
   FoldersIcon,
   HomeIcon,
+  LifeBuoyIcon,
   LogInIcon,
   LogOutIcon,
   MenuIcon,
