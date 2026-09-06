@@ -391,6 +391,11 @@
   넘어가며 실패 시 재시도, 계정 전환 시 대기열 격리, 기존 본인 프로필 업적 진열장 이동을 제공한다. 신규
   단위 4개와 관련 UI 2개, 영향 범위 UI 6개, Release build·정적 분석·서명 iPhone build와 설치를
   확인했다. GOAPI·Android·NUBO runtime 변경이나 서버 재시작은 필요 없다.
+- 제품 소유자가 iPhone에서 새 업적 축하와 프로필 업적 진열장 이동을 확인했다. 이어 Sensta iOS
+  `aa85cbd`에서 기존 인증 `GET /chat/list`, `GET /chat/history`, `POST /chat/save` 계약으로 최근 받은
+  대화·대화 내역·전송을 연결하고, 계정과 다른 사진가 프로필 및 type 4 알림에서 1:1 대화로 이동하게 했다.
+  신규 단위 4개, 메시지와 영향 범위 UI 6개, Release build·정적 분석·서명 iPhone build와 설치를
+  확인했다. 이번 작업은 GOAPI·Android·NUBO runtime 변경이나 서버 재시작이 필요 없다.
 
 ## Next action
 
@@ -400,4 +405,5 @@
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
 4. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 확인한다.
-5. Sensta iOS 1:1 대화·push, 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다.
+5. Sensta iOS APNs/FCM token 등록과 원격 push를 GOAPI의 Android 전용 device 등록 계약과 함께 확장한
+   뒤 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다.
