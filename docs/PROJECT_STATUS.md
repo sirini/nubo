@@ -91,7 +91,8 @@
   최종 화면을 시뮬레이터에서 확인하고 Release 앱을 실제 iPhone에 설치·실행했다. GOAPI 변경은 없다.
 - Sensta iOS에 Android 8+와 같은 조리개·빛의 흐름 브랜드 mark와 `#2A211B` 배경을 사용하는 1024px
   `AppIcon`을 추가했다. iOS의 system mask를 위해 원본은 모서리를 둥글게 굽지 않은 불투명 정사각형으로
-  유지했다. Debug·Release simulator와 Release device build, bundle icon metadata를 확인했다.
+  유지했다. Debug·Release simulator와 Release device build, bundle icon metadata를 확인하고 자동 서명
+  Debug 앱을 iPhone 17에 덮어 설치했다.
 
 ## Current decisions
 
