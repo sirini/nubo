@@ -36,6 +36,11 @@
   44pt 이상의 `수정`·`삭제` 버튼으로 옮겼다. 관련 UI·Debug/Release와 iPhone 설치·실행을 다시 확인했다.
   GOAPI·Android 변경이나 서버 교체는 없다.
 
+- 1:1 메시지 공통 백엔드는 GOAPI `f6250c1`에 읽음 시각과 수신자 범위의 일괄 확인 API를 추가하고,
+  기존 2,000자 handler 검증과 1,000자 DB 컬럼 불일치를 수정했다. 운영 DB backup 뒤 migration과 runtime
+  교체를 기다리는 상태다. 배포 확인 후 Sensta iOS에는 활성 대화의 가벼운 polling, 상대 프로필 이미지,
+  마지막 발신 메시지 읽음 표시와 해시태그 탐색 연결을 순차 적용한다.
+
 - Sensta iOS `3f24de9`에 GoogleSignIn-iOS 9.2.0 공식 인증 흐름과 48pt 버튼을 추가했다. iOS client ID는
   Git에서 제외한 configuration별 xcconfig로 주입하고, Android와 같은 Web server client ID를 audience로
   하는 ID token을 기존 `/auth/android/google` 계약에 보낸다. 전체 단위 91개와 관련 UI 3개,
@@ -124,6 +129,9 @@
 - Sensta iOS는 사진 품질과 부드러운 감상을 우선한다. 2400px 미리보기는 유지하되 ImageIO가 원본과 표시
   영역 종횡비·화면 scale을 고려해 백그라운드 다운샘플링하고, 메모리·디스크 캐시와 인접 사진 예열로
   반복 다운로드·디코딩을 줄인다.
+- 1:1 메시지는 채팅 앱 수준으로 확장하지 않는다. 활성 대화에서만 가볍게 polling하고, 일일 수신 이메일·
+  WebSocket·사진 첨부는 넣지 않는다. 읽음 상태는 서버의 `readAt`을 사용하고 `#태그`는 기존 탐색 검색으로
+  연결한다.
 - 배지는 한 번 획득하면 유지되는 업적만 다룬다. 만료·구독·활성 상태는 넣지 않으며 관리자 표시는 기존
   `admin` 상태와 권한 응답을 계속 사용한다.
 - 첫 내장 업적은 `first-post`, `first-comment`, `sensta-app` 세 개다. 프로필은 전체 업적을 받고,
@@ -168,6 +176,16 @@
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
+
+- 2026-09-06 GOAPI `f6250c1`에 additive `readAt` 대화 이력과 수신자 전용 `PATCH /chat/read`를 추가했다.
+  읽음 갱신은 JWT 수신자·상대 발신자·마지막 표시 UID로 제한하고 차단 관계를 유지한다. `chat.message`를
+  handler와 같은 2,000자로 맞추고 `read_at`·복합 인덱스를 반복 실행 가능한 migration으로 준비했다.
+  전체 test·vet와 내부 race test, 공식 Ubuntu 22.04·24.04 및 qemu64/max 이미지 변환 검증을 통과했다.
+  교체용 `goapi.git/dist/nubo-runtime/bin/goapi` SHA-256은
+  `46c66c9f5b46c737642cc8f99fc839f5c22ab41dc21ed2ac9494a1f4d6790eb5`, 업로드용 tar.gz SHA-256은
+  `8e6926bbc0421a1c63550195f5c54546f5b1b3aabeee552701e4a919848b2b94`다. 배포 전 DB backup과
+  `NUBO_ENV_FILE="$PWD/.env" ./bin/goapi install` 1회가 필요하며 이후 실행에는 `install`을 붙이지 않는다.
+  수신 메시지 일일 이메일은 구현하지 않았다.
 
 - 2026-09-06 NUBO 웹 알림 드로어에 좋아요·댓글·답글·1:1 메시지별 설명과 이동 동작을 연결했다.
   알림 클릭은 단건 읽음 처리와 게시글/댓글 또는 상대방 대화 화면 이동을 함께 수행하고, 전체 읽음·

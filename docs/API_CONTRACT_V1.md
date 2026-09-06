@@ -107,7 +107,7 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 게시판 보호 | JWT | `GET /board/{download,move/list,my/studio}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
 | 최근 태그 | Public · Direct | `GET /board/tag/recent` |
 | RSS | Public · Direct | `GET /rss/:id` |
-| 쪽지 | JWT | `GET /chat/{list,history}`; `POST /chat/save` |
+| 쪽지 | JWT | `GET /chat/{list,history}`; `POST /chat/save`; `PATCH /chat/read` |
 | 댓글 공개 | Public | `GET /comment/list` |
 | 댓글 보호 | JWT | `PATCH /comment/{like,modify}`; `DELETE /comment/remove`; `POST /comment/{reply,write}` |
 | 에디터 공개 | Public | `GET /editor/config` |
@@ -144,6 +144,26 @@ JWT에서만 결정하며 query나 body의 UID는 받지 않는다.
 기간별 추이, 고유 방문자, 증감률, engagement rate, follow, bookmark는 이 endpoint의 v1 계약에 포함하지
 않는다. 공개 사용자 작품 목록이 필요해질 때는 UID 노출·비밀글 제외 정책을 별도 명세하되 GOAPI의 내부
 사용자·게시판 범위 repository query를 재사용한다.
+
+## 1:1 메시지 읽음 상태
+
+`GET /chat/history?targetUserUid=...&limit=...`의 각 메시지는 기존 `uid`, `userUid`, `message`,
+`timestamp`에 `readAt`을 additive field로 반환한다. 값은 읽지 않았으면 `0`, 읽었으면 epoch milliseconds다.
+기존 TypeScript 클라이언트와 알 수 없는 JSON key를 무시하는 네이티브 클라이언트는 이 필드를 사용하기
+전에도 같은 응답을 계속 읽을 수 있다.
+
+- `PATCH /chat/read` body는 `{ targetUserUid: number, throughUid: number }`다. `throughUid`는 수신자가
+  현재 대화 화면에 실제로 표시한 마지막 수신 메시지 UID여야 한다.
+- 서버는 JWT UID를 수신자로, `targetUserUid`를 발신자로 고정하고 `uid <= throughUid`인 미확인 메시지만
+  갱신한다. 따라서 다른 대화나 요청자가 보낸 메시지는 읽음 처리할 수 없다.
+- result는 `throughUid`, 처리 시각 `readAt`, 실제 갱신 행 수 `updatedCount`를 반환한다. 같은 요청을 다시
+  보내면 성공하되 이미 읽은 행은 갱신하지 않는다.
+- 메시지는 trim 후 1~2,000 Unicode 문자를 허용하며 DB 컬럼도 2,000자로 맞춘다.
+- 활성 대화의 새 메시지와 상대방 읽음 상태는 클라이언트가 포그라운드에서 가볍게 polling한다. WebSocket,
+  사진 첨부와 수신 메시지 일일 이메일은 v1 범위에 포함하지 않는다.
+- 이 계약을 기존 설치에 적용하려면 DB 백업 뒤 새 runtime으로
+  `NUBO_ENV_FILE="$PWD/.env" ./bin/goapi install`을 한 번 실행한다. 이후 일반 실행에는 `install`을 붙이지
+  않는다.
 
 ## 영구 업적 배지
 
