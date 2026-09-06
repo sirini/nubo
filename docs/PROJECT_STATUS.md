@@ -120,9 +120,9 @@
 - Apple 로그인 계정 키는 Apple의 provider subject로 고정한다. 서버 발급 nonce는 5분 안에 한 번만
   소비하고 원문 대신 digest를 저장한다. 이메일이 같아도 자동 병합하지 않고 기존 세션에서 Apple ID를
   다시 인증한 경우에만 연결한다.
-- Sensta iOS 공개 피드는 `GET /board/list`를 인증 헤더 없이 호출하고 Android와 같은 차단 목록 필터 및
-  `cover` 미리보기 경로 변환을 적용한다. API 기능은 fixture와 Swift 요청·decoding 회귀 테스트를 먼저
-  고정한다.
+- Sensta iOS 공개 피드는 로그아웃 상태에서 `GET /board/list`를 인증 헤더 없이 호출하고, 로그인 상태에서는
+  Android와 같이 Bearer token을 보내 사용자별 차단 목록을 적용한다. 공개 열람 권한과 `cover` 미리보기
+  경로 변환은 유지하며 API 기능은 fixture와 Swift 요청·decoding 회귀 테스트를 먼저 고정한다.
 - Sensta iOS 게시글 상세도 익명 `GET /board/view` 계약을 사용한다. 사진별 EXIF·AI 설명, 본문·태그·
   첨부 정보와 시스템 공유를 네이티브 SwiftUI로 표시하고 원격 이미지 크기가 화면 폭을 넓히지 않도록
   Geometry 기반으로 제약한다.
@@ -474,13 +474,19 @@
   순서로 최종 JPEG를 한 번 렌더링한다. 사진별 상태, 취소·적용, 원본 픽셀과 회전 치수, 재편집 임시 파일
   정리를 검증했다. 전체 단위 132개와 편집·태그 UI 회귀, Release simulator build·Debug 정적 분석을
   통과했고 서명 Debug 앱을 Wi-Fi iPhone 17에 설치·실행했다. 서버·Android·NUBO 변경은 없다.
+- Sensta iOS `221d1d2`는 Android·NUBO 웹의 기존 사용자 안전 계약으로 사진·사용자 신고와 차단·해제를
+  연결했다. 신고 상태는 사진 상세·사진가 프로필·1:1 대화가 공유하며 차단 즉시 작품·대화·입력창을
+  숨긴다. 로그인 피드와 검색도 인증 요청으로 서버 `blackList`를 적용하고 현재 화면의 차단 상태를 즉시
+  필터링한다. 전체 단위 138개, 사진 신고→프로필 차단·해제→대화 차단 UI 흐름, Release simulator
+  build와 Debug 정적 분석을 통과했다. 공통 서버·Android·NUBO runtime 변경과 운영 배포는 없다.
+  제품 소유자 요청에 따라 실기기 확인은 남은 기능·테마 완료 뒤 한 번의 통합 QA에서 진행한다.
 
 ## Next action
 
-1. 실제 iPhone에서 자르기와 회전·반전 조합, 알림 미확인·읽음 처리, JPEG·HEIC 다중 업로드를 마무리
-   확인한다.
-2. Sensta iOS 신고·차단을 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
-   NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
-3. Sensta iOS 본인 게시글 수정·삭제와 앱 내 계정 삭제·Apple token 폐기를 연결한다.
-4. iOS UGC 심사 시나리오, 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다.
-5. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
+1. Sensta iOS 본인 게시글 수정·삭제를 작품 스튜디오와 상세에 연결한다.
+2. 앱 내 계정 삭제와 Sign in with Apple token 폐기를 연결한다.
+3. Android·NUBO 웹의 웜톤 라이트/다크 룩앤필을 iOS 전체 화면에 맞게 적용한다.
+4. 남은 기능을 모아 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 UGC·계정·테마를
+   한 번의 최종 통합 QA로 확인한다.
+5. QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
+   요구 전에는 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적을 확장하지 않는다.
