@@ -485,12 +485,22 @@
   태그 칩·추천만 바꾼다. 삭제 성공 시 상세를 닫고 피드·내 작품에서 즉시 제거한 뒤 통계를 서버와 다시
   맞춘다. 전체 단위 142개와 비공개 사진 수정→상세 반영→삭제→목록 복귀 UI 흐름, Release simulator
   build와 Debug 정적 분석을 통과했다. 공통 서버·Android·NUBO runtime 변경과 운영 배포는 없다.
+- GOAPI `24bcc4d`와 Sensta iOS `ae7c315`가 앱 내 계정 삭제를 완성했다. 이메일·Google 계정은 웹과 같은
+  인증 `DELETE /auth/account` 계약을 사용하고, Apple 연결 계정은 삭제 전 새 identity token·5분짜리
+  authorization code·삭제 전용 nonce로 audience와 연결 subject를 현재 JWT 계정에 다시 대조한다. 서버는
+  Apple token 교환과 refresh token 폐기에 성공한 뒤에만 로컬 계정을 삭제하므로 폐기 실패 시 계정과 iOS
+  Keychain 세션이 유지된다.
+- 탈퇴 화면은 삭제 데이터 범위, 정확한 `DELETE` 입력과 마지막 destructive 확인을 제공한다. GOAPI 전체
+  테스트·vet, 공식 Ubuntu 22.04 build와 Ubuntu 24.04·qemu64/max runtime smoke, iOS 전체 단위 146개,
+  이메일 계정 삭제 UI 흐름, Release simulator build와 Debug 정적 분석을 통과했다. 교체용 GOAPI binary
+  SHA-256은 `8b400bc609fd60185d2b1bf919cd9f3848f66ddcb07f4cdd017326de971643f1`이다. DB migration은
+  없고 운영 환경에 Apple Team ID·Key ID·Sign in with Apple `.p8` private key 설정과 runtime 교체가
+  필요하다. 실기기 삭제는 최종 통합 QA에서 전용 테스트 계정으로 한 번만 확인한다.
 
 ## Next action
 
-1. Sensta iOS 앱 내 계정 삭제와 Sign in with Apple token 폐기를 연결한다.
-2. Android·NUBO 웹의 웜톤 라이트/다크 룩앤필을 iOS 전체 화면에 맞게 적용한다.
-3. 남은 기능을 모아 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 UGC·계정·테마를
+1. Android·NUBO 웹의 웜톤 라이트/다크 룩앤필을 iOS 전체 화면에 맞게 적용한다.
+2. 남은 기능을 모아 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 UGC·계정·테마를
    한 번의 최종 통합 QA로 확인한다.
-4. QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
+3. QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
    요구 전에는 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적을 확장하지 않는다.
