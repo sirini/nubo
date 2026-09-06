@@ -3,7 +3,7 @@
 ## Active goal
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
-  프로필 반영까지 확인했다. 남은 목표는 Sensta 2.1.4 Play 제출과 웹·Android 최종 표시 점검이다.
+  프로필 반영까지 확인했다. 남은 목표는 Sensta 2.1.5 Play 제출과 웹·Android 최종 표시 점검이다.
 - Sensta iOS는 공개 사진 피드를 화면 전체 세로 페이징과 워드마크·정보 오버레이로 완성하고, 게시글
   상세에는 고화질 다운샘플링·캐시·예열과 연속 추적 가로 페이징을 적용했다. 제품 소유자가 실기기
   감상 성능·디자인을 승인했고, 페이지 추가 로딩·전체 화면 확대 감상·본문 아래 댓글·최근 사진 탐색과 다중 검색까지
@@ -93,6 +93,9 @@
   `AppIcon`을 추가했다. iOS의 system mask를 위해 원본은 모서리를 둥글게 굽지 않은 불투명 정사각형으로
   유지했다. Debug·Release simulator와 Release device build, bundle icon metadata를 확인하고 자동 서명
   Debug 앱을 iPhone 17에 덮어 설치했다.
+- Sensta Android 2.1.5(`versionCode 28`)는 전체 화면 피드 상단의 계정·알림, 하단 중앙 업로드·탐색을
+  정리하고 사진 롱터치로 홈·잠금 배경화면을 적용한다. 전체 test·lint와 Debug·QA·Release APK, Release
+  AAB build를 통과했고 Release APK v2 서명과 AAB 서명을 확인했다.
 
 ## Current decisions
 
@@ -364,8 +367,8 @@
 
 ## Next action
 
-1. Sensta 2.1.4(27) AAB를 Play Console에 올리고 내부 테스트 또는 단계적 배포에서 로그인·업로드·업적 흐름을
-   확인한다.
+1. Galaxy에서 Sensta 2.1.5의 피드 핵심 동작 배치와 홈·잠금 배경화면 적용을 확인한 뒤 versionCode 28
+   AAB를 Play Console 내부 테스트 또는 단계적 배포에 올린다.
 2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
    `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
 3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
