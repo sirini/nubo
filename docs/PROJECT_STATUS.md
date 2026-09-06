@@ -480,13 +480,17 @@
   필터링한다. 전체 단위 138개, 사진 신고→프로필 차단·해제→대화 차단 UI 흐름, Release simulator
   build와 Debug 정적 분석을 통과했다. 공통 서버·Android·NUBO runtime 변경과 운영 배포는 없다.
   제품 소유자 요청에 따라 실기기 확인은 남은 기능·테마 완료 뒤 한 번의 통합 QA에서 진행한다.
+- Sensta iOS는 기존 `PATCH /editor/modify`와 `DELETE /board/remove/post` 계약으로 작성자 전용 사진
+  수정·삭제를 연결했다. 수정은 기존 사진과 공개·비공개 상태를 유지하며 제목·설명과 업로드 화면 수준의
+  태그 칩·추천만 바꾼다. 삭제 성공 시 상세를 닫고 피드·내 작품에서 즉시 제거한 뒤 통계를 서버와 다시
+  맞춘다. 전체 단위 142개와 비공개 사진 수정→상세 반영→삭제→목록 복귀 UI 흐름, Release simulator
+  build와 Debug 정적 분석을 통과했다. 공통 서버·Android·NUBO runtime 변경과 운영 배포는 없다.
 
 ## Next action
 
-1. Sensta iOS 본인 게시글 수정·삭제를 작품 스튜디오와 상세에 연결한다.
-2. 앱 내 계정 삭제와 Sign in with Apple token 폐기를 연결한다.
-3. Android·NUBO 웹의 웜톤 라이트/다크 룩앤필을 iOS 전체 화면에 맞게 적용한다.
-4. 남은 기능을 모아 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 UGC·계정·테마를
+1. Sensta iOS 앱 내 계정 삭제와 Sign in with Apple token 폐기를 연결한다.
+2. Android·NUBO 웹의 웜톤 라이트/다크 룩앤필을 iOS 전체 화면에 맞게 적용한다.
+3. 남은 기능을 모아 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 UGC·계정·테마를
    한 번의 최종 통합 QA로 확인한다.
-5. QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
+4. QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
    요구 전에는 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적을 확장하지 않는다.
