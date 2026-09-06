@@ -435,14 +435,21 @@
   대화·대화 내역·전송을 연결하고, 계정과 다른 사진가 프로필 및 type 4 알림에서 1:1 대화로 이동하게 했다.
   신규 단위 4개, 메시지와 영향 범위 UI 6개, Release build·정적 분석·서명 iPhone build와 설치를
   확인했다. 이번 작업은 GOAPI·Android·NUBO runtime 변경이나 서버 재시작이 필요 없다.
+- GOAPI `b6b9b0f`가 기존 Android push 계약을 유지하면서 iOS device 등록과 APNs alert payload를
+  지원한다. 전체 test·vet와 공식 Ubuntu build·Ubuntu 24.04 및 qemu64/max runtime smoke가 통과했고,
+  교체용 `dist/nubo-runtime/bin/goapi`의 SHA-256은
+  `014801934b335f23d2acef3e7c21c3e05009a9cb9fb36d09aba5f7a7e2b23e01`이다. 데이터베이스 migration과
+  환경 변수 변경은 없다. Sensta iOS `0864373`은 Firebase Messaging 12.18.0, 구성별 APNs entitlement,
+  사용자 맥락의 권한 요청, FCM installation ID 등록·갱신·로그아웃 해제와 사진·1:1 메시지 push deep
+  link를 구현했다. 단위 테스트, Release simulator·Debug 분석과 서명 iPhone build를 통과했으며,
+  운영 GOAPI 반영과 Firebase plist·APNs 키 설정 및 실기기 원격 수신 검증은 남아 있다.
 
 ## Next action
 
-1. Google Play 2.1.5 배포판에서 피드 핵심 동작 배치와 홈·잠금 배경화면 적용, 비정상 종료·ANR 지표를
-   확인한다.
-2. 잠금 해제한 Galaxy에서 3탭 프로필과 축하창의 업적 탭 이동을 최종 확인하고, 운영 웹에서는
-   `nubo-advance-gallery` 댓글 작성자 인라인 업적과 웹 축하창을 한 번씩 점검한다.
-3. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
-4. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 확인한다.
-5. Sensta iOS APNs/FCM token 등록과 원격 push를 GOAPI의 Android 전용 device 등록 계약과 함께 확장한
-   뒤 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다.
+1. GOAPI `b6b9b0f` runtime을 운영에 교체·재시작하고, Firebase Debug·Release plist와 APNs 인증 키를
+   설정해 실제 iPhone에서 foreground·background·종료 상태 및 사진·1:1 메시지 push deep link를 검증한다.
+2. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 마무리 확인한다.
+3. Sensta iOS 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
+   NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
+4. iOS UGC 심사 시나리오, 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다.
+5. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
