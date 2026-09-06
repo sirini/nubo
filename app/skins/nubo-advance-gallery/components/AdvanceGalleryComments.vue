@@ -1,5 +1,9 @@
 <template>
-  <section class="border-t border-border/60 pt-7" aria-labelledby="advance-comments-title">
+  <section
+    id="comments"
+    class="scroll-mt-24 border-t border-border/60 pt-7"
+    aria-labelledby="advance-comments-title"
+  >
     <h2 id="advance-comments-title" class="mb-6 text-xl font-semibold tracking-tight">
       댓글 {{ num(view.post.comment) }}
     </h2>

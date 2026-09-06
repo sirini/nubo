@@ -11,7 +11,10 @@
 
       <ViewWriterProfile class="mt-5 rounded-2xl border border-border/70 bg-card/55 p-5" />
       <ViewRelatedContent />
-      <section class="mt-8 rounded-2xl border border-border/70 bg-card/55 p-4 sm:p-6">
+      <section
+        id="comments"
+        class="scroll-mt-24 mt-8 rounded-2xl border border-border/70 bg-card/55 p-4 sm:p-6"
+      >
         <h2 class="mb-5 text-lg font-semibold">댓글 {{ num(view.post.comment) }}</h2>
         <ViewWriteComment />
         <ViewCommentList class="mt-8" />

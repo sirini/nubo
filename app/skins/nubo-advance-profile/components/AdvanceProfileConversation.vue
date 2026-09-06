@@ -1,5 +1,5 @@
 <template>
-  <Card class="overflow-hidden">
+  <Card id="conversation" class="scroll-mt-24 overflow-hidden">
     <CardHeader>
       <CardTitle class="flex items-center gap-2 text-base"><MessagesSquareIcon class="size-4" />{{ recoverChars(profileUser.name) }}님과의 대화</CardTitle>
       <CardDescription>개인정보나 계좌 정보는 메시지로 전달하지 마세요.</CardDescription>

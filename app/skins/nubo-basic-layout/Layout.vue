@@ -22,4 +22,12 @@ defineOptions({ name: "NuboBasicLayout" })
 if (isLoggedIn.value) {
   await loadNotifications(10)
 }
+
+watch(isLoggedIn, async (loggedIn) => {
+  if (loggedIn) {
+    await loadNotifications(10)
+  } else {
+    useHomeStore().clearNotifications()
+  }
+})
 </script>

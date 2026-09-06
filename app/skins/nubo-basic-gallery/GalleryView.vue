@@ -16,7 +16,10 @@
             <BoardImageDescription :description="view.images[imgIdx]?.description ?? ''" />
             <ViewWriterProfile class="rounded-2xl border border-border/70 bg-card/55 p-4" />
 
-            <section class="rounded-2xl border border-border/70 bg-card/55 p-4">
+            <section
+              id="comments"
+              class="scroll-mt-24 rounded-2xl border border-border/70 bg-card/55 p-4"
+            >
               <h2 class="mb-4 text-sm font-semibold">댓글 {{ num(view.post.comment) }}</h2>
               <ViewWriteComment />
               <ViewCommentList />

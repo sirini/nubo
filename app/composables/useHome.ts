@@ -80,6 +80,22 @@ export const useHome = () => {
     return data.value
   }
 
+  // 알림 하나를 읽음으로 처리하기
+  const markMyNotificationRead = async (notificationUid: number) => {
+    return await $fetch<Resp<null>>(`/home/noti/checked/${notificationUid}`, {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+    })
+  }
+
+  // 현재 사용자의 알림을 모두 읽음으로 처리하기
+  const markAllMyNotificationsRead = async () => {
+    return await $fetch<Resp<null>>("/home/noti/checked", {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+    })
+  }
+
   return {
     addVisitHistory,
     loadInitHomeMenus,
@@ -87,5 +103,7 @@ export const useHome = () => {
     loadInitPostsById,
     loadMorePosts,
     loadMyNotifications,
+    markMyNotificationRead,
+    markAllMyNotificationsRead,
   }
 }

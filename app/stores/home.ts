@@ -16,6 +16,8 @@ export const useHomeStore = defineStore("home", () => {
     loadMorePosts,
     loadInitHomeMenus,
     loadMyNotifications,
+    markMyNotificationRead,
+    markAllMyNotificationsRead,
   } = useHome()
   const bunch = ref<number>(20)
   const error = ref<unknown>(null)
@@ -132,6 +134,52 @@ export const useHomeStore = defineStore("home", () => {
     notifications.value = response.result
   }
 
+  // 알림을 누르는 즉시 화면에 반영하고, 서버 처리가 실패하면 원래 상태로 되돌립니다.
+  const markNotiRead = async (notificationUid: number) => {
+    const notification = notifications.value.find((item) => item.uid === notificationUid)
+    if (!notification || notification.checked) return true
+
+    notification.checked = true
+    try {
+      const response = await markMyNotificationRead(notificationUid)
+      if (!response.success) throw new Error(response.error)
+      return true
+    } catch (error) {
+      const current = notifications.value.find((item) => item.uid === notificationUid)
+      if (current) current.checked = false
+      toast(`❌ 알림을 읽음으로 처리하지 못했습니다: ${error}`)
+      return false
+    }
+  }
+
+  // 현재 표시된 미확인 알림을 한 번에 읽음으로 처리합니다.
+  const markAllNotiRead = async () => {
+    const unreadUids = new Set(
+      notifications.value.filter((item) => !item.checked).map((item) => item.uid),
+    )
+    if (unreadUids.size === 0) return true
+
+    for (const notification of notifications.value) {
+      if (unreadUids.has(notification.uid)) notification.checked = true
+    }
+
+    try {
+      const response = await markAllMyNotificationsRead()
+      if (!response.success) throw new Error(response.error)
+      return true
+    } catch (error) {
+      for (const notification of notifications.value) {
+        if (unreadUids.has(notification.uid)) notification.checked = false
+      }
+      toast(`❌ 알림을 모두 읽음으로 처리하지 못했습니다: ${error}`)
+      return false
+    }
+  }
+
+  const clearNotifications = () => {
+    notifications.value = []
+  }
+
   // 각종 변수 초기화
   const reset = () => {
     sinceUid.value = 0
@@ -160,6 +208,9 @@ export const useHomeStore = defineStore("home", () => {
     getInitMenus,
     loadMore,
     loadNoti,
+    markNotiRead,
+    markAllNotiRead,
+    clearNotifications,
     reset,
   }
 })

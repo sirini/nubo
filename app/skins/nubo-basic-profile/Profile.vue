@@ -2,7 +2,7 @@
   <section class="container mx-auto py-6 max-w-5xl">
     <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-2 gap-4 h-auto">
       <ProfileMain />
-      <Card class="md:col-span-2 md:row-span-2 overflow-hidden p-0">
+      <Card id="conversation" class="scroll-mt-24 md:col-span-2 md:row-span-2 overflow-hidden p-0">
         <div class="p-4 border-b bg-muted/30">
           <h3 class="font-semibold text-sm flex items-center gap-2">
             <span class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>

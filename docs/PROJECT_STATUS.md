@@ -169,6 +169,13 @@
 
 ## Recent completion
 
+- 2026-09-06 NUBO 웹 알림 드로어에 좋아요·댓글·답글·1:1 메시지별 설명과 이동 동작을 연결했다.
+  알림 클릭은 단건 읽음 처리와 게시글/댓글 또는 상대방 대화 화면 이동을 함께 수행하고, 전체 읽음·
+  미확인 개수·드로어 재오픈 갱신·실패 시 낙관 상태 복구를 제공한다. 고급 프로필은 메시지 알림에서
+  대화 탭을 바로 열며 모든 내장 게시글 스킨은 댓글 영역 딥 링크를 지원한다. 기존 GOAPI의 JWT 단건/전체
+  읽음 계약과 알림 DTO로 충분해 GOAPI 변경·바이너리 교체는 없다. 알림 회귀 11개를 포함한 전체 98개
+  테스트, typecheck, lint(기존 warning 50개), production build를 통과했다.
+
 - 2026-09-05 M4 Pro Mac mini에 Homebrew Colima·Buildx와 VZ/Rosetta Linux VM(CPU 6개, RAM 8GiB,
   디스크 최대 60GiB)을 준비했다. GOAPI 공식 스크립트가 Ubuntu 22.04·24.04 이미지 테스트와
   QEMU `qemu64`·`max` 검증을 통과했고, 생성된 바이너리는 같은 날 Sensta 서버 빌드와 SHA-256이

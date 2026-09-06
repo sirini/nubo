@@ -14,6 +14,8 @@ export interface NuboLayoutContext {
   search: (event: Event) => void
   moveTop: () => void
   loadNotifications: (limit: number) => Promise<void>
+  openNotification: (notification: NotificationItem) => Promise<void>
+  readAllNotifications: () => Promise<boolean>
 }
 
 export const nuboLayoutKey: InjectionKey<NuboLayoutContext> = Symbol("nuboLayoutContext")

@@ -1,5 +1,7 @@
 import { toast } from "vue-sonner"
 import { SEARCH, type Search } from "~/types/board"
+import type { NotificationItem } from "~/types/home"
+import { getNotificationTarget } from "~/utils/notification"
 import type { NuboLayoutContext } from "./contexts/layout"
 
 export const useLayoutProvider = (): NuboLayoutContext => {
@@ -41,5 +43,16 @@ export const useLayoutProvider = (): NuboLayoutContext => {
     loadNotifications: async (limit: number) => {
       await home.loadNoti(limit)
     },
+    openNotification: async (notification: NotificationItem) => {
+      const markReadRequest = home.markNotiRead(notification.uid)
+      const target = getNotificationTarget(notification)
+      if (!target) {
+        await markReadRequest
+        toast("이 알림의 대상이 삭제되었거나 더 이상 존재하지 않습니다")
+        return
+      }
+      await Promise.all([markReadRequest, router.push(target)])
+    },
+    readAllNotifications: () => home.markAllNotiRead(),
   }
 }

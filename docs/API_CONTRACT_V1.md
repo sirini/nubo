@@ -11,15 +11,15 @@
 
 - 브라우저와 SSR은 원칙적으로 NUBO의 `/api/*`를 호출한다.
 - Nitro는 같은 method와 path로 GOAPI에 전달하며, 보호된 경로에서는 access token 갱신을 중재한다.
-- 현재 GOAPI와 같은 경로의 Nitro proxy는 method 기준 113개이며 GOAPI 131개 중 아래 18개를 제외하고
-  모두 대응한다. NUBO 전용 `/api/market/user`는 별도로 `/auth/load` 결과를 최소 identity로 좁혀 전달한다.
+- 브라우저에서 사용하는 GOAPI 경로에는 같은 method/path의 Nitro proxy를 둔다. NUBO 전용
+  `/api/market/user`는 별도로 `/auth/load` 결과를 최소 identity로 좁혀 전달한다.
 - `/health`, `/ready`, `/version`은 Nitro가 자체 응답과 GOAPI 상태를 조합한다.
 - NUBO `/version`은 공식 release manifest의 NUBO·GOAPI version, commit, dirty 상태를 `build`에 공개하고
   실행 중인 버전·API contract가 manifest와 다르면 `status="degraded"`와 machine-readable `issues`를 반환한다.
 - Nitro는 시작할 때 GOAPI `/version`을 2초 제한으로 한 번 확인한다. contract 불일치나 아직 준비되지 않은
   GOAPI는 비밀값 없는 구조화 경고로 남기되 Web 기동을 막지 않으며, 지속 상태는 `/ready`와 `/version`이 판단한다.
 - OAuth request/callback 6개, Android Google OAuth·토큰 갱신, Android 푸시 디바이스 등록·해제, RSS,
-  `/sync`, `/board/tag/recent`, `/home/nubo`, 단일 알림 확인은 GOAPI 직접 노출 또는 현재 UI 비사용 경로다.
+  `/sync`, `/board/tag/recent`, `/home/nubo`는 GOAPI 직접 노출 또는 현재 UI 비사용 경로다.
 
 ## 공통 JSON 응답
 
@@ -114,8 +114,7 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | 에디터 보호 | JWT | `GET /editor/{load/thumbnail,load/images,load/post,suggestion/title,suggestion/tag}`; `PATCH /editor/modify`; `DELETE /editor/{remove/attached,remove/image}`; `POST /editor/{upload/images,write}` |
 | 홈 공개 | Public | `GET /home/{visit,latest,latest/:id,sidebar/links}` |
 | 홈 버전 | Public · Direct | `GET /home/nubo` |
-| 알림 | JWT | `GET /home/noti/load`; `PATCH /home/noti/checked` |
-| 단일 알림 | JWT · Direct | `PATCH /home/noti/checked/:notiUid` |
+| 알림 | JWT | `GET /home/noti/load`; `PATCH /home/noti/checked`, `/home/noti/checked/:notiUid` |
 | 거래 공개 | Public | `GET /trade/{list,view}` |
 | 거래 보호 | JWT | `GET /trade/load`; `PATCH /trade/{modify,status}`; `POST /trade/write` |
 | 동기화 | Secret · Direct | `GET /sync` (`SYNC_SECRET_KEY`) |

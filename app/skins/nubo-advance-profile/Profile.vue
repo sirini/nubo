@@ -4,7 +4,7 @@
 
     <UserAchievementShelf :badges="profileUser.badges ?? []" />
 
-    <Tabs :default-value="isMe ? 'studio' : 'activity'" class="space-y-5">
+    <Tabs v-model="selectedTab" class="space-y-5">
       <TabsList class="grid w-full max-w-md" :class="isMe ? 'grid-cols-2' : 'grid-cols-2'">
         <TabsTrigger v-if="isMe" value="studio">내 작품 스튜디오</TabsTrigger>
         <TabsTrigger value="activity">최근 활동</TabsTrigger>
@@ -37,4 +37,18 @@ import AdvanceProfileStudio from "./components/AdvanceProfileStudio.vue"
 defineOptions({ name: "NuboAdvanceProfilePage" })
 
 const { isMe, isOpenReportForm, profileUser } = useNuboProfileContext()
+const route = useRoute()
+const selectedTab = ref("activity")
+
+watch(
+  [isMe, () => route.query.tab],
+  ([viewingSelf, requestedTab]) => {
+    selectedTab.value = viewingSelf
+      ? "studio"
+      : requestedTab === "conversation"
+        ? "conversation"
+        : "activity"
+  },
+  { immediate: true },
+)
 </script>

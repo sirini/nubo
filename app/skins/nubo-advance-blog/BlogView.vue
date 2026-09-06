@@ -89,7 +89,7 @@
               :class="view.post.liked ? 'fill-current text-primary' : ''"
             />{{ num(view.post.like) }}</Button
           ><a
-            href="#advance-blog-comments"
+            href="#comments"
             class="inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             ><MessageCircleIcon class="size-4" />{{ num(view.post.comment) }}</a
           >
@@ -166,7 +166,7 @@
       </div>
     </section>
 
-    <AdvanceBlogComments id="advance-blog-comments" />
+    <AdvanceBlogComments id="comments" class="scroll-mt-24" />
 
     <footer
       class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 border-t border-border/60 px-4 py-10 sm:px-6"
