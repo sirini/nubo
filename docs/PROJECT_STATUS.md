@@ -467,14 +467,20 @@
   필터 및 강도 조절을 추가했다. 원본을 보존하다 완료할 때만 최종 JPEG를 렌더링하고 EXIF는 유지하되
   GPS와 이전 orientation을 제거한다. 전체 단위 129개와 편집·기존 태그 UI 회귀, Release simulator
   build·Debug 정적 분석을 통과했고 서명 Debug 앱을 Wi-Fi iPhone 17에 설치·실행했다. 공통 API와
-  Android·NUBO runtime 변경은 없고 자유 비율 자르기는 다음 수직 작업으로 남겼다.
+  Android·NUBO runtime 변경은 없다. 제품 소유자가 실제 iPhone에서 필터·강도·회전·반전·초기화의
+  동작과 사용성을 확인했다.
+- Sensta iOS `3947a49`는 원본 전체와 3×3 프레임을 보며 이동·모서리 크기 조절로 업로드 사진을 자른다.
+  Android의 원본·4:5·3:4와 iOS 자유 비율을 제공하고, 원본 정규화 좌표에 자르기→회전·반전→필터
+  순서로 최종 JPEG를 한 번 렌더링한다. 사진별 상태, 취소·적용, 원본 픽셀과 회전 치수, 재편집 임시 파일
+  정리를 검증했다. 전체 단위 132개와 편집·태그 UI 회귀, Release simulator build·Debug 정적 분석을
+  통과했고 서명 Debug 앱을 Wi-Fi iPhone 17에 설치·실행했다. 서버·Android·NUBO 변경은 없다.
 
 ## Next action
 
-1. 실제 iPhone에서 알림 미확인·읽음 처리와 JPEG·HEIC 다중 업로드 조합을 마무리 확인한다.
-2. Sensta iOS 업로드의 자유 비율 자르기를 iOS 방식으로 연결하고 회전·반전과 조합한 좌표를 검증한다.
-3. Sensta iOS 신고·차단을 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
+1. 실제 iPhone에서 자르기와 회전·반전 조합, 알림 미확인·읽음 처리, JPEG·HEIC 다중 업로드를 마무리
+   확인한다.
+2. Sensta iOS 신고·차단을 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
    NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
-4. Sensta iOS 본인 게시글 수정·삭제와 앱 내 계정 삭제·Apple token 폐기를 연결한다.
-5. iOS UGC 심사 시나리오, 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다.
-6. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
+3. Sensta iOS 본인 게시글 수정·삭제와 앱 내 계정 삭제·Apple token 폐기를 연결한다.
+4. iOS UGC 심사 시나리오, 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다.
+5. 실제 운영 요구가 생기기 전까지 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적은 확장하지 않는다.
