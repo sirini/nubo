@@ -443,11 +443,19 @@
   사용자 맥락의 권한 요청, FCM installation ID 등록·갱신·로그아웃 해제와 사진·1:1 메시지 push deep
   link를 구현했다. 단위 테스트, Release simulator·Debug 분석과 서명 iPhone build를 통과했으며,
   운영 GOAPI 반영과 Firebase plist·APNs 키 설정 및 실기기 원격 수신 검증은 남아 있다.
+- 제품 소유자가 Debug·Release Firebase plist와 환경별 APNs 키를 설정했다. iPhone 15 Pro Max의 Wi-Fi
+  실기기에서 Firebase 초기화, 22자 installation ID 수신과 운영 GOAPI device 등록 성공을 확인했지만 첫
+  1:1 메시지 push는 수신되지 않았다. GOAPI가 multicast의 설치별 Firebase 오류를 버리던 진단 사각지대를
+  `1ccf15a`에서 보완했고 전체 test·vet와 공식 Ubuntu 22.04·24.04 및 qemu64/max runtime 검증을
+  통과했다. 새 교체용 binary SHA-256은
+  `be57e3fc9486f95e6df186aece0737068af14a8beb58d3db84525b2f1be91d2e`다. iOS `64128c2`는 token 값을
+  노출하지 않는 Debug 등록 단계 로그를 추가했으며 실기기에서 세 등록 단계 성공을 확인했다.
 
 ## Next action
 
-1. GOAPI `b6b9b0f` runtime을 운영에 교체·재시작하고, Firebase Debug·Release plist와 APNs 인증 키를
-   설정해 실제 iPhone에서 foreground·background·종료 상태 및 사진·1:1 메시지 push deep link를 검증한다.
+1. GOAPI `1ccf15a` runtime을 운영에 교체·재시작하고 새 1:1 메시지 한 건으로 Firebase의 설치별 발송
+   결과를 서버 로그에서 확인한다. 원인을 보정한 뒤 실제 iPhone에서 foreground·background·종료 상태 및
+   사진·1:1 메시지 push deep link를 검증한다.
 2. 실제 iPhone에서 알림 읽음 처리와 JPEG·HEIC 다중 업로드를 마무리 확인한다.
 3. Sensta iOS 신고·차단·계정 삭제를 순서대로 작은 수직 기능 단위로 구현한다. 공통 서버 계약이 필요하면
    NUBO 웹·Sensta Android·iOS 영향을 함께 검증한다.
