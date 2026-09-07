@@ -4,8 +4,8 @@
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
-  Android 업로드 응답 제한을 교정한 2.1.7(`versionCode 30`)도 준비했다. 남은 목표는 교정판 실기기
-  업로드와 배포판·웹·Android 최종 표시 점검이다.
+  Android 업로드 응답 제한과 iOS 대비 핵심 기능 누락을 교정한 2.1.7(`versionCode 30`)도 준비했다.
+  남은 목표는 교정판 실기기 통합 QA와 배포판·웹·Android 최종 표시 점검이다.
 - Sensta iOS는 공개 사진 피드를 화면 전체 세로 페이징과 워드마크·정보 오버레이로 완성하고, 게시글
   상세에는 고화질 다운샘플링·캐시·예열과 연속 추적 가로 페이징을 적용했다. 제품 소유자가 실기기
   감상 성능·디자인을 승인했고, 페이지 추가 로딩·전체 화면 확대 감상·본문 아래 댓글·최근 사진 탐색과 다중 검색까지
@@ -183,8 +183,17 @@
   OkHttp 기본 10초 읽기 제한이 응답 전에 끝나 앱만 실패로 판단했다. Sensta Android `c2bf346`은
   iOS와 같은 120초 읽기·쓰기 제한을 `/editor/write` POST에만 적용하고 일반 API 제한은 유지한다.
   전용 회귀 테스트와 전체 test·lint, Debug·QA·Release APK 및 Release AAB build, v2·AAB 서명을 통과했다.
-  2.1.7(`versionCode 30`) AAB SHA-256은
+  이 교정만 담았던 1차 2.1.7(`versionCode 30`) AAB SHA-256은
   `d5ed92213008256b3a28f3e90fe5381c2c4b56bc80bb0fba2746992ecbf02e19`이며 GOAPI·웹·운영 runtime 변경은 없다.
+
+- Sensta Android `05073be`는 기존 공통 계약을 사용해 비밀번호 재설정, 가입 상태·초대 코드, 서버
+  로그아웃, 최근 1:1 메시지 목록, 사진가 공개 작품·사진·좋아요 통계와 업로드·게시글 수정 태그 추천을
+  추가했다. 업로드는 access token 갱신·저장을 기다린 뒤 시작하고 `editor/config`의 게시판·분류를
+  사용해 고정 UID 의존성을 제거했다. 새 메시지 push는 현재 대화 여부와 관계없이 메시지 목록을
+  갱신한다. 전체 Gradle test·lint와 Debug·QA·축소 Release APK/AAB 빌드, APK v2 및 AAB 서명을
+  통과했다. 최종 2.1.7 AAB SHA-256은
+  `bcf7fd94a4adbae13156bac993facc8a0c508d249e9774968cf2150a91476f09`이다. GOAPI·NUBO runtime과
+  Sensta iOS 코드는 변경하지 않았다.
 
 - 2026-09-06 Sensta iOS App Store 심사를 위해 공개 `/support` 페이지를 추가했다. 운영 설정의 관리자
   이메일로 바로 문의할 수 있고 민감한 인증 정보 전송 금지, 재현 정보, 신고·차단, 계정 삭제와 개인정보
@@ -529,7 +538,9 @@
 
 ## Next action
 
-1. 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 신고·차단·게시글 관리·계정 삭제·
+1. Galaxy 실제 기기에서 2.1.7의 다중 사진 업로드, 태그 추천, 비밀번호 재설정, 메시지 목록·사진가 통계와
+   로그아웃 후 세션 복원 방지를 통합 확인한 뒤 AAB를 Play Console에 업로드한다.
+2. 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 신고·차단·게시글 관리·계정 삭제·
    라이트/다크 테마를 한 번의 최종 통합 QA로 확인한다. 삭제는 복구 가능한 전용 테스트 계정만 사용한다.
-2. 통합 QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
+3. 통합 QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
    요구 전에는 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적을 확장하지 않는다.
