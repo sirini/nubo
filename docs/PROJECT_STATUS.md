@@ -4,7 +4,8 @@
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
-  남은 목표는 배포판과 웹·Android 최종 표시 점검이다.
+  Android 업로드 응답 제한을 교정한 2.1.7(`versionCode 30`)도 준비했다. 남은 목표는 교정판 실기기
+  업로드와 배포판·웹·Android 최종 표시 점검이다.
 - Sensta iOS는 공개 사진 피드를 화면 전체 세로 페이징과 워드마크·정보 오버레이로 완성하고, 게시글
   상세에는 고화질 다운샘플링·캐시·예열과 연속 추적 가로 페이징을 적용했다. 제품 소유자가 실기기
   감상 성능·디자인을 승인했고, 페이지 추가 로딩·전체 화면 확대 감상·본문 아래 댓글·최근 사진 탐색과 다중 검색까지
@@ -176,6 +177,14 @@
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
+
+- 2026-09-07 운영 로그에서 Android 사진 글쓰기 요청이 Nginx HTTP 499로 먼저 종료된 뒤에도 같은
+  게시물의 GOAPI AI 사진 설명 생성이 완료된 사실을 확인했다. 서버는 게시물·첨부를 저장했지만 Android의
+  OkHttp 기본 10초 읽기 제한이 응답 전에 끝나 앱만 실패로 판단했다. Sensta Android `c2bf346`은
+  iOS와 같은 120초 읽기·쓰기 제한을 `/editor/write` POST에만 적용하고 일반 API 제한은 유지한다.
+  전용 회귀 테스트와 전체 test·lint, Debug·QA·Release APK 및 Release AAB build, v2·AAB 서명을 통과했다.
+  2.1.7(`versionCode 30`) AAB SHA-256은
+  `d5ed92213008256b3a28f3e90fe5381c2c4b56bc80bb0fba2746992ecbf02e19`이며 GOAPI·웹·운영 runtime 변경은 없다.
 
 - 2026-09-06 Sensta iOS App Store 심사를 위해 공개 `/support` 페이지를 추가했다. 운영 설정의 관리자
   이메일로 바로 문의할 수 있고 민감한 인증 정보 전송 금지, 재현 정보, 신고·차단, 계정 삭제와 개인정보
