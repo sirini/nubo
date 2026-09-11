@@ -32,13 +32,13 @@
       </header>
 
       <div v-if="posts.length" class="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
-        <article v-for="post in posts" :key="post.uid" class="group mb-3 break-inside-avoid">
+        <article v-for="(post, index) in posts" :key="post.uid" class="group mb-3 break-inside-avoid">
           <NuxtLink :to="`/board/${config.id}/${post.uid}`" class="relative block overflow-hidden rounded-xl bg-media">
             <img
               v-if="post.cover"
-              :src="post.cover"
+              :src="getPreviewImage(post.cover)"
               :alt="recoverChars(post.title)"
-              loading="lazy"
+              :loading="index < 4 ? 'eager' : 'lazy'"
               class="h-auto w-full transition duration-500 group-hover:scale-[1.015] group-hover:brightness-90"
             />
             <div v-else class="flex aspect-4/3 items-center justify-center text-sm text-media-foreground/55">

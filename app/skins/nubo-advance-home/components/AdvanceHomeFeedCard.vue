@@ -61,9 +61,10 @@
           @click="$emit('open-media', post)"
         >
           <img
-            :src="post.cover"
+            :src="getPreviewImage(post.cover)"
             :alt="recoverChars(post.title)"
-            loading="lazy"
+            :loading="priority ? 'eager' : 'lazy'"
+            :fetchpriority="priority ? 'high' : 'auto'"
             class="mx-auto max-h-[34rem] min-h-48 w-full object-contain transition duration-300 group-hover:brightness-[0.97]"
           />
           <span
@@ -124,7 +125,9 @@ import type { Component } from "vue"
 import { BOARD, STATUS } from "~/types/board"
 import type { HomePostItem } from "~/types/home"
 
-const props = defineProps<{ post: HomePostItem; boardName: string }>()
+const props = withDefaults(defineProps<{ post: HomePostItem; boardName: string; priority?: boolean }>(), {
+  priority: false,
+})
 defineEmits<{
   "open-media": [post: HomePostItem]
   "toggle-like": [post: HomePostItem]

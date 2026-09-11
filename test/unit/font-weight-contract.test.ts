@@ -6,7 +6,7 @@ describe("Pretendard variable font weight", () => {
   it("lets font-weight select the variable weight axis", () => {
     const fontCss = readFileSync(resolve(process.cwd(), "app/assets/css/font.css"), "utf8")
     const themeCss = readFileSync(
-      resolve(process.cwd(), "app/skins/nubo-basic-layout/theme.css"),
+      resolve(process.cwd(), "app/assets/css/theme.css"),
       "utf8",
     )
 

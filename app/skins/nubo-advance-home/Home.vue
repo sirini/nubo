@@ -68,6 +68,7 @@
               v-for="post in visiblePosts"
               :key="`${post.id}-${post.uid}`"
               :post="post"
+              :priority="post === mediaPosts[0]"
               :board-name="boardNames.get(post.id) || post.id"
               @open-media="openMedia"
               @toggle-like="toggleLike"

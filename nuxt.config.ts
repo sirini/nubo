@@ -56,7 +56,7 @@ export default defineNuxtConfig({
   },
 
   // UI 스타일
-  css: ["~/assets/css/tailwind.css", "~/assets/css/font.css"],
+  css: ["~/assets/css/theme.css", "~/assets/css/tailwind.css", "~/assets/css/font.css"],
   vite: {
     plugins: [tailwindcss()],
     optimizeDeps: {

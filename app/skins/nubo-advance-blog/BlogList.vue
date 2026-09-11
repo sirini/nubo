@@ -128,7 +128,7 @@
           class="order-first block overflow-hidden rounded-xl bg-media sm:order-last"
           ><img
             v-if="post.cover"
-            :src="post.cover"
+            :src="getPreviewImage(post.cover)"
             :alt="recoverChars(post.title)"
             loading="lazy"
             class="aspect-16/10 h-full w-full object-cover transition duration-500 hover:scale-[1.02]"
