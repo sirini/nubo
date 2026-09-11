@@ -10,9 +10,9 @@
   macOS `27.0 (26A428)`와 공식 Xcode 27 RC(`27A266a`), iOS SDK `24A430`으로 다시 아카이브했다.
   iOS 26.5의 단위 147개·UI 7개, iOS 27 RC(`24A434`)의 단위 147개·UI 4개, Debug/Release build와
   App Store export·Apple Distribution 서명 검증을 통과했다. 개인정보 manifest 20개는 기존과 같다.
-  App Store Connect의 자동 출시 설정은 기존 결정대로 수동 출시로 저장·재확인했다. 빌드 2 업로드와
+  재제출 후 제품 소유자의 2026-09-11 요청에 따라 심사 승인 후 자동 출시로 변경했다. 빌드 2 업로드와
   기존 제출의 바이너리 교체·재제출을 완료하고 2026-09-11 23:04 KST 접수 뒤 `심사 대기 중`을 확인했다.
-  다음 작업은 Apple 심사 결과 대응과 승인 후 수동 출시이며 GOAPI·Android·운영 서버 변경은 없다.
+  다음 작업은 Apple 심사 결과 대응과 자동 출시 결과 확인이며 GOAPI·Android·운영 서버 변경은 없다.
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
