@@ -2,6 +2,10 @@
 
 ## Active goal
 
+- NUBO v1.3.2: 버전·GOAPI `367e8fb` pin, migration 표시와 릴리스 노트를 준비했다. 웹 111개 테스트,
+  lint(기존 경고 50개·오류 0), typecheck·build, SSR 1,000회(약 37~40 MiB), API contract v1, CLI·GOAPI
+  전체 test·vet를 통과했다. 다음은 GitHub Actions의 공식 Ubuntu runtime 사전 검증과 태그·Release 게시다.
+
 - Sensta Node OOM(2026-09-11): `NODE_ENV` 누락으로 `vee-validate` 개발용 전역 폼 목록이 SSR 화면을
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.

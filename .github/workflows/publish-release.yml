@@ -69,6 +69,7 @@ jobs:
           npm run lint
           npm run typecheck
           npm run build
+          npm run test:ssr-memory
 
       - name: Test and vet GOAPI in the official build environment
         run: |

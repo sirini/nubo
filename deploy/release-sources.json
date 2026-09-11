@@ -1,8 +1,8 @@
 {
   "schemaVersion": 2,
   "channel": {
-    "version": "1.3.1",
-    "tag": "v1.3.1",
+    "version": "1.3.2",
+    "tag": "v1.3.2",
     "repository": "sirini/nubo"
   },
   "target": {
@@ -15,12 +15,12 @@
     "checksum": "nubo-linux-amd64.sha256"
   },
   "runtime": {
-    "name": "nubo-runtime-1.3.1-linux-amd64.tar.gz",
-    "checksum": "nubo-runtime-1.3.1-linux-amd64.tar.gz.sha256",
-    "migrationRequired": false
+    "name": "nubo-runtime-1.3.2-linux-amd64.tar.gz",
+    "checksum": "nubo-runtime-1.3.2-linux-amd64.tar.gz.sha256",
+    "migrationRequired": true
   },
   "goapi": {
     "repository": "sirini/goapi",
-    "commit": "cb485a4fab5dd87b0b5f7a847d82c0700f8a18e0"
+    "commit": "367e8fb808fe90d9c2a25289da95476b564f637c"
   }
 }

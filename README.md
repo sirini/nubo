@@ -3,7 +3,7 @@
 NUBO는 사진 커뮤니티, 블로그, 게시판과 사내 커뮤니티를 만드는 오픈소스 커뮤니티 빌더입니다.
 Nuxt 4 웹, [GOAPI](https://github.com/sirini/goapi), MySQL/MariaDB를 함께 사용합니다.
 
-> 현재 버전: NUBO/GOAPI 1.3.1 · 지원 runtime: Ubuntu 22.04+ Linux amd64, Node.js 22+
+> 현재 버전: NUBO/GOAPI 1.3.2 · 지원 runtime: Ubuntu 22.04+ Linux amd64, Node.js 22+
 
 ## 주요 기능
 
@@ -86,6 +86,9 @@ PM2를 사용한다면 같은 두 명령을 기존 PM2 설정에 등록합니다
 
 ## Runtime 갱신
 
+v1.3.2는 DB migration이 필요합니다. [릴리스 노트의 업데이트 순서](docs/releases/v1.3.2.md#v131에서-업데이트)에
+따라 백업과 서비스 중지 후 새 runtime으로 `./bin/goapi install`을 실행하세요.
+
 소스와 runtime의 조합은 descriptor가 고정합니다.
 
 ```bash
@@ -94,7 +97,8 @@ git pull --ff-only
 ./bin/nubo update
 ./bin/nubo download --dry-run
 ./bin/nubo download
-npm install
+NUBO_ENV_FILE="$PWD/.env" ./bin/goapi install
+npm ci
 npm run build
 ```
 
@@ -119,7 +123,7 @@ TTY에서는 Bubble Tea 기반의 warm-tone 진행 화면을 사용합니다. �
 
 ## NUBO Market
 
-Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 배포합니다. v1.3.1 CLI는 공개 package를
+Market은 완성된 Web bundle이 아니라 검토 가능한 스킨 소스를 배포합니다. v1.3 CLI는 공개 package를
 검색·설치하고, 로컬 스킨을 Market 계약에 맞춰 검증·패키징합니다. 인증·게시 흐름은 v1.4에서 활성화합니다.
 
 ```text

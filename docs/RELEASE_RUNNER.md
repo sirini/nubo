@@ -22,7 +22,7 @@ NUBO_RELEASE_BUILD_RUNNER=["ubuntu-22.04"]
 gh workflow run publish-release.yml \
   --repo sirini/nubo \
   --ref main \
-  -f release_tag=v1.3.1
+  -f release_tag=v1.3.2
 gh run watch --repo sirini/nubo --exit-status
 ```
 
