@@ -197,6 +197,11 @@
   GOAPI가 기존에 만드는 `t*.webp`·`f*.webp` 계약을 재사용하므로 API·DB·이미지 재생성 변경은 없다.
   전체 111개 테스트, lint(기존 경고 50개·오류 0개), typecheck·production build와 브라우저의
   라이트·다크·390px 모바일 오류 화면·홈 복귀·2048px 이미지 직접 요청을 확인했다.
+  NUBO `b4f0d18`과 센스타 전용 홈의 운영 `internal` 변경 `8ffebc2`를 별도 디렉터리에서 빌드해
+  sensta.me에 반영했다. 첫 화면의 사진 16장 모두 큰 WebP 경로를 사용하고 첫 사진은 실제
+  2048×2731·eager 로딩임을 확인했다. 외부 라이트·다크 오류 화면의 HTTP 404와 홈 복귀,
+  내부 readiness HTTP 200도 확인했다. 이전 빌드는 `/var/backups/sensta-skins-20260911/output-before`에
+  보관했다. GOAPI 프로세스와 DB는 그대로이며 제품 소유자의 최종 시각 QA만 남았다.
 
 - 2026-09-07 운영 로그에서 Android 사진 글쓰기 요청이 Nginx HTTP 499로 먼저 종료된 뒤에도 같은
   게시물의 GOAPI AI 사진 설명 생성이 완료된 사실을 확인했다. 서버는 게시물·첨부를 저장했지만 Android의
