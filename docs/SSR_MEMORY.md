@@ -23,7 +23,7 @@ Nuxt also documents [setting production mode when starting Node](https://nuxt.co
 
 The production process had the same library implementation and no `NODE_ENV`. This is
 the strongest evidenced cause of the incident; no heap snapshot from the crashed process
-exists, so other contributors cannot be excluded. PHP scan traffic was visible in logs,
+was available in this investigation, so other contributors cannot be excluded. PHP scan traffic was visible in logs,
 but the 404 reproduction did not show the growing heap.
 
 ## Correction and operation
@@ -48,6 +48,14 @@ An additional code fix scopes the shared DOMPurify link hook to each synchronous
 call and removes it in `finally`. This prevents callbacks accumulating per SSR component.
 It is a separate defect, not the demonstrated source of the login-page leak.
 
+The `63eb96b` changes were merged into Sensta's existing deployment branch without
+changing its GOAPI binary. The web build ran in a separate directory while the old
+service continued serving. Its regression check on the actual Node 24.14.1 runtime
+passed at 36.4–37.5 MiB. The verified output is deployed and running through `npm start`;
+the old output is in `/var/backups/sensta-node-20260911-225153/output-before`.
+Post-deployment internal health/readiness and public home, login and photo detail all
+returned HTTP 200; the login password field remained server-rendered.
+
 ## Repeat the regression check
 
 ```sh
@@ -63,3 +71,5 @@ scripts/check-ssr-memory.mjs`; the retained-heap assertion should fail.
 
 Watch the production process over the next several days. RSS includes memory outside
 the JavaScript heap and is not expected to equal these local GC measurements.
+The regression check was also run with `NODE_ENV` unset and correctly failed after
+retaining another 401.8 MiB across its 1,000 measured requests.
