@@ -2,6 +2,12 @@
 
 ## Active goal
 
+- Sensta iOS 재제출 점검(2026-09-11): `1.0 (1)`은 `ITMS-90111`로 실패했으며 App Store Connect의
+  현재 상태는 `잘못된 바이너리`다. Apple은 9월 9일부터 Xcode 27 RC(`27A266a`) 제출을 허용한다.
+  Mac에는 macOS beta 8과 Xcode 26.6/27 beta 6만 있어 RC 환경을 준비 중이다. 제품 소유자가 macOS RC
+  업데이트·재시작을 직접 진행한 뒤, RC 설치 확인·빌드 2 검증·업로드·재제출을 이어간다. 재제출은 승인됐고
+  수동 출시를 유지한다. 자세한 인계는 `sensta-ios.git/docs/APP_STORE_SUBMISSION.md`에 기록했다.
+
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
   Android 업로드 응답 제한과 iOS 대비 핵심 기능 누락을 교정한 2.1.7(`versionCode 30`)도 준비했다.
