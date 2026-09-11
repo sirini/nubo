@@ -6,11 +6,13 @@
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
 
-- Sensta iOS 재제출 점검(2026-09-11): `1.0 (1)`은 `ITMS-90111`로 실패했으며 App Store Connect의
-  현재 상태는 `잘못된 바이너리`다. Apple은 9월 9일부터 Xcode 27 RC(`27A266a`) 제출을 허용한다.
-  Mac에는 macOS beta 8과 Xcode 26.6/27 beta 6만 있어 RC 환경을 준비 중이다. 제품 소유자가 macOS RC
-  업데이트·재시작을 직접 진행한 뒤, RC 설치 확인·빌드 2 검증·업로드·재제출을 이어간다. 재제출은 승인됐고
-  수동 출시를 유지한다. 자세한 인계는 `sensta-ios.git/docs/APP_STORE_SUBMISSION.md`에 기록했다.
+- Sensta iOS `8babf02`(2026-09-11)는 `ITMS-90111`로 실패한 빌드 1을 대체할 `1.0 (2)`를 준비했다.
+  macOS `27.0 (26A428)`와 공식 Xcode 27 RC(`27A266a`), iOS SDK `24A430`으로 다시 아카이브했다.
+  iOS 26.5의 단위 147개·UI 7개, iOS 27 RC(`24A434`)의 단위 147개·UI 4개, Debug/Release build와
+  App Store export·Apple Distribution 서명 검증을 통과했다. 개인정보 manifest 20개는 기존과 같다.
+  App Store Connect의 자동 출시 설정은 기존 결정대로 수동 출시로 저장·재확인했다. 빌드 2 업로드와
+  기존 제출의 바이너리 교체·재제출을 완료하고 2026-09-11 23:04 KST 접수 뒤 `심사 대기 중`을 확인했다.
+  다음 작업은 Apple 심사 결과 대응과 승인 후 수동 출시이며 GOAPI·Android·운영 서버 변경은 없다.
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
