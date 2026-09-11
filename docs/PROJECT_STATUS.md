@@ -2,10 +2,6 @@
 
 ## Active goal
 
-- NUBO v1.3.2: 버전·GOAPI `367e8fb` pin, migration 표시와 릴리스 노트를 준비했다. 웹 111개 테스트,
-  lint(기존 경고 50개·오류 0), typecheck·build, SSR 1,000회(약 37~40 MiB), API contract v1, CLI·GOAPI
-  전체 test·vet를 통과했다. 다음은 GitHub Actions의 공식 Ubuntu runtime 사전 검증과 태그·Release 게시다.
-
 - Sensta Node OOM(2026-09-11): `NODE_ENV` 누락으로 `vee-validate` 개발용 전역 폼 목록이 SSR 화면을
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
@@ -193,6 +189,13 @@
   `/Users/sirini/github/nubohub-market.git`과 함께 다시 고정해야 한다.
 
 ## Recent completion
+
+- NUBO [v1.3.2](https://github.com/sirini/nubo/releases/tag/v1.3.2)를 2026-09-12 KST에 Latest로 게시했다.
+  NUBO `6cbd3ec`·GOAPI `367e8fb`를 고정하고 업적·OAuth·메시지 schema migration과 production 실행
+  안내를 릴리스 노트에 포함했다. 웹 111개 테스트, lint(기존 경고 50개·오류 0), typecheck·build,
+  SSR 1,000회, API contract v1, CLI·GOAPI 전체 test·vet와 공식 Ubuntu 22.04·24.04 runtime 검사를
+  통과했다. 사전 검증 `34610690006`·태그 게시 `34612386826` 모두 성공했으며 공개 asset 4개의
+  SHA-256, runtime 내부 11개 파일과 manifest, 릴리스 노트 일치를 확인했다. 공개 파일은 사전 검증판과 동일하다.
 
 - 고급 스킨 이미지·오류 화면(2026-09-11): 고급 홈·갤러리·블로그 목록은 기존 큰 WebP를 첫 요청부터
   사용하고 홈의 첫 사진과 갤러리 앞쪽 사진을 우선 로드한다. 오류 화면에서도 기본 색상이 로드되도록
