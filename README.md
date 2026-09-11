@@ -74,8 +74,12 @@ npm run build
 
 ```bash
 ./bin/goapi
-node --env-file=.env .output/server/index.mjs
+npm start
 ```
+
+`npm start`는 `.env`를 읽고 `NODE_ENV=production`으로 실행합니다. Node를 직접 실행할 때도
+`NODE_ENV=production node --env-file=.env .output/server/index.mjs`로 지정하세요.
+이 값이 없으면 일부 의존성의 개발 도구가 SSR 화면 객체를 보관해 메모리가 계속 증가할 수 있습니다.
 
 PM2를 사용한다면 같은 두 명령을 기존 PM2 설정에 등록합니다. NUBO는 운영자의 프로세스 관리 방식을
 감지하거나 변경하지 않습니다.

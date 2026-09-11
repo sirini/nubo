@@ -70,8 +70,12 @@ npm run build
 
 ```bash
 ./bin/goapi
-node --env-file=.env .output/server/index.mjs
+npm start
 ```
+
+`npm start`는 `.env`를 읽고 `NODE_ENV=production`을 명시한다. 직접 실행이나 PM2에서도
+`NODE_ENV=production node --env-file=.env .output/server/index.mjs`와 같은 환경을 유지한다.
+운영 빌드만으로는 외부 의존성의 개발용 SSR 객체 보관이 비활성화되지 않을 수 있다.
 
 기존 tmux 또는 PM2 사이트의 재시작 방법을 추측하지 않는다. runtime 교체와 Web build가 끝난 뒤 실제
 명령을 운영자에게 보여주고 명시적인 요청이 있을 때만 수행한다.

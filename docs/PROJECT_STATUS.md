@@ -2,6 +2,10 @@
 
 ## Active goal
 
+- Sensta Node OOM(2026-09-11): `NODE_ENV` 누락으로 `vee-validate` 개발용 전역 폼 목록이 SSR 화면을
+  붙잡는 누수를 재현했다. 운영 `.env`와 tmux 실행을 production으로 교정하고 HTTP 정상 응답을 확인했다.
+  이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
+
 - Sensta iOS 재제출 점검(2026-09-11): `1.0 (1)`은 `ITMS-90111`로 실패했으며 App Store Connect의
   현재 상태는 `잘못된 바이너리`다. Apple은 9월 9일부터 Xcode 27 RC(`27A266a`) 제출을 허용한다.
   Mac에는 macOS beta 8과 Xcode 26.6/27 beta 6만 있어 RC 환경을 준비 중이다. 제품 소유자가 macOS RC
@@ -356,6 +360,10 @@
   회원가입은 독립된 표준 이동 행으로 표시한다.
 
 ## Verification
+
+- Node OOM 교정: 전체 111개 테스트, typecheck, production build, lint(기존 경고 50개·오류 0개)를
+  통과했다. 새 SSR 검사에서 로그인 100회 예열 후 1,000회 추가 요청 동안 GC 후 힙이 약 37~40MiB로
+  유지됐다. `npm start`와 운영 안내에 production 환경을 명시하고 DOMPurify 콜백 누적도 제거했다.
 
 - Sensta iOS 다운샘플 크기·가로 사진 세로 fill 품질·메모리 캐시·동시 요청 병합 회귀를 포함한 unit
   18개와 화면 네 변을 채우는 피드·워드마크·상세 이동/폭 UI 3개, 총 21개 테스트가 통과했다. Release

@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "nuxt build",
+    "start": "NODE_ENV=production node --env-file=.env .output/server/index.mjs",
     "build:nubo": "bash scripts/build-nubo-linux.sh",
     "build:release": "bash scripts/build-v1.3-release.sh",
     "build:runtime": "bash scripts/build-runtime-bundle.sh",
@@ -19,6 +20,7 @@
     "test:nuxt": "vitest run --project nuxt",
     "test:release-contract": "node scripts/verify-release-contract.mjs",
     "test:unit": "vitest run --project unit",
+    "test:ssr-memory": "NODE_ENV=production node --expose-gc scripts/check-ssr-memory.mjs",
     "test:watch": "vitest",
     "typecheck": "nuxt typecheck"
   },
