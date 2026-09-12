@@ -70,12 +70,15 @@ qemu64/max 실행 검증을 통과했다. migration과 환경 변수 변경은 �
 - 교체 전 확인한 운영 SHA-256: `8b400bc609fd60185d2b1bf919cd9f3848f66ddcb07f4cdd017326de971643f1`
 - 기존 운영의 libvips와 호환되는 동일한 공식 runtime 라이브러리 조합이다.
 
- 운영 반영 전 기존 binary를 백업하고 GOAPI runtime을 교체·재시작한 뒤
-health/readiness와 전용 촬영 계정의 앱 내 삭제 완료를 확인한다. 이번 조사에서는 운영 runtime을
-교체하거나 계정을 대신 삭제하지 않았다.
+재촬영 영상 검토 시 운영 `/var/www/sensta.me/bin/goapi`의 SHA-256이 위 수정판과 일치함을
+읽기 전용으로 확인했다. Nginx에는 2026-09-12 23:11:12 KST `DELETE /goapi/auth/account`,
+`SENSTA/2`, HTTP 200, 응답 50 bytes가 기록됐다. HTTP 상태만으로 성공을 판단하지 않고,
+22:57:27에 시작한 새 영상의 **13:46–13:48 계정 삭제 완료** 및 13:50 로그인 화면 복귀와 대조했다.
+이번 검토에서 Codex가 운영 runtime을 교체하거나 계정을 대신 삭제하지 않았다.
 
-서버 수정이므로 SENSTA iOS 제출 빌드 `1.0 (2)`를 새로 만들 필요는 없다. 실제 기기 삭제 성공을
-확인하기 전 영상과 Apple 답변을 완료 처리하지 않는다. 기존 영상은 보관하고, 삭제 시연을 포함한
-최종 영상 구성은 성공 확인 뒤 결정한다.
+서버 수정이므로 SENSTA iOS 제출 빌드 `1.0 (2)`를 새로 만들 필요는 없다. 이메일로 새로 가입한 촬영용
+계정의 삭제 성공을 확인했다. 이 영상은 Apple 연결 계정의 승인 폐기나 삭제 후 재실행을 검증한 자료는
+아니다. 상세 검토·타임스탬프는 sibling iOS의 `docs/APP_REVIEW_RESPONSE_2026-09-12.md`에 기록했고,
+제출용 영상 준비와 Apple 회신·재제출은 남았다.
 
 참고: [MySQL의 서브쿼리 오류 1093 설명](https://dev.mysql.com/doc/refman/8.0/en/subquery-errors.html).

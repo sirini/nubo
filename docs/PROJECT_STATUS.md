@@ -6,13 +6,12 @@
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
 
-- Sensta iOS 심사 대응(2026-09-12): Apple Guideline 2.1 추가 정보의 설명은 Review Notes에 저장했고
-  제품 소유자가 빌드 `1.0 (2)`로 실제 영상을 촬영했으나 계정 삭제가 실패했다. 운영 로그와 읽기 전용
-  EXPLAIN, 로컬 MySQL 8.0.46에서 댓글 삭제 SQL의 오류 1093을 재현했다. GOAPI `ed55c9b`로 수정했고
-  빈 계정·콘텐츠 계정·실패 rollback 통합 검사와 Go 전체 test·vet, 공식 Ubuntu 22.04·24.04 및
-  qemu64/max runtime 검증을 통과했다. 교체 파일·해시는 `docs/ACCOUNT_DELETION_MYSQL.md`에 기록했다.
-  운영 교체·재시작 및 실기기 삭제 재확인이 남았다. iOS 바이너리·API·DB schema 변경은 없으며
-  빌드 2를 유지한다. 영상 검토·Apple 회신·재제출은 대기 중이고 자동 출시 설정도 유지한다.
+- Sensta iOS 심사 대응(2026-09-12): Apple Guideline 2.1 설명은 Review Notes에 저장했다. 첫 촬영의
+  계정 삭제 실패는 MySQL 오류 1093으로, GOAPI `ed55c9b`에서 수정하고 실제 MySQL 회귀·전체 test·vet와
+  공식 Ubuntu runtime 검증을 통과했다. 운영 파일 해시가 수정판과 일치하며 23:11:12 KST 삭제 요청과
+  새 영상 13:46의 삭제 완료 화면을 대조했다. 근거는 `docs/ACCOUNT_DELETION_MYSQL.md`에 기록했다.
+  새 14:57.5 영상의 필수 흐름을 확인했고 제출용 용량·개인정보 검토와 Apple 회신·재제출이 남았다.
+  iOS 바이너리·API·DB schema 변경 없이 빌드 2와 자동 출시 설정을 유지한다.
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
