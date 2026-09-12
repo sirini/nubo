@@ -6,13 +6,13 @@
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
 
-- Sensta iOS 심사 대응(2026-09-12): Apple은 Guideline 2.1에 따라 제한된 심사 이력의 개발자에게
-  실제 iPhone 최신 OS 시연 영상과 앱 목적·기능 접근·외부 서비스·지역 차이·콘텐츠 권리 정보를 요청했다.
-  구체적 버그는 지적하지 않았다. 빌드 `1.0 (2)`를 유지하며 App Store Connect Review Notes에 설명을
-  보강·저장했다. 기존 심사 계정과 승인 후 자동 출시는 유지하고 회신·영상 첨부·재제출은 아직 하지 않았다.
-  제품 소유자가 영상을 직접 촬영하기로 했고 iOS `docs/APP_REVIEW_RESPONSE_2026-09-12.md`에
-  촬영 순서와 영문 초안을 준비했다. 가입·로그인·삭제·신고·차단 영상과 기기/OS/빌드 확인 뒤 마무리한다.
-  GOAPI·Android·운영 서버 변경은 없다.
+- Sensta iOS 심사 대응(2026-09-12): Apple Guideline 2.1 추가 정보의 설명은 Review Notes에 저장했고
+  제품 소유자가 빌드 `1.0 (2)`로 실제 영상을 촬영했으나 계정 삭제가 실패했다. 운영 로그와 읽기 전용
+  EXPLAIN, 로컬 MySQL 8.0.46에서 댓글 삭제 SQL의 오류 1093을 재현했다. GOAPI `ed55c9b`로 수정했고
+  빈 계정·콘텐츠 계정·실패 rollback 통합 검사와 Go 전체 test·vet, 공식 Ubuntu 22.04·24.04 및
+  qemu64/max runtime 검증을 통과했다. 교체 파일·해시는 `docs/ACCOUNT_DELETION_MYSQL.md`에 기록했다.
+  운영 교체·재시작 및 실기기 삭제 재확인이 남았다. iOS 바이너리·API·DB schema 변경은 없으며
+  빌드 2를 유지한다. 영상 검토·Apple 회신·재제출은 대기 중이고 자동 출시 설정도 유지한다.
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,
