@@ -2,7 +2,7 @@
   <!-- eslint-disable vue/no-v-html -- 게시글 HTML은 useSanitize()로 정제합니다. -->
   <div
     ref="contentElement"
-    class="nubo advance-blog-prose text-[1.08rem] leading-[1.95] sm:text-[1.16rem]"
+    class="nubo advance-blog-prose text-[1.08rem] leading-8 sm:text-[1.16rem]"
     @click="handleContentClick"
     v-html="sanitizedContent"
   ></div>
@@ -74,9 +74,6 @@ watch(() => props.content, renderCodeBlocks, { flush: "post" })
 </script>
 
 <style scoped>
-.advance-blog-prose :deep(p) {
-  margin-block: 1.4em;
-}
 .advance-blog-prose :deep(h1),
 .advance-blog-prose :deep(h2),
 .advance-blog-prose :deep(h3) {
@@ -97,7 +94,6 @@ watch(() => props.content, renderCodeBlocks, { flush: "post" })
   font-size: 1.35rem;
 }
 .advance-blog-prose :deep(blockquote) {
-  margin-block: 2em;
   border-left: 3px solid color-mix(in oklab, var(--primary) 72%, var(--border));
   padding-left: 1.35rem;
   color: hsl(var(--muted-foreground));

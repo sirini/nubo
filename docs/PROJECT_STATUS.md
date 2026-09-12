@@ -190,6 +190,11 @@
 
 ## Recent completion
 
+- 고급 블로그 본문 간격(2026-09-12): `nubo-advance-blog`의 문단별 `1.4em` 여백을 제거하고
+  기본 블로그와 같은 `leading-8`(32px), 공통 인용문 상하 여백(16px)을 사용한다. 고급 스킨의 글자
+  크기와 나머지 디자인은 유지한다. 전체 111개 테스트, lint(기존 경고 50개·오류 0), typecheck와
+  production build를 통과했다. GOAPI 본문 HTML 계약 변경은 없으며 제품 소유자의 최종 표시 확인이 남았다.
+
 - NUBO [v1.3.2](https://github.com/sirini/nubo/releases/tag/v1.3.2)를 2026-09-12 KST에 Latest로 게시했다.
   NUBO `6cbd3ec`·GOAPI `367e8fb`를 고정하고 업적·OAuth·메시지 schema migration과 production 실행
   안내를 릴리스 노트에 포함했다. 웹 111개 테스트, lint(기존 경고 50개·오류 0), typecheck·build,
