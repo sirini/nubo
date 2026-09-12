@@ -10,8 +10,9 @@
   계정 삭제 실패는 MySQL 오류 1093으로, GOAPI `ed55c9b`에서 수정하고 실제 MySQL 회귀·전체 test·vet와
   공식 Ubuntu runtime 검증을 통과했다. 운영 파일 해시가 수정판과 일치하며 23:11:12 KST 삭제 요청과
   새 영상 13:46의 삭제 완료 화면을 대조했다. 근거는 `docs/ACCOUNT_DELETION_MYSQL.md`에 기록했다.
-  새 14:57.5 영상의 필수 흐름을 확인했고 제출용 용량·개인정보 검토와 Apple 회신·재제출이 남았다.
-  iOS 바이너리·API·DB schema 변경 없이 빌드 2와 자동 출시 설정을 유지한다.
+  새 영상의 필수 흐름을 확인하고 193 MB H.264 압축본을 준비했다. 23:30 KST 영상·영문 회신 전송과
+  Review Notes 갱신, 23:31 KST 재제출을 완료해 **심사 대기 중**을 확인했다. Apple 결과를 기다린다.
+  iOS 바이너리·API·DB schema 변경 없이 빌드 2와 승인 후 자동 출시 설정을 유지한다.
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
   프로필 반영까지 확인했다. Sensta 2.1.5(`versionCode 28`)의 Google Play 업데이트도 완료했으며,

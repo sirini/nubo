@@ -79,6 +79,6 @@ qemu64/max 실행 검증을 통과했다. migration과 환경 변수 변경은 �
 서버 수정이므로 SENSTA iOS 제출 빌드 `1.0 (2)`를 새로 만들 필요는 없다. 이메일로 새로 가입한 촬영용
 계정의 삭제 성공을 확인했다. 이 영상은 Apple 연결 계정의 승인 폐기나 삭제 후 재실행을 검증한 자료는
 아니다. 상세 검토·타임스탬프는 sibling iOS의 `docs/APP_REVIEW_RESPONSE_2026-09-12.md`에 기록했고,
-제출용 영상 준비와 Apple 회신·재제출은 남았다.
+23:30 KST 영상·회신 전송 및 23:31 KST 재제출 후 **심사 대기 중**을 확인했다.
 
 참고: [MySQL의 서브쿼리 오류 1093 설명](https://dev.mysql.com/doc/refman/8.0/en/subquery-errors.html).
