@@ -6,12 +6,19 @@
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
 
-- Sensta iOS 심사 대응(2026-09-12): Apple Guideline 2.1 설명은 Review Notes에 저장했다. 첫 촬영의
+- Sensta iOS 심사 대응(2026-09-13): Guideline 2.3.6 Accurate Metadata는 앱 내 제어 기능 오기였다.
+  App Store Connect에서 ‘유해 콘텐츠 차단(Parental Controls)’만 예→아니요로 수정했다. ‘나이 확인’은
+  이미 아니요였으며 두 값의 저장 결과를 설문 재진입으로 확인했다. 일반 신고·사용자 차단은 보호자가
+  자녀 사용을 관리하는 기능에 해당하지 않는다. 대한민국 15+와 기존 빌드 `1.0 (2)`·승인 후 자동 출시를
+  유지하고 23:51 KST 심사 업데이트·재제출을 완료해 **심사 대기 중**을 확인했다. 별도 회신은 보내지
+  않았고 새 바이너리·서버 변경은 없다. 다음 작업은 Apple 심사 결과 확인이다.
+
+- Sensta iOS 이전 심사 대응(2026-09-12): Apple Guideline 2.1 설명은 Review Notes에 저장했다. 첫 촬영의
   계정 삭제 실패는 MySQL 오류 1093으로, GOAPI `ed55c9b`에서 수정하고 실제 MySQL 회귀·전체 test·vet와
   공식 Ubuntu runtime 검증을 통과했다. 운영 파일 해시가 수정판과 일치하며 23:11:12 KST 삭제 요청과
   새 영상 13:46의 삭제 완료 화면을 대조했다. 근거는 `docs/ACCOUNT_DELETION_MYSQL.md`에 기록했다.
   새 영상의 필수 흐름을 확인하고 193 MB H.264 압축본을 준비했다. 23:30 KST 영상·영문 회신 전송과
-  Review Notes 갱신, 23:31 KST 재제출을 완료해 **심사 대기 중**을 확인했다. Apple 결과를 기다린다.
+  Review Notes 갱신, 23:31 KST 재제출을 완료했다. 이후 심사 결과와 최신 상태는 위 9월 13일 기록을 따른다.
   iOS 바이너리·API·DB schema 변경 없이 빌드 2와 승인 후 자동 출시 설정을 유지한다.
 
 - 영구 업적 기반은 세 저장소 `main`에 반영했고 운영에서 관리자 수동 수여와 Sensta Android의 1회 축하·
