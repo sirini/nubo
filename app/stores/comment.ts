@@ -2,7 +2,7 @@ import { toast } from "vue-sonner"
 import type { BoardViewResult } from "~/types/board"
 import {
   COMMENT_RESULT,
-  type CommentLikeParam,
+  type CommentReactionParam,
   type CommentModifyParam,
   type CommentRemoveParam,
   type CommentReplyParam,
@@ -10,10 +10,10 @@ import {
   type CommentWriteParam,
 } from "~/types/comment"
 import type { UserMyResult } from "~/types/user"
-import { likeCountAfterTransition } from "~/utils/like"
+import { normalizeReactionState } from "~/types/reaction"
 
 export const useCommentStore = defineStore("comment", () => {
-  const { loadInitCommentList, write, reply, remove, modify, like } = useComment()
+  const { loadInitCommentList, write, reply, remove, modify, reaction } = useComment()
   const { notifyAchievementCheck } = useAchievementInbox()
   const comments = ref<CommentResult[]>([])
   const isLoading = ref<boolean>(false)
@@ -50,7 +50,7 @@ export const useCommentStore = defineStore("comment", () => {
         toast(`❌ 댓글 목록을 가져오지 못했습니다: ${response?.error}`)
         return
       }
-      comments.value = response.result.comments
+      comments.value = response.result.comments.map((comment) => ({ ...comment, reactions: normalizeReactionState(comment.reactions) }))
       totalCommentCount.value = response.result.totalCommentCount
 
       comments.value.map((comment) => {
@@ -63,26 +63,27 @@ export const useCommentStore = defineStore("comment", () => {
     }
   }
 
-  // 댓글에 좋아요 남기기
-  const likeComment = async (param: CommentLikeParam) => {
+  // 댓글에 다중 리액션 남기기
+  const setCommentReaction = async (param: CommentReactionParam) => {
     const current = comments.value.find((comment) => comment.uid === param.commentUid)
-    if (!current || current.liked === param.liked || pendingLikes.has(param.commentUid)) return
+    if (!current || current.reactions.myReaction === param.reaction || pendingLikes.has(param.commentUid)) return
 
     try {
       pendingLikes.add(param.commentUid)
-      const response = await like(param)
+      const response = await reaction(param)
       if (!response.success) {
-        toast(`❌ 댓글에 좋아요를 남기지 못했습니다: ${response.error}`)
+        toast(`❌ 댓글에 리액션을 남기지 못했습니다: ${response.error}`)
         return
       }
 
       const latest = comments.value.find((comment) => comment.uid === param.commentUid)
-      if (latest && latest.liked !== param.liked) {
-        latest.like = likeCountAfterTransition(latest.like, latest.liked, param.liked)
-        latest.liked = param.liked
+      if (latest) {
+        latest.reactions = normalizeReactionState(response.result)
+        latest.liked = latest.reactions.myReaction === "like"
+        latest.like = latest.reactions.reactions.like
       }
     } catch (e) {
-      toast(`❌ 댓글에 좋아요를 남기지 못했습니다: ${e}`)
+      toast(`❌ 댓글에 리액션을 남기지 못했습니다: ${e}`)
     } finally {
       pendingLikes.delete(param.commentUid)
     }
@@ -216,7 +217,7 @@ export const useCommentStore = defineStore("comment", () => {
     totalCommentCount,
 
     getInitComments,
-    likeComment,
+    setCommentReaction,
     modifyComment,
     removeComment,
     replyComment,

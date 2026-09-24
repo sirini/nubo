@@ -9,6 +9,9 @@ export default defineConfig({
           name: "unit",
           include: ["test/unit/**/*.test.ts"],
           environment: "node",
+          alias: {
+            "~": new URL("./app/", import.meta.url).pathname,
+          },
         },
       },
       await defineVitestProject({
@@ -16,6 +19,15 @@ export default defineConfig({
           name: "nuxt",
           include: ["test/nuxt/**/*.nuxt.test.ts"],
           environment: "nuxt",
+          environmentOptions: {
+            nuxt: {
+              overrides: {
+                runtimeConfig: {
+                  public: { version: "1.3.2" },
+                },
+              },
+            },
+          },
         },
       }),
     ],

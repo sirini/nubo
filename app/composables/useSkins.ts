@@ -68,6 +68,7 @@ const entryByType: Record<AdminSkinType, string[]> = {
 
 export const useSkins = () => {
   const config = useRuntimeConfig()
+  const currentVersion = String(config?.public?.version || "9.9.9")
   const settings = useState<Record<AdminSkinType, string>>("skin-settings", () => ({ ...defaults }))
   const loaded = useState("skin-settings-loaded", () => false)
 
@@ -87,7 +88,7 @@ export const useSkins = () => {
     const manifest = parsed.data
     const issues: string[] = []
     if (manifest.key !== directoryKey) issues.push(`key(${manifest.key})와 폴더명(${directoryKey})이 다릅니다`)
-    if (!versionAtLeast(String(config.public.version), manifest.min_nubo_version)) issues.push(`NUBO ${manifest.min_nubo_version} 이상이 필요합니다`)
+    if (!versionAtLeast(currentVersion, manifest.min_nubo_version)) issues.push(`NUBO ${manifest.min_nubo_version} 이상이 필요합니다`)
     const skins = (Object.keys(entryByType) as AdminSkinType[])
       .filter((type) => entryByType[type].some((entry) => Object.keys(components).some((componentPath) => componentPath.endsWith(`/skins/${directoryKey}/${entry}`))))
       .map((type) => ({ ...manifest, key: directoryKey, type }))

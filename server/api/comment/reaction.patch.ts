@@ -1,0 +1,4 @@
+export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig()
+  return safeProxyRequest(event, `${config.apiBaseInternal}/comment/reaction`)
+})

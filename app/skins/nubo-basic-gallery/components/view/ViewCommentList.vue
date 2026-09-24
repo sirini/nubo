@@ -74,25 +74,7 @@
               </Button>
             </CommonVTooltip>
 
-            <CommonVTooltip
-              :content="
-                co.liked ? '이 댓글에 남긴 좋아요를 취소합니다' : '이 댓글에 좋아요를 남깁니다'
-              "
-            >
-              <Button
-                variant="outline"
-                size="sm"
-                class="text-muted-foreground hover:text-foreground cursor-pointer"
-                :disabled="!isLoggedIn"
-                @click="likeComment(co.uid, !co.liked)"
-              >
-                <HeartIcon
-                  class="mr-1.5 h-3 w-3"
-                  :class="co.liked ? 'fill-current text-primary' : co.like ? 'text-primary' : ''"
-                />
-                <span class="text-xs">{{ co.like > 0 ? co.like : "좋아요" }}</span>
-              </Button>
-            </CommonVTooltip>
+            <ReactionPicker :state="co.reactions" :disabled="!isLoggedIn" @select="setCommentReaction(co.uid, $event)" />
           </div>
         </div>
       </div>
@@ -131,7 +113,7 @@ const {
   isConfirmRemoveCommentDialog,
   isLoggedIn,
   checkPermissionComment,
-  likeComment,
+  setCommentReaction,
   confirmRemoveComment,
   removeComment,
   setModifyComment,

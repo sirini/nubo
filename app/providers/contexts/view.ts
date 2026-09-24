@@ -1,5 +1,6 @@
 import type { BoardConfig, BoardItem, BoardViewResult, TableOfContent } from "~/types/board"
 import type { CommentResult } from "~/types/comment"
+import type { Reaction } from "~/types/reaction"
 
 // [게시판 글보기] 화면에서 필요한 변수 & 함수들 정의
 export interface NuboViewContext {
@@ -21,6 +22,7 @@ export interface NuboViewContext {
   commentTarget: ComputedRef<{ reply: number; remove: number; modify: number }>
   checkPermissionComment: (writerUid: number) => boolean
   likeComment: (commentUid: number, liked: boolean) => Promise<void>
+  setCommentReaction: (commentUid: number, reaction: Reaction | null) => Promise<void>
   confirmRemoveComment: (commentUid: number) => void
   confirmRemovePost: (postUid: number) => void
   openMovePostDialog: () => Promise<void>
@@ -34,6 +36,7 @@ export interface NuboViewContext {
   downloadFile: (fileUid: number) => Promise<void>
   originalImageUrl: (fileUid: number) => Promise<string>
   likePost: (isLiked: boolean) => Promise<void>
+  setPostReaction: (reaction: Reaction | null) => Promise<void>
   makeTableOfContents: () => TableOfContent[]
   updateReadingProgress: (element: string) => void
   clearReadingProgress: () => void

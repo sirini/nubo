@@ -1,4 +1,6 @@
 import { STATUS } from "./board"
+import { REACTION_STATE } from "~/types/reaction"
+import type { Reaction, ReactionState } from "~/types/reaction"
 import type { UserBasicInfo } from "./user"
 
 // 댓글 목록 가져오기용 파라미터 정의
@@ -36,6 +38,12 @@ export type CommentReplyParam = CommentWriteParam & {
 }
 
 // 댓글에 좋아요 남기기 시 필요한 파라미터 정의
+export type CommentReactionParam = {
+  boardUid: number
+  commentUid: number
+  reaction: Reaction | null
+}
+
 export type CommentLikeParam = {
   boardUid: number
   commentUid: number
@@ -50,6 +58,7 @@ export type CommentResult = {
   content: string
   like: number
   liked: boolean
+  reactions: ReactionState
   submitted: number
   modified: number
   status: number
@@ -64,6 +73,7 @@ export const COMMENT_RESULT: CommentResult = {
   content: "",
   like: 0,
   liked: false,
+  reactions: REACTION_STATE,
   submitted: Date.now(),
   modified: 0,
   status: STATUS.NORMAL,

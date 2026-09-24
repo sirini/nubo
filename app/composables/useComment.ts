@@ -1,5 +1,6 @@
 import type {
   CommentLikeParam,
+  CommentReactionParam,
   CommentListParam,
   CommentListResult,
   CommentModifyParam,
@@ -8,6 +9,7 @@ import type {
   CommentWriteParam,
 } from "~/types/comment"
 import type { Resp } from "~/types/common"
+import type { ReactionState } from "~/types/reaction"
 
 export const useComment = () => {
   const config = useRuntimeConfig()
@@ -25,6 +27,15 @@ export const useComment = () => {
   // 댓글에 좋아요 남기기
   const like = async (param: CommentLikeParam) => {
     return await $fetch<Resp<null>>("/comment/like", {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+      body: param,
+    })
+  }
+
+  // 댓글에 다중 리액션 남기기
+  const reaction = async (param: CommentReactionParam) => {
+    return await $fetch<Resp<ReactionState>>("/comment/reaction", {
       baseURL: config.public.apiBase,
       method: "PATCH",
       body: param,
@@ -70,6 +81,7 @@ export const useComment = () => {
   return {
     loadInitCommentList,
     like,
+    reaction,
     modify,
     remove,
     reply,

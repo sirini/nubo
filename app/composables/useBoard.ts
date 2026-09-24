@@ -6,6 +6,7 @@ import type {
   BoardStudioParam,
   BoardStudioResult,
   BoardViewDownloadResult,
+  BoardReactionParam,
   BoardViewLikeParam,
   BoardMovePostParam,
   BoardViewParam,
@@ -14,6 +15,7 @@ import type {
   RemovePostParam,
 } from "~/types/board"
 import type { Resp } from "~/types/common"
+import type { ReactionState } from "~/types/reaction"
 import type { TradeListResult, TradeViewResult } from "~/types/trade"
 
 export const useBoard = () => {
@@ -95,6 +97,15 @@ export const useBoard = () => {
     })
   }
 
+  // 게시글에 다중 리액션 남기기
+  const reaction = async (param: BoardReactionParam) => {
+    return await $fetch<Resp<ReactionState>>("/board/reaction", {
+      baseURL: config.public.apiBase,
+      method: "PATCH",
+      body: param,
+    })
+  }
+
   // 게시글 삭제하기
   const removePost = async (param: RemovePostParam) => {
     return await $fetch<Resp<null>>("/board/remove/post", {
@@ -135,6 +146,7 @@ export const useBoard = () => {
     loadInitUserLatestContent,
     loadMyStudio,
     like,
+    reaction,
     loadMoveTargets,
     movePost,
     removePost,

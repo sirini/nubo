@@ -1,5 +1,7 @@
-import type { UserBasicInfo } from "~/types/user"
 import type { Pair } from "./common"
+import { REACTION_STATE } from "~/types/reaction"
+import type { Reaction, ReactionState } from "~/types/reaction"
+import type { UserBasicInfo } from "~/types/user"
 
 // 게시글 작성/수정 실패 리턴값 정의
 export const WRITE_RESULT_FAIL = -1
@@ -172,6 +174,7 @@ export type BoardCommonListItem = {
   comment: number
   like: number
   liked: boolean
+  reactions: ReactionState
   writer: BoardWriter
 }
 
@@ -205,6 +208,7 @@ export const BOARD_LIST_ITEM: BoardListItem = {
   comment: 0,
   like: 0,
   liked: false,
+  reactions: REACTION_STATE,
   writer: BOARD_WRITER,
 }
 
@@ -336,6 +340,12 @@ export const BOARD_VIEW_RESULT: BoardViewResult = {
 }
 
 // 게시글에 좋아요 남기기 시 필요한 파라미터 정의
+export type BoardReactionParam = {
+  boardUid: number
+  postUid: number
+  reaction: Reaction | null
+}
+
 export type BoardViewLikeParam = {
   boardUid: number
   postUid: number

@@ -13,7 +13,8 @@ import {
 } from "~/types/board"
 import type { TradeListResult, TradeViewResult } from "~/types/trade"
 import { HomeSearchOptions } from "~/types/home"
-import { likeCountAfterTransition } from "~/utils/like"
+import type { Reaction } from "~/types/reaction"
+import { normalizeReactionState } from "~/types/reaction"
 
 export const useBoardStore = defineStore("board", () => {
   const config = useRuntimeConfig()
@@ -22,7 +23,7 @@ export const useBoardStore = defineStore("board", () => {
     loadInitBoardList,
     loadMoveTargets,
     movePost,
-    like,
+    reaction,
     download,
     originalImage,
     removePost,
@@ -72,7 +73,9 @@ export const useBoardStore = defineStore("board", () => {
       const result = response.result as TradeViewResult
       trade.current = result.trade
     }
-    view.value = response.result
+    const result = response.result as BoardViewResult
+    result.post.reactions = normalizeReactionState(result.post.reactions)
+    view.value = result
   }
 
   // 게시글 목록 가져오기
@@ -144,34 +147,28 @@ export const useBoardStore = defineStore("board", () => {
     return joinRuntimePath(config.public.apiBase, response.result.path)
   }
 
-  // 게시글에 좋아요 누르기
-  const likePost = async (isLiked: boolean) => {
-    const previouslyLiked = view.value.post.liked
-    if (isPostLikePending || previouslyLiked === isLiked) return
+  // 게시글에 다중 리액션 남기기
+  const setPostReaction = async (next: Reaction | null) => {
+    const current = view.value?.post.reactions
+    if (!current || isPostLikePending || current.myReaction === next) return
 
     try {
       isPostLikePending = true
-      const response = await like({
+      const response = await reaction({
         boardUid: view.value.config.uid,
         postUid: view.value.post.uid,
-        liked: isLiked,
+        reaction: next,
       })
 
       if (!response || !response.success) {
-        toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${response?.error}`)
+        toast(`❌ 리액션 상태를 변경하지 못했습니다: ${response?.error}`)
         return
       }
-      if (isLiked) {
-        toast(`✅ 이 게시글에 좋아요를 남겼습니다`)
-      }
-      view.value.post.like = likeCountAfterTransition(
-        view.value.post.like,
-        previouslyLiked,
-        isLiked,
-      )
-      view.value.post.liked = isLiked
+      view.value.post.reactions = normalizeReactionState(response.result)
+      view.value.post.liked = view.value.post.reactions.myReaction === "like"
+      view.value.post.like = view.value.post.reactions.reactions.like
     } catch (e) {
-      toast(`❌ 좋아요 상태를 변경하지 못했습니다: ${e}`)
+      toast(`❌ 리액션 상태를 변경하지 못했습니다: ${e}`)
     } finally {
       isPostLikePending = false
     }
@@ -348,7 +345,7 @@ export const useBoardStore = defineStore("board", () => {
     getInitList,
     downloadFile,
     originalImageUrl,
-    likePost,
+    setPostReaction,
     searchPost,
     setPagingUrl,
     makeTableOfContents,

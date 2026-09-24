@@ -1,5 +1,6 @@
 import { toast } from "vue-sonner"
 import type { NuboViewContext } from "./contexts/view"
+import type { Reaction } from "~/types/reaction"
 
 export const useViewProvider = (): NuboViewContext => {
   const route = useRoute()
@@ -53,11 +54,17 @@ export const useViewProvider = (): NuboViewContext => {
       return false
     },
     likeComment: async (commentUid: number, liked: boolean) => {
-      await comment.likeComment({
+      await comment.setCommentReaction({
         boardUid: board.view.config.uid,
         commentUid,
-        liked,
-        userUid: auth.user.uid,
+        reaction: liked ? "like" : null,
+      })
+    },
+    setCommentReaction: async (commentUid: number, reaction: Reaction | null) => {
+      await comment.setCommentReaction({
+        boardUid: board.view.config.uid,
+        commentUid,
+        reaction,
       })
     },
     confirmRemoveComment: (commentUid: number) => {
@@ -144,7 +151,10 @@ export const useViewProvider = (): NuboViewContext => {
     },
     originalImageUrl: async (fileUid: number) => board.originalImageUrl(fileUid),
     likePost: async (isLiked: boolean) => {
-      await board.likePost(isLiked)
+      await board.setPostReaction(isLiked ? "like" : null)
+    },
+    setPostReaction: async (reaction: Reaction | null) => {
+      await board.setPostReaction(reaction)
     },
     makeTableOfContents: () => board.makeTableOfContents(),
     updateReadingProgress: (element: string) => board.updateReadingProgress(element),
