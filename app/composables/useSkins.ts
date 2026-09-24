@@ -68,7 +68,8 @@ const entryByType: Record<AdminSkinType, string[]> = {
 
 export const useSkins = () => {
   const config = useRuntimeConfig()
-  const currentVersion = String(config?.public?.version || "9.9.9")
+  // 버전 누락은 호환성 문제를 숆기지 않도록 최소 버전으로 취급해 issues로 드러낸다.
+  const currentVersion = String(config?.public?.version || "0.0.0")
   const settings = useState<Record<AdminSkinType, string>>("skin-settings", () => ({ ...defaults }))
   const loaded = useState("skin-settings-loaded", () => false)
 

@@ -1,6 +1,6 @@
 <template>
   <div class="relative inline-flex items-center">
-    <ReactionPicker :state="view.post.reactions" :disabled="!isLoggedIn" @select="setPostReaction" />
+    <ReactionPicker :state="{ reactions: view.post.reactions, myReaction: view.post.myReaction }" :disabled="!isLoggedIn" @select="setPostReaction" />
   </div>
 </template>
 

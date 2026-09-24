@@ -104,12 +104,12 @@ Nitro `/api` proxy가 없거나 NUBO 자체 route가 대신하는 경로다. 중
 | OAuth·네이티브 인증 | Public · Direct | `GET /auth/{google,naver,kakao}/{request,callback}`; `POST /auth/android/{google,refresh}` |
 | 네이티브 푸시 | JWT · Direct | `POST /push/device`; `DELETE /push/device` (Android `token` 필드에는 FCM 설치 ID(FID) 전달) |
 | 게시판 공개 | Public | `GET /board/{list,view,user/latest,transfer,original,original/transfer}` |
-| 게시판 보호 | JWT | `GET /board/{download,move/list,my/studio}`; `PATCH /board/like`; `POST /board/move/apply`; `DELETE /board/remove/post` |
+| 게시판 보호 | JWT | `GET /board/{download,move/list,my/studio}`; `PATCH /board/{like,reaction}`; `POST /board/move/apply`; `DELETE /board/remove/post` |
 | 최근 태그 | Public · Direct | `GET /board/tag/recent` |
 | RSS | Public · Direct | `GET /rss/:id` |
 | 쪽지 | JWT | `GET /chat/{list,history}`; `POST /chat/save`; `PATCH /chat/read` |
 | 댓글 공개 | Public | `GET /comment/list` |
-| 댓글 보호 | JWT | `PATCH /comment/{like,modify}`; `DELETE /comment/remove`; `POST /comment/{reply,write}` |
+| 댓글 보호 | JWT | `PATCH /comment/{like,reaction,modify}`; `DELETE /comment/remove`; `POST /comment/{reply,write}` |
 | 에디터 공개 | Public | `GET /editor/config` |
 | 에디터 보호 | JWT | `GET /editor/{load/thumbnail,load/images,load/post,suggestion/title,suggestion/tag}`; `PATCH /editor/modify`; `DELETE /editor/{remove/attached,remove/image}`; `POST /editor/{upload/images,write}` |
 | 홈 공개 | Public | `GET /home/{visit,latest,latest/:id,sidebar/links}` |
@@ -198,6 +198,38 @@ type UserBadge = {
   `{ userUid, badgeKey }`이며 result는 새로 수여했으면 `true`, 이미 보유했으면 `false`다.
 - 내장 자동 업적 정의는 관리자 UI에서 수정할 수 없고 현재 v1에는 수여 취소 endpoint가 없다. 기존
   획득·소급분은 migration에서 확인 완료로 표시해 기능 배포 직후 과거 축하 알림이 몰리지 않게 한다.
+
+## 게시글·댓글 다중 리액션
+
+게시글과 댓글에는 좋아요(like), 최고(best), 아차(facepalm), 글쎄요(hmm) 네 종류의 리액션을 남길 수 있다.
+사용자 한 명은 대상 하나에 활성 리액션을 최대 하나 남긴다. 같은 종류를 다시 누르면 무변경, 다른 종류를
+누르면 교체, 명시적 `null`을 보내면 취소한다. DB 원본은 `post_like`·`comment_like`의 `reaction_type`
+(0 없음, 1 like, 2 best, 3 facepalm, 4 hmm)이고 `liked`는 좋아요 전용 투영값으로 동기화된다.
+
+- 공개 읽기(게시글 목록·공지·상세·홈 최신/검색, 댓글 목록, `GET /board/my/studio` 작품 행)의 대상 객체는
+  종류별 집계와 현재 사용자의 선택을 함께 반환한다. 네 값은 0이어도 항상 존재하고, 비로그인의
+  `myReaction`은 `null`이다. 기존 `like`는 `reactions.like`, `liked`는 `myReaction === "like"`와 같다.
+
+  ```json
+  { "like": 3, "liked": false, "reactions": { "like": 3, "best": 2, "facepalm": 0, "hmm": 1 }, "myReaction": "best" }
+  ```
+
+- 새 JWT 쓰기: `PATCH /board/reaction` 본문 `{ "boardUid": 1, "postUid": 2, "reaction": "best" }`,
+  `PATCH /comment/reaction` 본문 `{ "boardUid": 1, "commentUid": 3, "reaction": null }`.
+  `reaction`은 위 네 문자열이나 명시적 `null`만 허용하고, 누락된 uid·0/비정상 uid·미지의 종류·빈 문자열은
+  거부한다. `userUid`는 본문을 믿지 않고 JWT에서만 얻는다. 성공 `result`는 해당 대상의 최신
+  `{ "reactions": {...}, "myReaction": "best" }`이다. 같은 상태 재설정은 성공하지만 DB 상태·timestamp·
+  알림은 바뀌지 않는다.
+- 기존 `PATCH /board/like`, `PATCH /comment/like`의 요청 `{liked:boolean}` 형식은 유지된다. `liked:true`는
+  `reaction=like` 설정, `liked:false`는 현재 종류가 like일 때만 취소하고 다른 종류는 건드리지 않는다.
+  iOS/Android의 기존 좋아요 요청·읽기 필드는 그대로 동작한다.
+- 쓰기 권한: 게시판 소속 확인 외에 삭제된 글·댓글, 작성자 차단 관계, 열람 권한이 없는 비밀글(부모 게시글
+  포함)은 거부한다. 실패한 SQL을 성공으로 반환하지 않는다.
+- 좋아요 알림/푸시는 실제 like로 상태가 바뀐 경우(새 행 또는 기존 종류 변경)에만 기존 유형과 문구로
+  보낸다. 반복 요청과 취소는 알림을 만들지 않는다.
+- 스키마 이행: `goapi install`은 기존 두 좋아요 테이블에 PK(uid)·`reaction_type`·고유 키를 추가하고
+  중복 행(최신 timestamp, 동률은 큰 uid 한 행)을 정리한 뒤 `liked = (reaction_type = 1)` 불변식을
+  백필한다. 재실행 가능하다. 스튜디오의 누적 `likeCount`와 `likes` 정렬은 좋아요 전용 통계를 유지한다.
 
 ## 요청·응답 타입의 현재 source of truth
 

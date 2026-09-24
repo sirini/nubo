@@ -24,6 +24,7 @@
               {{ notice.comment }}
             </span>
           </NuxtLink>
+          <ReactionSummary :state="{ reactions: notice.reactions, myReaction: notice.myReaction }" class="shrink-0" />
         </div>
 
         <div class="flex items-center gap-2 text-xs text-muted-foreground md:hidden">

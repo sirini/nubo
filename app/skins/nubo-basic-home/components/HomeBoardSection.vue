@@ -32,6 +32,7 @@
             <span v-if="post.comment > 0" class="shrink-0 text-xs font-semibold text-primary">
               {{ post.comment }}
             </span>
+            <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" class="shrink-0 text-xs" />
           </div>
           <div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground md:hidden">
             <span>{{ recoverChars(post.writer.name) }}</span>

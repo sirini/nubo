@@ -52,6 +52,7 @@
             <span class="inline-flex items-center gap-1">
               <MessageCircleIcon class="size-3.5" /> {{ num(post.comment) }}
             </span>
+            <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" />
             <span class="inline-flex items-center gap-1">
               <EyeIcon class="size-3.5" /> {{ num(post.hit) }}
             </span>

@@ -21,15 +21,25 @@ export const REACTION_META: Record<Reaction, { icon: string; label: string }> = 
   hmm: { icon: "🤔", label: "글쎄요" },
 }
 
-export const normalizeReactionState = (state: Partial<ReactionState> | null | undefined): ReactionState => ({
-  reactions: {
-    like: Math.max(0, Number(state?.reactions?.like) || 0),
-    best: Math.max(0, Number(state?.reactions?.best) || 0),
-    facepalm: Math.max(0, Number(state?.reactions?.facepalm) || 0),
-    hmm: Math.max(0, Number(state?.reactions?.hmm) || 0),
-  },
-  myReaction: state?.myReaction && REACTIONS.includes(state.myReaction) ? state.myReaction : null,
-})
+// 구 GOAPI 응답(reactions 필드 없음)에서도 기존 like/liked를 이전해 표시가 0/null로 깨지지 않게 한다.
+export const normalizeReactionState = (
+  state: (Partial<ReactionState> & { like?: number; liked?: boolean }) | null | undefined,
+): ReactionState => {
+  const counts = state?.reactions
+  const legacy = !counts
+  let myReaction: Reaction | null =
+    state?.myReaction && REACTIONS.includes(state.myReaction) ? state.myReaction : null
+  if (legacy && myReaction === null && state?.liked === true) myReaction = "like"
+  return {
+    reactions: {
+      like: Math.max(0, Number(legacy ? state?.like : counts?.like) || 0),
+      best: Math.max(0, Number(counts?.best) || 0),
+      facepalm: Math.max(0, Number(counts?.facepalm) || 0),
+      hmm: Math.max(0, Number(counts?.hmm) || 0),
+    },
+    myReaction,
+  }
+}
 
 export const reactionAfterTransition = (
   state: ReactionState,

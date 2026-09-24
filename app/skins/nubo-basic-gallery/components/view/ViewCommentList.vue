@@ -74,7 +74,7 @@
               </Button>
             </CommonVTooltip>
 
-            <ReactionPicker :state="co.reactions" :disabled="!isLoggedIn" @select="setCommentReaction(co.uid, $event)" />
+            <ReactionPicker :state="{ reactions: co.reactions, myReaction: co.myReaction }" :disabled="!isLoggedIn" @select="setCommentReaction(co.uid, $event)" />
           </div>
         </div>
       </div>
@@ -102,7 +102,6 @@ import {
   CornerDownRightIcon,
   EllipsisVerticalIcon,
   EraserIcon,
-  HeartIcon,
   MessageSquareIcon,
   ShredderIcon,
 } from "lucide-vue-next"

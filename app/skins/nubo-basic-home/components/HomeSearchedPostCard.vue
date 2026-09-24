@@ -54,6 +54,7 @@
             {{ post.like }}
             <MessageCircleIcon class="w-3 h-3 ml-4 mr-2" />
             {{ num(post.comment) }}
+            <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" class="ml-4" />
             <EyeIcon class="w-3 h-3 ml-4 mr-2" />
             {{ num(post.hit) }}
             <span class="flex-1"></span>

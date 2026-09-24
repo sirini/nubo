@@ -50,7 +50,7 @@ export const useCommentStore = defineStore("comment", () => {
         toast(`❌ 댓글 목록을 가져오지 못했습니다: ${response?.error}`)
         return
       }
-      comments.value = response.result.comments.map((comment) => ({ ...comment, reactions: normalizeReactionState(comment.reactions) }))
+      comments.value = response.result.comments.map((comment) => ({ ...comment, ...normalizeReactionState(comment) }))
       totalCommentCount.value = response.result.totalCommentCount
 
       comments.value.map((comment) => {
@@ -66,7 +66,7 @@ export const useCommentStore = defineStore("comment", () => {
   // 댓글에 다중 리액션 남기기
   const setCommentReaction = async (param: CommentReactionParam) => {
     const current = comments.value.find((comment) => comment.uid === param.commentUid)
-    if (!current || current.reactions.myReaction === param.reaction || pendingLikes.has(param.commentUid)) return
+    if (!current || current.myReaction === param.reaction || pendingLikes.has(param.commentUid)) return
 
     try {
       pendingLikes.add(param.commentUid)
@@ -78,9 +78,11 @@ export const useCommentStore = defineStore("comment", () => {
 
       const latest = comments.value.find((comment) => comment.uid === param.commentUid)
       if (latest) {
-        latest.reactions = normalizeReactionState(response.result)
-        latest.liked = latest.reactions.myReaction === "like"
-        latest.like = latest.reactions.reactions.like
+        const state = normalizeReactionState(response.result)
+        latest.reactions = state.reactions
+        latest.myReaction = state.myReaction
+        latest.liked = state.myReaction === "like"
+        latest.like = state.reactions.like
       }
     } catch (e) {
       toast(`❌ 댓글에 리액션을 남기지 못했습니다: ${e}`)

@@ -90,6 +90,7 @@
           >
             <MessageCircleIcon class="size-4" /> 댓글 {{ num(post.comment) }}
           </NuxtLink>
+          <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" class="px-2 py-1.5" />
           <span class="inline-flex items-center gap-1.5 px-2 py-1.5">
             <EyeIcon class="size-4" /> {{ num(post.hit) }}
           </span>

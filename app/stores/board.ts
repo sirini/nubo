@@ -74,7 +74,7 @@ export const useBoardStore = defineStore("board", () => {
       trade.current = result.trade
     }
     const result = response.result as BoardViewResult
-    result.post.reactions = normalizeReactionState(result.post.reactions)
+    Object.assign(result.post, normalizeReactionState(result.post))
     view.value = result
   }
 
@@ -149,7 +149,7 @@ export const useBoardStore = defineStore("board", () => {
 
   // 게시글에 다중 리액션 남기기
   const setPostReaction = async (next: Reaction | null) => {
-    const current = view.value?.post.reactions
+    const current = view.value?.post
     if (!current || isPostLikePending || current.myReaction === next) return
 
     try {
@@ -164,9 +164,11 @@ export const useBoardStore = defineStore("board", () => {
         toast(`❌ 리액션 상태를 변경하지 못했습니다: ${response?.error}`)
         return
       }
-      view.value.post.reactions = normalizeReactionState(response.result)
-      view.value.post.liked = view.value.post.reactions.myReaction === "like"
-      view.value.post.like = view.value.post.reactions.reactions.like
+      const state = normalizeReactionState(response.result)
+      view.value.post.reactions = state.reactions
+      view.value.post.myReaction = state.myReaction
+      view.value.post.liked = state.myReaction === "like"
+      view.value.post.like = state.reactions.like
     } catch (e) {
       toast(`❌ 리액션 상태를 변경하지 못했습니다: ${e}`)
     } finally {

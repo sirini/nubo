@@ -1,6 +1,5 @@
 import { STATUS } from "./board"
-import { REACTION_STATE } from "~/types/reaction"
-import type { Reaction, ReactionState } from "~/types/reaction"
+import type { Reaction, ReactionCounts } from "~/types/reaction"
 import type { UserBasicInfo } from "./user"
 
 // 댓글 목록 가져오기용 파라미터 정의
@@ -52,13 +51,15 @@ export type CommentLikeParam = {
 }
 
 // 댓글(답글) 작성 후 화면에 반영할 때 필요한 타입 정의
+// 계약: reactions는 종류별 집계, myReaction은 현재 사용자의 종류(비로그인이면 null)다.
 export type CommentResult = {
   uid: number
   writer: UserBasicInfo
   content: string
   like: number
   liked: boolean
-  reactions: ReactionState
+  reactions: ReactionCounts
+  myReaction: Reaction | null
   submitted: number
   modified: number
   status: number
@@ -73,7 +74,8 @@ export const COMMENT_RESULT: CommentResult = {
   content: "",
   like: 0,
   liked: false,
-  reactions: REACTION_STATE,
+  reactions: { like: 0, best: 0, facepalm: 0, hmm: 0 },
+  myReaction: null,
   submitted: Date.now(),
   modified: 0,
   status: STATUS.NORMAL,

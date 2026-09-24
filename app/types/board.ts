@@ -1,6 +1,5 @@
 import type { Pair } from "./common"
-import { REACTION_STATE } from "~/types/reaction"
-import type { Reaction, ReactionState } from "~/types/reaction"
+import type { Reaction, ReactionCounts } from "~/types/reaction"
 import type { UserBasicInfo } from "~/types/user"
 
 // 게시글 작성/수정 실패 리턴값 정의
@@ -168,13 +167,15 @@ export type BoardCommonPostItem = {
 }
 
 // 게시글 목록보기에 추가로 필요한 리턴 타입 정의
+// 계약: reactions는 종류별 집계, myReaction은 현재 사용자의 종류(비로그인이면 null)다.
 export type BoardCommonListItem = {
   category: Pair
   cover: string
   comment: number
   like: number
   liked: boolean
-  reactions: ReactionState
+  reactions: ReactionCounts
+  myReaction: Reaction | null
   writer: BoardWriter
 }
 
@@ -208,7 +209,8 @@ export const BOARD_LIST_ITEM: BoardListItem = {
   comment: 0,
   like: 0,
   liked: false,
-  reactions: REACTION_STATE,
+  reactions: { like: 0, best: 0, facepalm: 0, hmm: 0 },
+  myReaction: null,
   writer: BOARD_WRITER,
 }
 
@@ -262,6 +264,8 @@ export type BoardStudioPostItem = {
   hit: number
   like: number
   comment: number
+  reactions: ReactionCounts
+  myReaction: Reaction | null
 }
 
 // JWT 사용자의 작품 스튜디오 반환값
