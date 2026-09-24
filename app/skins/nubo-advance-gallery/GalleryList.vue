@@ -56,8 +56,8 @@
                     <UserInlineBadges :badges="post.writer.badges" />
                   </p>
                 </div>
-                <span class="inline-flex shrink-0 items-center gap-1 text-xs text-white/80">
-                  <HeartIcon class="size-3.5" :class="post.liked ? 'fill-current' : ''" />{{ num(post.like) }}
+                <span class="inline-flex shrink-0 items-center text-xs text-white/80">
+                  <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" />
                 </span>
               </div>
             </div>
@@ -95,7 +95,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronLeftIcon, ChevronRightIcon, HeartIcon, ImageUpIcon, LockIcon, LogInIcon, SearchIcon, SettingsIcon } from "lucide-vue-next"
+import { ChevronLeftIcon, ChevronRightIcon, ImageUpIcon, LockIcon, LogInIcon, SearchIcon, SettingsIcon } from "lucide-vue-next"
 import { useNuboListContext } from "~/providers/contexts/list"
 import { SEARCH, STATUS } from "~/types/board"
 

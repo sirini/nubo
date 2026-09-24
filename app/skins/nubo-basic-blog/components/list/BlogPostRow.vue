@@ -18,8 +18,7 @@
       <div
         class="absolute bottom-3 right-3 flex items-center gap-2 px-4 py-2 rounded-full bg-background/60 backdrop-blur-md border border-white/20 shadow-sm text-foreground transition-transform duration-300 group-hover:scale-110"
       >
-        <HeartIcon class="w-4 h-4 text-red-400" :class="post.liked ? 'fill-current' : ''" />
-        <span class="text-sm font-bold">{{ num(post.like) }}</span>
+        <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" />
       </div>
 
       <Badge
@@ -84,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightIcon, CalendarIcon, ClockIcon, HeartIcon } from "lucide-vue-next"
+import { ArrowRightIcon, CalendarIcon, ClockIcon } from "lucide-vue-next"
 import { useNuboListContext } from "~/providers/contexts/list"
 
 // posts는 차단 사용자를 제외한 현재 페이지 글이며 config.id로 각 글의 링크를 만듭니다.

@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import { toast } from "vue-sonner"
 import { BOARD_CONFIG, SEARCH, type Search } from "~/types/board"
+import { normalizeReactionState } from "~/types/reaction"
 import {
   HomeSearchOptions,
   type NotificationItem,
@@ -39,8 +40,16 @@ export const useHomeStore = defineStore("home", () => {
   const sinceUid = ref<number>(0)
   const notifications = ref<NotificationItem[]>([])
 
+  // 내부 유틸: 진입 데이터의 리액션 요약을 정규화해 구 응답에서도 화면이 깨지지 않게 한다
+  const withReactionState = (incoming: HomePostItem[] = []) =>
+    incoming.map((item) => {
+      Object.assign(item, normalizeReactionState(item))
+      return item
+    })
+
   // 내부 유틸: 결과 병합
   const mergePosts = (incoming: HomePostItem[] = []) => {
+    incoming = withReactionState(incoming)
     if (sinceUid.value === 0) {
       posts.value = incoming
       return

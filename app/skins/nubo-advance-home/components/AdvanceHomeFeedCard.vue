@@ -4,16 +4,11 @@
   >
     <div class="flex min-w-0">
       <aside class="hidden w-12 shrink-0 justify-center bg-muted/45 py-3 sm:flex">
-        <button
-          type="button"
-          class="flex h-fit min-w-9 cursor-pointer flex-col items-center gap-0.5 rounded-lg px-1.5 py-1.5 text-xs font-semibold transition-colors hover:bg-background/75 hover:text-primary"
-          :class="post.liked ? 'text-primary' : 'text-muted-foreground'"
-          :aria-label="post.liked ? '좋아요 취소' : '좋아요'"
-          @click="$emit('toggle-like', post)"
-        >
-          <ArrowBigUpIcon class="size-5" :class="post.liked ? 'fill-current' : ''" />
-          {{ num(post.like) }}
-        </button>
+        <ReactionPicker
+          :state="{ reactions: post.reactions, myReaction: post.myReaction }"
+          :disabled="!isLoggedIn"
+          @select="setPostReaction(post, $event)"
+        />
       </aside>
 
       <div class="min-w-0 flex-1">
@@ -75,15 +70,6 @@
         </button>
 
         <footer class="flex flex-wrap items-center gap-1 px-3 py-2 text-xs text-muted-foreground sm:px-4">
-          <button
-            type="button"
-            class="inline-flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 font-semibold transition-colors hover:bg-accent hover:text-primary sm:hidden"
-            :class="post.liked ? 'text-primary' : ''"
-            @click="$emit('toggle-like', post)"
-          >
-            <ArrowBigUpIcon class="size-4" :class="post.liked ? 'fill-current' : ''" />
-            {{ num(post.like) }}
-          </button>
           <NuxtLink
             :to="postPath"
             class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 font-semibold transition-colors hover:bg-accent hover:text-foreground"
@@ -111,7 +97,6 @@
 
 <script setup lang="ts">
 import {
-  ArrowBigUpIcon,
   ArrowUpRightIcon,
   BookOpenIcon,
   EyeIcon,
@@ -123,6 +108,7 @@ import {
   ShoppingBagIcon,
 } from "lucide-vue-next"
 import type { Component } from "vue"
+import { useNuboHomeContext } from "~/providers/contexts/home"
 import { BOARD, STATUS } from "~/types/board"
 import type { HomePostItem } from "~/types/home"
 
@@ -131,8 +117,9 @@ const props = withDefaults(defineProps<{ post: HomePostItem; boardName: string; 
 })
 defineEmits<{
   "open-media": [post: HomePostItem]
-  "toggle-like": [post: HomePostItem]
 }>()
+
+const { isLoggedIn, setPostReaction } = useNuboHomeContext()
 
 const postPath = computed(() => `/board/${props.post.id}/${props.post.uid}`)
 const excerpt = computed(() =>

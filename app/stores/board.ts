@@ -106,10 +106,12 @@ export const useBoardStore = defineStore("board", () => {
     normalized.notices.map((notice) => {
       notice.title = recoverChars(notice.title)
       notice.writer.name = recoverChars(notice.writer.name)
+      Object.assign(notice, normalizeReactionState(notice))
     })
     normalized.posts.map((post) => {
       post.title = recoverChars(post.title)
       post.writer.name = recoverChars(post.writer.name)
+      Object.assign(post, normalizeReactionState(post))
     })
     list.value = normalized
   }

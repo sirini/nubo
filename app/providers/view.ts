@@ -53,13 +53,6 @@ export const useViewProvider = (): NuboViewContext => {
       }
       return false
     },
-    likeComment: async (commentUid: number, liked: boolean) => {
-      await comment.setCommentReaction({
-        boardUid: board.view.config.uid,
-        commentUid,
-        reaction: liked ? "like" : null,
-      })
-    },
     setCommentReaction: async (commentUid: number, reaction: Reaction | null) => {
       await comment.setCommentReaction({
         boardUid: board.view.config.uid,
@@ -150,9 +143,6 @@ export const useViewProvider = (): NuboViewContext => {
       await board.downloadFile(fileUid)
     },
     originalImageUrl: async (fileUid: number) => board.originalImageUrl(fileUid),
-    likePost: async (isLiked: boolean) => {
-      await board.setPostReaction(isLiked ? "like" : null)
-    },
     setPostReaction: async (reaction: Reaction | null) => {
       await board.setPostReaction(reaction)
     },

@@ -21,7 +21,6 @@ export interface NuboViewContext {
   content: ComputedRef<string>
   commentTarget: ComputedRef<{ reply: number; remove: number; modify: number }>
   checkPermissionComment: (writerUid: number) => boolean
-  likeComment: (commentUid: number, liked: boolean) => Promise<void>
   setCommentReaction: (commentUid: number, reaction: Reaction | null) => Promise<void>
   confirmRemoveComment: (commentUid: number) => void
   confirmRemovePost: (postUid: number) => void
@@ -35,7 +34,6 @@ export interface NuboViewContext {
   modifyExistComment: () => Promise<boolean>
   downloadFile: (fileUid: number) => Promise<void>
   originalImageUrl: (fileUid: number) => Promise<string>
-  likePost: (isLiked: boolean) => Promise<void>
   setPostReaction: (reaction: Reaction | null) => Promise<void>
   makeTableOfContents: () => TableOfContent[]
   updateReadingProgress: (element: string) => void

@@ -1,4 +1,5 @@
 import type { Search } from "~/types/board"
+import type { Reaction } from "~/types/reaction"
 import type { HomePostItem, HomePostResult, HomeSidebarGroupResult } from "~/types/home"
 
 // [홈] 화면에서 필요한 변수 & 함수들 정의
@@ -13,7 +14,7 @@ export interface NuboHomeContext {
   keyword: ComputedRef<string>
   loadMorePosts: () => Promise<void>
   reloadPosts: () => Promise<void>
-  toggleLike: (post: HomePostItem) => Promise<void>
+  setPostReaction: (post: HomePostItem, reaction: Reaction | null) => Promise<void>
   getPostsById: (id: string, limit: number) => Promise<HomePostResult>
 }
 

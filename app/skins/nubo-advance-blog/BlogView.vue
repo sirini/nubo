@@ -51,16 +51,11 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
+          <ReactionPicker
+            :state="{ reactions: view.post.reactions, myReaction: view.post.myReaction }"
             :disabled="!isLoggedIn"
-            :aria-label="view.post.liked ? '좋아요 취소' : '좋아요'"
-            @click="likePost(!view.post.liked)"
-            ><HeartIcon
-              class="size-4"
-              :class="view.post.liked ? 'fill-current text-primary' : ''" /></Button
-          ><span class="text-xs text-muted-foreground">{{ num(view.post.like) }}</span>
+            @select="setPostReaction"
+          />
         </div>
       </div>
     </header>
@@ -78,17 +73,12 @@
     >
       <aside class="hidden lg:block">
         <div class="sticky top-28 flex flex-col items-start gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="gap-2"
+          <ReactionPicker
+            :state="{ reactions: view.post.reactions, myReaction: view.post.myReaction }"
             :disabled="!isLoggedIn"
-            @click="likePost(!view.post.liked)"
-            ><HeartIcon
-              class="size-4"
-              :class="view.post.liked ? 'fill-current text-primary' : ''"
-            />{{ num(view.post.like) }}</Button
-          ><a
+            @select="setPostReaction"
+          />
+          <a
             href="#comments"
             class="inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             ><MessageCircleIcon class="size-4" />{{ num(view.post.comment) }}</a
@@ -188,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeftIcon, HeartIcon, MessageCircleIcon, PaperclipIcon } from "lucide-vue-next"
+import { ArrowLeftIcon, MessageCircleIcon, PaperclipIcon } from "lucide-vue-next"
 import BoardPostDeleteButton from "~/components/board/view/BoardPostDeleteButton.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceBlogComments from "./components/AdvanceBlogComments.vue"
@@ -202,7 +192,7 @@ const {
   isAdmin,
   isLoggedIn,
   isWriter,
-  likePost,
+  setPostReaction,
   updateReadingProgress,
   view,
 } = useNuboViewContext()

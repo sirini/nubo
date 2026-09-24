@@ -40,7 +40,7 @@ const open = ref(false)
 const route = useRoute()
 
 const current = computed(() => props.state.myReaction)
-// 비로그인 탭·키보드 Enter는 기존 로그인 후 복귀 흐름으로 연결한다.
+// 비로그인으로 활성화하면(클릭·Enter 모두) 로그인 후 복귀 흐름으로 연결한다.
 const handleTrigger = () => {
   if (props.disabled) {
     navigateTo({ path: "/auth/login", query: { redirect: route.fullPath } })

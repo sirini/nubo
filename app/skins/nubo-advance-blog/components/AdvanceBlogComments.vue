@@ -44,17 +44,11 @@
               @click="beginReply(comment.uid, comment.content)"
               ><MessageSquareReplyIcon class="size-3.5" />답글</Button
             >
-            <Button
-              variant="ghost"
-              size="sm"
-              class="gap-1"
+            <ReactionPicker
+              :state="{ reactions: comment.reactions, myReaction: comment.myReaction }"
               :disabled="!isLoggedIn"
-              @click="likeComment(comment.uid, !comment.liked)"
-              ><HeartIcon
-                class="size-3.5"
-                :class="comment.liked ? 'fill-current text-primary' : ''"
-              />{{ comment.like || "좋아요" }}</Button
-            >
+              @select="setCommentReaction(comment.uid, $event)"
+            />
             <template
               v-if="checkPermissionComment(comment.writer.uid) && comment.content !== '(deleted)'"
               ><Button variant="ghost" size="sm" @click="beginModify(comment.uid, comment.content)"
@@ -127,7 +121,6 @@
 <script setup lang="ts">
 import {
   CornerDownRightIcon,
-  HeartIcon,
   LoaderCircleIcon,
   MessageSquareReplyIcon,
 } from "lucide-vue-next"
@@ -143,9 +136,9 @@ const {
   confirmRemoveComment,
   isConfirmRemoveCommentDialog,
   isLoggedIn,
-  likeComment,
   modifyExistComment,
   removeComment,
+  setCommentReaction,
   setModifyComment,
   setReplyComment,
   view,

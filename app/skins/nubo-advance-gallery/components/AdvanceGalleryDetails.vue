@@ -38,18 +38,11 @@
       </div>
 
       <div class="flex flex-wrap gap-2">
-        <Button
-          variant="outline"
-          class="gap-2"
+        <ReactionPicker
+          :state="{ reactions: view.post.reactions, myReaction: view.post.myReaction }"
           :disabled="!isLoggedIn"
-          @click="likePost(!view.post.liked)"
-        >
-          <HeartIcon
-            class="size-4"
-            :class="view.post.liked ? 'fill-current text-primary' : ''"
-          />
-          {{ num(view.post.like) }}
-        </Button>
+          @select="setPostReaction"
+        />
         <Button variant="outline" class="gap-2" :disabled="!currentImage" @click="emit('openOriginal')">
           <Maximize2Icon class="size-4" /> 원본 보기
         </Button>
@@ -114,14 +107,14 @@
 </template>
 
 <script setup lang="ts">
-import { HashIcon, HeartIcon, ListIcon, Maximize2Icon } from "lucide-vue-next"
+import { HashIcon, ListIcon, Maximize2Icon } from "lucide-vue-next"
 import BoardPostDeleteButton from "~/components/board/view/BoardPostDeleteButton.vue"
 import BoardImageDescription from "~/components/board/view/BoardImageDescription.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceGalleryComments from "./AdvanceGalleryComments.vue"
 
 const emit = defineEmits<{ openOriginal: [] }>()
-const { config, imgIdx, isAdmin, isLoggedIn, isWriter, likePost, view } = useNuboViewContext()
+const { config, imgIdx, isAdmin, isLoggedIn, isWriter, setPostReaction, view } = useNuboViewContext()
 const { sanitize } = useSanitize()
 const currentImage = computed(() => view.value.images[imgIdx.value])
 </script>

@@ -82,6 +82,7 @@
 <script setup lang="ts">
 import { ChevronLeftIcon, ChevronRightIcon, EyeIcon, HeartIcon, ImageIcon, ImagePlusIcon, ImagesIcon, LockIcon, MessageCircleIcon, NotepadTextIcon } from "lucide-vue-next"
 import { STATUS, type BoardStudioResult, type BoardStudioSort } from "~/types/board"
+import { normalizeReactionState } from "~/types/reaction"
 import { useNuboProfileContext } from "~/providers/contexts/profile"
 
 const EMPTY_STUDIO = (): BoardStudioResult => ({
@@ -125,6 +126,9 @@ const refreshStudio = async () => {
     if (!response.success) {
       error.value = response.error || "작품 통계를 불러오지 못했습니다."
       return
+    }
+    for (const item of response.result.posts.items) {
+      Object.assign(item, normalizeReactionState(item))
     }
     studio.value = response.result
   } catch {

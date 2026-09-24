@@ -71,7 +71,6 @@
               :priority="post === mediaPosts[0]"
               :board-name="boardNames.get(post.id) || post.id"
               @open-media="openMedia"
-              @toggle-like="toggleLike"
             />
           </div>
 
@@ -158,7 +157,6 @@ const {
   optionLabels,
   posts,
   reloadPosts,
-  toggleLike,
 } = useNuboHomeContext()
 const viewMode = ref<"all" | "media">("all")
 const loadingMore = ref(false)
