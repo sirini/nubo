@@ -300,6 +300,15 @@
   min-height: 10rem;
 }
 
+// Keep line breaks in legacy plain-text comments without Firefox's pre-wrap/justify conflict.
+.nubo-comment {
+  white-space: pre-wrap;
+
+  p[style*="justify"] {
+    white-space: normal;
+  }
+}
+
 .tableWrapper {
   padding: 1rem 0;
   overflow-x: auto;

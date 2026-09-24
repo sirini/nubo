@@ -2,6 +2,10 @@
 
 ## Active goal
 
+- NUBO 공용 Tiptap 문단 정렬(2026-09-24): 게시글 문단·제목과 모든 기본/고급 스킨 댓글의
+  작성·수정·상세 표시 코드를 반영했다. 저장 후 실제 브라우저 표시와 Firefox 양쪽 정렬의 제품 소유자
+  QA가 남아 있다.
+
 - Sensta Node OOM(2026-09-11): `NODE_ENV` 누락으로 `vee-validate` 개발용 전역 폼 목록이 SSR 화면을
   붙잡는 누수를 재현했다. `63eb96b`와 운영 `.env`를 배포하고 `npm start`로 production 실행을 확인했다.
   이후 수일간 메모리 추이를 관찰한다. 근거·재현·백업은 `docs/SSR_MEMORY.md`에 기록했다.
@@ -395,6 +399,11 @@
 
 ## Verification
 
+- Tiptap 정렬: 전체 테스트 115개, lint(기존 경고 50개·오류 0), Vue typecheck와 production build를
+  통과했다. 저장 HTML → DOMPurify 출력 → 재편집의 정렬 유지, 제목·이미지·표·코드 블록 보존과
+  댓글의 네 정렬을 검증했다. GOAPI 댓글 저장·조회는 기존 HTML 문자열 계약을 그대로 사용한다.
+  로컬 Homebrew `simdutf` 경로 오류로 마지막 typecheck/build는 기존 라이브러리 경로를 명시해 실행했다.
+
 - Node OOM 교정: 전체 111개 테스트, typecheck, production build, lint(기존 경고 50개·오류 0개)를
   통과했다. 새 SSR 검사에서 로그인 100회 예열 후 1,000회 추가 요청 동안 GC 후 힙이 약 37~40MiB로
   유지됐다. `npm start`와 운영 안내에 production 환경을 명시하고 DOMPurify 콜백 누적도 제거했다.
@@ -589,9 +598,11 @@
 
 ## Next action
 
-1. Galaxy 실제 기기에서 2.1.7의 다중 사진 업로드, 태그 추천, 비밀번호 재설정, 메시지 목록·사진가 통계와
+1. 브라우저에서 게시글·댓글의 네 정렬을 저장·재진입하고 기본/고급 스킨 상세 표시를 확인한다.
+   Firefox에서는 양쪽 정렬된 댓글 문단의 줄 배치도 확인한다.
+2. Galaxy 실제 기기에서 2.1.7의 다중 사진 업로드, 태그 추천, 비밀번호 재설정, 메시지 목록·사진가 통계와
    로그아웃 후 세션 복원 방지를 통합 확인한 뒤 AAB를 Play Console에 업로드한다.
-2. 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 신고·차단·게시글 관리·계정 삭제·
+3. 실제 iPhone에서 자르기 조합, 알림 읽음, JPEG·HEIC 다중 업로드와 신고·차단·게시글 관리·계정 삭제·
    라이트/다크 테마를 한 번의 최종 통합 QA로 확인한다. 삭제는 복구 가능한 전용 테스트 계정만 사용한다.
-3. 통합 QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
+4. 통합 QA 뒤 전용 지원 URL, App Privacy 수집표와 TestFlight·App Store 제출 자료를 준비한다. 실제 운영
    요구 전에는 수여 취소·감사 UI, 단계형·상태형 배지와 추가 자동 업적을 확장하지 않는다.

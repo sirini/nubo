@@ -75,6 +75,22 @@
           </SelectContent>
         </Select>
 
+        <div class="flex items-center gap-0.5" role="group" aria-label="문단 정렬">
+          <Button
+            v-for="option in alignmentOptions"
+            :key="option.value"
+            size="sm"
+            :variant="activeAlignment === option.value ? 'secondary' : 'ghost'"
+            class="cursor-pointer"
+            :aria-label="option.label"
+            :aria-pressed="activeAlignment === option.value"
+            :disabled="!canAlign"
+            @click="setAlignment(option.value)"
+          >
+            <component :is="option.icon" class="w-4 h-4" />
+          </Button>
+        </div>
+
         <div class="w-px h-6 bg-border mx-1"></div>
 
         <Button
@@ -168,6 +184,10 @@ import { EditorContent } from "@tiptap/vue-3"
 import type { Editor } from "@tiptap/vue-3"
 import { toast } from "vue-sonner"
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold as BoldIcon,
   CodeIcon,
   Image,
@@ -194,6 +214,15 @@ const props = withDefaults(
 )
 const emit = defineEmits<{ (e: "update:modelValue", value: string): void }>()
 const ed = shallowRef<Editor | null>(null)
+const alignmentOptions = [
+  { value: "left", label: "왼쪽 정렬", icon: AlignLeft },
+  { value: "center", label: "가운데 정렬", icon: AlignCenter },
+  { value: "right", label: "오른쪽 정렬", icon: AlignRight },
+  { value: "justify", label: "양쪽 정렬", icon: AlignJustify },
+] as const
+type TextAlignment = (typeof alignmentOptions)[number]["value"]
+const activeAlignment = ref<TextAlignment | null>(null)
+const canAlign = ref(false)
 
 // 화면이 준비되면 Tiptap 에디터 꺼내와서 준비
 onMounted(() => {
@@ -217,11 +246,22 @@ const uploadEditorImages = async (files: File[]) => {
 }
 
 const syncBlockStyle = () => {
-  if (!ed.value || props.profile !== "post") return
+  if (!ed.value) return
+  const block = ed.value.isActive("heading") ? "heading" : "paragraph"
+  canAlign.value = ed.value.isActive(block)
+  const alignment = ed.value.getAttributes(block).textAlign
+  activeAlignment.value = canAlign.value
+    ? (alignmentOptions.find((option) => option.value === alignment)?.value ?? "left")
+    : null
+  if (props.profile !== "post") return
   const activeLevel = ([1, 2, 3, 4] as const).find((level) =>
     ed.value?.isActive("heading", { level }),
   )
   headingStyle.value = activeLevel ? String(activeLevel) : "0"
+}
+
+const setAlignment = (alignment: TextAlignment) => {
+  if (canAlign.value) ed.value?.chain().focus().setTextAlign(alignment).run()
 }
 
 const changeHeading = (value: AcceptableValue) => {

@@ -53,7 +53,7 @@
           </div>
 
           <div
-            class="nubo whitespace-pre-wrap pt-2 text-sm leading-7 text-foreground"
+            class="nubo nubo-comment pt-2 text-sm leading-7 text-foreground"
             v-html="sanitize(co.content)"
           ></div>
 

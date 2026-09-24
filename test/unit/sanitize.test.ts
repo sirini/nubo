@@ -29,4 +29,12 @@ describe("SSR HTML sanitization", () => {
     expect(() => useSanitize().sanitize(invalid as unknown as string)).toThrow("sanitizer failure")
     expect(DOMPurify.removeHook("afterSanitizeAttributes")).toBeUndefined()
   })
+
+  it("preserves paragraph alignment while removing unsafe attributes", () => {
+    const clean = useSanitize().sanitize(
+      '<p style="text-align: center;" onclick="alert(1)">Centered</p>',
+    )
+    expect(clean).toContain('style="text-align: center;"')
+    expect(clean).not.toContain("onclick")
+  })
 })

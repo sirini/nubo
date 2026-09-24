@@ -30,7 +30,7 @@
           </div>
           <!-- eslint-disable vue/no-v-html -- 댓글 HTML은 useSanitize()로 정제합니다. -->
           <div
-            class="nubo mt-2 whitespace-pre-wrap text-sm leading-7"
+            class="nubo nubo-comment mt-2 text-sm leading-7"
             v-html="sanitize(comment.content)"
           ></div>
           <!-- eslint-enable vue/no-v-html -->
@@ -78,9 +78,8 @@
       아직 댓글이 없습니다. 글에 대한 생각을 남겨보세요.
     </p>
 
-    <form
+    <div
       class="mt-8 rounded-2xl border border-border/70 bg-muted/15 p-4 sm:p-5"
-      @submit.prevent="submitComment"
     >
       <div class="mb-3 flex items-center justify-between gap-3">
         <div>
@@ -101,24 +100,18 @@
           >취소</Button
         >
       </div>
-      <Textarea
-        v-model="draft"
-        class="min-h-28 resize-y bg-background leading-7"
-        :disabled="!isLoggedIn || submitting"
-        :placeholder="
-          isLoggedIn
-            ? '글에 대한 생각을 10자 이상 남겨보세요'
-            : '로그인 후 댓글을 작성할 수 있습니다'
-        "
-      />
+      <NuboTiptapEditor v-if="isLoggedIn" v-model="content" :config="view.config" profile="comment" />
+      <p v-else class="rounded-lg border bg-background p-4 text-sm text-muted-foreground">
+        로그인 후 댓글을 작성할 수 있습니다.
+      </p>
       <div class="mt-3 flex justify-end">
-        <Button type="submit" :disabled="!isLoggedIn || submitting || draft.trim().length < 10"
+        <Button type="button" :disabled="!isLoggedIn || submitting || !hasEnoughContent" @click="submitComment"
           ><LoaderCircleIcon v-if="submitting" class="size-4 animate-spin" />{{
             submitLabel
           }}</Button
         >
       </div>
-    </form>
+    </div>
     <CommonVConfirmDialog
       v-model="isConfirmRemoveCommentDialog"
       title="댓글 삭제"
@@ -140,6 +133,7 @@ import {
 } from "lucide-vue-next"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import { useNuboViewContext } from "~/providers/contexts/view"
+import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
 const { content } = useNuboEditorContext()
 const {
   cancelCommentTarget,
@@ -159,24 +153,13 @@ const {
   writeReplyComment,
 } = useNuboViewContext()
 const { sanitize } = useSanitize()
-const draft = ref("")
 const submitting = ref(false)
 const replyQuote = ref("")
-const escapeText = (value: string) =>
-  value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;")
-    .replace(/\r?\n/g, "<br>")
-const paragraph = (value: string) => `<p>${escapeText(value.trim())}</p>`
-const toPlainText = (value: string) =>
-  recoverChars(
-    stripTags(value.replace(/<br\s*\/?>/gi, "\n").replace(/<\/(?:p|div|blockquote)>/gi, "\n")),
-  )
-    .replace(/\n{3,}/g, "\n\n")
-    .trim()
+const hasEnoughContent = computed(() => {
+  if (!import.meta.client) return false
+  const text = new DOMParser().parseFromString(content.value, "text/html").body.textContent || ""
+  return text.trim().length >= 10
+})
 const formTitle = computed(() =>
   commentTarget.value.reply ? "답글 작성" : commentTarget.value.modify ? "댓글 수정" : "댓글 작성",
 )
@@ -189,34 +172,32 @@ const submitLabel = computed(() =>
 )
 const beginReply = (uid: number, existing: string) => {
   setReplyComment(uid, existing)
-  replyQuote.value = `<blockquote><p>${escapeText(toPlainText(existing))}</p></blockquote>`
-  draft.value = ""
+  replyQuote.value = content.value
+  content.value = ""
 }
 const beginModify = (uid: number, existing: string) => {
   setModifyComment(uid, existing)
-  draft.value = toPlainText(existing)
   replyQuote.value = ""
 }
 const cancelTarget = () => {
   cancelCommentTarget()
-  draft.value = ""
   replyQuote.value = ""
 }
 const submitComment = async () => {
-  if (!isLoggedIn.value || submitting.value || draft.value.trim().length < 10) return
+  if (!isLoggedIn.value || submitting.value || !hasEnoughContent.value) return
   submitting.value = true
+  const draft = content.value
   try {
-    content.value = commentTarget.value.reply
-      ? `${replyQuote.value}${paragraph(draft.value)}`
-      : paragraph(draft.value)
+    if (commentTarget.value.reply) content.value = `${replyQuote.value}${draft}`
     const succeeded = commentTarget.value.reply
       ? await writeReplyComment()
       : commentTarget.value.modify
         ? await modifyExistComment()
         : await writeNewComment()
     if (succeeded) {
-      draft.value = ""
       replyQuote.value = ""
+    } else {
+      content.value = draft
     }
   } finally {
     submitting.value = false

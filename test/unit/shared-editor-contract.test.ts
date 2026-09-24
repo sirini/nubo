@@ -43,6 +43,22 @@ describe("shared NUBO editor contract", () => {
     }
   })
 
+  it("uses the platform comment editor in every built-in comment form", () => {
+    const forms = [
+      "app/skins/nubo-basic-board/components/view/ViewWriteComment.vue",
+      "app/skins/nubo-basic-blog/components/view/ViewWriteComment.vue",
+      "app/skins/nubo-basic-gallery/components/view/ViewWriteComment.vue",
+      "app/skins/nubo-basic-trade/components/view/ViewWriteComment.vue",
+      "app/skins/nubo-advance-blog/components/AdvanceBlogComments.vue",
+      "app/skins/nubo-advance-gallery/components/AdvanceGalleryComments.vue",
+    ]
+
+    for (const file of forms) {
+      expect(source(file)).toContain('~/components/editor/NuboTiptapEditor.vue')
+      expect(source(file)).toContain('profile="comment"')
+    }
+  })
+
   it("exposes table editing through the shared post toolbar", () => {
     const editor = source("app/components/editor/NuboTiptapEditor.vue")
     const tableMenu = source("app/components/editor/NuboEditorTableMenu.vue")

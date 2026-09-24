@@ -54,7 +54,7 @@
 
           <!-- eslint-disable vue/no-v-html -- 댓글 HTML은 useSanitize()로 정제합니다. -->
           <div
-            class="nubo whitespace-pre-wrap pt-2 text-sm leading-7 text-foreground"
+            class="nubo nubo-comment pt-2 text-sm leading-7 text-foreground"
             v-html="sanitize(co.content)"
           ></div>
           <!-- eslint-enable vue/no-v-html -->
