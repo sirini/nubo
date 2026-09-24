@@ -58,11 +58,7 @@ export const useHomeStore = defineStore("home", () => {
     for (const it of incoming) {
       map.set(it.uid, it)
     }
-    const merged = Array.from(map.values())
-    if (merged.length === posts.value.length && merged.at(-1)?.uid === posts.value.at(-1)?.uid) {
-      return
-    }
-    posts.value = merged
+    posts.value = Array.from(map.values())
   }
 
   // (검색된 or 전체) 게시글들 가져오기
@@ -97,7 +93,7 @@ export const useHomeStore = defineStore("home", () => {
       toast(`❌ 서버로부터 데이터를 가져오지 못했습니다: ${response?.error}`)
       return result
     }
-    return response.result
+    return { ...response.result, items: withReactionState(response.result.items) }
   }
 
   // 초기 페이지 로드 시 상단 메뉴들 가져오기

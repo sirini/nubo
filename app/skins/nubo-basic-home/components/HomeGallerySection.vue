@@ -47,13 +47,6 @@
               <span class="truncate">{{ recoverChars(post.writer.name) }}</span>
               <span class="flex shrink-0 items-center gap-3">
                 <span class="inline-flex items-center gap-1">
-                  <HeartIcon
-                    class="size-3.5"
-                    :class="post.liked ? 'fill-current text-primary' : ''"
-                  />
-                  {{ num(post.like) }}
-                </span>
-                <span class="inline-flex items-center gap-1">
                   <MessageCircleIcon class="size-3.5" /> {{ num(post.comment) }}
                 </span>
                 <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" />
@@ -74,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightIcon, HeartIcon, MessageCircleIcon } from "lucide-vue-next"
+import { ArrowRightIcon, MessageCircleIcon } from "lucide-vue-next"
 import type { HomePostResult } from "~/types/home"
 
 defineProps<{ latest: HomePostResult }>()

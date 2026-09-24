@@ -31,8 +31,8 @@
 - `clearReadingProgress()`: 화면을 떠날 때 scroll listener를 제거한다.
 - `makeTableOfContents()`: `.nubo` 본문의 h1~h3에서 목차를 만든다.
 
-댓글·좋아요 버튼은 같은 provider의 댓글 작성·수정·삭제 함수와 `likePost()`를 내부에서
-사용한다. 값은 대부분 `ComputedRef`이므로 script에서는 `.value`, template에서는 이름 그대로
+댓글과 리액션 선택기는 같은 provider의 댓글 작성·수정·삭제 함수와
+`setPostReaction()`·`setCommentReaction()`을 사용한다. 값은 대부분 `ComputedRef`이므로 script에서는 `.value`, template에서는 이름 그대로
 쓴다. 전체 계약은 `app/providers/contexts/list.ts`, `view.ts`에 있다.
 
 ## 복사해서 시작하기

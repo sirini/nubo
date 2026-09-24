@@ -43,13 +43,6 @@
           </span>
           <span class="flex shrink-0 items-center gap-3">
             <span class="inline-flex items-center gap-1">
-              <HeartIcon
-                class="size-3.5"
-                :class="post.liked ? 'fill-current text-primary' : ''"
-              />
-              {{ num(post.like) }}
-            </span>
-            <span class="inline-flex items-center gap-1">
               <MessageCircleIcon class="size-3.5" /> {{ num(post.comment) }}
             </span>
             <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" />
@@ -64,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { EyeIcon, HeartIcon, LockIcon, MessageCircleIcon } from "lucide-vue-next"
+import { EyeIcon, LockIcon, MessageCircleIcon } from "lucide-vue-next"
 import { useNuboListContext } from "~/providers/contexts/list"
 import { STATUS } from "~/types/board"
 

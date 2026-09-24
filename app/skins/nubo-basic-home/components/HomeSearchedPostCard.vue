@@ -47,12 +47,7 @@
             </span>
           </CardTitle>
           <CardDescription class="inline-flex items-center font-mono text-xs">
-            <HeartIcon
-              :class="post.liked ? 'text-red-200 fill-current' : ''"
-              class="w-3 h-3 mr-2"
-            />
-            {{ post.like }}
-            <MessageCircleIcon class="w-3 h-3 ml-4 mr-2" />
+            <MessageCircleIcon class="w-3 h-3 mr-2" />
             {{ num(post.comment) }}
             <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" class="ml-4" />
             <EyeIcon class="w-3 h-3 ml-4 mr-2" />
@@ -94,7 +89,6 @@ import {
   ArrowDownFromLineIcon,
   CheckCircle2Icon,
   EyeIcon,
-  HeartIcon,
   MessageCircleIcon,
   SearchIcon,
 } from "lucide-vue-next"

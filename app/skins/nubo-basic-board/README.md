@@ -32,7 +32,7 @@
 |  | `setPagingUrl(page)` | 검색 상태를 보존한 페이지 URL 생성 |
 | `useNuboViewContext` | `view`, `config` | 현재 글·작성자·이미지·첨부·게시판 설정 |
 |  | `isWriter`, `isAdmin`, `isLoggedIn` | 수정·삭제·댓글 UI 권한 판단 |
-|  | `likePost()`, `downloadFile()` | 좋아요 변경과 첨부 다운로드 |
+|  | `setPostReaction()`, `setCommentReaction()`, `downloadFile()` | 게시글·댓글 리액션 변경과 첨부 다운로드 |
 |  | 댓글 관련 값·함수 | 댓글 작성·답글·수정·삭제 상태와 실행 |
 |  | `openMovePostDialog()`, `move()` | 관리자용 게시글 이동 |
 | `useNuboWriteContext` | `title`, `categories`, `categoryUid` | 제목과 분류 입력 상태 |

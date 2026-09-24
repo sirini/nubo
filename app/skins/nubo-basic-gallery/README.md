@@ -28,7 +28,7 @@
 `useNuboViewContext()`의 `view`에는 현재 글과 `images`, 작성자·댓글·첨부가 들어 있다.
 `imgIdx`는 현재 보고 있는 이미지 인덱스인 `WritableComputedRef<number>`이므로 carousel에서
 직접 변경할 수 있다. `config`, `isWriter`, `isAdmin`, `isLoggedIn`은 게시판 설정과 권한 UI에
-사용하고, 글보기 컴포넌트는 댓글 함수·`likePost()`·`downloadFile()`을 같은 provider에서 받는다.
+사용하고, 글보기 컴포넌트는 댓글 함수·`setPostReaction()`·`setCommentReaction()`·`downloadFile()`을 같은 provider에서 받는다.
 
 template에서는 ref를 자동으로 풀어 쓰고, script에서 직접 읽거나 변경할 때는 `.value`를 쓴다.
 전체 계약은 `app/providers/contexts/list.ts`, `view.ts`에 있다.

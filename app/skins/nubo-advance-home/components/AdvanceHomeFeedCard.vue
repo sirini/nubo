@@ -3,7 +3,7 @@
     class="group overflow-hidden rounded-2xl border border-border/75 bg-card shadow-sm transition hover:border-border hover:shadow-md"
   >
     <div class="flex min-w-0">
-      <aside class="hidden w-12 shrink-0 justify-center bg-muted/45 py-3 sm:flex">
+      <aside class="hidden w-20 shrink-0 justify-center bg-muted/45 py-3 sm:flex">
         <ReactionPicker
           :state="{ reactions: post.reactions, myReaction: post.myReaction }"
           :disabled="!isLoggedIn"
@@ -70,6 +70,12 @@
         </button>
 
         <footer class="flex flex-wrap items-center gap-1 px-3 py-2 text-xs text-muted-foreground sm:px-4">
+          <ReactionPicker
+            class="sm:hidden"
+            :state="{ reactions: post.reactions, myReaction: post.myReaction }"
+            :disabled="!isLoggedIn"
+            @select="setPostReaction(post, $event)"
+          />
           <NuxtLink
             :to="postPath"
             class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 font-semibold transition-colors hover:bg-accent hover:text-foreground"

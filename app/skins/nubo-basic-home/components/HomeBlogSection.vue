@@ -37,9 +37,6 @@
           </p>
           <div class="mt-auto flex items-center gap-3 pt-4 text-xs text-muted-foreground">
             <span class="inline-flex items-center gap-1">
-              <HeartIcon class="size-3.5" /> {{ num(post.like) }}
-            </span>
-            <span class="inline-flex items-center gap-1">
               <MessageCircleIcon class="size-3.5" /> {{ num(post.comment) }}
             </span>
             <ReactionSummary :state="{ reactions: post.reactions, myReaction: post.myReaction }" />
@@ -74,7 +71,6 @@
 import {
   ArrowRightIcon,
   BookOpenIcon,
-  HeartIcon,
   MessageCircleIcon,
 } from "lucide-vue-next"
 import type { HomePostResult } from "~/types/home"
