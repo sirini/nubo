@@ -23,6 +23,7 @@
               <div>
                 <div class="flex items-center gap-2 text-sm font-semibold text-foreground">
                   <span>{{ comment.writer.name }}</span>
+                <UserInlineBadges v-if="comment.writer.badges?.length" :badges="comment.writer.badges" />
                   <span
                     v-if="replyTo"
                     class="rounded-full bg-muted px-2 py-0.5 text-xs font-normal text-muted-foreground"
@@ -195,7 +196,7 @@ const { sanitize } = useSanitize()
 }
 .avatar-spine {
   position: absolute;
-  left: 17.25px; /* 내 아바타 중심 x */
+  left: 18px; /* 연결선 엘보와 동일한 x(18..19.5px)에 둔다 */
   top: 56px; /* 아바타 아래부터 */
   bottom: 0;
   border-left-style: solid;

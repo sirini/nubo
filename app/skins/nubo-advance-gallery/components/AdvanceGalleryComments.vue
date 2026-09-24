@@ -8,69 +8,14 @@
       댓글 {{ num(view.post.comment) }}
     </h2>
 
-    <div v-if="comments.length" class="divide-y divide-border/60">
-      <article
-        v-for="comment in comments"
-        :key="comment.uid"
-        class="group flex gap-3 py-5"
-        :class="comment.uid !== comment.replyUid ? 'pl-5 sm:pl-8' : ''"
-      >
-        <CornerDownRightIcon
-          v-if="comment.uid !== comment.replyUid"
-          class="mt-3 size-4 shrink-0 text-muted-foreground"
-        />
-        <Avatar class="size-9 shrink-0"
-          ><AvatarImage
-            :src="comment.writer.profile"
-            :alt="comment.writer.name"
-          /><AvatarFallback>{{ comment.writer.name.charAt(0) || "U" }}</AvatarFallback></Avatar
-        >
-        <div class="min-w-0 flex-1">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div class="flex min-w-0 items-center gap-1.5">
-              <strong class="truncate text-sm">{{ comment.writer.name }}</strong>
-              <UserInlineBadges :badges="comment.writer.badges" />
-            </div>
-            <span class="text-xs text-muted-foreground">{{ dateFull(comment.submitted) }}</span>
-          </div>
-          <!-- eslint-disable vue/no-v-html -- 댓글 HTML은 화면 출력 전에 정제합니다. -->
-          <div
-            class="nubo nubo-comment mt-2 text-sm leading-7"
-            v-html="sanitize(comment.content)"
-          ></div>
-          <!-- eslint-enable vue/no-v-html -->
-          <div class="mt-3 flex flex-wrap items-center gap-1">
-            <Button
-              v-if="comment.uid === comment.replyUid"
-              variant="ghost"
-              size="sm"
-              class="gap-1"
-              :disabled="!isLoggedIn || comment.content === '(deleted)'"
-              @click="beginReply(comment.uid, comment.content)"
-              ><MessageSquareReplyIcon class="size-3.5" />답글</Button
-            >
-            <ReactionPicker
-              :state="{ reactions: comment.reactions, myReaction: comment.myReaction }"
-              :disabled="!isLoggedIn"
-              @select="setCommentReaction(comment.uid, $event)"
-            />
-            <template
-              v-if="checkPermissionComment(comment.writer.uid) && comment.content !== '(deleted)'"
-            >
-              <Button variant="ghost" size="sm" @click="beginModify(comment.uid, comment.content)"
-                >수정</Button
-              >
-              <Button
-                variant="ghost"
-                size="sm"
-                class="text-destructive hover:text-destructive"
-                @click="confirmRemoveComment(comment.uid)"
-                >삭제</Button
-              >
-            </template>
-          </div>
-        </div>
-      </article>
+<div v-if="comments.length">
+      <CommentNode
+        v-for="(node, index) in tree"
+        :key="node.comment.uid"
+        :node="node"
+        :depth="0"
+        :is-first="index === 0"
+      />
     </div>
     <p
       v-else
@@ -127,36 +72,28 @@
 </template>
 
 <script setup lang="ts">
-import {
-  CornerDownRightIcon,
-  LoaderCircleIcon,
-  MessageSquareReplyIcon,
-} from "lucide-vue-next"
+import { LoaderCircleIcon } from "lucide-vue-next"
 import { useNuboEditorContext } from "~/providers/contexts/editor"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import NuboTiptapEditor from "~/components/editor/NuboTiptapEditor.vue"
+import CommentNode from "~/components/comment/CommentNode.vue"
+import { buildCommentTree } from "~/types/comment"
 
 const { content } = useNuboEditorContext()
 const {
   cancelCommentTarget,
   comments,
   commentTarget,
-  checkPermissionComment,
-  confirmRemoveComment,
   isConfirmRemoveCommentDialog,
   isLoggedIn,
   modifyExistComment,
   removeComment,
-  setCommentReaction,
-  setModifyComment,
-  setReplyComment,
   view,
   writeNewComment,
   writeReplyComment,
 } = useNuboViewContext()
-const { sanitize } = useSanitize()
 const submitting = ref(false)
-const replyQuote = ref("")
+const tree = computed(() => buildCommentTree(comments.value))
 const hasEnoughContent = computed(() => {
   if (!import.meta.client) return false
   const text = new DOMParser().parseFromString(content.value, "text/html").body.textContent || ""
@@ -173,34 +110,16 @@ const submitLabel = computed(() =>
       : "댓글 남기기",
 )
 
-const beginReply = (uid: number, existingContent: string) => {
-  setReplyComment(uid, existingContent)
-  replyQuote.value = content.value
-  content.value = ""
-}
-const beginModify = (uid: number, existingContent: string) => {
-  setModifyComment(uid, existingContent)
-  replyQuote.value = ""
-}
 const cancelTarget = () => {
   cancelCommentTarget()
-  replyQuote.value = ""
 }
 const submitComment = async () => {
   if (!isLoggedIn.value || submitting.value || !hasEnoughContent.value) return
   submitting.value = true
-  const draft = content.value
   try {
-    if (commentTarget.value.reply) content.value = `${replyQuote.value}${draft}`
-    let succeeded = false
-    if (commentTarget.value.reply) succeeded = await writeReplyComment()
-    else if (commentTarget.value.modify) succeeded = await modifyExistComment()
-    else succeeded = await writeNewComment()
-    if (succeeded) {
-      replyQuote.value = ""
-    } else {
-      content.value = draft
-    }
+    if (commentTarget.value.reply) await writeReplyComment()
+    else if (commentTarget.value.modify) await modifyExistComment()
+    else await writeNewComment()
   } finally {
     submitting.value = false
   }
