@@ -7,9 +7,11 @@
   목록·공지·상세·댓글 조회, 전체 Go test/vet, 공식 Ubuntu 22 빌드와 Ubuntu 22/24·CPU 호환 검증을
   통과했다. 새 바이너리와 libvips는 형제 GOAPI의 `dist/nubo-runtime`에 있다. 웹은 모든 스킨이
   공유하는 리액션 선택기를 아이콘·툴팁으로 바꾸고 상세 실패 후 잘못된 댓글 요청을 중단했다.
-  웹 lint/typecheck/122 테스트/build를 통과했다. 다음은 운영에 GOAPI runtime과 웹을 반영하고
-  목록·상세·댓글 및 리액션을 화면 QA하는 것이다. 현 `deploy/release-sources.json`은 v1.3.2의
-  구 GOAPI를 가리키므로 이번 배포에 `nubo download`를 사용하지 않는다.
+  비로그인 상태에서 아이콘 클릭 즉시 로그인으로 이동하던 동작을 고쳐 메뉴는 먼저 열리고
+  리액션 선택 시 로그인으로 이동하게 했다. 선택기의 인증 상태별 회귀 테스트와 웹
+  lint/typecheck/124 테스트/build를 통과했다. 다음은 수정한 웹을 운영에 반영하고 비로그인·
+  로그인 리액션 및 목록·상세·댓글을 화면 QA하는 것이다. 현 `deploy/release-sources.json`은
+  v1.3.2의 구 GOAPI를 가리키므로 이번 배포에 `nubo download`를 사용하지 않는다.
 
 - NUBO 공용 Tiptap 문단 정렬(2026-09-24): 게시글 문단·제목과 모든 기본/고급 스킨 댓글의
   작성·수정·상세 표시 코드를 반영했다. 저장 후 실제 브라우저 표시와 Firefox 양쪽 정렬의 제품 소유자

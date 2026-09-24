@@ -1,44 +1,30 @@
 <template>
   <div class="reaction-picker">
-    <CommonVTooltip v-if="disabled" content="리액션을 남기려면 로그인">
-      <button
-        type="button"
-        class="trigger"
-        aria-label="리액션을 남기려면 로그인"
-        @click="navigateToLogin"
-      >
-        <span aria-hidden="true">{{ current ? meta[current].icon : "🙂" }}</span>
-      </button>
-    </CommonVTooltip>
-    <Popover v-else v-model:open="open">
-      <CommonVTooltip :content="current ? `현재 리액션: ${meta[current].label}` : '리액션 선택'">
-        <PopoverTrigger as-child>
-          <button
-            type="button"
-            class="trigger"
-            :aria-label="current ? `리액션 선택, 현재 ${meta[current].label}` : '리액션 선택'"
-          >
-            <span aria-hidden="true">{{ current ? meta[current].icon : "🙂" }}</span>
-          </button>
-        </PopoverTrigger>
-      </CommonVTooltip>
+    <Popover v-model:open="open">
+      <PopoverTrigger as-child>
+        <button
+          type="button"
+          class="trigger"
+          :title="current ? `현재 리액션: ${meta[current].label}` : '리액션 선택'"
+          :aria-label="current ? `리액션 선택, 현재 ${meta[current].label}` : '리액션 선택'"
+        >
+          <span aria-hidden="true">{{ current ? meta[current].icon : "🙂" }}</span>
+        </button>
+      </PopoverTrigger>
       <PopoverContent align="start" class="w-max max-w-[calc(100vw-2rem)] p-2">
         <div class="menu" role="group" aria-label="리액션 선택">
-          <CommonVTooltip
+          <button
             v-for="item in REACTIONS"
             :key="item"
-            :content="`${meta[item].label} · ${state.reactions[item]}개${state.myReaction === item ? ' · 선택 취소' : ''}`"
+            type="button"
+            :title="`${meta[item].label} · ${state.reactions[item]}개${state.myReaction === item ? ' · 선택 취소' : ''}`"
+            :aria-pressed="state.myReaction === item"
+            :aria-label="state.myReaction === item ? `${meta[item].label} ${state.reactions[item]}개, 선택 취소` : `${meta[item].label} 선택, ${state.reactions[item]}개`"
+            :class="['choice', { selected: state.myReaction === item }]"
+            @click="select(item)"
           >
-            <button
-              type="button"
-              :aria-pressed="state.myReaction === item"
-              :aria-label="state.myReaction === item ? `${meta[item].label} ${state.reactions[item]}개, 선택 취소` : `${meta[item].label} 선택, ${state.reactions[item]}개`"
-              :class="['choice', { selected: state.myReaction === item }]"
-              @click="select(item)"
-            >
-              <span aria-hidden="true">{{ meta[item].icon }}</span>
-            </button>
-          </CommonVTooltip>
+            <span aria-hidden="true">{{ meta[item].icon }}</span>
+          </button>
         </div>
       </PopoverContent>
     </Popover>
@@ -59,6 +45,10 @@ const current = computed(() => props.state.myReaction)
 const navigateToLogin = () => navigateTo({ path: "/auth/login", query: { redirect: route.fullPath } })
 const select = (reaction: Reaction | null) => {
   open.value = false
+  if (props.disabled) {
+    void navigateToLogin()
+    return
+  }
   emit("select", reaction === current.value ? null : reaction)
 }
 </script>
