@@ -6,9 +6,10 @@
   열람 자격·삭제 댓글 검사와 MariaDB 설치/상태 전이 검증 기록을 재확인했다. 웹의 고급 스킨 적용도
   확인하고, 남은 모바일 고급 홈 선택기·메뉴 잘림 가능성·기본 홈 게시판별 구 응답 정규화·중복 좋아요
   표시·오래된 스킨 문서를 직접 정리했다. GOAPI test/vet, 웹 lint/typecheck/122 테스트를 재실행해
-  통과했다. 코드 리뷰 완료 후 제품 소유자 화면 QA와 운영 DB 백업·공식 Ubuntu 바이너리 준비·이행을
-  진행한다. 현 `deploy/release-sources.json`은 v1.3.2의 구 GOAPI를 가리키므로 이번 변경 배포에
-  `nubo download`를 사용하지 않는다.
+  통과했다. Intel Mac의 Colima/Buildx에서 GOAPI `80be83f`의 공식 Ubuntu 22 빌드와
+  Ubuntu 22/24·CPU 호환 검증을 통과해 `dist/nubo-runtime`을 준비했다. 남은 작업은 제품 소유자
+  화면 QA와 운영 DB 백업·이행이다. 현 `deploy/release-sources.json`은 v1.3.2의 구 GOAPI를
+  가리키므로 이번 변경 배포에 `nubo download`를 사용하지 않는다.
 
 - NUBO 공용 Tiptap 문단 정렬(2026-09-24): 게시글 문단·제목과 모든 기본/고급 스킨 댓글의
   작성·수정·상세 표시 코드를 반영했다. 저장 후 실제 브라우저 표시와 Firefox 양쪽 정렬의 제품 소유자
