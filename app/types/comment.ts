@@ -64,6 +64,8 @@ export type CommentResult = {
   modified: number
   status: number
   replyUid: number
+  parentUid: number
+  depth: number
   postUid: number
 }
 
@@ -80,6 +82,8 @@ export const COMMENT_RESULT: CommentResult = {
   modified: 0,
   status: STATUS.NORMAL,
   replyUid: 0,
+  parentUid: 0,
+  depth: 0,
   postUid: 0,
 }
 
@@ -89,4 +93,37 @@ export type CommentListResult = {
   sinceUid: number
   totalCommentCount: number
   comments: CommentResult[]
+}
+
+// 다층 댓글 트리의 한 노드다. replyTo는 직계 부모 작성자 이름(루트는 null)이다.
+export type CommentNode = {
+  comment: CommentResult
+  children: CommentNode[]
+  replyTo: string | null
+}
+
+// 평면 댓글 목록을 parentUid 기반 트리로 만든다.
+// parentUid가 없는 구 GOAPI 응답은 기존 계약(replyUid가 스레드 루트)으로 폴백해 2단계를 유지한다.
+// 부모가 목록에 없는 고아(이전 페이지 등)는 최상위로 승격시킨다.
+export const buildCommentTree = (comments: CommentResult[]): CommentNode[] => {
+  const nodes = new Map<number, CommentNode>()
+  for (const comment of comments) {
+    nodes.set(comment.uid, { comment, children: [], replyTo: null })
+  }
+  const parentUidOf = (comment: CommentResult): number => {
+    if (comment.parentUid) return comment.parentUid
+    return comment.replyUid !== comment.uid ? comment.replyUid : 0
+  }
+  const roots: CommentNode[] = []
+  for (const node of nodes.values()) {
+    const parentUid = parentUidOf(node.comment)
+    const parent = parentUid ? nodes.get(parentUid) : undefined
+    if (parent && parent !== node) {
+      parent.children.push(node)
+      node.replyTo = parent.comment.writer.name
+    } else {
+      roots.push(node)
+    }
+  }
+  return roots
 }

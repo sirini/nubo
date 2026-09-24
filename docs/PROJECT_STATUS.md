@@ -2,6 +2,15 @@
 
 ## Active goal
 
+- 다층 댓글·답글(2026-09-25): Reddit식 임의 깊이 스레드를 도입했다. GOAPI `e7aa0b0`은
+  `comment.parent_uid`·`depth`·인덱스를 추가하고 install이 2단계 기존 데이터를 백필한다. `reply_uid`는
+  스레드 루트 uid로 유지되고 `/comment/reply` 본문이 그대로라 구 iOS/Android 앱은 무변경 동작
+  (깊은 답글은 기존 2단계 평면 표시로 폴백). 삭제 판정은 직계 자식 기준. 실제 MySQL로 백필 이행·
+  다층 쓰기/읽기·삭제 통합테스트와 전체 test/vet, 공식 Ubuntu 22 빌드(24.04 실행 확인)를 통과했다.
+  웹은 `buildCommentTree`(구 GOAPI 폴백 포함)와 공용 재귀 `CommentNode`(답글 N개 접기, 6단위 이후
+  평면화, “OO님께 답글” 표시)로 4개 스킨 ViewCommentList를 통합했고 lint/typecheck/105 단위·26 nuxt
+  테스트/build를 통과했다. 남은 것: 운영 반영 후 브라우저 QA(깊은 답글 작성·접기·삭제, 앱 좋아요/댓글 확인).
+
 - 리액션 10종 확장(2026-09-25): Reddit 참조로 웃겨요(laugh)·축하해요(celebrate)·멋져요(fire)·
   응원해요(support)·슬퍼요(sad)·주목해요(eyes) 여섯 종류를 추가했다. GOAPI `74123ec`은 코드 5–10·
   DTO 필드·집계 SQL을 확장하고 전체 test/vet, 실제 MySQL 상태 전이·읽기·install 통합 테스트를

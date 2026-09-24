@@ -234,6 +234,20 @@ type UserBadge = {
   중복 행(최신 timestamp, 동률은 큰 uid 한 행)을 정리한 뒤 `liked = (reaction_type = 1)` 불변식을
   백필한다. 재실행 가능하다. 스튜디오의 누적 `likeCount`와 `likes` 정렬은 좋아요 전용 통계를 유지한다.
 
+## 다층 댓글·답글
+
+댓글과 답글은 이제 임의 깊이로 이어질 수 있다(GOAPI `e7aa0b0`부터). DB는 `comment.parent_uid`(직계 부모,
+루트=0)·`depth`(루트=0)를 원본으로 삼고, `reply_uid`는 기존 계약 그대로 스레드 루트 uid를 유지한다.
+
+- `GET /comment/list`의 각 댓글 객체에 `parentUid`, `depth`가 추가되었다(확장 필드라 구 앱은 무시한다).
+  목록 순서(`ORDER BY reply_uid, uid`)는 유지되며 부모 uid < 자식 uid가 항상 성립해 트리 복원에 충분하다.
+- `POST /comment/reply`의 본문은 변함없다. `replyTargetUid`에 대상 댓글 uid를 보내면 서버가 대상의
+  스레드 루트와 깊이를 계산해 저장한다. 루트에만 답글을 다는 구 앱의 결과는 기존 2단계와 동일하고,
+  깊은 답글도 구 앗에서는 `replyUid`(스레드 루트) 기존 평면 표시로 폴백한다.
+- 댓글 삭제의 soft/hard 판정은 직계 자식(`parent_uid`) 기준으로 바뀌었다. 삭제된 중간 댓글의 자손은 그대로 유지된다.
+- 스키마 이행: `goapi install`이 `comment`에 `parent_uid`·`depth`·`idx_comment_parent`를 추가하고
+  2단계 시절 데이터를 백필한다(답글 `parent_uid = reply_uid`, `depth = 1`). 재실행 가능하다.
+
 ## 요청·응답 타입의 현재 source of truth
 
 - GOAPI request/result 구조: `goapi/pkg/models`와 각 handler의 query/form binding

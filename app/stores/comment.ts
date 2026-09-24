@@ -123,8 +123,10 @@ export const useCommentStore = defineStore("comment", () => {
       }
       const target = comments.value.findIndex((c) => c.uid === param.removeTargetUid)
       if (target > -1) {
+        // 직계 자식이 있으면 대표 문구로 남기고, 없으면 행을 지운다(고아는 최상위로 승격된다).
         const child = comments.value.find(
-          (c) => c.uid !== c.replyUid && c.replyUid === param.removeTargetUid,
+          (c) =>
+            (c.parentUid || (c.replyUid !== c.uid ? c.replyUid : 0)) === param.removeTargetUid,
         )
         if (child) {
           const parent = comments.value.at(target)
@@ -155,8 +157,11 @@ export const useCommentStore = defineStore("comment", () => {
       notifyAchievementCheck()
       const comment = { ...COMMENT_RESULT }
       comment.uid = response.result
-      comment.replyUid = param.replyTargetUid
-      comment.writer = { uid: user.uid, name: user.name, profile: user.profile }
+      const targetComment = comments.value.find((c) => c.uid === param.replyTargetUid)
+      comment.replyUid = targetComment?.replyUid || param.replyTargetUid
+      comment.parentUid = param.replyTargetUid
+      comment.depth = (targetComment?.depth ?? 0) + 1
+      comment.writer = { uid: user.uid, name: recoverChars(user.name), profile: user.profile }
       comment.content = param.content
       comment.postUid = param.postUid
       comment.submitted = Date.now()
@@ -164,6 +169,8 @@ export const useCommentStore = defineStore("comment", () => {
       const target = comments.value.findIndex((c) => c.uid === param.replyTargetUid)
       if (target > -1) {
         comments.value.splice(target + 1, 0, comment)
+      } else {
+        comments.value.push(comment)
       }
       toast(`✅ 답글을 성공적으로 추가하였습니다`)
       clear()
