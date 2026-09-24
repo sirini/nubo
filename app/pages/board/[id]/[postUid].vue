@@ -46,9 +46,10 @@ const markedToRead = () => {
 }
 
 // 게시글 내용과 댓글들 가져오기
-await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit())
-await comment.getInitComments(board.view)
-markedToRead()
+if (await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit())) {
+  await comment.getInitComments(board.view)
+  markedToRead()
+}
 
 provide(nuboViewKey, useViewProvider())
 provide(nuboWriteKey, useWriteProvider())

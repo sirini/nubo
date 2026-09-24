@@ -66,8 +66,9 @@ export const useBoardStore = defineStore("board", () => {
     })
 
     if (!response || !response.success || !response.result) {
+      view.value = BOARD_VIEW_RESULT
       toast(`❌ 게시글 내용을 가져오지 못했습니다: ${response?.error}`)
-      return
+      return false
     }
     if (response.result.config.type === BOARD.TRADE) {
       const result = response.result as TradeViewResult
@@ -76,6 +77,7 @@ export const useBoardStore = defineStore("board", () => {
     const result = response.result as BoardViewResult
     Object.assign(result.post, normalizeReactionState(result.post))
     view.value = result
+    return true
   }
 
   // 게시글 목록 가져오기
