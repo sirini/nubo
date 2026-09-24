@@ -6,6 +6,7 @@ import { buildCommentTree, COMMENT_RESULT } from "../../app/types/comment"
 import type { CommentResult } from "../../app/types/comment"
 import { nuboViewKey } from "../../app/providers/contexts/view"
 import type { NuboViewContext } from "../../app/providers/contexts/view"
+import type { BoardConfig, BoardViewResult } from "../../app/types/board"
 
 const comment = (uid: number, replyUid: number, parentUid = 0, depth = 0, name = "작성자"): CommentResult => ({
   ...structuredClone(COMMENT_RESULT),
@@ -18,7 +19,11 @@ const comment = (uid: number, replyUid: number, parentUid = 0, depth = 0, name =
 })
 
 const noop = () => {}
+const noopAsync = async () => {}
+const noopAsyncBool = async () => true
 const context = {
+  view: computed(() => ({}) as unknown as BoardViewResult),
+  config: computed(() => ({}) as unknown as BoardConfig),
   comments: computed(() => [] as CommentResult[]),
   isAdmin: computed(() => false),
   isConfirmRemoveCommentDialog: computed({ get: () => false, set: noop }),
@@ -34,25 +39,25 @@ const context = {
   content: computed(() => ""),
   commentTarget: computed(() => ({ reply: 0, remove: 0, modify: 0 })),
   checkPermissionComment: () => false,
-  setCommentReaction: noop,
+  setCommentReaction: noopAsync,
   confirmRemoveComment: noop,
   confirmRemovePost: noop,
-  openMovePostDialog: async () => {},
-  removeComment: async () => true,
+  openMovePostDialog: noopAsync,
+  removeComment: noopAsyncBool,
   setModifyComment: noop,
   setReplyComment: noop,
   cancelCommentTarget: noop,
-  writeNewComment: async () => true,
-  writeReplyComment: async () => true,
-  modifyExistComment: async () => true,
-  downloadFile: async () => {},
+  writeNewComment: noopAsyncBool,
+  writeReplyComment: noopAsyncBool,
+  modifyExistComment: noopAsyncBool,
+  downloadFile: noopAsync,
   originalImageUrl: async () => "",
-  setPostReaction: async () => {},
+  setPostReaction: noopAsync,
   makeTableOfContents: () => [],
   updateReadingProgress: () => {},
   clearReadingProgress: () => {},
   remove: noop,
-  move: async () => {},
+  move: noopAsync,
 } satisfies NuboViewContext
 
 describe("comment node", () => {
@@ -63,7 +68,7 @@ describe("comment node", () => {
       comment(3, 1, 2, 2, "깊은답글"),
     ])
     const wrapper = await mountSuspended(CommentNode, {
-      props: { node: tree[0], depth: 0 },
+      props: { node: tree[0]!, depth: 0 },
       global: { provide: { [nuboViewKey as symbol]: context } },
       attachTo: document.body,
     })
@@ -73,7 +78,9 @@ describe("comment node", () => {
     expect(wrapper.text()).toContain("댓글 2")
     expect(wrapper.text()).toContain("댓글 3")
     expect(wrapper.text()).toContain("첫답글님께 답글")
-    // 자손을 감싼 들여쓰기 컨테이너가 재귀를 만든다.
+    // 부모 아바타에서 자식 아바타로 이어지는 연결선 요소가 재귀 구조를 만든다.
+    expect(wrapper.find(".connector-elbow").exists()).toBe(true)
+    expect(wrapper.find(".avatar-spine").exists()).toBe(true)
     expect(wrapper.findComponent(CommentNode).exists()).toBe(true)
     wrapper.unmount()
   })
@@ -84,7 +91,7 @@ describe("comment node", () => {
       comment(2, 1, 1, 1, "답글"),
     ])
     const wrapper = await mountSuspended(CommentNode, {
-      props: { node: tree[0], depth: 0 },
+      props: { node: tree[0]!, depth: 0 },
       global: { provide: { [nuboViewKey as symbol]: context } },
       attachTo: document.body,
     })

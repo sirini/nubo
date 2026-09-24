@@ -1,6 +1,12 @@
 <template>
   <section>
-    <CommentNode v-for="node in tree" :key="node.comment.uid" :node="node" :depth="0" />
+    <CommentNode
+      v-for="(node, index) in tree"
+      :key="node.comment.uid"
+      :node="node"
+      :depth="0"
+      :is-first="index === 0"
+    />
 
     <div v-if="comments.length === 0" class="py-8 text-center text-sm text-muted-foreground">
       아직 댓글이 없습니다. 첫 댓글을 남겨보세요.
