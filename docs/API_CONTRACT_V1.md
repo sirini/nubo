@@ -201,22 +201,25 @@ type UserBadge = {
 
 ## 게시글·댓글 다중 리액션
 
-게시글과 댓글에는 좋아요(like), 최고(best), 아차(facepalm), 글쎄요(hmm) 네 종류의 리액션을 남길 수 있다.
+게시글과 댓글에는 열 종류의 리액션을 남길 수 있다: 좋아요(like), 최고(best), 아차(facepalm),
+글쎄요(hmm), 웃겨요(laugh), 축하해요(celebrate), 멋져요(fire), 응원해요(support), 슬퍼요(sad),
+주목해요(eyes). 이전 네 종류는 기존 계약 그대로 유지되고 확장 여섯 종류는 GOAPI `74123ec`부터 지원한다.
 사용자 한 명은 대상 하나에 활성 리액션을 최대 하나 남긴다. 같은 종류를 다시 누르면 무변경, 다른 종류를
 누르면 교체, 명시적 `null`을 보내면 취소한다. DB 원본은 `post_like`·`comment_like`의 `reaction_type`
-(0 없음, 1 like, 2 best, 3 facepalm, 4 hmm)이고 `liked`는 좋아요 전용 투영값으로 동기화된다.
+(0 없음, 1 like, 2 best, 3 facepalm, 4 hmm, 5 laugh, 6 celebrate, 7 fire, 8 support, 9 sad, 10 eyes)이고
+`liked`는 좋아요 전용 투영값으로 동기화된다.
 
 - 공개 읽기(게시글 목록·공지·상세·홈 최신/검색, 댓글 목록, `GET /board/my/studio` 작품 행)의 대상 객체는
-  종류별 집계와 현재 사용자의 선택을 함께 반환한다. 네 값은 0이어도 항상 존재하고, 비로그인의
+  종류별 집계와 현재 사용자의 선택을 함께 반환한다. 모든 종류 값은 0이어도 항상 존재하고, 비로그인의
   `myReaction`은 `null`이다. 기존 `like`는 `reactions.like`, `liked`는 `myReaction === "like"`와 같다.
 
   ```json
-  { "like": 3, "liked": false, "reactions": { "like": 3, "best": 2, "facepalm": 0, "hmm": 1 }, "myReaction": "best" }
+  { "like": 3, "liked": false, "reactions": { "like": 3, "best": 2, "facepalm": 0, "hmm": 1, "laugh": 0, "celebrate": 0, "fire": 0, "support": 0, "sad": 0, "eyes": 0 }, "myReaction": "best" }
   ```
 
 - 새 JWT 쓰기: `PATCH /board/reaction` 본문 `{ "boardUid": 1, "postUid": 2, "reaction": "best" }`,
   `PATCH /comment/reaction` 본문 `{ "boardUid": 1, "commentUid": 3, "reaction": null }`.
-  `reaction`은 위 네 문자열이나 명시적 `null`만 허용하고, 누락된 uid·0/비정상 uid·미지의 종류·빈 문자열은
+  `reaction`은 위 열 문자열이나 명시적 `null`만 허용하고, 누락된 uid·0/비정상 uid·미지의 종류·빈 문자열은
   거부한다. `userUid`는 본문을 믿지 않고 JWT에서만 얻는다. 성공 `result`는 해당 대상의 최신
   `{ "reactions": {...}, "myReaction": "best" }`이다. 같은 상태 재설정은 성공하지만 DB 상태·timestamp·
   알림은 바뀌지 않는다.

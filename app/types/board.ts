@@ -209,7 +209,7 @@ export const BOARD_LIST_ITEM: BoardListItem = {
   comment: 0,
   like: 0,
   liked: false,
-  reactions: { like: 0, best: 0, facepalm: 0, hmm: 0 },
+  reactions: { like: 0, best: 0, facepalm: 0, hmm: 0, laugh: 0, celebrate: 0, fire: 0, support: 0, sad: 0, eyes: 0 },
   myReaction: null,
   writer: BOARD_WRITER,
 }

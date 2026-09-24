@@ -32,6 +32,24 @@ describe("reaction picker", () => {
     wrapper.unmount()
   })
 
+  it("offers the extended reaction kinds", async () => {
+    const wrapper = await mountSuspended(ReactionPicker, {
+      props: { state: structuredClone(REACTION_STATE), disabled: false },
+      attachTo: document.body,
+    })
+
+    await wrapper.get("button.trigger").trigger("click")
+    await nextTick()
+    for (const label of ["웃겨요", "축하해요", "멋져요", "응원해요", "슬퍼요", "주목해요"]) {
+      expect(document.querySelector(`button[aria-label^="${label} 선택"]`)).not.toBeNull()
+    }
+    const choice = document.querySelector<HTMLButtonElement>('button[aria-label^="웃겨요 선택"]')
+    choice?.click()
+    await nextTick()
+    expect(wrapper.emitted("select")?.[0]).toEqual(["laugh"])
+    wrapper.unmount()
+  })
+
   it("shows reaction choices before asking an anonymous visitor to log in", async () => {
     const wrapper = await mountSuspended(ReactionPicker, {
       props: { state: structuredClone(REACTION_STATE), disabled: true },

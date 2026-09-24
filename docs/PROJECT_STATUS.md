@@ -2,6 +2,14 @@
 
 ## Active goal
 
+- 리액션 10종 확장(2026-09-25): Reddit 참조로 웃겨요(laugh)·축하해요(celebrate)·멋져요(fire)·
+  응원해요(support)·슬퍼요(sad)·주목해요(eyes) 여섯 종류를 추가했다. GOAPI `74123ec`은 코드 5–10·
+  DTO 필드·집계 SQL을 확장하고 전체 test/vet, 실제 MySQL 상태 전이·읽기·install 통합 테스트를
+  통과했다. 레거시 like 엔드포인트와 확장 전 응답을 읽는 기존 iOS/Android 좋아요는 영향 없음을
+  확인했다. 웹은 types·선택기(5열)·요약·계약 문서를 갱신하고 lint/typecheck/125 단위·26 nuxt
+  테스트를 통과했다. 스키마·이행 변경은 없다. 남은 것: 공식 Ubuntu 22 빌드 확인, 웹 build,
+  운영 반영 후 브라우저 QA.
+
 - 게시글·댓글 리액션 운영 복구(2026-09-24): GOAPI 공지 목록 SQL의 초과 인자와 상세 SQL의
   잘못된 인자 순서가 게시글 조회를 막았다. GOAPI `7314c64`에서 수정하고 실제 MariaDB의
   목록·공지·상세·댓글 조회, 전체 Go test/vet, 공식 Ubuntu 22 빌드와 Ubuntu 22/24·CPU 호환 검증을

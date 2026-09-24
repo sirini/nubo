@@ -59,6 +59,6 @@ const select = (reaction: Reaction | null) => {
 .choice { width: 2.5rem; height: 2.5rem; font-size: 1.35rem; }
 .trigger:hover, .choice:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
 .trigger:focus-visible, .choice:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
-.menu { display: grid; grid-template-columns: repeat(4, 2.5rem); gap: .375rem; }
+.menu { display: grid; grid-template-columns: repeat(5, 2.5rem); gap: .375rem; }
 .selected { border-width: 2px; background: color-mix(in srgb, currentColor 10%, transparent); }
 </style>

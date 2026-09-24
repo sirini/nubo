@@ -74,7 +74,7 @@ export const COMMENT_RESULT: CommentResult = {
   content: "",
   like: 0,
   liked: false,
-  reactions: { like: 0, best: 0, facepalm: 0, hmm: 0 },
+  reactions: { like: 0, best: 0, facepalm: 0, hmm: 0, laugh: 0, celebrate: 0, fire: 0, support: 0, sad: 0, eyes: 0 },
   myReaction: null,
   submitted: Date.now(),
   modified: 0,
