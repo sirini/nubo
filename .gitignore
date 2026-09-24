@@ -36,6 +36,7 @@ __pycache__/
 .fleet
 .idea
 .codex
+/.ai/
 
 # Local env files
 .env
