@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Backfill missing NUBO attachment image descriptions with GPT-5.6 Luna."""
+"""Backfill missing NUBO attachment image descriptions with GPT-6 Luna."""
 
 from __future__ import annotations
 
@@ -21,16 +21,16 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
-MODEL = "gpt-5.6-luna"
-PRICE_DATE = "2026-08-28"
-INPUT_USD_PER_MILLION = 0.20
-OUTPUT_USD_PER_MILLION = 1.20
-# Luna low detail의 최대 512px 패치 비용과 고정 프롬프트 토큰을 합친 보수적 예산값입니다.
+MODEL = "gpt-6-luna"
+PRICE_DATE = "2026-09-25"
+INPUT_USD_PER_MILLION = 0.10
+OUTPUT_USD_PER_MILLION = 0.50
+# low detail 이미지와 고정 프롬프트를 합친 예산 추정치입니다. 실제 토큰은 응답 usage를 따릅니다.
 ESTIMATED_INPUT_TOKENS = 450
 MAX_OUTPUT_TOKENS = 220
 MAX_DESCRIPTION_CHARS = 500
 MAX_IMAGE_BYTES = 25 * 1024 * 1024
-PRICING_URL = "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
+PRICING_URL = "https://developers.openai.com/api/docs/models/gpt-6-luna"
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 PROMPT = (
     "사진 접근성 설명과 사이트 검색 색인을 작성해 주세요. 이미지에서 직접 확인되는 사실만 "
@@ -73,7 +73,7 @@ class Totals:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="설명이 없는 NUBO 첨부 이미지를 GPT-5.6 Luna로 소급 처리합니다."
+        description="설명이 없는 NUBO 첨부 이미지를 GPT-6 Luna로 소급 처리합니다."
     )
     parser.add_argument(
         "--env-file",

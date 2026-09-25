@@ -78,7 +78,7 @@ class BackfillImageDescriptionsTest(unittest.TestCase):
                 "/upload/attachments/a.jpg",
             )
             selected, reason = MODULE.choose_image(candidate, root)
-            self.assertEqual(selected, thumbnail)
+            self.assertEqual(selected, thumbnail.resolve())
             self.assertEqual(reason, "")
             with self.assertRaises(MODULE.BackfillError):
                 MODULE.resolve_public_path("/upload/../../etc/passwd", root)
@@ -88,8 +88,8 @@ class BackfillImageDescriptionsTest(unittest.TestCase):
         self.assertEqual(len(normalized), MODULE.MAX_DESCRIPTION_CHARS)
         self.assertTrue(normalized.endswith("…"))
         self.assertAlmostEqual(
-            MODULE.estimate_cost(1, 0.20, 1.20),
-            0.000354,
+            MODULE.estimate_cost(1, 0.10, 0.50),
+            0.000155,
         )
 
     def test_request_description_uses_luna_low_detail_and_usage(self):
@@ -112,6 +112,8 @@ class BackfillImageDescriptionsTest(unittest.TestCase):
         request_payload = json.loads(requests[0][0].data)
         self.assertEqual(request_payload["model"], MODULE.MODEL)
         self.assertEqual(request_payload["messages"][0]["content"][0]["image_url"]["detail"], "low")
+        self.assertEqual(request_payload["reasoning_effort"], "none")
+        self.assertNotIn("temperature", request_payload)
         self.assertEqual(description, payload["choices"][0]["message"]["content"])
         self.assertEqual((input_tokens, output_tokens), (350, 80))
         self.assertNotIn("secret", requests[0][0].data.decode())
