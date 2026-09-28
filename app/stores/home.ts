@@ -63,13 +63,8 @@ export const useHomeStore = defineStore("home", () => {
 
   // (검색된 or 전체) 게시글들 가져오기
   const getInitLatestPosts = async (opts?: { reset?: boolean }) => {
-    if (opts?.reset) {
-      sinceUid.value = 0
-      posts.value = []
-    }
-
     const response = await loadInitPosts({
-      sinceUid: sinceUid.value,
+      sinceUid: opts?.reset ? 0 : sinceUid.value,
       bunch: bunch.value,
       option: option.value,
       keyword: keyword.value,
@@ -80,6 +75,7 @@ export const useHomeStore = defineStore("home", () => {
       return
     }
 
+    if (opts?.reset) sinceUid.value = 0
     mergePosts(response.result ?? [])
     initialized.value = true
   }

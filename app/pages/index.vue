@@ -15,7 +15,10 @@ const selectedSkin = getSkin(modules, () => settings.value.home, "nubo-basic-hom
 
 home.option = SEARCH.TITLE as Search
 home.keyword = ""
-await home.getInitLatestPosts({ reset: true })
+// SSR에서 직렬화한 피드를 hydration 도중 다시 비우거나 재요청하지 않습니다.
+if (!useNuxtApp().isHydrating || !home.initialized) {
+  await home.getInitLatestPosts({ reset: true })
+}
 
 provide(nuboHomeKey, useHomeProvider())
 </script>

@@ -59,8 +59,10 @@ describe("achievement badge contract", () => {
     const comments = read(
       "app/skins/nubo-advance-gallery/components/AdvanceGalleryComments.vue",
     )
+    const node = read("app/components/comment/CommentNode.vue")
 
-    expect(comments).toContain('<UserInlineBadges :badges="comment.writer.badges" />')
-    expect(comments).not.toContain("sensta-app")
+    expect(comments).toContain("<CommentNode")
+    expect(node).toContain(':badges="comment.writer.badges"')
+    expect(node).not.toContain("sensta-app")
   })
 })

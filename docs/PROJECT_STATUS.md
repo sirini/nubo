@@ -2,6 +2,13 @@
 
 ## Active goal
 
+- 프론트엔드 hydration 안정화(2026-09-28): 홈·검색 초기 hydration에서 SSR Pinia 피드를 재조회하며
+  비우지 않도록 하고, 새 피드는 조회 성공 후 교체한다. 게시글 상세는 서버·클라이언트 첫 조회의
+  `needUpdateHit=false`를 일치시키고 조회수 기록은 마운트 후 별도 요청으로 처리한다. 공개 날짜 표시는
+  서버·브라우저 모두 한국 시간대로 고정했다. 공용 `CommentNode` 이전을 반영하지 못한 업적 표시
+  계약 테스트도 갱신했다. lint/typecheck/단위 106개/Nuxt 28개/build 통과.
+  다음은 제품 소유자의 localhost 브라우저 재확인(고급 홈 첫 로드·새로고침, 게시글 상세 조회수)이다.
+
 - 다층 댓글·답글(2026-09-25): Reddit식 임의 깊이 스레드를 도입했다. GOAPI `e7aa0b0`은
   `comment.parent_uid`·`depth`·인덱스를 추가하고 install이 2단계 기존 데이터를 백필한다. `reply_uid`는
   스레드 루트 uid로 유지되고 `/comment/reply` 본문이 그대로라 구 iOS/Android 앱은 무변경 동작

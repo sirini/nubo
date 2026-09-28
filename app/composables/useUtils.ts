@@ -6,25 +6,32 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
 }
 
+// 서버와 브라우저가 같은 날짜를 렌더링하도록 표시 시간대를 고정합니다.
+const displayDateTime = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+})
+
+const dateParts = (timestamp: number) =>
+  Object.fromEntries(displayDateTime.formatToParts(timestamp).map(({ type, value }) => [type, value])) as
+    Record<"year" | "month" | "day" | "hour" | "minute" | "second", string>
+
 // 날짜만 출력하기
 export const date = (timestamp: number, div: string = "-") => {
-  const date = new Date(timestamp)
-  const y = date.getFullYear()
-  const m = ("0" + (date.getMonth() + 1)).slice(-2)
-  const d = ("0" + date.getDate()).slice(-2)
-  return `${y}${div}${m}${div}${d}`
+  const { year, month, day } = dateParts(timestamp)
+  return `${year}${div}${month}${div}${day}`
 }
 
 // 날짜와 시간까지 모두 출력하기
 export const dateFull = (timestamp: number, d1: string = "/", d2: string = ":") => {
-  const date = new Date(timestamp)
-  const y = date.getFullYear().toString().slice(2)
-  const m = ("0" + (date.getMonth() + 1)).slice(-2)
-  const d = ("0" + date.getDate()).slice(-2)
-  const h = ("0" + date.getHours()).slice(-2)
-  const i = ("0" + date.getMinutes()).slice(-2)
-  const s = ("0" + date.getSeconds()).slice(-2)
-  return `${y}${d1}${m}${d1}${d} ${h}${d2}${i}${d2}${s}`
+  const { year, month, day, hour, minute, second } = dateParts(timestamp)
+  return `${year.slice(2)}${d1}${month}${d1}${day} ${hour}${d2}${minute}${d2}${second}`
 }
 
 // 큰 숫자는 K, M 단위를 뒤에 붙여서 표현

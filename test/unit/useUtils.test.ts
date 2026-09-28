@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
+  date,
+  dateFull,
   getPreviewImage,
   getReadingTime,
   num,
@@ -8,6 +10,21 @@ import {
 } from "../../app/composables/useUtils"
 
 describe("content display utilities", () => {
+  it("renders the same Korean date across the UTC day boundary", () => {
+    const timestamp = Date.UTC(2025, 11, 31, 23, 30)
+    const originalTimeZone = process.env.TZ
+    try {
+      for (const timeZone of ["UTC", "America/Los_Angeles"]) {
+        process.env.TZ = timeZone
+        expect(date(timestamp)).toBe("2026-01-01")
+        expect(dateFull(timestamp)).toBe("26/01/01 08:30:00")
+      }
+    } finally {
+      if (originalTimeZone === undefined) delete process.env.TZ
+      else process.env.TZ = originalTimeZone
+    }
+  })
+
   it("formats compact counts at the existing thresholds", () => {
     expect(num(999)).toBe("999")
     expect(num(1_000)).toBe("1.0K")

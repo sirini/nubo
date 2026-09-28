@@ -46,10 +46,18 @@ const markedToRead = () => {
 }
 
 // 게시글 내용과 댓글들 가져오기
-if (await board.getInitView(boardId.value, postUid.value, checkNeedUpdateHit())) {
+if (await board.getInitView(boardId.value, postUid.value)) {
   await comment.getInitComments(board.view)
-  markedToRead()
 }
+
+onMounted(async () => {
+  if (board.view.post.uid !== postUid.value || !checkNeedUpdateHit()) return
+  try {
+    if (await board.recordViewHit(boardId.value, postUid.value)) markedToRead()
+  } catch (error) {
+    console.warn("Could not record the post view", error)
+  }
+})
 
 provide(nuboViewKey, useViewProvider())
 provide(nuboWriteKey, useWriteProvider())

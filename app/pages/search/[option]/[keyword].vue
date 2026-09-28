@@ -22,7 +22,9 @@ const keyword = computed(() => route.params.keyword as string)
 home.option = (home.options[option.value] || SEARCH.TITLE) as Search
 home.keyword = keyword.value
 
-await home.getInitLatestPosts({ reset: true })
+if (!useNuxtApp().isHydrating || !home.initialized) {
+  await home.getInitLatestPosts({ reset: true })
+}
 
 provide(nuboHomeKey, useHomeProvider())
 </script>

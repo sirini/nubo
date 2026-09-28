@@ -56,6 +56,15 @@ export const useBoard = () => {
     return data.value
   }
 
+  // 조회수 기록은 초기 SSR 데이터와 별도 요청으로 처리합니다.
+  const recordBoardViewHit = async (param: BoardViewParam) => {
+    return await $fetch<Resp<BoardViewResult | TradeViewResult>>("/board/view", {
+      baseURL: config.public.apiBase,
+      method: "GET",
+      query: { ...param, needUpdateHit: true },
+    })
+  }
+
   // 게시글 목록 가져오기
   const loadInitBoardList = async (param: BoardListParam) => {
     const { data } = await useFetch<Resp<BoardListResult | TradeListResult>>("/board/list", {
@@ -142,6 +151,7 @@ export const useBoard = () => {
     originalImage,
     download,
     loadInitBoardView,
+    recordBoardViewHit,
     loadInitBoardList,
     loadInitUserLatestContent,
     loadMyStudio,

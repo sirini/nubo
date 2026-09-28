@@ -20,6 +20,7 @@ export const useBoardStore = defineStore("board", () => {
   const config = useRuntimeConfig()
   const {
     loadInitBoardView,
+    recordBoardViewHit,
     loadInitBoardList,
     loadMoveTargets,
     movePost,
@@ -57,12 +58,12 @@ export const useBoardStore = defineStore("board", () => {
   let isPostLikePending = false
 
   // 게시글 본문 내용 가져오기
-  const getInitView = async (id: string, postUid: number, needUpdateHit: boolean) => {
+  const getInitView = async (id: string, postUid: number) => {
     const response = await loadInitBoardView({
       id,
       postUid,
       latestLimit: latestLimit.value,
-      needUpdateHit,
+      needUpdateHit: false,
     })
 
     if (!response || !response.success || !response.result) {
@@ -78,6 +79,16 @@ export const useBoardStore = defineStore("board", () => {
     Object.assign(result.post, normalizeReactionState(result.post))
     view.value = result
     return true
+  }
+
+  const recordViewHit = async (id: string, postUid: number) => {
+    const response = await recordBoardViewHit({
+      id,
+      postUid,
+      latestLimit: latestLimit.value,
+      needUpdateHit: true,
+    })
+    return response.success
   }
 
   // 게시글 목록 가져오기
@@ -348,6 +359,7 @@ export const useBoardStore = defineStore("board", () => {
     removeTargetUid,
 
     getInitView,
+    recordViewHit,
     getInitList,
     downloadFile,
     originalImageUrl,
