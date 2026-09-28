@@ -61,6 +61,51 @@ const context = {
 } satisfies NuboViewContext
 
 describe("comment node", () => {
+  it("draws one parent rail through a sibling subtree and stops at the last reply", async () => {
+    const tree = buildCommentTree([
+      comment(1, 1),
+      comment(2, 1, 1, 1),
+      comment(3, 1, 2, 2),
+      comment(4, 1, 1, 1),
+    ])
+    const wrapper = await mountSuspended(CommentNode, {
+      props: { node: tree[0]!, depth: 0 },
+      global: { provide: { [nuboViewKey as symbol]: context } },
+      attachTo: document.body,
+    })
+
+    const nodes = wrapper.findAll(".comment-node")
+    const hasOwnRail = (element: Element) =>
+      Array.from(element.children).some((child) => child.classList.contains("connector-line"))
+
+    expect(nodes).toHaveLength(4)
+    expect(hasOwnRail(nodes[0]!.element)).toBe(false)
+    expect(hasOwnRail(nodes[1]!.element)).toBe(true)
+    expect(hasOwnRail(nodes[2]!.element)).toBe(false)
+    expect(hasOwnRail(nodes[3]!.element)).toBe(false)
+    expect(nodes[1]!.find(".avatar-spine").exists()).toBe(true)
+    wrapper.unmount()
+  })
+
+  it("does not draw a new avatar rail when the depth limit flattens replies", async () => {
+    const tree = buildCommentTree([
+      comment(1, 1),
+      ...Array.from({ length: 7 }, (_, index) =>
+        comment(index + 2, 1, index + 1, index + 1),
+      ),
+    ])
+    const wrapper = await mountSuspended(CommentNode, {
+      props: { node: tree[0]!, depth: 0 },
+      global: { provide: { [nuboViewKey as symbol]: context } },
+      attachTo: document.body,
+    })
+
+    const nodes = wrapper.findAll(".comment-node")
+    expect(nodes[6]!.find(".avatar-spine").exists()).toBe(false)
+    expect(nodes[7]!.find(".connector-elbow").exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it("renders nested children recursively with the replyTo badge", async () => {
     const tree = buildCommentTree([
       comment(1, 1),
@@ -104,6 +149,7 @@ describe("comment node", () => {
     await nextTick()
     expect(wrapper.text()).not.toContain("댓글 2")
     expect(wrapper.text()).toContain("답글 1개 펼치기")
+    expect(wrapper.find(".avatar-spine").exists()).toBe(false)
     wrapper.unmount()
   })
 })

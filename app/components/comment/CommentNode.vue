@@ -1,12 +1,12 @@
 <template>
-  <div class="comment-node">
+  <div class="comment-node relative">
+    <!-- 다음 형제가 있으면 자손 전체 높이만큼 부모 쪽 레일을 잇는다. -->
+    <span v-if="showConnector && !isLast" aria-hidden="true" class="connector-line"></span>
     <div class="relative">
-      <!-- 부모 아바타 중심에서 내려온 세로선이 이 댓글 아바타 중심으로 라운드 엘보로 연결된다. -->
+      <!-- 부모 레일에서 이 댓글 아바타까지 연결한다. -->
       <span v-if="showConnector" aria-hidden="true" class="connector-elbow"></span>
-      <!-- 다음 형제나 내 자식으로 이어지는 세로선 연장부. -->
-      <span v-if="showConnector && lineContinues" aria-hidden="true" class="connector-line"></span>
-      <!-- 내 아바타 아래로 내려가 자식들의 엘보를 받는 세로선. -->
-      <span v-if="childrenExpanded" aria-hidden="true" class="avatar-spine"></span>
+      <!-- 들여쓴 자식이 있을 때만 내 아바타 아래에 새 레일을 연다. -->
+      <span v-if="showChildSpine" aria-hidden="true" class="avatar-spine"></span>
 
       <div
         class="group"
@@ -114,7 +114,7 @@
     </div>
 
     <!-- 깊이 제한을 넘으면 들여쓰지 않고 이어 붙인다(모바일 가독성). -->
-    <div v-if="childrenExpanded" :class="depth < COMMENT_MAX_DEPTH ? 'ml-7' : ''">
+    <div v-if="childrenExpanded" :class="depth < COMMENT_MAX_DEPTH ? 'comment-children' : ''">
       <CommentNode
         v-for="(child, index) in node.children"
         :key="child.comment.uid"
@@ -152,8 +152,7 @@ const replyTo = computed(() => props.node.replyTo)
 const childrenExpanded = computed(() => props.node.children.length > 0 && !collapsed.value)
 // 부모가 나를 들여쓰기한 경우(깊이 상한 안)에만 부모와의 연결선을 그린다.
 const showConnector = computed(() => props.depth >= 1 && props.depth <= COMMENT_MAX_DEPTH)
-// 마지막 형제가 아니거나 자식을 펼쳐둔 경우 세로선을 행 끝까지 연장한다.
-const lineContinues = computed(() => !props.isLast || childrenExpanded.value)
+const showChildSpine = computed(() => childrenExpanded.value && props.depth < COMMENT_MAX_DEPTH)
 
 const {
   isLoggedIn,
@@ -167,39 +166,53 @@ const { sanitize } = useSanitize()
 </script>
 
 <style scoped>
-/* 좌표 기준: 아바타 36px(size-9), 행 안여백 20px(py-5), 자식 들여쓰기 28px(ml-7), 아바타 중심 y=38px. */
+/* 아바타 36px, 행 안여백 20px. 각 레일은 인접 구간 하나만 그린다. */
+.comment-node {
+  --comment-indent: 24px;
+  --comment-avatar-center: 18px;
+  --comment-row-center: 38px;
+  --comment-avatar-bottom: 56px;
+}
+@media (min-width: 640px) {
+  .comment-node {
+    --comment-indent: 28px;
+  }
+}
+.comment-children {
+  margin-left: var(--comment-indent);
+}
 .connector-elbow,
 .connector-line,
 .avatar-spine {
   pointer-events: none;
-  border-color: color-mix(in srgb, var(--border) 75%, transparent);
+  border-color: var(--border);
 }
 .connector-elbow {
   position: absolute;
-  left: -10px; /* 부모 아바타 중심 x = 18 - 28 */
-  top: -20px; /* 부모 행의 아래 안여백부터 */
-  width: 28px; /* 내 아바타 중심까지 */
-  height: 58px; /* 아바타 중심 y = 38 + 20 */
+  left: calc(var(--comment-avatar-center) - var(--comment-indent));
+  top: 0;
+  width: var(--comment-indent);
+  height: var(--comment-row-center);
   border-left-style: solid;
-  border-left-width: 1.5px;
+  border-left-width: 1px;
   border-bottom-style: solid;
-  border-bottom-width: 1.5px;
+  border-bottom-width: 1px;
   border-bottom-left-radius: 12px;
 }
 .connector-line {
   position: absolute;
-  left: -10px;
-  top: 38px;
+  left: calc(var(--comment-avatar-center) - var(--comment-indent));
+  top: var(--comment-row-center);
   bottom: 0;
   border-left-style: solid;
-  border-left-width: 1.5px;
+  border-left-width: 1px;
 }
 .avatar-spine {
   position: absolute;
-  left: 18px; /* 연결선 엘보와 동일한 x(18..19.5px)에 둔다 */
-  top: 56px; /* 아바타 아래부터 */
+  left: var(--comment-avatar-center);
+  top: var(--comment-avatar-bottom);
   bottom: 0;
   border-left-style: solid;
-  border-left-width: 1.5px;
+  border-left-width: 1px;
 }
 </style>
