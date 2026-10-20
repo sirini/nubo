@@ -8,7 +8,7 @@ export interface NuboEditorContext {
   config: ComputedRef<BoardConfig>
   content: WritableComputedRef<string>
   imageSizeLimit: ComputedRef<{ profile: string; contentInsert: string; thumbnail: string }>
-  imageUrl: ComputedRef<string>
+  imageUrl: WritableComputedRef<string>
   insertedImageResult: ComputedRef<EditorInsertImageResult | null>
   insertedImages: ComputedRef<Pair[]>
   headingStyle: WritableComputedRef<string>

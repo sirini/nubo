@@ -12,7 +12,10 @@ export const useEditorProvider = (): NuboEditorContext => {
       contentInsert: config.public.contentInsertSize,
       thumbnail: config.public.thumbnailSize,
     })),
-    imageUrl: computed(() => edit.imageUrl),
+    imageUrl: computed({
+      get: () => edit.imageUrl,
+      set: (val: string) => (edit.imageUrl = val),
+    }),
     insertedImageResult: computed(() => edit.insertedImageResult),
     insertedImages: computed(() => edit.insertedImages),
     headingStyle: computed({
