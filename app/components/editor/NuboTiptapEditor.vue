@@ -67,7 +67,7 @@
               <SelectItem
                 v-for="(_, index) in 4"
                 :key="index"
-                :value="index + 1"
+                :value="String(index + 1)"
                 :selected="ed.isActive('heading', { level: index + 1 })"
                 >H{{ index + 1 }}</SelectItem
               >

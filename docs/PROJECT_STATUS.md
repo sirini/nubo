@@ -1,5 +1,12 @@
 # NUBO project status
 
+## Recent completion
+
+- 글쓰기 Tiptap 문단 스타일(2026-10-20): H1~H4 선택값이 숫자로 전달되어 문자열만 처리하는
+  핸들러에서 무시되던 문제를 수정했다. 공용 게시글 에디터의 본문↔H1~H4 전환 테스트를 추가했고
+  lint(기존 경고 49개), typecheck, 단위 137개, Nuxt 31개, build를 통과했다.
+  서버 요청·저장 형식은 변경하지 않았다.
+
 ## Active goal
 
 - 댓글 스레드 선 정리(2026-09-28): 공용 `CommentNode`에서 부모 아바타 아래 선·자식 엘보·
