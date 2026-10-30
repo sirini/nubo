@@ -13,17 +13,16 @@
           </div>
 
           <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-            <Button
+            <NuxtLink
               v-for="item in menuItems"
               :key="item.value"
-              variant="ghost"
-              class="w-full justify-start gap-3 cursor-pointer transition-colors"
+              :to="adminMenuPaths[item.value]"
+              class="flex w-full items-center rounded-md px-4 py-2 text-sm font-medium justify-start gap-3 transition-colors hover:bg-muted"
               :class="menu !== item.value ? 'text-muted-foreground opacity-70' : 'bg-muted'"
-              @click="openMenu(item.value)"
             >
               <component :is="item.icon" class="w-4 h-4" />
               {{ item.label }}
-            </Button>
+            </NuxtLink>
           </nav>
 
           <div class="p-2 border-t bg-card/20 shrink-0">
@@ -62,7 +61,7 @@
               <SheetHeader><SheetTitle>관리자 설정</SheetTitle><SheetDescription>관리할 영역을 선택하세요.</SheetDescription></SheetHeader>
               <nav class="mt-6 space-y-2">
                 <SheetClose v-for="item in menuItems" :key="item.value" as-child>
-                  <Button variant="ghost" class="w-full justify-start gap-3" :class="menu === item.value && 'bg-muted'" @click="openMenu(item.value)"><component :is="item.icon" class="size-4" />{{ item.label }}</Button>
+                  <NuxtLink :to="adminMenuPaths[item.value]" class="flex w-full items-center rounded-md px-4 py-2 text-sm font-medium gap-3 hover:bg-muted" :class="menu === item.value && 'bg-muted'"><component :is="item.icon" class="size-4" />{{ item.label }}</NuxtLink>
                 </SheetClose>
               </nav>
             </SheetContent>
@@ -90,13 +89,14 @@ import {
   PaletteIcon,
   UsersIcon,
 } from "lucide-vue-next"
+import { adminMenuPaths } from "~/utils/adminRoutes"
 import { useNuboAdminContext } from "~/providers/contexts/admin"
 import { ADMIN_BADGE, ADMIN_BOARD, ADMIN_DASHBOARD, ADMIN_MAIL, ADMIN_REPORT, ADMIN_SKIN, ADMIN_USER } from "~/types/admin"
 
 defineOptions({ name: "NuboAdmin" })
 
 const config = useRuntimeConfig()
-const { panel, menu, openMenu } = useNuboAdminContext()
+const { panel, menu } = useNuboAdminContext()
 const menuItems = [
   { label: "대시보드", value: ADMIN_DASHBOARD, icon: LayoutDashboardIcon },
   { label: "게시판 관리", value: ADMIN_BOARD, icon: FileTextIcon },

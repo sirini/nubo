@@ -1,3 +1,4 @@
+import { adminMenuPaths } from "~/utils/adminRoutes"
 import type {
   AdminBoardCreateParam,
   AdminBoardModifyParam,
@@ -113,7 +114,7 @@ export const useAdminProvider = (): NuboAdminContext => {
       admin.openGroupRemoveConfirmDialog(groupUid, groupId),
     openUserRemoveConfirmDialog: (userUid: number, name: string) =>
       admin.openUserRemoveConfirmDialog(userUid, name),
-    openMenu: (newMenu: AdminMenu) => admin.openMenu(newMenu),
+    openMenu: (newMenu: AdminMenu) => { void navigateTo(adminMenuPaths[newMenu]) },
     removeBoard: () => admin.removeBoard(),
     removeGroup: () => admin.removeGroup(),
     removeUser: () => admin.removeUser(),
