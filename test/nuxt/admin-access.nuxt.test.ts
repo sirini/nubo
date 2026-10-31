@@ -2,6 +2,9 @@ import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime"
 import { describe, expect, it, vi } from "vitest"
 import { nextTick } from "vue"
 import AdminPage from "../../app/components/admin/AdminPage.vue"
+import AdminIndex from "../../app/pages/admin/index.client.vue"
+import AdminSection from "../../app/pages/admin/[section].client.vue"
+import AdminBoard from "../../app/pages/admin/board/[id].vue"
 
 const mocks = vi.hoisted(() => ({
   auth: { isLoggedIn: false, isAdmin: false, getInitUserInfo: vi.fn() },
@@ -46,4 +49,13 @@ describe("admin access", () => {
     expect(mocks.openMenu).toHaveBeenCalledWith("User")
     wrapper.unmount()
   })
+  it.each([AdminIndex, AdminSection, AdminBoard])("renders the admin panel through each page entry", async (page) => {
+    mocks.auth.isLoggedIn = true
+    mocks.auth.isAdmin = true
+    const wrapper = await mountSuspended(page, { route: "/admin" })
+    await nextTick()
+    expect(wrapper.find("[data-admin-panel]").exists()).toBe(true)
+    wrapper.unmount()
+  })
+
 })
