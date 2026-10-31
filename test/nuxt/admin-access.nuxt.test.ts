@@ -1,6 +1,7 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime"
 import { describe, expect, it, vi } from "vitest"
-import { nextTick } from "vue"
+import { defineComponent, h, nextTick } from "vue"
+import { NuxtPage } from "#components"
 import { useRouter } from "#imports"
 import AdminPage from "../../app/components/admin/AdminPage.vue"
 import AdminIndex from "../../app/pages/admin/index.vue"
@@ -61,6 +62,35 @@ describe("admin access", () => {
       expect(mocks.openMenu).toHaveBeenLastCalledWith(menu)
     }
     wrapper.unmount()
+  })
+
+  it("leaves admin without selecting its dashboard while the home page loads", async () => {
+    mocks.auth.isLoggedIn = true
+    mocks.auth.isAdmin = true
+    const router = useRouter()
+    let finishHome!: () => void
+    const originalHome = router.getRoutes().find((route) => route.name === "index")!
+    const removeHome = router.addRoute({
+      path: "/", name: "index",
+      component: defineComponent({ async setup() {
+        await new Promise<void>((resolve) => { finishHome = resolve })
+        return () => h("div", { "data-site-home": "" }, "Site home")
+      } }),
+    })
+    const wrapper = await mountSuspended(NuxtPage, { route: "/admin/members" })
+    await vi.waitFor(() => expect(wrapper.find("[data-admin-panel]").exists()).toBe(true))
+    mocks.openMenu.mockClear()
+    await router.push("/")
+    await nextTick()
+    expect(router.currentRoute.value.path).toBe("/")
+    expect(mocks.openMenu).not.toHaveBeenCalled()
+    await vi.waitFor(() => expect(finishHome).toBeTypeOf("function"))
+    finishHome()
+    await vi.waitFor(() => expect(wrapper.find("[data-site-home]").exists()).toBe(true))
+    expect(wrapper.find("[data-admin-panel]").exists()).toBe(false)
+    wrapper.unmount()
+    removeHome()
+    router.addRoute(originalHome)
   })
 
   it.each([AdminIndex, AdminSection, AdminBoard])("renders the admin panel through each page entry", async (page) => {

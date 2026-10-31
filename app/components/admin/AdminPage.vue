@@ -26,7 +26,8 @@ const modules = import.meta.glob("~/skins/*/Admin.vue")
 const selectedSkin = getSkin(modules, () => settings.value.admin, "nubo-basic-admin")
 
 watch(() => router.currentRoute.value.path, (path) => {
-  admin.openMenu(adminMenuForPath(path))
+  const menu = adminMenuForPath(path)
+  if (menu) admin.openMenu(menu)
 }, { immediate: true })
 
 onMounted(async () => {

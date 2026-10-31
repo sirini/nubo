@@ -11,7 +11,7 @@ export const adminMenuPaths: Record<AdminMenu, string> = {
   System: "/admin/system",
 }
 
-export function adminMenuForPath(path: string): AdminMenu {
+export function adminMenuForPath(path: string): AdminMenu | null {
   if (path.startsWith("/admin/board/")) return "Board"
-  return (Object.entries(adminMenuPaths).find(([, value]) => value === path)?.[0] as AdminMenu | undefined) ?? "Dashboard"
+  return (Object.entries(adminMenuPaths).find(([, value]) => value === path)?.[0] as AdminMenu | undefined) ?? null
 }

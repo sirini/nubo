@@ -84,7 +84,7 @@ export const useAdminProvider = (): NuboAdminContext => {
     changeGroupId: (newGroupId: string): Promise<boolean> => admin.changeGroupId(newGroupId),
     changeGroupAdmin: (groupUid: number, targetUserUid: number) => admin.changeGroupAdmin(groupUid, targetUserUid),
     changeUserPermission: (param: UserPermissionManageParam) => admin.changeUserPermission(param),
-    closeAddGroupDialog: () => admin.closeAddGroupDialog,
+    closeAddGroupDialog: () => admin.closeAddGroupDialog(),
     closeBoardRemoveConfirmDialog: () => admin.closeBoardRemoveConfirmDialog(),
     closeChangeGroupIdDialog: () => admin.closeChangeGroupIdDialog(),
     closeGroupRemoveConfirmDialog: () => admin.closeGroupRemoveConfirmDialog(),

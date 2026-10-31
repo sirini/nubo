@@ -9,6 +9,12 @@ describe("admin routes", () => {
     }
   })
 
+  it("does not select an admin panel for public or unknown routes", () => {
+    for (const path of ["/", "/board/news/page/1", "/auth/login", "/administrator", "/admin/unknown"]) {
+      expect(adminMenuForPath(path)).toBeNull()
+    }
+  })
+
   it("keeps existing board edit links in the board menu", () => {
     expect(adminMenuForPath("/admin/board/news")).toBe("Board")
   })
