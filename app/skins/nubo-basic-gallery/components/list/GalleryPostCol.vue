@@ -4,7 +4,7 @@
     :key="post.uid"
     class="group mb-5 break-inside-avoid overflow-hidden rounded-2xl border border-border/70 bg-card/70 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:bg-card"
   >
-    <NuxtLink :to="`/board/${config.id}/${post.uid}`" class="block">
+    <NuxtLink :to="`/board/${config.id}/${post.uid}?page=${useRoute().params.page || 1}`" class="block">
       <div class="relative overflow-hidden bg-media">
         <img
           v-if="post.cover"

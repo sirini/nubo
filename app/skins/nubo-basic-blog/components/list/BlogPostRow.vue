@@ -6,7 +6,7 @@
       class="group grid grid-cols-1 items-center gap-6 overflow-hidden p-5 shadow-none sm:p-6 md:grid-cols-12 md:gap-8 lg:p-8"
     >
     <NuxtLink
-      :to="`/board/${config.id}/${post.uid}`"
+      :to="`/board/${config.id}/${post.uid}?page=${useRoute().params.page || 1}`"
       class="block md:col-span-4 overflow-hidden rounded-lg bg-muted aspect-square shadow-sm relative"
     >
       <img
@@ -43,7 +43,7 @@
         </CardDescription>
 
         <NuxtLink
-          :to="`/board/${config.id}/${post.uid}`"
+          :to="`/board/${config.id}/${post.uid}?page=${useRoute().params.page || 1}`"
           class="block group-hover:text-primary transition-colors duration-300"
           as-child
         >
@@ -71,7 +71,7 @@
         </div>
 
         <NuxtLink
-          :to="`/board/${config.id}/${post.uid}`"
+          :to="`/board/${config.id}/${post.uid}?page=${useRoute().params.page || 1}`"
           class="text-sm font-bold flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
         >
           읽어 보기 <ArrowRightIcon class="w-4 h-4" />

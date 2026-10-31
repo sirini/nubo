@@ -33,7 +33,7 @@
 
       <div v-if="posts.length" class="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
         <article v-for="(post, index) in posts" :key="post.uid" class="group mb-3 break-inside-avoid">
-          <NuxtLink :to="`/board/${config.id}/${post.uid}`" class="relative block overflow-hidden rounded-xl bg-media">
+          <NuxtLink :to="`/board/${config.id}/${post.uid}?page=${useRoute().params.page || 1}`" class="relative block overflow-hidden rounded-xl bg-media">
             <img
               v-if="post.cover"
               :src="getPreviewImage(post.cover)"

@@ -4,7 +4,7 @@
       <ListHeader />
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <NuxtLink
-          v-for="post in board.list.posts" :key="post.uid" :to="`/board/${board.list.config.id}/${post.uid}`"
+          v-for="post in board.list.posts" :key="post.uid" :to="`/board/${board.list.config.id}/${post.uid}?page=${useRoute().params.page || 1}`"
           class="group overflow-hidden rounded-2xl border border-border/70 bg-card/70 transition hover:-translate-y-0.5 hover:shadow-lg">
           <div class="aspect-[4/3] overflow-hidden bg-surface-subtle">
             <img

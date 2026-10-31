@@ -10,7 +10,7 @@
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem
-        ><BreadcrumbLink :href="`/board/${config.id}/page/1`">
+        ><BreadcrumbLink :href="`/board/${config.id}/page/${listPage}`">
           {{ recoverChars(config.name) }}
         </BreadcrumbLink>
       </BreadcrumbItem>
@@ -25,6 +25,10 @@
 <script setup lang="ts">
 import { BOARD } from "~/types/board"
 import { useNuboViewContext } from "~/providers/contexts/view"
+const listPage = computed(() => {
+  const page = useRoute().query.page
+  return typeof page === "string" && /^[1-9][0-9]*$/.test(page) ? page : "1"
+})
 
 const { config, view } = useNuboViewContext()
 

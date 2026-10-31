@@ -12,7 +12,7 @@
 
     <header class="mx-auto max-w-3xl px-4 pb-9 pt-12 sm:px-6 sm:pt-18">
       <NuxtLink
-        :to="`/board/${config.id}/page/1`"
+        :to="`/board/${config.id}/page/${listPage}`"
         class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary"
         ><ArrowLeftIcon class="size-3.5" />{{ recoverChars(config.name) }}</NuxtLink
       >
@@ -162,7 +162,7 @@
       class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 border-t border-border/60 px-4 py-10 sm:px-6"
     >
       <Button variant="ghost" as-child
-        ><NuxtLink :to="`/board/${config.id}/page/1`">목록으로</NuxtLink></Button
+        ><NuxtLink :to="`/board/${config.id}/page/${listPage}`">목록으로</NuxtLink></Button
       >
       <div class="flex flex-wrap justify-end gap-2">
         <Button v-if="isWriter || isAdmin" variant="outline" as-child>
@@ -184,6 +184,10 @@ import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceBlogComments from "./components/AdvanceBlogComments.vue"
 import AdvanceBlogContent from "./components/AdvanceBlogContent.vue"
 import AdvanceBlogToc from "./components/AdvanceBlogToc.vue"
+const listPage = computed(() => {
+  const page = useRoute().query.page
+  return typeof page === "string" && /^[1-9][0-9]*$/.test(page) ? page : "1"
+})
 
 const {
   clearReadingProgress,

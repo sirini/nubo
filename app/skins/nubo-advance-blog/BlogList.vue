@@ -36,7 +36,7 @@
       <NuxtLink
         v-for="notice in notices"
         :key="notice.uid"
-        :to="`/board/${config.id}/${notice.uid}`"
+        :to="`/board/${config.id}/${notice.uid}?page=${useRoute().params.page || 1}`"
         class="flex items-center gap-3 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-sm hover:bg-primary/10"
         ><MegaphoneIcon class="size-4 shrink-0 text-primary" /><span class="truncate font-medium">{{
           recoverChars(notice.title)
@@ -216,6 +216,6 @@ const remainingPosts = computed(() => posts.value.slice(1))
 const pageCount = computed(() =>
   Math.max(1, Math.ceil(totalPostCount.value / Math.max(1, config.value.rowCount))),
 )
-const postUrl = (uid: number) => `/board/${config.value.id}/${uid}`
+const postUrl = (uid: number) => `/board/${config.value.id}/${uid}?page=${useRoute().params.page || 1}`
 const excerpt = (content: string) => recoverChars(stripTags(content)).replace(/\s+/g, " ").trim()
 </script>

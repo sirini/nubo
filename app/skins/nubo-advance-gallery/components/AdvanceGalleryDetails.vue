@@ -88,7 +88,7 @@
 
       <footer class="flex flex-wrap justify-between gap-2 border-t border-border/60 pt-5">
         <Button variant="outline" class="gap-2" as-child>
-          <NuxtLink :to="`/board/${config.id}/page/1`">
+          <NuxtLink :to="`/board/${config.id}/page/${listPage}`">
             <ListIcon class="size-4" /> 목록 보기
           </NuxtLink>
         </Button>
@@ -112,6 +112,10 @@ import BoardPostDeleteButton from "~/components/board/view/BoardPostDeleteButton
 import BoardImageDescription from "~/components/board/view/BoardImageDescription.vue"
 import { useNuboViewContext } from "~/providers/contexts/view"
 import AdvanceGalleryComments from "./AdvanceGalleryComments.vue"
+const listPage = computed(() => {
+  const page = useRoute().query.page
+  return typeof page === "string" && /^[1-9][0-9]*$/.test(page) ? page : "1"
+})
 
 const emit = defineEmits<{ openOriginal: [] }>()
 const { config, imgIdx, isAdmin, isLoggedIn, isWriter, setPostReaction, view } = useNuboViewContext()

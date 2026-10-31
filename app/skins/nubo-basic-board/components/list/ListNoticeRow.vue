@@ -11,7 +11,7 @@
             <PinIcon class="size-3.5 md:hidden" /> 공지
           </span>
           <NuxtLink
-            :to="`/board/${config.id}/${notice.uid}`"
+            :to="`/board/${config.id}/${notice.uid}?page=${useRoute().params.page || 1}`"
             class="flex min-w-0 items-center hover:text-primary"
           >
             <span class="truncate text-[0.95rem] font-semibold leading-snug">
