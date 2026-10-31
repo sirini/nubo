@@ -17,6 +17,7 @@ import { nuboAdminKey } from "~/providers/contexts/admin"
 import { adminMenuForPath } from "~/utils/adminRoutes"
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 const admin = useAdminStore()
 const checking = ref(true)
@@ -24,7 +25,7 @@ const { settings } = useSkins()
 const modules = import.meta.glob("~/skins/*/Admin.vue")
 const selectedSkin = getSkin(modules, () => settings.value.admin, "nubo-basic-admin")
 
-watch(() => route.path, (path) => {
+watch(() => router.currentRoute.value.path, (path) => {
   admin.openMenu(adminMenuForPath(path))
 }, { immediate: true })
 

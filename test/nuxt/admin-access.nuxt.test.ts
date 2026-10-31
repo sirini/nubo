@@ -1,9 +1,10 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime"
 import { describe, expect, it, vi } from "vitest"
 import { nextTick } from "vue"
+import { useRouter } from "#imports"
 import AdminPage from "../../app/components/admin/AdminPage.vue"
-import AdminIndex from "../../app/pages/admin/index.client.vue"
-import AdminSection from "../../app/pages/admin/[section].client.vue"
+import AdminIndex from "../../app/pages/admin/index.vue"
+import AdminSection from "../../app/pages/admin/[section].vue"
 import AdminBoard from "../../app/pages/admin/board/[id].vue"
 
 const mocks = vi.hoisted(() => ({
@@ -49,6 +50,19 @@ describe("admin access", () => {
     expect(mocks.openMenu).toHaveBeenCalledWith("User")
     wrapper.unmount()
   })
+  it("updates the selected menu on client navigation", async () => {
+    mocks.auth.isLoggedIn = true
+    mocks.auth.isAdmin = true
+    const wrapper = await mountSuspended(AdminIndex, { route: "/admin" })
+    const router = useRouter()
+    for (const [path, menu] of [["/admin/members", "User"], ["/admin/boards", "Board"], ["/admin", "Dashboard"]]) {
+      await router.push(path!)
+      await nextTick()
+      expect(mocks.openMenu).toHaveBeenLastCalledWith(menu)
+    }
+    wrapper.unmount()
+  })
+
   it.each([AdminIndex, AdminSection, AdminBoard])("renders the admin panel through each page entry", async (page) => {
     mocks.auth.isLoggedIn = true
     mocks.auth.isAdmin = true

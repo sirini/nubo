@@ -2,6 +2,8 @@
 
 ## Recent completion
 
+- 관리자 메뉴 이동 보강(2026-10-31): 페이지의 client 전용 래퍼를 제거하고 라우터 현재 주소로 메뉴를 즉시 동기화한다. 연속 메뉴 이동 포함 Nuxt 테스트 7개, lint/typecheck/build 통과. 운영 화면의 메뉴 이동·뒤로가기 QA가 남아 있다.
+
 - 관리자 화면 빈 페이지 수정(2026-10-31): 세 관리자 페이지의 잘못된 컴포넌트 이름을 명시적 import로 교정했다. 각 페이지 진입 회귀 테스트 6개, lint(기존 경고 49개), typecheck, build 통과. 실제 운영 브라우저 확인은 남아 있다.
 
 - GOAPI Mac 빌드 도우미(2026-10-31): Docker가 중지된 Mac에서 Colima를 시작한 뒤 공식 Ubuntu 22 빌드 스크립트를 실행한다. 원격 main의 최신 변경을 병합했다. Ubuntu 22 공식 빌드 및 runtime 검증 완료. go vet 통과, 원격 코드의 전체 테스트에서 studio SQL mock과 reaction 권한 테스트 두 건 실패.
