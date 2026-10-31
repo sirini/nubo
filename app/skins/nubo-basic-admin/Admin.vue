@@ -4,8 +4,8 @@
       <aside class="hidden w-48 border-r bg-muted/30 md:block">
         <div class="flex h-full flex-col gap-2">
           <div class="flex h-16 items-center border-b px-6">
-            <CommonVTooltip content="관리화면 첫 페이지로 이동합니다">
-              <NuxtLink to="/admin" class="flex items-center gap-3 font-bold text-lg text-primary">
+            <CommonVTooltip content="사이트 첫 화면으로 이동합니다">
+              <NuxtLink to="/" class="flex items-center gap-3 font-bold text-lg text-primary">
                 <CogIcon class="w-4 h-4" />
                 <span class="font-mono">Settings</span>
               </NuxtLink>
