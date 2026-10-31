@@ -29,10 +29,13 @@ const resolveAdminView = (skinKey: string, menu: AdminMenu): Component => {
   return loader ? defineAsyncComponent(loader as AsyncComponentLoader) : fallbackAdminView
 }
 
-export const useAdminProvider = (): NuboAdminContext => {
+// A page owns its menu. During Nuxt's overlapping page transition, the outgoing
+// provider must keep its panel while the incoming page resolves its async tree.
+export const useAdminProvider = (pageMenu?: MaybeRefOrGetter<AdminMenu>): NuboAdminContext => {
   const admin = useAdminStore()
   const auth = useAuthStore()
   const { settings } = useSkins()
+  const menu = computed(() => pageMenu === undefined ? admin.menu : toValue(pageMenu))
 
   return {
     dashboard: computed(() => admin.dashboard),
@@ -65,10 +68,10 @@ export const useAdminProvider = (): NuboAdminContext => {
     reportTotal: computed(() => admin.reportTotal),
     isBlocked: computed({ get: () => admin.isBlocked, set: (val) => (admin.isBlocked = val) }),
     limit: computed({ get: () => admin.limit, set: (val) => (admin.limit = val) }),
-    menu: computed(() => admin.menu),
+    menu,
     option: computed({ get: () => admin.option, set: (val) => (admin.option = val) }),
     page: computed({ get: () => admin.page, set: (val) => (admin.page = val) }),
-    panel: computed(() => resolveAdminView(settings.value.admin, admin.menu)),
+    panel: computed(() => resolveAdminView(settings.value.admin, menu.value)),
     statFile: computed(() => admin.dashboard.statistic.file),
     statImage: computed(() => admin.dashboard.statistic.image),
     statPost: computed(() => admin.dashboard.statistic.post),

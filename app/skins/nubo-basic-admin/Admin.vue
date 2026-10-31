@@ -69,7 +69,10 @@
           <span class="font-semibold">{{ menuItems.find((item) => item.value === menu)?.label }}</span>
         </header>
         <section>
-          <component :is="panel" :key="menu" />
+          <Suspense :key="menu">
+            <component :is="panel" :key="menu" />
+            <template #fallback><p class="p-6" role="status">관리 메뉴를 불러오고 있습니다.</p></template>
+          </Suspense>
         </section>
       </main>
     </div>

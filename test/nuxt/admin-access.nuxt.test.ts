@@ -1,5 +1,5 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { defineComponent, h, nextTick } from "vue"
 import { NuxtPage } from "#components"
 import { useRouter } from "#imports"
@@ -10,15 +10,15 @@ import AdminBoard from "../../app/pages/admin/board/[id].vue"
 
 const mocks = vi.hoisted(() => ({
   auth: { isLoggedIn: false, isAdmin: false, getInitUserInfo: vi.fn() },
-  openMenu: vi.fn(),
+  menuSources: [] as Array<() => string>,
 }))
 mockNuxtImport("useAuthStore", () => () => mocks.auth)
-mockNuxtImport("useAdminStore", () => () => ({ openMenu: mocks.openMenu }))
 mockNuxtImport("useSkins", () => () => ({ settings: { value: { admin: "nubo-basic-admin" } } }))
 mockNuxtImport("getSkin", () => () => ({ template: '<div data-admin-panel>Admin panel</div>' }))
-vi.mock("../../app/providers/admin", () => ({ useAdminProvider: () => ({}) }))
+vi.mock("../../app/providers/admin", () => ({ useAdminProvider: (menu: () => string) => { mocks.menuSources.push(menu); return {} } }))
 
 describe("admin access", () => {
+  beforeEach(() => { mocks.menuSources.length = 0 })
   it("waits for session restoration and denies anonymous visitors", async () => {
     let resolveSession!: () => void
     mocks.auth.getInitUserInfo.mockImplementation(() => new Promise<void>((resolve) => { resolveSession = resolve }))
@@ -29,6 +29,21 @@ describe("admin access", () => {
     await vi.waitFor(() => expect(wrapper.text()).toContain("관리자 계정으로 로그인"))
     expect(wrapper.find("[data-admin-panel]").exists()).toBe(false)
     expect(wrapper.get('a[href*="/auth/login"]').attributes("href")).toContain("redirect=")
+    wrapper.unmount()
+  })
+
+  it("keeps its DOM root while session restoration loads the async skin", async () => {
+    mocks.auth.isLoggedIn = false
+    mocks.auth.isAdmin = false
+    let resolveSession!: () => void
+    mocks.auth.getInitUserInfo.mockImplementation(() => new Promise<void>((resolve) => { resolveSession = resolve }))
+    const wrapper = await mountSuspended(AdminPage, { route: "/admin" })
+    const root = wrapper.element
+    mocks.auth.isLoggedIn = true
+    mocks.auth.isAdmin = true
+    resolveSession()
+    await vi.waitFor(() => expect(wrapper.find("[data-admin-panel]").exists()).toBe(true))
+    expect(wrapper.element).toBe(root)
     wrapper.unmount()
   })
 
@@ -45,21 +60,21 @@ describe("admin access", () => {
   it("shows the requested panel for an administrator", async () => {
     mocks.auth.isLoggedIn = true
     mocks.auth.isAdmin = true
-    const wrapper = await mountSuspended(AdminPage, { route: "/admin/members" })
+    const wrapper = await mountSuspended(AdminPage, { route: "/admin/members", props: { menu: "User" } })
     await nextTick()
     expect(wrapper.find("[data-admin-panel]").exists()).toBe(true)
-    expect(mocks.openMenu).toHaveBeenCalledWith("User")
+    expect(mocks.menuSources.at(-1)!()).toBe("User")
     wrapper.unmount()
   })
   it("updates the selected menu on client navigation", async () => {
     mocks.auth.isLoggedIn = true
     mocks.auth.isAdmin = true
-    const wrapper = await mountSuspended(AdminIndex, { route: "/admin" })
+    const wrapper = await mountSuspended(NuxtPage, { route: "/admin" })
     const router = useRouter()
     for (const [path, menu] of [["/admin/members", "User"], ["/admin/boards", "Board"], ["/admin", "Dashboard"]]) {
       await router.push(path!)
       await nextTick()
-      expect(mocks.openMenu).toHaveBeenLastCalledWith(menu)
+      await vi.waitFor(() => expect(mocks.menuSources.at(-1)!()).toBe(menu))
     }
     wrapper.unmount()
   })
@@ -79,11 +94,12 @@ describe("admin access", () => {
     })
     const wrapper = await mountSuspended(NuxtPage, { route: "/admin/members" })
     await vi.waitFor(() => expect(wrapper.find("[data-admin-panel]").exists()).toBe(true))
-    mocks.openMenu.mockClear()
+    const outgoingMenu = mocks.menuSources.at(-1)!
+    expect(outgoingMenu()).toBe("User")
     await router.push("/")
     await nextTick()
     expect(router.currentRoute.value.path).toBe("/")
-    expect(mocks.openMenu).not.toHaveBeenCalled()
+    expect(outgoingMenu()).toBe("User")
     await vi.waitFor(() => expect(finishHome).toBeTypeOf("function"))
     finishHome()
     await vi.waitFor(() => expect(wrapper.find("[data-site-home]").exists()).toBe(true))
@@ -93,12 +109,17 @@ describe("admin access", () => {
     router.addRoute(originalHome)
   })
 
-  it.each([AdminIndex, AdminSection, AdminBoard])("renders the admin panel through each page entry", async (page) => {
+  it.each([
+    [AdminIndex, "/admin", "Dashboard"],
+    [AdminSection, "/admin/members", "User"],
+    [AdminBoard, "/admin/board/news", "Board"],
+  ] as const)("renders the admin panel through each page entry", async (page, route, menu) => {
     mocks.auth.isLoggedIn = true
     mocks.auth.isAdmin = true
-    const wrapper = await mountSuspended(page, { route: "/admin" })
+    const wrapper = await mountSuspended(page, { route })
     await nextTick()
     expect(wrapper.find("[data-admin-panel]").exists()).toBe(true)
+    expect(mocks.menuSources.at(-1)!()).toBe(menu)
     wrapper.unmount()
   })
 
