@@ -74,7 +74,7 @@ export async function installedSiteIsCustomized(currentLink = "/opt/nubo/current
     return Boolean(manifest.siteBuild?.baseVersion && manifest.siteBuild?.skinsHash)
   } catch (error) {
     if (error?.code === "ENOENT") return false
-    throw new Error(`현재 설치의 커스텀 스킨 상태를 읽을 수 없습니다: ${error.message}`)
+    throw new Error(`현재 설치의 커스텀 스킨 상태를 읽을 수 없습니다: ${error.message}`, { cause: error })
   }
 }
 
@@ -84,7 +84,7 @@ export async function autoCustomizeEnabled(root) {
     return marker.schemaVersion === 1 && marker.enabled === true
   } catch (error) {
     if (error?.code === "ENOENT") return false
-    throw new Error(`자동 커스텀 설정을 읽을 수 없습니다: ${error.message}`)
+    throw new Error(`자동 커스텀 설정을 읽을 수 없습니다: ${error.message}`, { cause: error })
   }
 }
 

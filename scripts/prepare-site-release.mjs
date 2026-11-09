@@ -37,7 +37,7 @@ async function ensureDependencies() {
   const lockPath = join(projectRoot, "package-lock.json")
   const lockHash = await sha256File(lockPath)
   const stampPath = join(buildRoot, "package-lock.sha256")
-  let installedHash = ""
+  let installedHash
   try {
     installedHash = (await readFile(stampPath, "utf8")).trim()
     await readFile(join(projectRoot, "node_modules", ".package-lock.json"))
@@ -58,7 +58,7 @@ export async function assertDirectCustomizeBase(sourceVersion, installedRelease 
   try {
     manifest = JSON.parse(await readFile(join(installedRelease, "manifest.json"), "utf8"))
   } catch (error) {
-    throw new Error(`현재 설치된 NUBO 버전을 확인할 수 없습니다: ${error.message}`)
+    throw new Error(`현재 설치된 NUBO 버전을 확인할 수 없습니다: ${error.message}`, { cause: error })
   }
   const installedVersion = manifest?.releaseVersion
   if (!installedVersion) {

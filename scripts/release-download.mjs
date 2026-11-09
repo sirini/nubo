@@ -238,8 +238,10 @@ export function runReleaseCommand(releaseDirectory, args) {
 }
 
 export function assertSupportedRuntime() {
-  const major = Number.parseInt(process.versions.node.split(".")[0], 10)
-  if (major < 22) throw new Error(`Node.js 22 이상이 필요합니다: ${process.version}`)
+  const [major, minor, patch] = process.versions.node.split(".").map(Number)
+  if (!(major >= 26 || major === 24 && minor >= 15 || major === 22 && (minor > 22 || minor === 22 && patch >= 3))) {
+    throw new Error(`Node.js 22.22.3+, 24.15.0+ 또는 26+가 필요합니다: ${process.version}`)
+  }
   if (process.platform !== "linux" || process.arch !== "x64") {
     throw new Error(`공식 릴리스는 Linux amd64에서만 실행할 수 있습니다: ${process.platform} ${process.arch}`)
   }

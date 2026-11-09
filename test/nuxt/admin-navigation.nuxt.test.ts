@@ -83,7 +83,7 @@ describe("admin navigation with real asynchronous skins", () => {
           for (const [path, heading] of destinations) {
             await wrapper.findAll(`a[href="${path}"]`).at(0)!.trigger("click")
             await vi.waitFor(() => expect(router.currentRoute.value.path).toBe(path))
-            await vi.waitFor(() => expect(wrapper.findAll("h1,h2,h3").some((node) => node.text() === heading)).toBe(true))
+            await vi.waitFor(() => expect(wrapper.findAll("h1,h2,h3").map((node) => node.text()), path).toContain(heading))
           }
           router.back()
           await vi.waitFor(() => expect(router.currentRoute.value.path).toBe("/admin"))

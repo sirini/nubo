@@ -180,7 +180,7 @@ const { installed } = useSkins()
 const boardSkins = installed.value.filter((skin) => skin.type === "board").map((skin) => ({ name: skin.name, value: skin.key }))
 
 // 레벨 제한 목록
-const levels = []
+const levels: { name: string; value: number }[] = []
 for (let lv = 0; lv < 11; lv++) {
   levels.push({ name: `Lv. ${lv}`, value: lv })
 }

@@ -2,6 +2,14 @@
 
 ## Recent completion
 
+- 의존성 업데이트(2026-11-09): Nuxt 4.6.4/Nitro 2.13.6, Tiptap 전체 3.33.0,
+  Vue 3.5.45, Tailwind 4.3.5, Shiki 4.6.0 등 적용. Node 요구 조건·설치 도구도 동기화.
+  Vite 8.3.7은 2 CPU/2GB에서 transform 정지를 재현해 기존 rolldown-vite 7.3.1 유지.
+  같은 제한에서 최종 build 25.7초/최대 1.83GiB/OOM 0, lint(기존 경고 49개), typecheck,
+  154개 테스트, nuboctl Go 테스트와 GOAPI 계약 검사 통과. API 변경 없음.
+  Unovis 1.8 SSR 오류로 1.6.7 유지; 기존 MapLibre/Zod audit 취약점과 다른 major 이행은
+  후속 과제로 남는다. 근거·버전 고정 사유는 `docs/DEPENDENCY_UPDATES.md` 참조.
+
 - 관리자 전환 구조 정리(2026-10-31): 각 Nuxt 페이지가 메뉴를 provider에 전달하도록 변경해 전역 라우트 감시·공용 메뉴 변경을 제거했다. 권한 확인 전후 DOM 루트를 유지하고 스킨·패널의 비동기 로딩을 로컬 Suspense로 격리했다. 실제 레이아웃·게시판·관리자·홈 스킨을 사용하는 링크 클릭, 7개 메뉴, 게시판 편집 대상 변경, history, 로딩 중 이탈 테스트를 추가했다. 전체 154개, lint(기존 경고 49개), typecheck, build 및 운영 모드 전환 테스트 통과. GOAPI 계약 변경 없음.
 
 - GOAPI Mac 빌드 도우미(2026-10-31): Docker가 중지된 Mac에서 Colima를 시작한 뒤 공식 Ubuntu 22 빌드 스크립트를 실행한다. 원격 main의 최신 변경을 병합했다. Ubuntu 22 공식 빌드 및 runtime 검증 완료. go vet 통과, 원격 코드의 전체 테스트에서 studio SQL mock과 reaction 권한 테스트 두 건 실패.

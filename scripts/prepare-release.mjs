@@ -94,7 +94,7 @@ async function main() {
       await enableAutoCustomize(process.cwd())
     } catch (error) {
       if (stagedSiteRelease) discardStagedSystemRelease(stagedSiteRelease)
-      throw new Error(`공식 업데이트는 완료됐지만 커스텀 Web 적용에 실패했습니다: ${error.message}`)
+      throw new Error(`공식 업데이트는 완료됐지만 커스텀 Web 적용에 실패했습니다: ${error.message}`, { cause: error })
     } finally {
       await rm(siteRelease, { recursive: true, force: true })
     }

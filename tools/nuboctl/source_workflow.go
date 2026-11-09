@@ -58,7 +58,7 @@ func runSourceWorkflow(command string, args []string) error {
 	}
 	node, err := exec.LookPath("node")
 	if err != nil {
-		return fmt.Errorf("Node.js를 찾을 수 없습니다. Node.js 22 이상을 설치해 주세요")
+		return fmt.Errorf("Node.js를 찾을 수 없습니다. Node.js 22.22.3+, 24.15.0+ 또는 26+을 설치해 주세요")
 	}
 	commandLine := exec.Command(node, append([]string{workflow.script}, workflow.args...)...)
 	commandLine.Dir = workflow.root

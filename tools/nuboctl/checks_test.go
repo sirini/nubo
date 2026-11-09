@@ -8,11 +8,11 @@ import (
 	"testing"
 )
 
-// Node 22 이상을 허용하고 그 아래 버전만 거부하는지 확인한다.
+// Nuxt가 요구하는 Node 버전 경계를 확인한다.
 func TestCheckNodeEnforcesMinimumVersion(t *testing.T) {
 	runner := fakeRunner{
 		paths:   map[string]bool{"node": true},
-		outputs: map[string]string{"node --version": "v22.0.0\n"},
+		outputs: map[string]string{"node --version": "v22.22.3\n"},
 		errors:  map[string]error{},
 	}
 	if result := checkNode(runner); result.level != levelPass {
@@ -77,5 +77,18 @@ func TestRunningServiceUserPrefersSystemdValue(t *testing.T) {
 	runner.outputs["systemctl show --property=User --value nubo-goapi.service"] = "invalid user\n"
 	if user := runningServiceUser("configured-owner", runner); user != "configured-owner" {
 		t.Fatalf("fallback 서비스 사용자 = %q", user)
+	}
+}
+
+func TestValidateNodeVersionBoundaries(t *testing.T) {
+	for _, version := range []string{"v22.22.3", "v22.23.0", "v24.15.0", "v26.0.0", "v30.0.0"} {
+		if err := validateNodeVersion(version); err != nil {
+			t.Errorf("%s: %v", version, err)
+		}
+	}
+	for _, version := range []string{"v22.22.2", "v24.14.9", "v23.0.0", "v25.0.0", "v20.0.0", "v26.0.0-beta.1", "garbage"} {
+		if err := validateNodeVersion(version); err == nil {
+			t.Errorf("accepted %s", version)
+		}
 	}
 }

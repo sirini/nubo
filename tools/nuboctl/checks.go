@@ -104,16 +104,21 @@ func checkNode(runner commandRunner) checkResult {
 // Node.js 버전 문자열을 해석해 최소 지원 버전을 적용한다.
 func validateNodeVersion(output string) error {
 	version := strings.TrimPrefix(strings.TrimSpace(output), "v")
-	majorText, _, _ := strings.Cut(version, ".")
-	if majorText == "" {
+	parts := strings.Split(version, ".")
+	if len(parts) != 3 {
 		return fmt.Errorf("버전을 해석할 수 없습니다: %s", version)
 	}
-	major, err := strconv.Atoi(majorText)
-	if err != nil {
-		return fmt.Errorf("버전을 해석할 수 없습니다: %s", version)
+	numbers := make([]int, 3)
+	for i, part := range parts {
+		n, err := strconv.Atoi(part)
+		if err != nil || n < 0 {
+			return fmt.Errorf("버전을 해석할 수 없습니다: %s", version)
+		}
+		numbers[i] = n
 	}
-	if major < 22 {
-		return fmt.Errorf("%s은 최소 지원 버전 22 미만입니다", version)
+	major, minor, patch := numbers[0], numbers[1], numbers[2]
+	if !(major >= 26 || major == 24 && minor >= 15 || major == 22 && (minor > 22 || minor == 22 && patch >= 3)) {
+		return fmt.Errorf("%s은 지원되지 않습니다. Node.js 22.22.3+, 24.15.0+ 또는 26+가 필요합니다", version)
 	}
 	return nil
 }
