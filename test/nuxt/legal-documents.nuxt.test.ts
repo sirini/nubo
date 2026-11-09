@@ -1,10 +1,49 @@
-import { mountSuspended } from "@nuxt/test-utils/runtime"
-import { useRuntimeConfig } from "#imports"
+import { mountSuspended, registerEndpoint } from "@nuxt/test-utils/runtime"
+import { clearNuxtData, useRuntimeConfig } from "#imports"
 import { describe, expect, it } from "vitest"
 import LegalDocument from "../../app/components/legal/LegalDocument.vue"
+import PrivacyOperations from "../../app/components/legal/PrivacyOperations.vue"
 import LegalFooter from "../../app/components/legal/LegalFooter.vue"
 
+const operationalState = { available: true, providers: [] as string[], imageDescriptionEnabled: false, securityLogEnabled: true, securityLogRetentionDays: 7, securityLogMaskedIP: true }
+registerEndpoint("/api/legal/status", () => operationalState)
+
 describe("public legal documents", () => {
+  it("distinguishes disabled AI from an unconfirmed backend and configured thumbnail search", async () => {
+    const original = { ...operationalState }
+    let wrapper
+    try {
+      clearNuxtData("legal-operational-status")
+      wrapper = await mountSuspended(PrivacyOperations, { route: "/privacy" })
+      expect(wrapper.text()).toContain("설정된 외부 위탁·연동은 없습니다")
+      expect(wrapper.text()).toContain("현재 사용하지 않습니다")
+      wrapper.unmount()
+      operationalState.available = false
+      clearNuxtData("legal-operational-status")
+      wrapper = await mountSuspended(PrivacyOperations, { route: "/privacy" })
+      expect(wrapper.text()).toContain("외부 처리 없음으로 판단하지 않으며")
+      expect(wrapper.text()).not.toContain("설정된 외부 위탁·연동은 없습니다")
+      wrapper.unmount()
+      Object.assign(operationalState, { available: true, providers: ["OpenAI"], imageDescriptionEnabled: true })
+      clearNuxtData("legal-operational-status")
+      wrapper = await mountSuspended(PrivacyOperations, { route: "/privacy" })
+      expect(wrapper.text()).toContain("작은 썸네일")
+      expect(wrapper.text()).toContain("텍스트 검색")
+    } finally {
+      wrapper?.unmount()
+      Object.assign(operationalState, original)
+      clearNuxtData("legal-operational-status")
+    }
+  })
+
+  it("keeps the November 9 privacy policy without today's live operational statements", async () => {
+    const wrapper = await mountSuspended(LegalDocument, { props: { kind: "privacy" }, route: "/privacy?version=2026-11-09" })
+    expect(wrapper.get('[role="status"]').text()).toContain("이전 문서")
+    expect(wrapper.get("time").text()).toBe("2026-11-09")
+    expect(wrapper.find("#privacy-operations").exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it("exposes all three documents in the footer", async () => {
     const wrapper = await mountSuspended(LegalFooter)
     expect(wrapper.findAll("a").map((link) => link.attributes("href"))).toEqual(["/terms", "/privacy", "/disclaimer"])

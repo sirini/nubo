@@ -3,7 +3,7 @@
     <component :is="selectedSkin" class="flex-1">
       <slot></slot>
     </component>
-    <LegalFooter />
+    <LegalFooter v-if="!homeHasPolicyLinks" />
     <UserAchievementCelebration />
   </div>
 </template>
@@ -13,9 +13,11 @@ import LegalFooter from "~/components/legal/LegalFooter.vue"
 import { nuboLayoutKey } from "~/providers/contexts/layout"
 import { useLayoutProvider } from "~/providers/layout"
 
+const route = useRoute()
 const home = useHomeStore()
 const { settings, loadSettings } = useSkins()
 await loadSettings()
+const homeHasPolicyLinks = computed(() => route.path === "/" && ["nubo-basic-home", "nubo-advance-home"].includes(settings.value.home))
 
 const modules = import.meta.glob("~/skins/*/Layout.vue")
 const selectedSkin = getSkin(modules, () => settings.value.layout, "nubo-basic-layout")

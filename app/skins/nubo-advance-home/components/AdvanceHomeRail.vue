@@ -1,6 +1,7 @@
 <template>
   <aside class="hidden min-w-0 space-y-4 xl:block">
     <div class="sticky top-20 space-y-4">
+      <LegalLinks class="px-2 leading-6" />
       <section class="overflow-hidden rounded-2xl border border-border/75 bg-card shadow-sm">
         <div class="bg-linear-to-br from-primary/18 via-accent/55 to-card px-5 py-5">
           <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Community</p>
@@ -80,6 +81,7 @@
 </template>
 
 <script setup lang="ts">
+import LegalLinks from "~/components/legal/LegalLinks.vue"
 import {
   BookOpenIcon,
   GithubIcon,

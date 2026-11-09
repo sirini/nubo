@@ -123,10 +123,12 @@
       :posts="mediaPosts"
       @close="selectedMediaIndex = -1"
     />
+    <LegalFooter />
   </section>
 </template>
 
 <script setup lang="ts">
+import LegalFooter from "~/components/legal/LegalFooter.vue"
 import {
   ArrowDownToLineIcon,
   CheckCircle2Icon,

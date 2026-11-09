@@ -88,6 +88,7 @@ import {
   LayoutDashboardIcon,
   MenuIcon,
   MailIcon,
+  ShieldCheckIcon,
   MessageCircleWarningIcon,
   PaletteIcon,
   UsersIcon,
@@ -107,6 +108,7 @@ const menuItems = [
   { label: "업적 배지", value: ADMIN_BADGE, icon: AwardIcon },
   { label: "신고 관리", value: ADMIN_REPORT, icon: MessageCircleWarningIcon },
   { label: "단체 메일", value: ADMIN_MAIL, icon: MailIcon },
+  { label: "보안·운영 로그", value: "Logs" as const, icon: ShieldCheckIcon },
   { label: "스킨 관리", value: ADMIN_SKIN, icon: PaletteIcon },
 ]
 </script>

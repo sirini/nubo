@@ -10,14 +10,15 @@
       </nav>
     </header>
 
-    <template v-if="archived">
-      <aside role="status" class="my-6 rounded-lg border border-border bg-muted/40 p-4 text-sm leading-6">
-        이전 문서입니다. 당시 전문을 보존하며, 문서에 표시되는 사이트 이름·연락처는 현재 운영 설정입니다.
+    <aside v-if="historical" role="status" class="my-6 rounded-lg border border-border bg-muted/40 p-4 text-sm leading-6">
+        이전 문서입니다. 당시 전문을 보존하며, 사이트 이름·연락처는 현재 운영 설정입니다.
         <NuxtLink :to="basePath" class="underline underline-offset-4">현행 문서 보기</NuxtLink>
       </aside>
+    <template v-if="archived">
       <component :is="archived" />
     </template>
     <template v-else>
+      <PrivacyOperations v-if="kind === 'privacy' && !historical" />
       <nav aria-label="문서 목차" class="my-8 rounded-lg border border-border bg-muted/20 p-5">
         <h2 class="mb-3 text-sm font-semibold">목차</h2>
         <ol class="grid gap-2 text-sm sm:grid-cols-2">
@@ -48,7 +49,7 @@
         <NuxtLink to="/support" class="underline underline-offset-4">고객 지원</NuxtLink>
         <NuxtLink to="/delete-account" class="underline underline-offset-4">계정 및 데이터 삭제</NuxtLink>
       </div>
-      <template v-if="kind === 'privacy' && !archived">
+      <template v-if="kind === 'privacy' && !historical">
         <h3 class="mb-3 mt-7 font-semibold">이 운영처의 개인정보 처리 상세</h3>
         <p v-if="config.public.legalProcessingDetails" class="whitespace-pre-line break-words text-sm leading-7">{{ config.public.legalProcessingDetails }}</p>
         <p v-else class="text-sm leading-7 text-muted-foreground">추가 처리 상세가 등록되지 않았습니다. 실제 외부 연동·위탁·국외 이전 여부와 접속 로그·백업 등의 보유기간은 위 담당자에게 확인할 수 있습니다. 운영자는 해당 처리를 시행하기 전에 적용 항목과 근거·기간을 공개해야 합니다.</p>
@@ -57,8 +58,8 @@
     <section id="legal-history" class="scroll-mt-24 border-t border-border py-7">
       <h2 class="mb-4 text-lg font-semibold">개정 이력</h2>
       <ul class="space-y-3 text-sm leading-6">
-        <li><NuxtLink :to="basePath" class="underline underline-offset-4">{{ document.effective }} · 현행</NuxtLink><p class="text-muted-foreground">{{ document.summary }}</p></li>
-        <li v-if="previous"><NuxtLink :to="`${basePath}?version=${previous.date}`" class="underline underline-offset-4">{{ previous.date }} · 이전 전문</NuxtLink><p class="text-muted-foreground">기존 서비스 정책 보존</p></li>
+        <li><NuxtLink :to="basePath" class="underline underline-offset-4">{{ currentDocument.effective }} · 현행</NuxtLink><p class="text-muted-foreground">{{ currentDocument.summary }}</p></li>
+        <li v-for="revision in revisions" :key="revision.date"><NuxtLink :to="`${basePath}?version=${revision.date}`" class="underline underline-offset-4">{{ revision.date }} · 이전 전문</NuxtLink><p class="text-muted-foreground">기존 서비스 정책 보존</p></li>
       </ul>
     </section>
   </article>
@@ -66,8 +67,10 @@
 
 <script setup lang="ts">
 import terms from "~/data/legal/terms.json"
+import privacy20261109 from "~/data/legal/archive/privacy-2026-11-09.json"
 import privacy from "~/data/legal/privacy.json"
 import disclaimer from "~/data/legal/disclaimer.json"
+import PrivacyOperations from "./PrivacyOperations.vue"
 import PrivacyArchive from "./archive/Privacy20260906.vue"
 import TermsArchive from "./archive/Terms20260821.vue"
 
@@ -80,17 +83,19 @@ const policies = [
   { kind: "privacy", path: "/privacy", title: "개인정보처리방침" },
   { kind: "disclaimer", path: "/disclaimer", title: "책임의 한계와 법적고지" },
 ]
-const document = computed(() => documents[props.kind])
+const currentDocument = computed(() => documents[props.kind])
 const basePath = computed(() => `/${props.kind}`)
-const previous = computed(() => props.kind === "privacy" ? { date: "2026-09-06", component: PrivacyArchive } : props.kind === "terms" ? { date: "2026-08-21", component: TermsArchive } : undefined)
-const archived = computed(() => route.query.version && route.query.version === previous.value?.date ? previous.value.component : undefined)
-// Unknown versions must never silently display the current policy as an old version.
+const revisions = computed(() => props.kind === "privacy" ? [{ date: "2026-11-09" }, { date: "2026-09-06" }] : props.kind === "terms" ? [{ date: "2026-08-21" }] : [])
+const previous = computed(() => revisions.value.find((item) => item.date === route.query.version))
+const historical = computed(() => !!previous.value)
+const archived = computed(() => previous.value?.date === "2026-09-06" ? PrivacyArchive : previous.value?.date === "2026-08-21" ? TermsArchive : undefined)
+const document = computed(() => props.kind === "privacy" && previous.value?.date === "2026-11-09" ? privacy20261109 : currentDocument.value)
 watchEffect(() => {
-  if (route.query.version && route.query.version !== document.value.effective && route.query.version !== previous.value?.date) {
+  if (route.query.version && route.query.version !== currentDocument.value.effective && !previous.value) {
     throw createError({ statusCode: 404, statusMessage: "Policy version not found" })
   }
 })
 const operator = computed(() => config.public.legalOperator || config.public.title)
 const email = computed(() => config.public.legalEmail || config.public.adminId)
-useHead(() => ({ title: document.value.title, meta: [{ name: "robots", content: archived.value ? "noindex,follow" : "index,follow" }] }))
+useHead(() => ({ title: document.value.title, meta: [{ name: "robots", content: historical.value ? "noindex,follow" : "index,follow" }] }))
 </script>

@@ -42,3 +42,6 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Private runtime operational records
+security-logs/

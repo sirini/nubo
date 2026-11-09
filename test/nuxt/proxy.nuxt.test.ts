@@ -57,6 +57,18 @@ describe("safeProxyRequest token refresh", () => {
     await Promise.resolve()
   })
 
+  it("preserves CSV bytes including BOM and no-store headers after authorization forwarding", async () => {
+    const csv = new TextEncoder().encode("\ufefftime_utc,method\n2026-11-10T00:00:00Z,POST\n")
+    fetchRaw.mockResolvedValue({ status: 200, _data: csv.buffer, headers: new Headers({ "content-type": "text/csv; charset=utf-8", "content-disposition": 'attachment; filename="security.csv"' }) })
+    const { event, response: nodeResponse } = eventFor({ cookie: "nubo-auth-token=admin-access", url: "/api/admin/system/logs?format=csv" })
+    const body = await safeProxyRequest(event, "http://goapi.test/admin/system/logs")
+    expect(body).toEqual(csv)
+    expect([...body as Uint8Array].slice(0, 3)).toEqual([239, 187, 191])
+    expect(fetchRaw.mock.calls[0]?.[1].responseType).toBe("arrayBuffer")
+    expect(nodeResponse.getHeader("content-type")).toBe("text/csv; charset=utf-8")
+    expect(nodeResponse.getHeader("cache-control")).toBe("no-store")
+  })
+
   it("refreshes once, forwards cookies, and replays the exact request body", async () => {
     const rawBody = Buffer.from([0, 1, 2, 255])
     const cookie = "nubo-auth-token=expired; nubo-refresh-token=refresh-value"

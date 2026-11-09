@@ -12,7 +12,7 @@ import type { Pair } from "./common"
 import type { UserBadge, UserBasicInfo } from "./user"
 
 // 관리화면 메뉴(컴포넌트명) 타입 정의
-export type AdminMenu = "Dashboard" | "Board" | "User" | "Badge" | "Report" | "Skin" | "Mail" | "System"
+export type AdminMenu = "Dashboard" | "Board" | "User" | "Badge" | "Report" | "Skin" | "Mail" | "System" | "Logs"
 
 // 스킨 타입 정의
 export type AdminSkinType =

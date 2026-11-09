@@ -284,3 +284,35 @@ JSON result의 필드명은 일치하며, request는 handler가 실제 읽는 JS
 - 기존 `GET /board/my/studio`는 JWT 본인 기준과 비공개 작품 포함 집계를 그대로 유지한다.
 - 추가 endpoint이며 기존 웹·Android 요청/응답과 DB 스키마 변경은 없다. iOS는 서버 미배포·오류 시
   숫자를 0으로 대체하지 않고 통계 미조회 상태를 표시한다.
+
+## 운영·개인정보 상태 및 관리자 감사 (2026-11-10 추가)
+
+기존 v1 요청·응답 형식은 유지하며 다음 엔드포인트를 추가한다. 상태·로그 API는 일반 게시물
+`Resp` 포장 없이 직접 JSON을 반환한다.
+
+- 공개 `GET /goapi/privacy/status`: `providers: string[]`, `imageDescriptionEnabled: boolean`,
+  `securityLogEnabled: boolean`, `securityLogRetentionDays: number`, `securityLogMaskedIP: boolean`,
+  `auditLogRetentionDays: number`. 키·파일 경로·계정 식별자는 반환하지 않는다.
+- 웹 `GET /api/legal/status`: 위 공개 필드의 허용 목록과 `available`을 반환한다.
+  구버전/미응답은 `available=false`, AI 상태 null이며 ‘없음’으로 추정하지 않는다.
+- 최고 관리자 `GET /goapi/admin/system/logs`, `GET /goapi/admin/system/audit`:
+  `date=YYYY-MM-DD` (UTC, 기본 오늘), `offset>=0` (기본 0), 페이지당 최대 100건.
+  `items`, `next` (없으면 0), `retentionDays`, `maskedIP`, `fullIP`, `integrityChecked`,
+  `writeError`, `dropped` 반환. 일반 회원은 기존 관리자 권한 오류 응답으로 차단한다.
+- 같은 경로의 `format=csv&purpose=privacy-review|incident-response|authority-submission`:
+  해당 날짜 전체 UTF-8 BOM CSV. 날짜는 엄격히 검증하고 Excel 수식 시작 문자를 무력화한다.
+  최고 관리자 그룹에서 제출 목적을 확인하며, 응답은 `text/csv`, attachment, no-store다.
+  웹 프록시는 인증 갱신 후에도 CSV 본문·파일 헤더를 보존한다.
+- 최고 관리자 `POST /goapi/admin/system/audit/review?month=YYYY-MM`: 보관 중인 해당 월 파일의
+  무결성을 확인하고 실제 점검 완료의 선언을 감사에 남긴다. 미래 월은 거부한다.
+  성공 시 `{success:true, month}`. 웹은 `/api/admin/system/audit-review`로 연결한다.
+
+감사 엔트리는 기본 메타데이터 외 `requestId`, `phase`, `subjects` (내부 회원 번호만),
+`purpose`, `reference` (CSV 대상 날짜), `peerSource`, `resultCode`, `previousHash`, `hash`를 가진다.
+실행 전·후는 같은 requestId로 대응한다. IP 전달은 명시적 신뢰 CIDR에서의 X-Real-IP만 허용하며
+웹도 검증한 주소만 전달한다. 신뢰 설정이 없으면 직접 연결 주소가 기록된다.
+
+관리자 그룹은 유효한 최고 관리자 인증 뒤 감사 미들웨어를 거친다. 의도 기록을 저장할 수 없으면
+작업 전 503, 결과 기록 실패는 작업 후 503이므로 후자의 경우 이미 처리되었을 수 있다.
+이 경우 변경 요청을 자동으로 반복하지 않는다. 단기 로그 저장 실패로 일반 이용을 차단하지 않는다.
+보관·점검·제출·배포 절차는 `SECURITY_LOGS.md`를 따른다. DB 스키마 변경은 없다.

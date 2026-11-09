@@ -8,6 +8,7 @@ export const adminMenuPaths: Record<AdminMenu, string> = {
   Report: "/admin/reports",
   Mail: "/admin/mail",
   Skin: "/admin/skins",
+  Logs: "/admin/logs",
   System: "/admin/system",
 }
 
