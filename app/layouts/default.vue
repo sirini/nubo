@@ -1,13 +1,15 @@
 <template>
-  <div class="contents">
-    <component :is="selectedSkin">
+  <div class="min-h-screen flex flex-col">
+    <component :is="selectedSkin" class="flex-1">
       <slot></slot>
     </component>
+    <LegalFooter />
     <UserAchievementCelebration />
   </div>
 </template>
 
 <script setup lang="ts">
+import LegalFooter from "~/components/legal/LegalFooter.vue"
 import { nuboLayoutKey } from "~/providers/contexts/layout"
 import { useLayoutProvider } from "~/providers/layout"
 

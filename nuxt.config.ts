@@ -51,6 +51,12 @@ export default defineNuxtConfig({
       fileSizeLimit: env.NUXT_PUBLIC_FILE_SIZE_LIMIT || "104857600",
       accessHours: env.NUXT_PUBLIC_ACCESS_HOURS || "2",
       refreshDays: env.NUXT_PUBLIC_REFRESH_DAYS || "7",
+      // 운영처별 법적 고지. prebuilt에서도 NUXT_PUBLIC_LEGAL_* 환경 변수로 덮어쓴다.
+      legalOperator: "",
+      legalOfficer: "",
+      legalEmail: "",
+      legalAddress: "",
+      legalProcessingDetails: "",
       skins: defaultSkins,
     },
   },

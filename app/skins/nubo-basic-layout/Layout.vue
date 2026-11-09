@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-background">
+  <div class="flex flex-col bg-background">
     <LayoutTopNavMenus />
-    <main>
+    <main class="flex-1">
       <slot></slot>
     </main>
     <Toaster />

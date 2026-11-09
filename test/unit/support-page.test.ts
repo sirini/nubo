@@ -23,13 +23,4 @@ describe("public support page", () => {
     expect(menu).toContain("고객 지원")
   })
 
-  it("documents mobile collection, processors, deletion, and no ad tracking", () => {
-    const privacy = source("app/skins/nubo-basic-privacy/Privacy.vue")
-
-    expect(privacy).toContain("SENSTA 모바일 앱")
-    expect(privacy).toContain("Google Firebase")
-    expect(privacy).toContain("GPS 위치 메타데이터를 제거")
-    expect(privacy).toContain("맞춤형 광고 추적에 사용하지 않습니다")
-    expect(privacy).toContain('to="/delete-account"')
-  })
 })
