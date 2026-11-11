@@ -1,8 +1,8 @@
+import { safeProxyRequest } from "~~/server/utils/proxy"
 import { VISIT_KEY } from "~/types/common"
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
-  const query = getQuery(event) as { userUid?: number }
   const ua = getHeader(event, "user-agent") || ""
 
   if (/\b(bot|spider|crawl)\b/i.test(ua)) {
@@ -23,5 +23,5 @@ export default defineEventHandler(async (event) => {
     path: "/",
   })
 
-  return proxyRequest(event, `${config.apiBaseInternal}/home/visit?userUid=${query.userUid}`)
+  return safeProxyRequest(event, `${config.apiBaseInternal}/home/visit`)
 })

@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from "vitest"
 import SecurityLogs from "../../app/skins/nubo-basic-admin/Logs.vue"
 
 const requests: Record<string, unknown>[] = []
+registerEndpoint("/api/admin/system/visits", () => ({ items: [], next: 0, retentionDays: 90, fullIP: true }))
+registerEndpoint("/api/admin/system/visit-statistics", () => ({ counts: { "2026-11": 12 }, retentionDays: 90 }))
 registerEndpoint("/api/admin/system/logs", (event) => {
   const query = getQuery(event)
   requests.push(query)
@@ -23,6 +25,7 @@ describe("security log administration", () => {
     Object.defineProperty(URL, "createObjectURL", { configurable: true, value: create })
     Object.defineProperty(URL, "revokeObjectURL", { configurable: true, value: revoke })
     const wrapper = await mountSuspended(SecurityLogs)
+    await wrapper.findAll("select")[1]!.setValue("logs")
     try {
       await vi.waitFor(() => expect(wrapper.text()).toContain("192.0.2.0/24"))
       await wrapper.get('input[type="date"]').setValue("2026-11-10")

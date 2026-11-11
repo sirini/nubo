@@ -70,7 +70,7 @@ export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
   const token = getCookie(event, AUTH_KEY)
   const method = event.node.req.method
   const query = getQuery(event)
-  const binaryCSV = query.format === "csv" && /\/admin\/system\/(logs|audit)$/.test(targetUrl)
+  const binaryCSV = query.format === "csv" && /\/admin\/system\/(logs|audit|visits)$/.test(targetUrl)
   const contentType = getHeader(event, "content-type")
   const peer = trustedRequestPeer(event)
   const peerHeader: Record<string, string> = peer ? { "X-Real-IP": peer } : {}
@@ -87,7 +87,7 @@ export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
     body: rawBody,
     query,
     headers: {
-      Authorization: `Bearer ${token}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...peerHeader,
       ...(contentType ? { "content-type": contentType } : {}), // 원본 멀티파트 헤더 토스
     },

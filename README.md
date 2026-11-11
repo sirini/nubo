@@ -3,7 +3,9 @@
 NUBO는 사진 커뮤니티, 블로그, 게시판과 사내 커뮤니티를 만드는 오픈소스 커뮤니티 빌더입니다.
 Nuxt 4 웹, [GOAPI](https://github.com/sirini/goapi), MySQL/MariaDB를 함께 사용합니다.
 
-> 현재 버전: NUBO/GOAPI 1.3.2 · 지원 runtime: Ubuntu 22.04+ Linux amd64, Node.js 22.22.3+ / 24.15.0+ / 26+
+> 현재 버전: NUBO/GOAPI 1.4.0 · 지원 runtime: Ubuntu 22.04+ Linux amd64, Node.js 22.22.3+ / 24.15.0+ / 26+
+
+[v1.4.0 접속 기록·관리자 콘솔 업데이트](docs/releases/v1.4.0.md)
 
 ## 주요 기능
 

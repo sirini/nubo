@@ -67,6 +67,7 @@
 
 <script setup lang="ts">
 import terms from "~/data/legal/terms.json"
+import privacy20261110 from "~/data/legal/archive/privacy-2026-11-10.json"
 import privacy20261109 from "~/data/legal/archive/privacy-2026-11-09.json"
 import privacy from "~/data/legal/privacy.json"
 import disclaimer from "~/data/legal/disclaimer.json"
@@ -85,11 +86,11 @@ const policies = [
 ]
 const currentDocument = computed(() => documents[props.kind])
 const basePath = computed(() => `/${props.kind}`)
-const revisions = computed(() => props.kind === "privacy" ? [{ date: "2026-11-09" }, { date: "2026-09-06" }] : props.kind === "terms" ? [{ date: "2026-08-21" }] : [])
+const revisions = computed(() => props.kind === "privacy" ? [{ date: "2026-11-10" }, { date: "2026-11-09" }, { date: "2026-09-06" }] : props.kind === "terms" ? [{ date: "2026-08-21" }] : [])
 const previous = computed(() => revisions.value.find((item) => item.date === route.query.version))
 const historical = computed(() => !!previous.value)
 const archived = computed(() => previous.value?.date === "2026-09-06" ? PrivacyArchive : previous.value?.date === "2026-08-21" ? TermsArchive : undefined)
-const document = computed(() => props.kind === "privacy" && previous.value?.date === "2026-11-09" ? privacy20261109 : currentDocument.value)
+const document = computed(() => props.kind === "privacy" && previous.value?.date === "2026-11-10" ? privacy20261110 : props.kind === "privacy" && previous.value?.date === "2026-11-09" ? privacy20261109 : currentDocument.value)
 watchEffect(() => {
   if (route.query.version && route.query.version !== currentDocument.value.effective && !previous.value) {
     throw createError({ statusCode: 404, statusMessage: "Policy version not found" })

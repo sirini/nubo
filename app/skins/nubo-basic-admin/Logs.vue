@@ -1,9 +1,10 @@
 <template>
   <section class="space-y-5 p-4 sm:p-6">
-    <h1 class="text-xl font-semibold">보안·운영 로그</h1>
-    <p class="text-sm leading-6 text-muted-foreground">변경 요청·관리자 조회·HTTP 오류를 확인합니다. 본문·이메일·토큰·검색어는 기록하지 않습니다. 시각과 날짜는 UTC 기준입니다.</p>
+    <h1 class="text-xl font-semibold">관리자 콘솔 · 접속 기록</h1>
+    <p class="text-sm leading-6 text-muted-foreground">방문자 페이지 접속·관리자 화면 방문·API 작업 기록을 확인합니다. 본문·이메일·토큰·검색어는 기록하지 않습니다. 시각과 날짜는 UTC 기준입니다.</p>
+    <VisitStatistics />
     <div class="flex flex-wrap items-end gap-3">
-      <label class="space-y-1 text-sm">기록 유형<select v-model="kind" class="block rounded-md border bg-background px-3 py-2" @change="offset = 0; load()"><option value="logs">단기 운영 로그</option><option value="audit">관리자 감사 기록</option></select></label>
+      <label class="space-y-1 text-sm">기록 유형<select v-model="kind" class="block rounded-md border bg-background px-3 py-2" @change="offset = 0; load()"><option value="visits">방문자 접속 기록</option><option value="logs">단기 운영 로그</option><option value="audit">관리자 감사 기록</option></select></label>
       <label class="space-y-1 text-sm">조회 날짜 (UTC)<input v-model="day" type="date" class="block rounded-md border bg-background px-3 py-2" @change="offset = 0; load()" /></label>
       <Button variant="outline" :disabled="pending" @click="load">조회</Button>
       <label class="space-y-1 text-sm">CSV 제출 목적<select v-model="exportPurpose" class="block rounded-md border bg-background px-3 py-2"><option value="privacy-review">개인정보 보호 점검</option><option value="incident-response">보안 사고 대응</option><option value="authority-submission">권한 있는 기관 제출</option></select></label>
@@ -17,7 +18,7 @@
       <p class="text-xs leading-6 text-muted-foreground">접속지는 신뢰 프록시 설정에 따라 원 접속지 또는 직접 연결 주소입니다. 프록시 설정이 없으면 실제 이용자 주소와 다릅니다. 회원 번호 0은 인증된 회원이 확인되지 않은 요청입니다. HTTP 200도 업무 처리가 성공했다는 보장은 아닙니다.</p>
       <div class="overflow-x-auto rounded-md border">
         <table class="w-full whitespace-nowrap text-left text-xs">
-          <thead class="bg-muted"><tr><th v-for="label in ['시각 (UTC)', '방식', '경로 유형', 'HTTP / 업무 코드', '소요(ms)', '회원 번호', '연결 주소', '대상 회원', '단계']" :key="label" class="p-3">{{ label }}</th></tr></thead>
+          <thead class="bg-muted"><tr><th v-for="label in ['시각 (UTC)', '방식', '방문 페이지 / API 경로', 'HTTP / 업무 코드', '소요(ms)', '회원 번호', '연결 주소', '대상 회원', '단계']" :key="label" class="p-3">{{ label }}</th></tr></thead>
           <tbody><tr v-for="(entry, index) in result.items" :key="index" class="border-t"><td class="p-3">{{ entry.time }}</td><td class="p-3">{{ entry.method }}</td><td class="p-3">{{ entry.route }}</td><td class="p-3">{{ entry.status }} / {{ entry.resultCode ?? '—' }}</td><td class="p-3">{{ entry.durationMs }}</td><td class="p-3">{{ entry.actor || '0' }}</td><td class="p-3">{{ entry.peer || '—' }}</td><td class="p-3">{{ entry.subjects?.join(', ') || '—' }}</td><td class="p-3">{{ entry.phase || '—' }}</td></tr></tbody>
         </table>
         <p v-if="result.items.length === 0" class="p-5 text-sm text-muted-foreground">해당 날짜에 조회할 기록이 없습니다.</p>
@@ -37,12 +38,13 @@
 </template>
 
 <script setup lang="ts">
+import VisitStatistics from "./components/VisitStatistics.vue"
 
 defineOptions({ name: "NuboSecurityLogs" })
 
 type LogPage = { fullIP?: boolean; integrityChecked?: boolean; items: { time: string; method: string; route: string; status: number; resultCode?: number; durationMs: number; actor: number; peer?: string; subjects?: number[]; phase?: string }[]; next: number; retentionDays: number; maskedIP: boolean; writeError: boolean; dropped: number }
 const config = useRuntimeConfig()
-const kind = ref("logs")
+const kind = ref("visits")
 const exportPurpose = ref("privacy-review")
 const endpoint = computed(() => `/admin/system/${kind.value}`)
 const day = ref(new Date().toISOString().slice(0, 10))

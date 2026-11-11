@@ -1,4 +1,5 @@
 export type PrivacyOperationalStatus = {
+  visitLogRetentionDays?: number
   available: boolean
   providers: string[]
   imageDescriptionEnabled: boolean | null

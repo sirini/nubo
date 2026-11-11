@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
     return {
       available: true,
       providers: status.providers.filter((value): value is string => typeof value === "string" && knownProviders.includes(value)),
+      visitLogRetentionDays: typeof status.visitLogRetentionDays === "number" ? status.visitLogRetentionDays : 0,
       auditLogRetentionDays: typeof status.auditLogRetentionDays === "number" ? status.auditLogRetentionDays : 0,
       imageDescriptionEnabled: status.imageDescriptionEnabled,
       securityLogEnabled: status.securityLogEnabled === true,
@@ -20,6 +21,6 @@ export default defineEventHandler(async (event) => {
     }
   } catch {
     // An old or unreachable backend must not be reported as having no external processing.
-    return { available: false, auditLogRetentionDays: 0, providers: [], imageDescriptionEnabled: null, securityLogEnabled: null, securityLogRetentionDays: 0, securityLogMaskedIP: null }
+    return { available: false, visitLogRetentionDays: 0, auditLogRetentionDays: 0, providers: [], imageDescriptionEnabled: null, securityLogEnabled: null, securityLogRetentionDays: 0, securityLogMaskedIP: null }
   }
 })
