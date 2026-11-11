@@ -21,6 +21,18 @@ Nuxt 문서 렌더링은 서버에서, SPA 경로 변경·로그인 상태 변�
 저장 실패는 일반 페이지 응답을 막지 않는다. 콘솔에 저장 오류·용량 초과 생략 수(프로세스 기준)를 표시한다.
 최고 관리자 API 작업은 기존 감사 기록 실패 시 차단 규칙을 유지한다.
 
+## v1.4.0 검증 (2026-11-11)
+
+- NUBO 기능 소스 `7e8758b`, GOAPI `ad05c11`을 main에 커밋·푸시했다.
+- 웹 lint(기존 경고 49개), typecheck, 전체 173개 테스트, production build 통과.
+- GO configs/securitylog/handlers/routers race·전체 vet 통과. 전체 테스트의 기존 studio SQL mock·reaction
+  권한 실패 2건은 변경 전 `b638c09`에서도 재현했다.
+- production HTTP+임시 백엔드로 현행/이전 정책·보관 안내와 SSR 페이지 기록의 query 제외를 확인했다.
+- 공식 `./scripts/build-ubuntu22.sh`의 Ubuntu 22/24 이미지 변환·라이브러리와 qemu64/max CPU 검증 통과.
+- GOAPI `dist/nubo-runtime/bin/goapi` SHA-256:
+  `10c28566aa30725e40b92f2f142480448e1aa91e107ba954a70af61b2ea3bf9c`
+- 운영 서비스에는 배포하지 않았다. 웹·GOAPI를 함께 반영하고 신뢰 프록시와 보존기간을 설정한다.
+
 ## 기록 구분
 
 기존 GOAPI `user_access_log`는 방문 통계용 회원 번호·방문 시각만 저장한다. IP 컬럼은 없고
