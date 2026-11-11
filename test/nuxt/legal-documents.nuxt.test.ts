@@ -18,8 +18,8 @@ describe("public legal documents", () => {
       expect(wrapper.text()).toContain("설정된 외부 위탁·연동은 없습니다")
       expect(wrapper.text()).toContain("현재 사용하지 않습니다")
       expect(wrapper.text()).toContain("페이지 경로와 접속 IP 원문")
-      expect(wrapper.text()).toContain("관리자가 명시적으로 삭제할 때까지")
-      expect(wrapper.text()).toContain("당일 파일은 삭제할 수 없습니다")
+      expect(wrapper.text()).toContain("접근을 제한해 계속 보관")
+      expect(wrapper.text()).toContain("기록 삭제 기능을 제공하지 않습니다")
       wrapper.unmount()
       operationalState.available = false
       clearNuxtData("legal-operational-status")
@@ -39,10 +39,10 @@ describe("public legal documents", () => {
     }
   })
 
-  it("keeps the November 9 privacy policy without today's live operational statements", async () => {
-    const wrapper = await mountSuspended(LegalDocument, { props: { kind: "privacy" }, route: "/privacy?version=2026-11-09" })
+  it.each(["2026-11-09", "2026-11-10", "2026-11-11"])("keeps %s privacy policy without today's live operational statements", async (version) => {
+    const wrapper = await mountSuspended(LegalDocument, { props: { kind: "privacy" }, route: `/privacy?version=${version}` })
     expect(wrapper.get('[role="status"]').text()).toContain("이전 문서")
-    expect(wrapper.get("time").text()).toBe("2026-11-09")
+    expect(wrapper.get("time").text()).toBe(version)
     expect(wrapper.find("#privacy-operations").exists()).toBe(false)
     wrapper.unmount()
   })

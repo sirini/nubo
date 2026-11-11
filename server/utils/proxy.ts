@@ -70,7 +70,6 @@ export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
   const token = getCookie(event, AUTH_KEY)
   const method = event.node.req.method
   const query = getQuery(event)
-  const logDeletion = /\/admin\/system\/records\/(visits|audit)$/.test(targetUrl)
   const binaryCSV = query.format === "csv" && /\/admin\/system\/(logs|audit|visits)$/.test(targetUrl)
   const contentType = getHeader(event, "content-type")
   const peer = trustedRequestPeer(event)
@@ -85,7 +84,6 @@ export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
   // 메모리에 박제해 둔 rawBody 버퍼를 실어서 백엔드에 1차 요청
   let response = await ofetch.raw(targetUrl, {
     method,
-    ...(logDeletion ? { retry: 0 } : {}),
     body: rawBody,
     query,
     headers: {
@@ -112,7 +110,6 @@ export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
       // 만료되었을 때, 소멸한 스트림 대신 메모리의 rawBody 버퍼 사용
       response = await ofetch.raw(targetUrl, {
         method,
-        ...(logDeletion ? { retry: 0 } : {}),
         body: rawBody,
         query,
         headers: {
@@ -136,6 +133,8 @@ export const safeProxyRequest = async (event: H3Event, targetUrl: string) => {
   if (response.headers.get("content-type")?.startsWith("text/csv")) {
     setHeader(event, "Content-Type", "text/csv; charset=utf-8")
     setHeader(event, "Cache-Control", "no-store")
+    const timezone = response.headers.get("x-nubo-log-timezone")
+    if (timezone) setHeader(event, "X-Nubo-Log-Timezone", timezone)
     const disposition = response.headers.get("content-disposition")
     if (disposition) setHeader(event, "Content-Disposition", disposition)
   }
