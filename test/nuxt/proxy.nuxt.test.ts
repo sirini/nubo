@@ -57,6 +57,15 @@ describe("safeProxyRequest token refresh", () => {
     await Promise.resolve()
   })
 
+  it.each(["visits", "audit"])("does not automatically retry failed %s deletions", async (kind) => {
+    fetchRaw.mockResolvedValue(response(503, { error: "deletion may have completed" }))
+    const { event, response: nodeResponse } = eventFor({ method: "DELETE", url: `/api/admin/system/records/${kind}?date=2020-01-01`, body: Buffer.from('{}'), cookie: "nubo-auth-token=admin-access" })
+    await safeProxyRequest(event, `http://goapi.test/admin/system/records/${kind}`)
+    expect(fetchRaw).toHaveBeenCalledOnce()
+    expect(fetchRaw.mock.calls[0]?.[1].retry).toBe(0)
+    expect(nodeResponse.statusCode).toBe(503)
+  })
+
   it.each(["logs", "audit", "visits"])("preserves %s CSV bytes including BOM and no-store headers after authorization forwarding", async (kind) => {
     const csv = new TextEncoder().encode("\ufefftime_utc,method\n2026-11-10T00:00:00Z,POST\n")
     fetchRaw.mockResolvedValue({ status: 200, _data: csv.buffer, headers: new Headers({ "content-type": "text/csv; charset=utf-8", "content-disposition": 'attachment; filename="security.csv"' }) })

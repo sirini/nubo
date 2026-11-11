@@ -1,4 +1,8 @@
 export type PrivacyOperationalStatus = {
+  visitLogEnabled?: boolean
+  auditLogEnabled?: boolean
+  visitLogManualDeletionOnly?: boolean
+  auditLogManualDeletionOnly?: boolean
   visitLogRetentionDays?: number
   available: boolean
   providers: string[]

@@ -8,7 +8,7 @@
       <Button variant="outline" :disabled="pending">통계 조회</Button>
     </form>
     <p v-if="error" role="alert" class="text-sm text-destructive">{{ error }}</p>
-    <p v-if="result" class="text-sm">총 {{ total.toLocaleString() }}회 · 보존 {{ result.retentionDays }}일</p>
+    <p v-if="result" class="text-sm">총 {{ total.toLocaleString() }}회 · {{ result.manualDeletionOnly ? "관리자가 직접 삭제할 때까지 보관" : `보존 ${result.retentionDays}일` }}</p>
     <div v-if="rows.length" class="max-h-96 space-y-2 overflow-auto" aria-label="기간별 페이지 접속 그래프">
       <div v-for="[date, count] in rows" :key="date" class="flex items-center gap-3 text-xs">
         <span class="w-24 shrink-0">{{ date }}</span><div class="h-3 flex-1 rounded bg-muted"><div class="h-3 rounded bg-primary" :style="{ width: `${count / maximum * 100}%` }"></div></div><span class="w-16 text-right">{{ count }}</span>
@@ -18,7 +18,7 @@
   </div>
 </template>
 <script setup lang="ts">
-type Statistics = { counts: Record<string, number>; retentionDays: number }
+type Statistics = { manualDeletionOnly?: boolean; counts: Record<string, number>; retentionDays: number }
 const config = useRuntimeConfig()
 const year = ref(new Date().getUTCFullYear())
 const unit = ref("month")

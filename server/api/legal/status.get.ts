@@ -11,6 +11,10 @@ export default defineEventHandler(async (event) => {
     // Whitelist facts; never proxy arbitrary backend fields into this public response.
     return {
       available: true,
+      visitLogEnabled: status.visitLogEnabled === true,
+      auditLogEnabled: status.auditLogEnabled === true,
+      visitLogManualDeletionOnly: status.visitLogManualDeletionOnly === true,
+      auditLogManualDeletionOnly: status.auditLogManualDeletionOnly === true,
       providers: status.providers.filter((value): value is string => typeof value === "string" && knownProviders.includes(value)),
       visitLogRetentionDays: typeof status.visitLogRetentionDays === "number" ? status.visitLogRetentionDays : 0,
       auditLogRetentionDays: typeof status.auditLogRetentionDays === "number" ? status.auditLogRetentionDays : 0,

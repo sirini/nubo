@@ -5,7 +5,7 @@ import LegalDocument from "../../app/components/legal/LegalDocument.vue"
 import PrivacyOperations from "../../app/components/legal/PrivacyOperations.vue"
 import LegalFooter from "../../app/components/legal/LegalFooter.vue"
 
-const operationalState = { visitLogRetentionDays: 90, available: true, providers: [] as string[], imageDescriptionEnabled: false, securityLogEnabled: true, securityLogRetentionDays: 7, securityLogMaskedIP: true }
+const operationalState = { visitLogRetentionDays: 0, visitLogEnabled: true, visitLogManualDeletionOnly: true, auditLogRetentionDays: 0, auditLogEnabled: true, auditLogManualDeletionOnly: true, available: true, providers: [] as string[], imageDescriptionEnabled: false, securityLogEnabled: true, securityLogRetentionDays: 7, securityLogMaskedIP: true }
 registerEndpoint("/api/legal/status", () => operationalState)
 
 describe("public legal documents", () => {
@@ -18,7 +18,8 @@ describe("public legal documents", () => {
       expect(wrapper.text()).toContain("설정된 외부 위탁·연동은 없습니다")
       expect(wrapper.text()).toContain("현재 사용하지 않습니다")
       expect(wrapper.text()).toContain("페이지 경로와 접속 IP 원문")
-      expect(wrapper.text()).toContain("최근 90일")
+      expect(wrapper.text()).toContain("관리자가 명시적으로 삭제할 때까지")
+      expect(wrapper.text()).toContain("당일 파일은 삭제할 수 없습니다")
       wrapper.unmount()
       operationalState.available = false
       clearNuxtData("legal-operational-status")
